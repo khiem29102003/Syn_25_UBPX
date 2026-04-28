@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="dmhccong" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục hành chính công" e="Public Administration Catalog"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="dmhccong" fieldKey="ma_hccong" order="ma_hccong" allowFilter="true" allowOrder="true">
+      <fields >
+	    <field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="100" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="ma_hccong" fieldType="PK" width="120">
+          <text v="Mã hành chính công" e="Public Administration Code"></text>
+        </field>
+        <field name="ten_hccong" width="250">
+          <text v="Tên hành chính công" e="Public Administration Name"></text>
+        </field>
+		<field name="ten_hccong2" width="250" hidden="true">
+          <text v="Tên tiếng anh" e="English Name"></text>
+        </field>
+		<field name="stt_bd" dataType="N" format="0" width="150">
+          <text v="Số bắt đầu" e="English Name"></text>
+        </field>
+		<field name="stt_td" dataType="N" format="0" width="150">
+          <text v="Số tối đa trong ngày" e="English Name"></text>
+        </field>
+		<field name="tg_lamviec" width="150" hidden="false" align="center">
+			<text v="Thời gian làm việc" e="Working hours"></text>
+        </field>
+		<field name="tg_dukien" dataType="N" format="0" width="150" hidden="false">
+          <text v="Thời gian dự kiến (s)" e="Estimated time (s)"></text>
+        </field>
+		<field name="tg_trihoan" dataType="N" format="0" width="150"  hidden="false">
+          <text v="Thời gian trì hoãn (s)" e="Delay time (s)"></text>
+        </field>
+		<field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_tt, ten_tt%l from dmttsd where status = 1">
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+
+&DefaultButton;
+	  
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+			declare @strKey nvarchar(3000)
+			exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id', 'b.ma_unit', '@@key', @strKey , @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+		<finding>
+			<text>
+			<![CDATA[
+		declare @strKey nvarchar(3000)
+		set @strKey = @strFinding
+		exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id', 'b.ma_unit', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+			]]>	
+			</text>
+		</finding>
+      </script>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmhccong(f){
+  this.constructor(f);
+}
+grid$dmhccong.prototype = new DirEvent();
+grid$dmhccong.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

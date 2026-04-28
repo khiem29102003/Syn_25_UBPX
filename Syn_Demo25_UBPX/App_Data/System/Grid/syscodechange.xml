@@ -1,0 +1,193 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridFinding.xml">
+]>
+
+<dir id="syscodechange" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Đổi/gộp mã" e="Change/Merge Code"></title>
+  <subtitle v="Danh sách đổi/gộp: &lt;i&gt;{code_type_text}&lt;/i&gt;" e="Change/Merge List: &lt;i&gt;{code_type_text}&lt;/i&gt;"></subtitle>
+  <grids>
+    <grid table="syscodechange" fieldKey="id" order="id" >
+      <fields>
+        <field name="id" hidden="true" dataType="I" fieldType="PK" width="100">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="code_type" viewType="Combobox" width="120">
+          <text v="Loại mã" e="Code Type"></text>
+          <viewInfo>
+            <options query="select code, name%l from syslistchangecode where status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="xtype" copy="false" viewType="Combobox" width="150" >
+          <text v="Đổi/gộp mã" e="Change/Merge Code"></text>
+          <viewInfo>
+            <options>
+              <option val="0">
+                <text v="Đổi mã" e="Change Code"></text>
+              </option>
+              <option val="1">
+                <text v="Gộp mã" e="Merge Code"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="old_value" width="120">
+          <text v="Mã cũ" e="Old Code"></text>
+        </field>
+        <field name="new_value" width="120">
+          <text v="Mã mới" e="New Code"></text>
+        </field>
+        <field name="status" viewType="Combobox" copy="false" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="5">
+                <text v="Chờ thực hiện" e="Pedding"></text>
+              </option>
+              <option val="7">
+                <text v="Hoàn thành" e="Hoàn thành"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="edit">
+          <text v="$EditToolbar" e="$EditToolbar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="view">
+          <text v="$ViewToolbar" e="$ViewToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="find">
+          <text v="$FindToolbar" e="$FindToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="runrow">
+          <text v="Chạy dòng hiện tại" e="Run Current Code"></text>
+        </button>
+        <button id="runall">
+          <text v="Chạy tất cả" e="Run All"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="export">
+          <text v="$ExportToolbar" e="$ExportToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(128)
+set @strKey = 'code_type = ''' + dbo.ISWIFTFunctionReplaceSQLParam(@code_type) + ''''
+if @status <> 0 set @strKey = @strKey + ' and status = ' + rtrim(@status)
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$syscodechange(f){
+  this.constructor(f);
+}
+grid$syscodechange.prototype = new DirEvent();
+grid$syscodechange.prototype.afterInit = function() {
+  var p = this._dir;
+}
+grid$syscodechange.prototype.beforeButtonGridClick = function (id, gindex, r) {
+  var p = this._dir, g = p.grid(), time = $.userinfo.val('ProcessTimeout');;
+  switch (id) {
+    case 'runrow':
+      if (r == null || p.valGrid(r, 'status', gindex) != 5) return
+      $.question('$sureChangeCode', $.msg.get("QuestionTitle"), p, function (q, v) {
+        q._close();
+        if (v) {
+          p.grequest(gindex, 'RunRow', '', ['id', 'code_type', 'old_value', 'new_value'], function(){
+            p._refresh();
+          }, r, time)
+        }
+      });
+      return false;
+      break;
+    case 'runall':
+      $.question('$sureChangeCode', $.msg.get("QuestionTitle"), p, function (q, v) {
+        q._close();
+        if (v) {
+          p.grequest(gindex, 'RunAll', '', ['id', 'code_type', 'old_value', 'new_value'], function(){
+            p._refresh();
+          }, r, time)
+        }
+      });
+      return false;
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <request code="RunRow" transaction="true">
+      <text>
+        <![CDATA[
+exec ISWIFTStoredChangeCode @code_type, @old_value, @new_value, @id
+select '$Processed' as message
+        ]]>
+      </text>
+    </request>
+
+    <request code="RunAll" transaction="true">
+      <text>
+        <![CDATA[
+exec ISWIFTStoredChangeCodeAll @code_type
+select '$Processed' as message
+        ]]>
+      </text>
+    </request>
+  </script>
+
+  <messages>
+    <message val="sureChangeCode">
+      <text v="Vấn đề đổi mã có thể làm chậm hệ thống hoặc treo nếu hệ thống với dữ liệu lớn hoặc có nhiều người đang sử dụng. Cân nhắc chạy chức năng này vào buổi tối hoặc thời gian rảnh, ít người làm việc. Chọn Nhận để tiếp tục thực hiện!" e=""/>
+    </message>
+    <message val="notEditStatus">
+      <text v="Không thể xóa/sửa ở trạng thái này" e=""/>
+    </message>
+  </messages>
+</dir>

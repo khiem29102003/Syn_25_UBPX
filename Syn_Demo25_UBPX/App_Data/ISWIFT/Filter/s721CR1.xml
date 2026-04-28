@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="s721BQ1" fieldKey="id" voucherCode="PM1" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lọc báo giá" e="Quotation Entry Filter"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D">
+          <text v="Ngày từ/đến" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+       
+        <field name="unit_id" dataType="I" hidden="true" label="1" field="1">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+		
+        <field name="ma_noi_di" viewType="Lookup" disabled="false" label="1" field="1" operation="like">
+			<text v="Nơi đi" e="Origin "></text>
+			<viewInfo lookupType="One" lookupId="vdmcangdi" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_di" />
+		</field>
+		<field name="ten_noi_di" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+		<field name="ma_noi_den" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Nơi đến" e="Destination"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangden" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_den"  />
+		</field>
+		<field name="ten_noi_den" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field>  
+			
+		 <field name="so_ct" label="1" field="1" allowBlank="false" viewType="Lookup"  operation="like">
+          <text v="Lấy số đơn hàng" e="Get the order number"></text>
+          <viewInfo lookupType="one" lookupId="s611" lookupRef="ds_so_dh" lookupKey="ngay_ct between ![ngay_ct1]! and ![ngay_ct2]! and ma_noi_di like ![ma_noi_di]! +'%' and ma_noi_den like ![ma_noi_den]! +'%' and ma_ngv = 1" lookupCheck="ma_kh = ![ma_kh]! and status in (5,6) and ma_ngv = 2 and ma_nt = ![ma_nt]!" />
+        </field>
+        <field name="ds_so_dh" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>	
+      </fields>
+    </form>
+	
+	
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$s721BQ1(p){
+  this.constructor(p);
+}
+filter$s721BQ1.prototype = new DirEvent();
+
+filter$s721BQ1.prototype.afterInit = function(){
+  var p = this._dir;
+  
+  p.valForm(['ngay_ct','ngay_ct1','ngay_ct2', 'ma_noi_di', 'ten_noi_di', 'ma_noi_den', 'ten_noi_den', 'ma_kh', 'ten_kh','id_dh', 'ma_nt', 'unit_id'], [p.options._ngay_ct,p.options._ngay_ct1,p.options._ngay_ct2,p.options._ma_noi_di, p.options._ten_noi_di,p.options._ma_noi_den, p.options._ten_noi_den, p.options._ma_kh, p.options._ten_kh,p.options._id_dh, p.options._ma_nt, p.options._unit_id]);
+}
+filter$s721BQ1.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir;
+  m2.val('id', 'I', p.options.parent.valForm('id'))
+  opt = $.extend({}, opt, {controller: "s721CR1Select", folder: "Filter", dirViewType: "Dialog", parent: p.options.parent, useDataSet: true, memvars: m2});
+  p._close();
+  $.createDir(false, opt);
+  return false;
+}
+
+         ]]>
+    </text>
+  </js>
+
+  <script>
+
+  </script>
+</dir>

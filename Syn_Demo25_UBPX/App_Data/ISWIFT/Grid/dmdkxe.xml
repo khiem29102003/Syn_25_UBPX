@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="dmdkxe" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Khai báo đăng kiểm" e="Registration declaration"></title>
+  <subtitle v="Cập nhật tỷ giá..." e="Add, Edit, Delete Exchange Rate..."></subtitle>
+  <grids>
+    <grid table="dmdkxe" fieldKey="ma_xe,ngay_dk" order="ma_xe" allowFilter="true" allowOrder="true" >
+      <fields >
+        <field name="ma_xe" fieldType="PK" width="120" >
+          <text v="Xe đăng kiểm" e="Currency Code"></text>
+        </field>
+        <field name="ten_xe" width="250" fieldType="EX"  aliasName="b">
+          <text v="Tên xe" e="Currency Name"></text>
+        </field>
+        <field name="ngay_dk" fieldType="PK" width="120" dataType="D">
+          <text v="Ngày đăng kiểm" e="Date"></text>
+        </field>
+		 <field name="ngay_hh" fieldType="PK" width="120" dataType="D">
+          <text v="Ngày hết hạn" e="Date"></text>
+        </field>
+        
+      </fields>
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmxe b on a.ma_xe = b.ma_xe', 'b.ten_xe', '@@key', '', @@filterKey, '', @pageIndex, 50, @@admin, @@userId    --@@columnFilterKey
+         ]]>
+          </text>
+        </query>
+      </script>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmdkxe(f){
+  this.constructor(f);
+}
+grid$dmdkxe.prototype = new DirEvent();
+grid$dmdkxe.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmpttt" table="dmpttt" fieldKey="ma_pttt" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục phương thức thanh toán" e="Payment Methods List"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_pttt" format="U" label="1" field="1" allowBlank="false" fieldType="PK" >
+          <text v="Mã phương thức" e="Payment Methods Code"></text>
+        </field>
+         <field name="ten_pttt" label="1" field="2" allowBlank="false">
+          <text v="Tên phương thức" e="Description"></text>
+        </field>
+        <field name="ten_pttt2" label="1" field="2" allowBlank="true">
+          <text v="Tên khác" e="Other name"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmpttt(p){
+  this.constructor(p);
+}
+dir$dmpttt.prototype = new DirEvent();
+dir$dmpttt.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã phương thức đã tồn tại' else N'Payment Methods code is exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã phương thức đã tồn tại' else N'Payment Methods code is exists' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+  
+</dir>

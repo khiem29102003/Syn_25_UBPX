@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="dmquocgia" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục quốc gia" e="List of country"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="dmquocgia" fieldKey="ma_qg" order="ma_qg" allowFilter="true" allowOrder="true">
+      <fields >
+        <field name="ma_qg" fieldType="PK" width="120">
+          <text v="Mã quốc gia" e="Country code"></text>
+        </field>
+        <field name="ten_qg" width="250">
+          <text v="Tên quốc gia" e="Country name"></text>
+        </field>
+		 <field name="status" width="120">
+          <text v="Trạng thái" e="Status"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+	  <script>	
+        <query>	
+          <text>	
+            <![CDATA[	
+			declare @strKey nvarchar(3000)	
+				
+			exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey , @@filterKey, '', @pageIndex, 50, @@admin, @@userId	
+         ]]>	
+          </text>	
+        </query>	
+        <finding>	
+          <text>	
+            <![CDATA[	
+declare @strKey nvarchar(3000)	
+set @strKey = @strFinding	
+if @ma_qg <> '' set @strKey = @strKey + ' and ma_qg in (''' + replace(replace(dbo.ISWIFTFunctionReplaceSQLParam(@ma_qg), ' ', ''), ',', ''',''') + ''')'	
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId	
+         ]]>	
+          </text>	
+        </finding>	
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmquocgia(f){
+  this.constructor(f);
+}
+grid$dmquocgia.prototype = new DirEvent();
+grid$dmquocgia.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

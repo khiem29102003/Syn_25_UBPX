@@ -1,0 +1,532 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+  <!ENTITY VoucherRequiredFields01 SYSTEM "..\Include\XML\VoucherRequiredFields01.xml">
+  <!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid01.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from m64 where id = @id and ma_ngv = 2) and exists(select 1 from cthu20 where id = @id and loai_tt = 1) begin
+    select '$DaPhanBo' as message
+    return
+  end">
+]>
+
+
+<dir id="m64" table="m64" fieldKey="id" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" voucherCode="HU0" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="phiếu chi tiền" e="Cash Receipt"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_ngv" viewType="Combobox" valueDefault="2" label="1" field="[180]" >
+          <text v="Loại phiếu chi" e="Voucher Type"></text>
+          <viewInfo>
+            <options query="select ma_ngv, ten_ngv%l from dmngv where ma_ct = '@@voucherCode' and status = 1 and ma_ngv=2 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="dia_chi" label="1" field="-">
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+        <field name="ong_ba" label="1" field="-">
+          <text v="Người nộp tiền" e="Payer"></text>
+        </field>
+        <field name="dien_giai" label="1" rows="1" field="-">
+          <text v="Diễn giải" e="Pay for"></text>
+        </field>
+        <field name="tk" hidden="true">
+          <text v="Tài khoản nợ" e="Debit Account"></text>
+        </field>
+        <field name="so_ct0" hidden="true">
+          <text v="Số chứng từ" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct0" dataType="D" hidden="true">
+          <text v="Ngày chứng từ" e="Voucher Date"></text>
+        </field>
+        <field name="hd_yn" dataType="B" hidden="true">
+          <text v="Theo dõi thanh toán" e=""></text>
+        </field>
+      </fields>
+    </form>
+
+    <form gravity="TopRight" columns="120,120" >
+      <fields>
+        &VoucherRequiredFields01;
+        &VoucherRequiredFields02;
+      </fields>
+    </form>
+
+    <form tabPageIndex="1" gravity="MiddleLeft" height="320" columns="120,120,240" >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="d64" allowBlank="false" label="" field="-" viewType="Grid">
+          <text v="Chi tiết" e="Detail"></text>
+        </field>
+      </fields>
+    </form>
+
+    <form gravity="BottomLeft" columns="120,120,120,120,120,0" >
+      <fields>
+        <field name="t_tien_nt" label="1" field="1" dataType="N" disabled="true" format="FCAmount" >
+          <text v="Tổng tiền" e="Total Amount"></text>
+        </field>
+        <field name="t_tien" nextRow="false" label="" field="1" disabled="true" dataType="N" format="Amount" >
+          <text v="Tổng tiền" e="Total Amount"></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  <grids>
+    <grid id="d64" table="d64" fieldKey="id, line" order="line" readOnly="false">
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+        <field name="tk_co" width="100" hidden="true">
+          <text v="Tài khoản có" e="Credit Account"></text>
+        </field>
+
+        <field name="ma_kh" viewType="Lookup" width="120" allowBlank="false" readOnly="false">
+          <text v="Mã nhân viên" e="Employee Code"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1 and nv_yn = 1" lookupCheck="1=1" lookupRef="ten_kh" lookupInfo="dmkh|ma_kh|ten_kh" />
+        </field>
+        <field name="ten_kh" fieldType="EX" inactivate="true" width="250" aliasName="c.ten_kh as " join="left join dmkh c on a.ma_kh = c.ma_kh">
+          <text v="Tên nhân viên" e="Customer Name"></text>
+        </field>
+        <field name="id_hd" width="80" allowBlank="false" viewType="Lookup" readOnly="false">
+          <text v="ID hóa đơn" e="ID hóa đơn"></text>
+          <viewInfo lookupType="Two" lookupId="cthu20HU0" lookupRef="so_ct_hd" lookupKey="ma_kh = #[ma_kh]# and unit_id = ![unit_id]! and ngay_ct &lt;= ![ngay_ct]! and loai_tt = 0 and ma_nt = ![ma_nt]! and (tt_yn = 0 or (id in (select id_tt from cthu20 where id = ![id]! and loai_tt = 1)))" />
+        </field>
+        <field name="so_ct_hd" width="100" fieldType="EX" aliasName="b.so_ct as " join="left join cthu20 b on a.id_hd = b.id and b.loai_tt = 0" >
+          <text v="Số hóa đơn" e="Invoice No."></text>
+        </field>
+        <field name="ngay_ct_hd" width="100" dataType="D" fieldType="EX" aliasName="b.ngay_ct as ">
+          <text v="Ngày hóa đơn" e="Invoice Date"></text>
+        </field>
+        <field name="ma_nt_hd" width="100" fieldType="EX" aliasName="b.ma_nt as ">
+          <text v="Ngoại tệ" e="Currency"></text>
+        </field>
+        <field name="ty_gia_hd" dataType="N" format="FCAmount" width="120" fieldType="EX" aliasName="b.ty_gia as ">
+          <text v="Tỷ giá hđ" e="EX Inv"></text>
+        </field>
+        <field name="tien_hd_nt" dataType="N" format="FCAmount" width="120" fieldType="EX" aliasName="b.t_tt as ">
+          <text v="Tiền trên hóa đơn" e="Invoice Amount"></text>
+        </field>
+        <field name="da_pb_nt" dataType="N" format="FCAmount" width="120" fieldType="EX" aliasName="0*b.t_tt as ">
+          <text v="Đã phân bổ" e="Pcs UOM"></text>
+        </field>
+        <field name="cl_nt" dataType="N" format="FCAmount" width="100" fieldType="EX" aliasName="0*b.t_tt as " >
+          <text v="Còn lại" e=""></text>
+        </field>
+        <field name="tien_nt" dataType="N" format="FCAmount" width="120" readOnly="false">
+          <text v="Tiền %s" e="%s Amount"></text>
+        </field>
+        <field name="tien" dataType="N" format="Amount" width="120" inactivate="true">
+          <text v="Tiền" e="Amount"></text>
+        </field>
+		
+		<field name="ma_pttt" viewType="Lookup" width="100" allowBlank="false" readOnly="false">
+          <text v="Mã PT thanh toán" e="Payment Methods Code"></text>
+          <viewInfo lookupType="One" lookupId="dmpttt" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_pttt" lookupInfo="dmpttt|ma_pttt|ten_pttt" />
+        </field>
+        <field name="ten_pttt" fieldType="EX" inactivate="true" width="150" aliasName="d.ten_pttt as " join="left join dmpttt d on a.ma_pttt = d.ma_pttt">
+          <text v="Tên PT thanh toán" e="Payment Methods Name"></text>
+        </field>
+        <field name="dien_giai" width="300" readOnly="false">
+          <text v="Diễn giải" e="Description"></text>
+        </field>
+		
+        &VoucherExtendFields;
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="paste">
+          <text v="$PasteToolbar" e="$PasteToolbar"></text>
+        </button>
+        <button id="moveup">
+          <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+        </button>
+        <button id="movedown">
+          <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+set nocount on
+select @@fields into #t from d64 a @@join where @@key order by line
+
+select id_tt, sum(tt_nt) as da_pb_nt
+	into #datt 
+	from cthu20 a join #t b on a.id_tt = id_hd 
+	where a.loai_tt = 1 and (a.id <> b.id or @copy = 1)
+	group by id_tt
+update #t set da_pb_nt = isnull(b.da_pb_nt, 0), cl_nt = a.tien_hd_nt - isnull(b.da_pb_nt, 0) from #t a left join #datt b on a.id_hd = b.id_tt
+
+select * from #t order by line
+drop table #t, #datt
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$m64(p){
+  this.constructor(p);
+}
+dir$m64.prototype = new DirEvent();
+dir$m64.prototype.afterInit = function(renderType){
+  var p = this._dir, g = p.grid();
+  
+  var exp = {
+    tien_tg: ['*tien', '(([!ma_ngv] == 1)?[ty_gia_hd]:[!ty_gia])*[tien_nt]'],
+    t_tien_nt: ['@t_tien_nt', '[tien_nt]'],
+    t_tien: ['@t_tien', '[tien]']
+  }
+  p.applyExpression(exp, g, false); //Ko can de quy tinh cong thuc
+  
+  g.FomulaApplied = {
+    "!ty_gia":["tien_tg", "t_tien"],
+    "tien_nt":["tien_tg","t_tien_nt","t_tien"]
+  } //Gan lai valid của từng cột sẽ tính các công thức nào theo thứ tự.
+  
+  p.options.FCColumns = {FC: ['t_tien_nt'], BC: ['t_tien']};
+  g.FCColumns = {FC: ['tien_nt'], BC: ['tien']};
+  var oldTG = '', oTG = p.jObject('ma_nt'); //Neu ty gia thay doi
+  oTG.focus(function(){ oldTG = oTG.fval(); }).blur(function(){ if (oldTG != oTG.fval()) onExRateChanged(oTG, p);});
+  p.applyFCColumns();
+  p.applyFCColumns(g);
+  p.setFCHidden(oTG.fval());
+  
+  dir$m64HiddenColumnByType(p);
+  dir$m64DisabledStatusByAction(p);
+  dir$m64DisabledMasterField(p, g);
+}
+
+dir$m64.prototype.beforeButtonDialogClick = function (id) {
+  var p = this._dir, g = p.grid(0), dt = g.data;
+  switch (id) {
+    case 'ok':
+      var rows = dt.findRow("[tien_nt] > [cl_nt]") //Ban chuan chi xu ly canh bao ton kho tuc thoi tren client
+      if (p.valForm('ma_ngv') == 1 && p.valForm('status') != '0' && p.options.dataChanged && rows.length) {
+        $.question(p.msg('GtLonHonPhanBo'), $.msg.get("QuestionTitle"), p, function (q, v) {
+          q._close();
+          if (v)
+            p.options.event.buttonDialogClick(id, false);
+          else {
+            p.tabActive("1");
+            p.jCell(rows[0], 'tien_nt', 0).focus();
+          }
+        });
+        return false;
+      }
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+
+dir$m64.prototype.gridCellValueChange = function (o, g, r, c, v) {
+  var p = this._dir;
+  var funResetInv = function() {
+    p.valGrid(r, 'id_hd', g.gridIndex, '');
+    p.valGrid(r, 'so_ct_hd', g.gridIndex, '');
+    p.valGrid(r, 'ngay_ct_hd', g.gridIndex, null);
+    p.valGrid(r, 'ma_nt_hd', g.gridIndex, '');
+    p.valGrid(r, 'tien_hd_nt', g.gridIndex, 0);
+    p.valGrid(r, 'ty_gia_hd', g.gridIndex, 0);
+    p.valGrid(r, 'da_pb_nt', g.gridIndex, 0);
+    p.valGrid(r, 'cl_nt', g.gridIndex, 0);
+  }
+  switch (c) {
+    case 'ma_kh':
+      dir$m64DisabledMasterField(p, g);
+      funResetInv();
+      break;
+    case 'id_hd':
+      if ($.isNumeric(v)) p.grequest(g, 'Invoice', '', ['id_hd'], function(pp, d, run){}, r);
+      else funResetInv();
+      break;
+    default:
+      break;
+  }
+}
+dir$m64.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+]]>&VoucherExRateValid01;<![CDATA[
+    case 'ma_ngv':
+      dir$m64HiddenColumnByType(p);
+      break;
+    default:
+      break;
+  }
+}
+]]>&VoucherExRateValid02;<![CDATA[
+dir$m64.prototype.gridDetailActionChange = function(gindex, action, r){
+  var p = this._dir;
+  if (action == 'AfterDeleteRow' || action == 'AfterAppendGrid') dir$m64DisabledMasterField(p, p.grid(gindex));
+  return true;
+}
+function dir$m64DisabledMasterField(p, g){
+  var dt = g.data, rows = dt.findRow("[ma_kh].trim() != ''"), dis = rows.length > 0;
+  p.setDisabled('unit_id', dis);
+  p.setInactive('unit_id', true);
+  p.setDisabled('ma_ngv', dis);
+  p.setDisabled('ma_nt', dis);
+}
+function dir$m64HiddenColumnByType(p){
+  var v = p.valForm('ma_ngv'), nt = p.valForm('ma_nt'), bc = p.options.struct.baseCurrency;
+  p.setColumnHidden(0, ['id_hd', 'so_ct_hd', 'ngay_ct_hd', 'ma_nt_hd', 'ty_gia_hd', 'tien_hd_nt', 'da_pb_nt', 'cl_nt'], v == 2);
+}
+function dir$m64DisabledStatusByAction(p){
+  var o = p.jObject('status');
+  if (p.options.action != 'VIEW') o.find("[value=6],[value=7],[value=9]").remove();
+}
+         ]]>
+    </text>
+  </js>
+
+  <css>
+    <text>
+      <![CDATA[
+.control-label.t_tien_nt, .input-field.t_tien_nt, .input-field.t_tien {
+  font-weight:bold;
+}
+.input-field.so_job
+{	
+	color: #499b98;
+}
+.tien_nt span {
+	color: rgb(255, 0, 0)
+}
+
+.ma_kh, .id_hd span {
+color: #ab6926;
+}
+.grid-input-field.ma_kh, .grid-input-field.id_hd
+{
+	color: #ab6926;	
+}
+.input-field.status, .input-field.unit_id,.control-label.tt,.control-label.tt2,.control-label.tt3,.input-field.ma_gd
+{
+	color: #ab6926;
+}
+.cl_nt span
+{
+	color: #499b98;
+}
+
+.grid-input-field.cl_nt
+{
+	color: #499b98;
+}	
+      ]]>
+    </text>
+  </css>
+
+  <script>
+    &VoucherRequest;
+    <request code="Invoice">
+      <text>
+        <![CDATA[
+if isnumeric(@id_hd) = 1 begin
+  declare @tt_nt numeric(19,5)
+  select @tt_nt = isnull(sum(tt_nt), 0) from cthu20 where id_tt = @id_hd
+  select max(ngay_ct) as [#ngay_ct_hd], isnull(max(ma_nt), '') as [#ma_nt_hd], isnull(max(ty_gia), 0) as [#ty_gia_hd], isnull(max(t_tt), 0) as [#tien_hd_nt], @tt_nt as [#da_pb_nt], isnull(max(t_tt), 0) - @tt_nt as [#cl_nt] from cthu20 where id = @id_hd
+end
+else
+	select null as [#ngay_ct_hd], '' as [#ma_nt_hd], 0 as [#tien_hd_nt], 0 as [#da_pb_nt]
+]]>
+      </text>
+    </request>
+    <query>
+      <text>
+        <![CDATA[
+if @action = 'EDIT' begin
+]]>&CheckUpdatingDeleting;<![CDATA[
+end
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+if @action = 'NEW' begin
+  declare @ma_nk varchar(32), @ten_nk nvarchar(3000), @ngay_ct date, @so_ct varchar(32), @i_so_ct int, @unit_id int
+  select @ngay_ct = getdate(), @unit_id = @@unit
+]]>&VoucherNumberQuery;<![CDATA[
+  if @so_ct is null
+    select '' as [so_ct], 0 as [i_so_ct], @unit_id as [unit_id], '' as ma_nk, '' as ten_nk
+  else
+    select @so_ct as [so_ct], @i_so_ct as [i_so_ct], @unit_id as [unit_id], @ma_nk as ma_nk, @ten_nk as ten_nk
+end
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+
+    <declare>
+      <text>
+        <![CDATA[
+declare @warning nvarchar(256), @dOldVoucherDate date, @dVoucherDate date, @nVoucherType tinyint
+set @warning = ''
+create table #idhd(id int)
+         ]]>
+      </text>
+    </declare>
+
+    &VoucherJSLoading;
+
+    <beforesave>
+      <text>
+        <![CDATA[
+if @ma_ngv = 1 and exists(select 1 from @d64 group by ma_kh, id_hd having count(1) > 1) begin
+  select '$DuplicateInv' as message
+  return
+end
+if @ma_ngv = 2 and exists(select 1 from @d64 group by ma_kh having count(1) > 1) begin
+  select '$DuplicateCus' as message
+  return
+end
+        ]]>
+        &VoucherNumberBeforeSave;
+      </text>
+    </beforesave>
+
+    <deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct, @dVoucherDate = ngay_ct, @nVoucherType = ma_ngv from m64 where id = @id
+        ]]>
+      </text>
+    </deleting>
+
+    <deleted>
+      <text>
+        <![CDATA[
+insert into #idhd select id_hd from d64 where id = @id
+exec ISWIFTStoredDeleteDataWithKey 'd64,cthu20,ctung20,r00$%Partition', @id, '', @dOldVoucherDate
+if @nVoucherType = 1 begin
+  exec ss_Calc_WriteOff '#idhd', 'cthu20'
+end
+        ]]>
+      </text>
+    </deleted>
+
+    <updating>
+      <text>
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct from m64 where id = @id
+insert into #idhd select id_hd from d64 where id = @id
+        ]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId, i_so_ct = @i_so_ct, so_ct = @so_ct where [%whereFieldKey]
+         ]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @ma_ct = '@@voucherCode'
+exec ISWIFTStoredGetIdentityNumber '@@voucherCode', '@@table', @id output
+         ]]>
+      </text>
+    </inserting>
+
+    <inserted>
+      <text>
+        <![CDATA[
+]]>
+      </text>
+    </inserted>
+
+    <aftersave>
+      <text>
+        <![CDATA[
+if @action = 'NEW' set @dOldVoucherDate = @ngay_ct
+update @d64 set id = @id, ngay_ct = @ngay_ct, so_ct = @so_ct, status = @status
+exec ISWIFTStoredDeleteDataWithKey 'd64,cthu20,ctung20', @id, '', @dOldVoucherDate
+insert into d64 select * from @d64
+insert into #idhd select distinct id_hd from @d64 where id_hd not in (select id from #idhd)
+
+exec ISWIFTStoredPostingVoucher 'm64', 'd64', @dOldVoucherDate, @ngay_ct, @id, '@@voucherCode', '', ''
+exec ss_Post_HU0 @ma_ngv, 'm64', 'd64', '@@voucherCode', @ngay_ct, @id
+if @ma_ngv = 1 begin
+  exec ss_Calc_WriteOfff '#idhd', 'cthu20'
+end
+exec ISWIFTStoredPostingGL @ma_ngv, 'm64', 'd64', @dOldVoucherDate, @ngay_ct, @id, '@@voucherCode'
+drop table #idhd
+
+exec ISWIFTStoredIncreaseVoucherNo @ma_nk, @ngay_ct, '@@voucherCode', @i_so_ct, @so_ct, '@@table'
+select '' as message, @warning as warning, @id as [#id], @so_ct as [#so_ct], @ma_unit as [#ma_unit]
+]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+    <message val="GtLonHonPhanBo">
+      <text v="Số tiền lớn hơn số tiền còn phải phân bổ. Có tiếp tục không?" e="Sure?"/>
+    </message>
+    <message val="DuplicateInv">
+      <text v="Số hóa đơn không được trùng" e="Duplicate Invoice Number"/>
+    </message>
+    <message val="DuplicateCus">
+      <text v="Mã nhân viên không được trùng" e="Duplicate Customer"/>
+    </message>
+    <message val="DaPhanBo">
+      <text v="Đã phân bổ phiếu chi này, không được sửa/xóa" e=""/>
+    </message>
+  </messages>
+</dir>

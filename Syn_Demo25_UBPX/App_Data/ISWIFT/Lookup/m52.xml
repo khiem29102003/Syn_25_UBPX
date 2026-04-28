@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+]>
+
+<dir id="m52" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Đơn hàng" e="Sales Orders"></title>
+
+  <grids>
+    <grid table="m52" fieldKey="id" fieldName="so_ct" order="id" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="id" dataType="N" fieldType="PK" width="100" format="0" hidden="true">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="so_ct" width="100" fieldType="RF" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+        <field name="ma_kh" width="120" >
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="250" fieldType="EX" >
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+        <field name="ma_nt" width="80" >
+          <text v="Ngoại tệ" e="FC"></text>
+        </field>
+        <field name="t_tt_nt" dataType="N" format="FCAmount" width="100">
+          <text v="Tổng tiền" e="Pcs UOM"></text>
+        </field>
+      </fields>
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = @lookupKey + case when @val = '' then '' else ' and (@@fieldKey like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or @@fieldName like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmkh b on a.ma_kh = b.ma_kh', 'b.ten_kh', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+</dir>

@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="bctkclc" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo cáo tồn kho chậm luân chuyển" e="Slow-moving Goods Report" />
+  <subtitle v="Ngày: {ngay_ct1}, số ngày luân chuyển: {thoi_gian}" e="Date: {ngay_ct1},  No. of Slow-Moving Date: {thoi_gian}"></subtitle>
+  <grids>
+    <grid>
+      <fields>
+        <field name="ma_vt" width="100">
+          <text v="Mã hàng hóa" e="Goods Code"></text>
+        </field>
+        <field name="ten_vt" width="350">
+          <text v="Tên hàng hóa" e="Goods Name"></text>
+        </field>
+        <field name="ngay_xuat" width="100" dataType="D" align="Center">
+          <text v="Ngày xuất cuối" e="Last Issue"></text>
+        </field>
+        <field name="dvt" width="80">
+          <text v="Đvt" e="UOM"></text>
+        </field>
+        <field name="so_luong" dataType="N" format="Qty" width="120">
+          <text v="Số lượng tồn" e="Closing Q'ty"></text>
+        </field>
+        <field name="tien_nt" dataType="N" format="Amount" width="120">
+          <text v="Tiền nt" e="FC Amount"></text>
+        </field>
+        <field name="tien" dataType="N" format="FCAmount" width="120">
+          <text v="Tiền" e="Amount"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$bctkclc(f){
+  this.constructor(f);
+}
+grid$bctkclc.prototype = new DirEvent();
+grid$bctkclc.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+grid$bctkclc.prototype.beforeInit = function(){
+  var p = this._dir;
+}
+grid$bctkclc.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(), dt = g.data;
+  if (p.options._data_analysis_struct == '') {
+    p.setColumnHidden(0, ['tien', 'tien_nt'], false);
+    if (p.options._mau_bc == 1) p.setColumnHidden(0, ['tien', 'tien_nt'], true);
+    if (p.options._mau_bc == 2) p.setColumnHidden(0, ['tien_nt'], true);
+  }
+}
+]]>
+    </text>
+  </js>
+<css>
+    <text>
+		<![CDATA[
+		.toolbar-close > div {
+			background-position: -336px -400px !important;
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

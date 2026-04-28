@@ -1,0 +1,91 @@
+﻿<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="bcthekho" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Thẻ kho" e="Stock card" />
+  <subtitle v="Từ ngày {ngay_ct1} đến ngày {ngay_ct2}..." e="Date From {ngay_ct1} Date To {ngay_ct2}..."></subtitle>
+  <grids>
+    <grid>
+      <fields>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày chứng từ" e="Voucher Date"></text>
+        </field>
+        <field name="ma_ct" width="100">
+          <text v="Mã chứng từ" e="Voucher Code"></text>
+        </field>
+        <field name="so_ct" width="100">
+          <text v="Số chứng từ" e="Voucher No."></text>
+        </field>
+        <field name="dien_giai" width="300">
+          <text v="Diễn giải" e="Descriptions"></text>
+        </field>
+        <field name="gia_nt" dataType="N" format="FCPrice" width="100">
+          <text v="Giá nt" e="FC Unit Cost"></text>
+        </field>
+        <field name="gia" dataType="N" format="Price" width="100">
+          <text v="Giá nt" e="Unit Cost"></text>
+        </field>
+        <field name="sl_nhap" dataType="N" format="Qty" width="100">
+          <text v="Số lượng nhập" e="Received Qty."></text>
+        </field>
+        <field name="tien_nt_n" dataType="N" format="FCAmount" width="100">
+          <text v="Tiền nhập nt" e="FC Received Amt."></text>
+        </field>
+        <field name="tien_nhap" dataType="N" format="Amount" width="100">
+          <text v="Tiền nhập" e="Received Amount"></text>
+        </field>
+        <field name="sl_xuat" dataType="N" format="Qty" width="100">
+          <text v="Số lượng xuất" e="Issued Qty."></text>
+        </field>
+        <field name="tien_nt_x" dataType="N" format="FCAmount" width="100">
+          <text v="Tiền xuất nt" e="FC Issued Amt."></text>
+        </field>
+        <field name="tien_xuat" dataType="N" format="Amount" width="100">
+          <text v="Tiền xuất" e="Issued Amount"></text>
+        </field>
+        <field name="sl_ton" dataType="N" format="Qty" width="100">
+          <text v="Số lượng tồn" e="Closing Balance"></text>
+        </field>
+
+        <field name="ma_kh" width="100">
+          <text v="Mã khách" e="Customer ID"></text>
+        </field>
+        <field name="ten_kh" width="250">
+          <text v="Tên khách" e="Customer Name"></text>
+        </field>
+        <field name="ma_vv" width="100">
+          <text v="Vụ việc" e="Job"></text>
+        </field>
+        <field name="id" dataType="N" format="0" hidden="true">
+          <text v="ID" e="ID"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$bcthekho(f){
+  this.constructor(f);
+}
+grid$bcthekho.prototype = new DirEvent();
+grid$bcthekho.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+grid$bcthekho.prototype.beforeInit = function(){
+  var p = this._dir;
+}
+grid$bcthekho.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(), dt = g.data;
+  if (p.options._mau_bc == 1) p.setColumnHidden(0, ['tien_nt_n', 'tien_nhap', 'tien_nt_x', 'tien_xuat'], true);
+  if (p.options._mau_bc == 2) p.setColumnHidden(0, ['tien_nt_n', 'tien_nt_x'], true);
+}
+]]>
+    </text>
+  </js>
+
+</dir>

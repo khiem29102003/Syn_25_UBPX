@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+]>
+
+<dir id="thpkhTC1Select" table="" height="" fieldKey="id" voucherCode="AS1" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Chi tiết danh sách khách hàng" e="Customer list details"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_thuchien1" label="1" field="1" aliasName="@DFDFrom" allowBlank="false" dataType="D" disabled="true">
+          <text v="Ngày thực hiện từ/đến" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_thuchien2" label="" field="1" allowBlank="false" inactivate="true" dataType="D" nextRow="false" disabled="true">
+          <text v="Ngày đến" e="Voucher Date"></text>
+        </field>
+        <field name="unit_id" dataType="I" hidden="true" label="1" field="1">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="xprocess" label="1" field="2" valueDefault="2" viewType="Combobox">
+          <text v="Xử lý" e="Process"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Thêm vào chi tiết" e="Append To Detail"></text>
+              </option>
+              <option val="2">
+                <text v="Xóa hết chi tiết và thêm mới" e="Delete All Detail And Append New"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+	
+    <form tabPageIndex="1" gravity="MiddleLeft" height="350" columns="120,120,240" >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="thpkhct" label="" field="-" viewType="Grid">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+ <grids>
+    <grid id="thpkhct" table="thpkhct" fieldKey="id, line" order="id, line" allowFilter="true" readOnly="false" allowOrder="true">
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+		<field name="chon_yn" dataType="B" width="80" valueDefault="1" readOnly="false" >
+          <text v="Chọn" e="Check"></text>
+        </field>
+		 <field name="ma_so_thue" width="120" allowBlank="false" readOnly="false" >
+          <text v="Mã số thuế" e="Tax Code"></text>
+        </field>
+        <field name="ten_kh" width="300" inactivate="true" readOnly="true">
+          <text v="Họ tên" e="Fullname"></text>
+        </field>
+		<field name="dia_chi" width="300" inactivate="true" readOnly="true">
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+
+	DECLARE @int_sl_phan INT
+	SET @int_sl_phan = CAST(@sl_phan AS INT);
+	declare @chon_yn int =1
+
+	select a.* into #d11 from dmkh0 a where ma_so_thue not in (select ma_so_thue from thpkhct ) and a.ngay_thuchien between @ngay_thuchien1 and @ngay_thuchien2 and unit_id = @unit_id
+
+	SELECT TOP (@int_sl_phan) a.ma_so_thue, @chon_yn chon_yn, a.ma_kh, a.ten_kh, a.dia_chi from #d11 a
+
+	drop table #d11
+         
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+   
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$thpkhTC1Select(p){
+  this.constructor(p);
+}
+filter$thpkhTC1Select.prototype = new DirEvent();
+filter$thpkhTC1Select.prototype.beforeInit = function(){
+  var p = this._dir;
+  
+}
+
+
+filter$thpkhTC1Select.prototype.afterInit = function(){
+  var p = this._dir;
+  p.valForm(['ngay_thuchien1','ngay_thuchien2', 'unit_id'], [p.options._ngay_thuchien1,p.options._ngay_thuchien2, p.options._unit_id]);
+	dir$thpkhTC1SetMaster(p);
+
+}
+
+function dir$thpkhTC1SetMaster(p) {
+  //p.request('ma_kh_request', '', ['id']);
+}
+
+filter$thpkhTC1Select.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir, pa = p.options.parent, g = p.grid(0), dt = g.data, master = g.ds.get(1), rErr = dt.findRow("[so_luong0] > [sl_cl]");
+  
+  var fun = function(){
+    dt.removeRow('[chon_yn] == 0'); 
+    pa.appendGrid(0, dt, p.valForm('xprocess') == "2", 'chon_yn', 'chon_yn');
+    pa.calcExpressionAll(0, 'chon_yn');
+	//p.request('ma_kh_request', '', ['id']);
+    //pa.appendForm(master, 0);
+	p._close();
+  }
+  
+  if (rErr.length) {
+    $.question('$VoucherRetrieveLimit', null, p, function(q, v){
+      q._close();
+      if (v) fun();
+    });
+  } else fun();
+  
+    return false;
+}
+
+         ]]>
+    </text>
+  </js>
+  
+  <script>
+		<request code="tien_request">
+			<text>
+			  <![CDATA[
+					select MAX(tien_no_goc) as [!tien_no_goc] from d11 where id_kb = @id_kb
+			]]>
+			</text>
+		</request>
+  </script>
+</dir>

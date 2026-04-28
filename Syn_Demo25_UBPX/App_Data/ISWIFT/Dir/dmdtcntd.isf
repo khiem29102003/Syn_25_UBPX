@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY CheckUpdatingDeleting "
+	if exists(select 1 from dmdtcntd where dien_thoai = @dien_thoai and status in (0,3)) begin
+	select '$NotEditVoucherStatus' as message
+		return
+		end
+  ">
+]>
+
+<dir id="dmdtcntd" table="dmdtcntd" fieldKey="ma_nv, dien_thoai" transaction="true" tryCatch="true" dirViewType="Dialog" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách cán bộ công khai số điện thoại tiếp dân" e="Public List of Officials' Citizen Reception Contact Numbers"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+  <forms>
+	<form gravity="TopLeft" columns="120,120,120,120" >
+		<fields>
+		    <field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_nv" viewType="Lookup" label="1" field="1" allowBlank="false" disabled="false" fieldType="PK" importable="5">
+				<text v="Mã cán bộ" e="Employee Code"></text>
+				<viewInfo lookupType="One" lookupId="dmnv" lookupKey="status=1 and xstatus = 5" lookupCheck="1=1" lookupInfo="dmnv|ma_nv|ten_nv"/>
+			</field>
+			<field name="dien_thoai" nextRow="true" label="1" field="1" importable="10" disabled="false" align="left" fieldType="PK">
+				<text v="Điện thoại" e="Phone Number"></text>
+			</field>
+			<field name="ma_loai" viewType="Combobox" width ="150" >
+			  <text v="Loại điện thoại" e="Phone Type"></text>
+			  <viewInfo>
+				<options query="select ma_loai, ten_loai%l from dmloaiphone where status = 1 and ma_loai = 'TIEPDAN' order by ma_loai">
+				</options>
+			  </viewInfo>
+			</field>
+			<field name="ma_ttp" allowBlank="true" viewType="Lookup" label="1" field="1"  hidden="false" disabled="false">
+			  <text v="Tỉnh thành phố" e="Province/City"></text>
+			  <viewInfo lookupType="One" lookupId="dmttp" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_ttp" lookupInfo="dmttp|ma_ttp|ten_ttp" />
+			</field>
+			<field name="ten_ttp" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_phuongxa" allowBlank="true" viewType="Lookup" label="1" field="1"  hidden="false" disabled="false">
+			  <text v="Phường/xã" e="Ward/Commune"></text>
+			  <viewInfo lookupType="One" lookupId="dmphuongxa" lookupKey="ma_ttp = ![ma_ttp]! and status = 1" lookupCheck="1=1" lookupRef="ten_phuongxa" lookupInfo="dmphuongxa|ma_phuongxa|ten_phuongxa" />
+			</field>
+			<field name="ten_phuongxa" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ghi_chu" nextRow="true" label="1" field="2" importable="20" disabled="false">
+				<text v="Ghi chú 1" e="Note"></text>
+			</field>
+			<field name="status" viewType="Combobox" label="1" field="2" valueDefault="1">
+			  <text v="Trạng thái" e="Status"></text>
+			  <viewInfo>
+				<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 order by ma_tt">
+				</options>
+			  </viewInfo>
+			</field>
+      </fields>
+    </form>
+	<form tabPageIndex="1" gravity="MiddleLeft" height="200" columns="120,120,120,120" >
+		<text v="Thông tin cán bộ" e="Information"></text>
+		<fields>		
+        <field name="ho_ten" allowBlank="true" label="1" field="2" disabled="true">
+          <text v="Họ tên" e="Customer Name"></text>
+        </field>
+		<field name="ma_pb" allowBlank="true" viewType="Lookup" label="1" field="1"  hidden="false" disabled="true">
+          <text v="Phòng ban" e="Department"></text>
+		  <viewInfo lookupType="One" lookupId="dmpb" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_pb" lookupInfo="dmpb|ma_pb|ten_pb" />
+		</field>
+		<field name="ten_pb" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+		  <text v="" e=""></text>
+		</field>
+		<field name="ma_bp" allowBlank="true" viewType="Lookup" label="1" field="1"  hidden="false" disabled="true">
+          <text v="Bộ phận" e="Section"></text>
+		  <viewInfo lookupType="One" lookupId="dnbp" lookupKey="ma_pb = ![ma_pb]! and status = 1" lookupCheck="1=1" lookupRef="ten_bp" lookupInfo="dmbp|ma_bp|ten_bp" />
+		</field>
+		<field name="ten_bp" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+		  <text v="" e=""></text>
+		</field>
+		<field name="ma_cv" allowBlank="true" viewType="Lookup" label="1" field="1"  hidden="false" disabled="true">
+          <text v="Chức vụ" e="Duty Code"></text>
+		  <viewInfo lookupType="One" lookupId="dmchucvu" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_cv" lookupInfo="dmchucvu|ma_cv|ten_cv" />
+		</field>
+		<field name="ten_cv" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+		  <text v="" e=""></text>
+		</field>
+
+      </fields>
+	</form>
+  </forms>
+
+&DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>araD1JCT6NPt2/WeKbkBpZczN8J7/L6F7hJAKuqb9Lfu4qE9ig2V9yL9ETCxZBLBAs/gXnzdHEbEJaBbyUj7cMx0ck49hV8EWW1hb1tw0s9EBBI6t+c6ut2YTzbaWJ95pu6VIsJDIRjw8FdzPb/cF955jTM0L9F5YiameaO808gx1un8QEHyGYrY04S3tKDBpC40RQTMBEg4Oc4K8OiEFyuw+O8QcEMEShvm21oTlpV595/yCcqB/x++VUlAAcM1HvunpmANKVKX8SyQ6y5zqkDRKIrmBYK17tPdS2gl2tQmNZpwde4bDMM3NjXJWC3LNYnw9IEtl3C7NE8jkazxWN92B1jW3d2M6rzN1wrogrgsINNoPFqIGyfpylPZn/b/+zxffOlijwDS1CrSTwG1NHmeZYwJ/jjjYLG9nVYJagUcxchyeAAfaDDadXiNUqiiOWoObIX6Lu5skTVZD0Zo4ja1Lbz/xM6UVdAZ6XQy0Zk=</enc>]]>
+    </text>
+  </js>
+<css>
+	<text>
+		  <![CDATA[<enc>jQr9S/4suFsxQDzGTuBaEkbQ6kWx8DFa/h8XNJPQN3At5itVOTIo+n67T2WulfmVZoYUJItlYYtjk9cTyrRGIOz5QjKgg16GKyUswNoPQ4dE69AFJ/DMA+uOfI5KPIkBsd9CWML9j7wFfHum2Xgzjo8Rr1YUKCFFPI9j+KypKbEyzTBdHvf1Z7kwnsjRTMjnbHdtCBOC6NCAqKJfacknWg==</enc>]]>
+	</text>
+</css>
+  <script>
+	<request code="info_request">
+		<text>		
+			<![CDATA[<enc>W+dK+zkFy1Y6xLYalN4Gc9BO8o1/Putyw/QMhFc7v9lhz8Y1eI8b/b5UnAm6+7yDnM/YyhaHDkRufOIztA42sOM/zxfduN3tRHGwEoltosu16P/U8E8DEd/WCeMXbsGr9xAThtXyR3MwpcPoIJyUC/x2WK0qLUVSkYjnumoypdP2ixH63I4ejnebYaj0U/u//dR4W1AA+uDS/c7gk0j8ec5ZPU6OKtBE9FkLHRXp7xIPt0TWH3QXfijN3AcIFrIZy/xvSaxETcgbMKYhjY4TeTvuOZMJ3H4bZGvdIOlr9cDocwL+F/yNBBBZOGygF9fbJ178E4N/xQ+ceqHr7gVSK4BhQL2niOMrqmLzdPfSgZCMcK6wRVzNQOUYK4fE/HV5IkN5kI99ZwhjrqTUmO9kxw==</enc>]]>
+		</text>
+	</request>
+  <inserting>
+      <text>
+        <![CDATA[<enc>qSibm796KHzTjltPx3ASfBJS3Slq3OhU64lN0N/Xa+7rh9PmO4e9o63d0euJ/IXsdL5ukrdrQCzIM8QLWr7MpxAQ+/ZvEOSnKjsUEpbZui2ulN9Tho9gwdxtLD7qbzXBVrYZ/Ew+PttGwPfU5tzhpe+9EDAc8KB0rEGQFtKLS+f5hvtZTNTEPCoOS1ChvdoD+Gx8bxaSdZSnA6buggrW7uP4hP9/GSb+AS7L0sN8LHnXatPxonFOvwcBL/bsTv8r043NaxWVQYYwoPSi4jv6tg==</enc>]]>
+      </text>
+    </inserting>
+	<importing>
+      <text>
+        <![CDATA[<enc>sxD5Swu0R4mcxEHdwcy2yi46ZbQRyi0uEDh1tGVfNVOBZJeZZHskWnswm55XGvVMtI3kJxA271ZmaBNQ7vOM1svvmG7tRC9SwsrihBxLjQw=</enc>]]>
+      </text>
+    </importing>
+  </script>
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Số điện thoại đã tồn tại" e="Phone number is exists"/>
+    </message>
+    <message val="taxtCodeExists">
+      <text v="Số điện thoại đã tồn tại" e="Phone number is exists"/>
+    </message>
+  </messages>
+</dir>

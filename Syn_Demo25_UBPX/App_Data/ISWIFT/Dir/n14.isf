@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+  <!ENTITY VoucherRequiredFields03 SYSTEM "..\Include\XML\VoucherRequiredFields03.xml">
+  <!ENTITY VoucherRequiredFieldsHiddenMaNT SYSTEM "..\Include\XML\VoucherRequiredFieldsHiddenMaNT.xml">
+  <!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid01.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+
+  <!ENTITY VoucherSaleRequest SYSTEM "..\Include\XML\VoucherSaleRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from n14 where id = @id and status in (6,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+    ">
+]>
+
+
+
+<dir id="n14" table="n14" fieldKey="id" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" voucherCode="CC0" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Đăng ký ngày công" e="Timekeeping"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120" >
+      <fields>
+		<field name="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+		  <text v="" e=""></text>
+		</field>
+		<field name="ma_bp" format="U" label="1" field="1" viewType="Lookup" clientDefault="true" allowBlank="false" fieldType="PK" copy = "0" >
+          <text v="Team" e="Team"></text>
+          <viewInfo lookupType="One" lookupId="dmbp" lookupKey="status = 1 " lookupCheck="1=1" lookupRef="ten_bp" lookupInfo="dmbp|ma_bp|ten_bp" />
+        </field>
+        <field name="ten_bp" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="ngay_hl" label="1" field="1" valueDefault="new Date()" copy="false" allowBlank="false" dataType="D">
+		  <text v="Ngày hiệu lực" e="Effective date"></text>
+		</field>
+      </fields>
+    </form>
+	
+	<form gravity="TopRight" columns="120,120" >
+		<fields>
+			&VoucherRequiredFieldsHiddenMaNT;
+		</fields>
+    </form>
+	
+	
+	<form tabPageIndex="1" gravity="MiddleLeft" height="320" columns="120,120,240" >
+       <text v="Chi tiết" e="Detail"></text>
+       <fields>
+			<field name="h14" allowBlank="false" label="" field="-" viewType="Grid">
+				<text v="Chi tiết" e="Detail"></text>
+			</field>
+		</fields>
+    </form>
+	
+</forms>
+<grids>
+    <grid id="h14" table="h14" fieldKey="id, line" order="line" readOnly="false">
+		<fields>
+			<field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+				<text v="" e=""></text>
+			</field>
+			<field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+				<text v="Dòng" e="Line"></text>
+			</field>
+			<field name="ma_nv" width="150" viewType="Lookup" readOnly="false" disabled="true">
+			  <text v=" Mã nhân viên" e="Employee code"></text>
+				<viewInfo lookupType="One" lookupId="dmnv" lookupKey="xstatus = 5" lookupCheck="1=1" lookupRef="ten_nv" lookupInfo="dmnv|ma_nv|ten_nv" />
+			</field>
+			<field name="ten_nv" width="200" fieldType="EX" inactivate="true" readOnly="true" aliasName="b" join=" left join dmnv b on a.ma_nv = b.ma_nv">
+			  <text v="Họ và tên" e="Full name"></text>
+			</field>
+			
+			<field name="t2" width="80" readOnly="false" viewType="Lookup" >
+			  <text v="T2" e="T2"></text>
+			  	<viewInfo lookupType="One" lookupId="dmcalv" lookupKey="status = 1" lookupCheck="1=1" lookupRef="" lookupInfo="dmcalv|t2" />
+			</field>
+			<field name="t3" width="80" readOnly="false" viewType="Lookup" >
+			  <text v="T3" e="T2"></text>
+			  	<viewInfo lookupType="One" lookupId="dmcalv" lookupKey="status = 1" lookupCheck="1=1" lookupRef="" lookupInfo="dmcalv|t2" />
+			</field>
+			<field name="t4" width="80" readOnly="false" viewType="Lookup" >
+			  <text v="T4" e="T2"></text>
+			  	<viewInfo lookupType="One" lookupId="dmcalv" lookupKey="status = 1" lookupCheck="1=1" lookupRef="" lookupInfo="dmcalv|t2" />
+			</field>
+				<field name="t5" width="80" readOnly="false" viewType="Lookup" >
+			  <text v="T5" e="T2"></text>
+			  	<viewInfo lookupType="One" lookupId="dmcalv" lookupKey="status = 1" lookupCheck="1=1" lookupRef="" lookupInfo="dmcalv|t2" />
+			</field>
+			<field name="t6" width="80" readOnly="false" viewType="Lookup" >
+			  <text v="T6" e="T2"></text>
+			  	<viewInfo lookupType="One" lookupId="dmcalv" lookupKey="status = 1" lookupCheck="1=1" lookupRef="" lookupInfo="dmcalv|t2" />
+			</field>
+			<field name="t7" width="80" readOnly="false" viewType="Lookup" >
+			  <text v="T7" e="T2"></text>
+			  	<viewInfo lookupType="One" lookupId="dmcalv" lookupKey="status = 1" lookupCheck="1=1" lookupRef="" lookupInfo="dmcalv|t2" />
+			</field>
+
+		</fields>
+
+		  <buttons>
+			<button id="add">
+			  <text v="$AddToolbar" e="$AddToobar"></text>
+			</button>
+			<button id="delete">
+			  <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+			</button>
+			<button id="copy">
+			  <text v="$CopyToolbar" e="$CopyToolbar"></text>
+			</button>
+			<button id="paste">
+			  <text v="$PasteToolbar" e="$PasteToolbar"></text>
+			</button>
+			<button id="moveup">
+			  <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+			</button>
+			<button id="movedown">
+			  <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+			</button>
+			<button id="split">
+			  <text v="-" e="-"></text>
+			</button>
+			<button id="freeze">
+			  <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+			</button>
+		  </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[<enc>0z5GcYxPoQelPxwhDcPl8stJPGKPc6B+ZV+1qsbQ+iJckVAtDC0ede0GKMbIudtSyKaPBUrxcXuyAsqYlLcWGqJvlMTYslLiS1Hn9kfEJ6fUF2Ju4ujZqwHHEKFWAWDG3v27BOK1JqU1vISalLmMIHATdFcPegP8oSiHZp1No1FSC+56E+6M8yGI/96sSS0z6nSd+HDTpIvcu52tM9eO/OV6b4Zd3B6wnY1lqoF2jKklAHJHbQq58uYNY6HZcU/9+XnrrgJ8Wor1G14Bb47jsEfMJDz0G1sJC7Jom/p1CFwTWzfFtJq5RKvPnj3lIR9L</enc>]]>
+          </text>
+        </query>
+      </script>
+	
+    </grid>
+	
+ 
+  </grids>
+  &DefaultButton;
+  <js>
+    <text>
+      <![CDATA[<enc>nUHTahDRWpGX1bBEg+RRNkyaveeADFptRKSldsAq2aZ2TgN+Ror4kjOjmY6gwIS7/i6DWgvFOutEYVX+rNh2Itho9Vz8CwATVAeJYVHAYG4zjgAfXaNvv8rGXbwM5mSHEuXZzEgoVWbhabbwURzexmOzfO3s8I6knlcbLx02z4myFdOnf8GkJ0wpJcA4SN3Tsp7ITZ/YSfVlrpeO2wG25DYWeQv2KCnBuplT0LHBnxqxlxkZtNTJgqJXhE7DVge8DEor1uFHKs6IdgEMOhTn9S55lrvJlr0e7S8dpsL3xd2+og37fr8wB5Gpq1cotNNs88stV7Za/dAfSsgsx/uwAEcSQmFyU+fjkC1cqEeS/JSCGPZVg4W5Wza9Ik4ihqzFyUpSOVbreydgUngRMh1SWYkNDpzP5xsivU4g2xpm4QRtVKNQsbxPM57yM73zOmJwuNx7j0J3emkqIReOhJ016WyXlG35Jywpbt847HmIAZcz2llkc5GhAlyOK9Phoy7Q6l41j80Jjl1bEMTXfrIzBQ==</enc>]]>&VoucherExRateValid01;<![CDATA[<enc>7ywuoSrXZcBk0RR1cuFWUNtBQSGx3i1Qxbse3YW1miQzfWL4RWXrnN4b2s2KO+J3FhC+JNM9GFmK/QqEV+61AEKsbxXdGTlmPM6wXocYGlieu1NE0ICkEDTfckZtLRDi1ZSx4MRfeEnbbgMxFoJ8qKU3lEVvTHVa92P/mlJRsG5fnKvU1IhuSTqbBH63kCdjVKEY+EnehjVsaf9MZUZ8Rhsicg+P6SynIFXq4TwASO8VxyCiRVmdGAnY1m0Rc7+YJnoWx6TLfuWqIm3LlFQfjOjlJ7mQxoLzDHFAH+NIt4Sp0vX8uS+A8u88pVdv2AgBecLuXCffA8fRoXBsBdzNeu6owQ4i8BBTxTU/+F2oqcfgkzinX/BYDx+pQ9yeHpBe</enc>]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[<enc>FTkFm4igxdrH0JOWCSE3pDOQT6jXMXeYKZO0piGUUDGEdZ13Ch2mmmvjrdlbsj2K0NfV93yKqGq9AT1xucH6MOguRFBhPVER6o0uM0XpU/fyiXHVVIuUkzkH07CguYbL</enc>]]>
+    </text>
+  </css>
+
+<script>
+    &VoucherRequest;
+    &VoucherSaleRequest;
+		  <request code="ma_nv_request">
+			<text>
+			  <![CDATA[<enc>kcDZujUcgYcJiENljKYjqX00q+5GuoUfVWFib9KPZSHVabyo7PmvSWCw76kI0RcWfFYkAIcwXm3Bg0CdzxC+LnT1qKZ9cVB+SzA7efe0lni/vUKoH1TeN2iCf0cdW3cSURZaetZZlB9m7biXjmOfpl444qEMyKnkmHo6ZX9H8anKEcvfcZAaL21Xk5qG0iYNMj3pBHgJzRcPSsw/gcIrVNQqnHkf0MgBebuhJRdLARJFBFXQnwJ6Gew3riKNuWzs</enc>]]>
+			</text>
+		  </request>
+		  <request code="loadform">
+			<text>
+			  <![CDATA[<enc>eb5GXAndZzGbLJ9CniO8K79m9BSggEF9BwuA7LSdNwi/HxYm7UxfAfZENH6B9d4D0HUYmhdS/4FfgHT4o3ld657Gw9W7xwWD+mnmQQ1xzXNnIIo5OXp3C1TLT2tJTC4/</enc>]]>
+			</text>
+		  </request>
+		  
+	<query>
+      <text>
+        <![CDATA[<enc>r07gHy2a1YsWBN5sJQoNxYa1sI4hSbyxaZPELeOK4RcruMCpSWfc9UthMqmOvYHTE2MipIQ+y/ONHqRuYxwMTw==</enc>]]>&CheckUpdatingDeleting;<![CDATA[<enc>npDD0lBIOECTMNOlV4Nyc9I50iA4Teyi6wutIeQK/jd1Z9LAkGMCP5r094DT8DOOaDmzEunHAs4SXBHf1J+dFeCGhwlYt4MjFtXjFF2Gjmao3UVM8KXrzp9AcLzcb/o0j3VODmGUr8Q7J+nJ4G+lXxSaocssrbtPKhi60+lZZKAymLDH1AzTIa6AOCV8YUaTRNwaW/H/ZLskvAHhP9liB3k9132pcUOIJOiUQo6OKrEea040LyoLlm+XCWbZ7pBIAJ7v8vMdwxQhtEZLr22q0Fmi8BwQkp8QIXtAVSWQ8XFKbCz8jovpoKFZxuzmJ+GPFi0OJYr1765umq4/529xzfTxXu34jo040kwS9OpuexwMWLXvS3JXLvM3bsAyCgrev5k4B++jhWVvmU+NFVFKTZ9IFwVafBBKmHXy68Pszrs=</enc>]]>&VoucherNumberQuery;<![CDATA[<enc>+5mLMTNJcvZTJbBjCjbo+cIrPcfaGX7+KR00EEE3U1NtiuNYcGSxxXIYWnaNUSuqHkYOyALhgjz8xbZu31/xojKCwemqRN+7rjKu7hFd4/Gpa8QBU9zmlOs6VN38KPx5+FyWr1pRh/+Lyfh0vREcLHq0HaAUPRkRMwxlJ9Xij9fpvCChlIKX3ELUNoGN04PhBBZ8NcpdIM1rl3tBXL9r6w==</enc>]]>
+      </text>
+    </query>
+	
+	<declare>
+      <text>
+        <![CDATA[<enc>hxQPm/hYhpvPifcenBxj7h7oN0snZYZljPmd/kTMe5whTFFwkDsDfoO5JwiPltwxLjPx0ikYFWniqwhGnBg2yIKR1GXkzLJhZhasObH3kRsMi+yMMT3AHG3z2B+SI1eCh/KK0L4RiaNQw5pWSMR6N/4K0NUT4Jasbv0dcsOCexc=</enc>]]>
+      </text>
+    </declare>
+	
+	&VoucherJSLoading;
+
+    <beforesave>
+      <text>
+        &VoucherNumberBeforeSave;
+		<![CDATA[<enc>k/k/GSTQzUuguJP2ukhYYORd3CEwsaLkEfdSlWiKEjY=</enc>]]>
+      </text>
+    </beforesave>
+	<deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOHo2m/I5r6vL/VnI32yTLjZo3g4lV17JTn1w4Idh5UQXELGRDhj3lfaPmenquxV6LLKq8kZGIA48kNumA55yMm/jP2uPNwilSoUekCTZKCc1ClCQFDzvC4Un85qYhEgYyw==</enc>]]>
+      </text>
+    </deleting>
+
+	 <deleted>
+      <text>
+        <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOHbMbHFxDiuf+Onfho6OBmznriD69PGZfJVRXeaD3SWYTqkaHlmnqlmXYRYDx5JwvDk87l67J+2oZ9+n+5fhetVZo3UEGzaDOgv+xFt6D4xHxUqqdXRWJwEv5D1MC9HkCtcLL/op436rFA1PjAQBW3n1rhGiEFtNClmXMg+cN3w55h/eJP9l6IRLfnfE6h72fg==</enc>]]>
+      </text>
+    </deleted>
+	<updating>
+      <text>
+
+      <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOHo2m/I5r6vL/VnI32yTLjY8ejKRS/cnXnUMMtEqL1MMjOZwCnCLbbPkwC57OB62AVYmg2Y8yvDj0di0LfxF26n/0X/2guTQJE1htT7d5sun</enc>]]>
+      </text>
+    </updating>
+	<updated>
+      <text>
+        <![CDATA[<enc>gXuqqcFgBkBI0oQdRceuvofpnmH75MCVp6IDtd+YCOrpaul1FKaZYJjjxbbbb/JICblQsAWz2RMDJKd2zKtCJ9+gdXuQ/yPS596rB/8EtHMlH+yqXA4tB1q+W6Msn9JMJaksG3YkpOIzDXNavyYWHsFpgrj8oOMlc30RUM1DmvTWOG5qSWHG7BHMbF/aFzK76vHS3Pd22c/odIWDXVPVzUKtwPl1X9OcqVtuehY7OIQ=</enc>]]>
+      </text>
+    </updated>
+	<inserting>
+      <text>
+        <![CDATA[<enc>z1s4NkrNk+40z3uOtt5qcgjBOPYOzc+u7EaQcyfDObcxnFyoQqy6mMZGCZarMI4LSWp2P3/8eRlbzAG73r5Kulnr3XU9FzoZaiSs6K4ommATqb6GbtHXoTTeK790QdTK52hhuJpcl9ZGjbJ6cuMdEDyrFWidTTfvqUJkn5qDmFqdfxxjRdTWlVTCSLVUBLU5/J3K0kf53EvwOF/dPnLByA==</enc>]]>
+      </text>
+    </inserting>
+	
+	<inserted>
+      <text>
+    <![CDATA[<enc>zSTdJagFMwuOZaoZMOGs3OxxRucsXt3rG4myf9T/ryo=</enc>]]>
+      </text>
+    </inserted>
+    <aftersave>
+      <text>
+        <![CDATA[<enc>pnlfBlPEOhmHT6/FhLXueobtbkciqALzvdPNlNE97cJVLC1rn7gwOOn4ieGUhH5e5THmS9kukpESiD7QwHtJ2d3VKE//eG9Spp5KAyqijHbfOD4jEaxC/uDthSfj7kypve4goiPewLyKxK6dlOYeyYxE61ywzbKw5rQxFk1ILg6HyHtGCVc8d3TRHkZeFEnDs7QFPNJhSCfuJFOySdi0ZdiQugi8z62JI78V/RM0cZZdnMU7fKzdOHPfVsjxiKCN21GDLDj72RCcJ4JPCMKxa9rvhqndT40G+Nftoxt8IGx24GhD3ur52dz24ybrdEDdiQ3bAxzxxaxEkKBx1aDD2biYuCTGqbm4K29yF/ojyDFuv8+ESkugsvHV9v+BzpZDj8h498xBQMYt4z2TiKcHcgR5zJngRgcHAM3CpwqBU/w=</enc>]]>
+      </text>
+    </aftersave>
+  </script>
+
+
+</dir>

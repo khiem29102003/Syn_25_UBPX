@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+  <!ENTITY VoucherRequiredFields01 SYSTEM "..\Include\XML\VoucherRequiredFields01.xml">
+  <!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid01.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+
+  <!ENTITY VoucherSaleRequest SYSTEM "..\Include\XML\VoucherSaleRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from s24 where id = @id and status in (6,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+    ">
+]>
+
+
+<dir id="s24" table="s24" fieldKey="id" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" voucherCode="YG4" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo giá khác" e="Other quotes"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120" >
+		<fields>
+			<field name="tieu_de" label="1"  field="-" allowBlank="false" >
+				<text v="Tiêu đề (*)" e="Request title (*)	"></text>
+			</field>
+			<field name="noi_dung" label="1" rows="7" field="-" valueDefault="Chào Quý công ty,
+Tôi đang cần Báo giá khác cho lô hàng này. 
+Vui lòng xem thông tin và gửi Báo giá khác tốt cho tôi. Mong phản hồi từ  Quý công ty sớm. 
+Trân trọng!">
+				<text v="Ghi chú (*)" e="Remarks (*)"></text>
+			</field>
+			
+			<field name="xfile" label="1" field="2" viewType="File" fieldType="EXParam">
+				<text v="Đính kèm" e="Add attachment"></text>
+				<viewInfo fileFieldId0="id" fileGroup="BG1" fileExtension="*" maxFileCount="10"></viewInfo>
+			</field>
+		</fields>
+    </form>
+
+    <form gravity="TopRight" columns="120,120" >
+		<fields>
+			<field name="unit_id" viewType="Combobox" dataType="I" clientDefault="true" inactivate="true" label="[60]" field="[180]" >
+			  <text v="Đơn vị" e="Unit"></text>
+			  <viewInfo>
+				<options cache="false" query="select unit_id, ten_unit%l from sysunit where unit_id in (select unit_id from dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @@admin, ''))">
+				</options>
+			  </viewInfo>
+			</field>
+<field name="i_so_ct" inactivate="true" hidden="true" label="[60]" field="[60]">
+  <text v="Số tăng" e="Number"></text>
+</field>
+<field name="ten_nk" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="[100]" hidden="true" aliasName="cast('' as nvarchar(4000)) as ">
+  <text v="" e=""></text>
+</field>
+<field name="ma_nk" inactivate="true" label="[60]" field="[60]" clientDefault="true" hidden="true" viewType="Lookup">
+  <text v="Quyển/Số ct" e="Book/No"></text>
+  <viewInfo lookupType="One" lookupId="dmnk" lookupKey="unit_id in (0, ![unit_id]!) and exists(select 1 from dmnk3 x where x.ma_nk = a.ma_nk and x.ma_ct = '@@voucherCode' and (x.user_id in (0, @@userId) or @@admin = 1)) and (ngay_hl1 is null or ![ngay_ct]! &gt;= ngay_hl1) and (ngay_hl2 is null or ![ngay_ct]! &lt;= ngay_hl2) " lookupCheck="1=1" lookupRef="ten_nk" lookupInfo="dmnk|ma_nk|ten_nk" />
+</field>
+<field name="so_ct" format="U" allowBlank="false" nextRow="false" label="" field="[120]">
+  <text v="Số c/từ" e="Voucher No"></text>
+</field>
+<field name="ngay_ct" label="1" field="1" valueDefault="new Date()" copy="false" allowBlank="false" dataType="D">
+  <text v="Ngày chứng từ" e="Voucher Date"></text>
+</field>
+<field name="ngay_lct" label="1" field="1" hidden="true" valueDefault="new Date()" allowBlank="false" disabled="true" dataType="D">
+  <text v="Ngày lập ct" e="Create Date"></text>
+</field>
+			&VoucherRequiredFields02;
+			<field name="ngay_hl" dataType="D" label="1"  field="1" allowBlank="false" >
+				<text v="Từ ngày (*)" e="From (*)"></text>
+			</field>
+			<field name="ngay_hld" dataType="D" label="1"  field="1" allowBlank="false">
+				<text v="Đến ngày (*)" e="To (*)"></text>
+			</field>
+		</fields>
+    </form>
+
+    
+  </forms>
+
+  
+
+  &DefaultButton;
+
+
+  <js>
+    <text>
+      <![CDATA[<enc>ZI7d2NMvBabGK6dy7kMLr+4F7Wvh/s8pbgjF03zjD2MpQ/y8C8UnFWo/MQRWhc1fGF9g9UUkgMHwe1pBnt8q/L/4CyNoygbFmmL0euZNpaFpKSpRLJ6CDqKGrWouTitsieOR4ZPBLpXfz2foPysqzy+OZm8BNFZQtJfD4pisJWyvZYC8cn/4lu6W3Va0GNpU1bEphQvBH8ztXQrJO5KvQmyK9Ly/r0M5kXgLVU+H1y8b7i3r/wAnqsreijBYywbhCPUcqd9CXidwr7/Bhodmoppu8bA21f/co2jCUkuYOvbVDsKLOPdEaeLr4z6Vij+oz8X+OkMAjlUMxX0WxKq4jjx5qpoQV88dBQrORZ/AMxMSl3TK4MK/utRVZ7r31fu3gJocWKm9fh8Bpa5BWvbNPlGqQckDYGeY4uRdIzZU9PQti/GZJlVLfyPZkHXjWBQNsOjb/bBFYPODuiuK0jBITp6fI76Yk7IJEKV/S++nqtW2MK8ezdNL8/OHTlXUqSko</enc>]]>
+    </text>
+  </js>
+
+
+     <script>
+    &VoucherRequest;
+    &VoucherSaleRequest;
+
+     <query>
+      <text>
+        <![CDATA[<enc>r07gHy2a1YsWBN5sJQoNxYa1sI4hSbyxaZPELeOK4RcruMCpSWfc9UthMqmOvYHTE2MipIQ+y/ONHqRuYxwMTw==</enc>]]>&CheckUpdatingDeleting;<![CDATA[<enc>t2Qblm/iKiSKIZpFhUih9XP26HzIDDPeD6n3eA8By4pgl/oQvea7dizviX+gPen/iMrWjB06aP3ThXTEZlPTmGtxz6kQFApWEX8tSwEknDGwPKEUmjVzWymrmA58sQ6PqkNqHx6xzc1OTx3W/zKk7bmN4iiyubmljMkdvNxOiyAvtbyv8Ajpsfq4HtioTPpD8cR0dn90Qb8E9nOmye6pcenRl09EfpkkVKb1XTI26xrsvLGuPMQ1dkrnd6zfYGEIaknyJMgLes1HmOqKMC4y/JGpioxrntDwxihQTxIkwl4YiDDz77sU7q4fG/gosWWVl/KtR6LncV1AqsM4lShaXjUojuPSNOiXpgpM6cJJWF8Pgs83gnX8wmiL1Pm4gPpgFTJJXDGVKCi6iGTKNhv7c/UhUtQLOtSyhQYHpgYc3Bo=</enc>]]>&VoucherNumberQuery;<![CDATA[<enc>+5mLMTNJcvZTJbBjCjbo+cIrPcfaGX7+KR00EEE3U1NtiuNYcGSxxXIYWnaNUSuqHkYOyALhgjz8xbZu31/xojKCwemqRN+7rjKu7hFd4/Gpa8QBU9zmlOs6VN38KPx5+FyWr1pRh/+Lyfh0vREcLHq0HaAUPRkRMwxlJ9Xij9fpvCChlIKX3ELUNoGN04PhBBZ8NcpdIM1rl3tBXL9r6w==</enc>]]>
+      </text>
+    </query>
+
+    <declare>
+      <text>
+        <![CDATA[<enc>hxQPm/hYhpvPifcenBxj7h7oN0snZYZljPmd/kTMe5whTFFwkDsDfoO5JwiPltwxLjPx0ikYFWniqwhGnBg2yIKR1GXkzLJhZhasObH3kRsMi+yMMT3AHG3z2B+SI1eCh/KK0L4RiaNQw5pWSMR6N/4K0NUT4Jasbv0dcsOCexc=</enc>]]>
+      </text>
+    </declare>
+
+    &VoucherJSLoading;
+
+    <beforesave>
+      <text>
+        &VoucherNumberBeforeSave;
+      </text>
+    </beforesave>
+
+    <deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOHo2m/I5r6vL/VnI32yTLjZo3g4lV17JTn1w4Idh5UQXELGRDhj3lfaPmenquxV6LGOPQX/n3NR+pu8FZKTnfMTTrhuSn67MHNc7NDzFZ61GV/MV6mx0PDTZnxb1RA0Yrw==</enc>]]>
+      </text>
+    </deleting>
+
+    <deleted>
+      <text>
+        <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOHbMbHFxDiuf+Onfho6OBmyIudspApiXuaG59+8uLMckjnwnWzosYfwRgvQaj/YGnMMBJ573RDCPGm316X0pL1yoNywHJ/VWgimJLQz+brmKvyCVacvPIvkR7reY4iCWiug6xkvsI2IArQSoYkTOS1Q=</enc>]]>
+      </text>
+    </deleted>
+
+    <updating>
+      <text>
+        <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOHo2m/I5r6vL/VnI32yTLjY8ejKRS/cnXnUMMtEqL1MMswF8bR6D24yzr8vC8TzSmjUVdHV7PjK1V9+tRtoTmeRkGcR+k/v/6AfdKMsC4sbw</enc>]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[<enc>ArurPA4yt4an7w7h9QL0RmqL9Zj9oRpzGQf0F/cns3IvpolVKnuljyreH4wA8QSzWnoIFOCR/WNftHaMvdd1aWHjeKKc38LCvp4LMQzdbhrfHV5vMwHoNRMTypn4J2euyYYS/IrT7apos8oIisCF2Qz8967stH8AXTPc6vUdBLywTWBOSlkKKO1DKTR1SlOMGXfIp7Hl5cW6dzCPajxVHByW+h7cLUjRsWexeeKaFN+znFvvN+lSTmGhrpFND+e9eMx1EQ/kmg+rbYNjlSixJlk2hAd6cgw7UjvNGppOibY=</enc>]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[<enc>z1s4NkrNk+40z3uOtt5qcgjBOPYOzc+u7EaQcyfDObcxnFyoQqy6mMZGCZarMI4LSWp2P3/8eRlbzAG73r5Kulnr3XU9FzoZaiSs6K4ommATqb6GbtHXoTTeK790QdTK52hhuJpcl9ZGjbJ6cuMdEDyrFWidTTfvqUJkn5qDmFqdfxxjRdTWlVTCSLVUBLU5/J3K0kf53EvwOF/dPnLByA==</enc>]]>
+      </text>
+    </inserting>
+
+    <inserted>
+      <text>
+        <![CDATA[<enc>/wI7uhHcwMgy02w9veCLUfS+ddg3PPmAEH1Xys3qbjp8bwl1gb2/BZU9XnpyIc6pgaejHYIY7jjZkYku6aUwSE0HtohD7wRmdjulnsf1lozKidoTdS+p3CsPgZ8RERRrseqcR0L/4HOIf6CawGK9K2lsRwitjNEyitmMf3ZbHMg=</enc>]]>
+      </text>
+    </inserted>
+
+    <aftersave>
+      <text>
+        <![CDATA[<enc>FdNKK0B7y/IaTFk3GLqv3Owp+bsrkQ/IfiPQhwflDMhN9gcDBh6qsHcPorMPCymUHDNj2FfqRBC9tYRGX02FmaOGXWCIzjio0L/MCKjdVPVUrEWBD9fBRzw9EWyu4I3yaNfFIAbA2ZF3aJsuQhaMCC9UhpQEd5PGIsH+qBtr9k6Kt+4cG+3CRYqzaWMmxntLVCU/zzxc6ovEm+oKfaYINKR/yOZrY+Q5yI9/sS+aYGadI5sAYMlsnV7VXdaF0wlUfaNtjpXvU3DPIQNiP5C4D4u1uoP9gGRVJEMyMKCnS6AX4MyYlV4nSUijhBIPMCkBGbQC1o6nTbxFdm2KOZ7zVg==</enc>]]>
+      </text>
+    </aftersave>
+  </script>
+
+    <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã chứng từ - Tên/nhóm đã tồn tại" e="Voucher Code - Name/Group Already Exists"/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã chứng từ - Tên/nhóm đã tồn tại" e="Voucher Code - Name/Group Already Exists"/>
+    </message>
+    <message val="commonInfo">
+      <text v="Thông tin chung" e="Header"/>
+    </message>
+    <message val="FCText">
+      <text v="nt" e="FC"/>
+    </message>
+    <message val="noChoice">
+      <text v="Chưa chọn thông tin giới hạn" e="No Selected Items"/>
+    </message>
+  </messages>
+
+</dir>

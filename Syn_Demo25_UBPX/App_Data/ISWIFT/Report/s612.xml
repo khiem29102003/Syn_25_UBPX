@@ -1,0 +1,1175 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<report xmlns="urn:schemas-iswift:struct-report">
+  <query>
+    <text>
+      <![CDATA[
+
+--- Table 1 ---
+declare @t numeric(19, 5)
+select  a.unit_id, a.so_ct, a.ma_kh, a.dien_giai, a.ma_nt, a.hanh_trinh, a.hanh_trinh2, a.ma_kh_s, a.ma_kh_g, a.ds_cong, a.book_no, a.so_tk, a.mbl_no, a.hbl_no, a.ma_tau, a.doc_no, a.doc_nam, a.ma_cnct, 
+		convert(float,a.t_so_kien) t_so_kien, a.t_tong_trong, a.ma_svc, a.ma_tham_chieu, a.so_do,
+		b.ten_kh, b.ten_kh2, b.dia_chi, b.ma_so_thue, b.nguoi_lh, b.dien_thoai, b.e_mail, 
+		iif(b.ten_kh!='',concat(b.ten_kh,iif(b.dia_chi!='',char(10)+b.dia_chi,''),iif(isnumeric(b.dien_thoai)=1 and b.dien_thoai!='0',char(10)+'PHONE: '+b.dien_thoai,'')),'') ten_dia_kh,
+		c.ten_kh ten_kh_n, c.dia_chi dia_chi_n,
+		iif(c.ten_kh!='',concat(c.ten_kh,iif(c.dia_chi!='',char(10)+c.dia_chi,''),iif(isnumeric(c.dien_thoai)=1 and c.dien_thoai!='0',char(10)+'PHONE: '+c.dien_thoai,'')),iif(f.ten_kh!='','SAME OF CONSIGNEE','')) ten_dia_n,
+		e.ten_kh ten_kh_s, e.dia_chi dia_chi_s,
+		iif(e.ten_kh!='',concat(e.ten_kh,iif(e.dia_chi!='',char(10)+e.dia_chi,''),iif(isnumeric(e.dien_thoai)=1 and e.dien_thoai!='0',char(10)+'PHONE: '+e.dien_thoai,'')),'') ten_dia_s,
+		f.ten_kh ten_kh_g, f.dia_chi dia_chi_g, 
+		iif(f.ten_kh!='',concat(f.ten_kh,iif(f.dia_chi!='',char(10)+f.dia_chi,''),iif(isnumeric(f.dien_thoai)=1 and f.dien_thoai!='0',char(10)+'PHONE: '+f.dien_thoai,'')),'') ten_dia_g,
+		g.ten_nv,
+		h.ten_tt,a.ong_ba, 
+		i.ten_noi_di, 
+		j.ten_noi_den, 
+		k.ten_noi_dodong, 
+		l.ten_noi_giaonhan, 
+		m.ten_cang_ct, 
+		n.ten_hang, 
+		o.ten_dl, 
+		iif(o.ten_dl!='',concat(o.ten_dl,iif(o.dia_chi!='',char(10)+o.dia_chi,''),iif(isnumeric(o.dien_thoai)=1 and o.dien_thoai!='0',char(10)+'PHONE: '+o.dien_thoai,'')),'') ten_dia_dl,
+		p.ten_tau,
+		q.ten_unit,
+		r.ten_gd, 
+	    s.ten_svc,
+		t.ten_hq,
+	   (REPLACE(a.ma_job, ' ' ,'') + a.so_job) ma_job, 
+		dbo.iswiftFunctionReadCurrency(a.ma_nt, @t) as t_tt_in_word, 
+	    replace(str(day(a.ngay_ct),2),' ','0') day, replace(str(month(a.ngay_ct),2),' ','0') month, cast(year(a.ngay_ct) as char(4)) year,
+		convert(varchar(10),a.ngay_hl,103) ngay_hl ,
+		convert(varchar(10),a.ngay_ct,103) ngay_ct ,
+		convert(varchar(10),a.ngay_hld,103) ngay_hld, 
+		convert(varchar(10),a.ngay_hantra,103) ngay_hantra,
+		convert(varchar(10),a.ngay_vc,103) ngay_vc ,
+		convert(varchar(10),a.ngay_hd,103) ngay_hd, 
+		convert(varchar(10),a.ngay_mbl,103) ngay_mbl, 
+		convert(varchar(10),a.ngay_hbl,103) ngay_hbl, 
+		(REPLACE((a.hanh_trinh), ' ' ,'')+ '-'+REPLACE((a.hanh_trinh2), ' ' ,'')) hanh_trinh12,
+		(REPLACE((p.ten_tau), ' ' ,'')+ ' / '+REPLACE((a.hanh_trinh), ' ' ,'')) chuyen_tau,
+		(REPLACE((a.mbl_no), ' ' ,'')+ ' - '+REPLACE((a.hbl_no), ' ' ,'')) mhbl_no,
+		(REPLACE((a.mbl_no), ' ' ,'')+REPLACE((a.hbl_no), ' ' ,'')) mhbl_no_cm,
+		IIF(a.chk_original = 1, replace(a.chk_original,1,'YES'), 'NO') chk_original,
+		IIF(a.chk_notice = 1, replace(a.chk_notice,1,'X'), '') chk_notice,
+		IIF(a.chk_recom = 1, replace(a.chk_recom,1,'X'), '') chk_recom,
+		IIF(a.chk_notice = 1, replace(a.chk_notice,1,'YES'), 'NO') chk_notice_15,
+		IIF(a.chk_recom = 1, replace(a.chk_recom,1,'YES'), 'NO') chk_recom_15
+			into #s61 from s61 a with(nolock)
+			left join dmkh b with(nolock) on a.ma_kh = b.ma_kh
+			left join dmkh c on a.ma_kh_n = c.ma_kh
+			left join dmkh d on a.ma_hang = d.ma_kh
+			left join dmkh e on a.ma_kh_s = e.ma_kh
+			left join dmkh f on a.ma_kh_g = f.ma_kh
+			left join dmnv g on a.ma_nv = g.ma_nv
+			left join dmtt h on a.ma_tt = h.ma_tt
+			left join vdmcangdi i on a.ma_noi_di = i.ma_noi_di
+			left join vdmcangden j on a.ma_noi_den = j.ma_noi_den
+			left join vdmcangdodong k on a.ma_noi_dodong = k.ma_noi_dodong
+			left join vdmcanggiaonhan l on a.ma_noi_giaonhan = l.ma_noi_giaonhan
+			left join vdmcangct m on a.ma_cang_ct = m.ma_cang_ct
+			left join vdmhangtau n on a.ma_hang = n.ma_hang
+			left join vdmdaily o on a.ma_dl = o.ma_dl			
+			left join dmtau p on a.ma_tau = p.ma_tau
+			left join sysunit q on a.unit_id = q.unit_id
+			left join dmgd r on a.ma_gd = r.ma_gd	
+			left join dmsvc s on a.ma_svc = s.ma_svc
+			left join dmhaiquan t on a.ma_hq = t.ma_hq
+			where a.id = @id and r.ma_ct = a.ma_ct and r.ma_ct = 'LCL'
+			select * from #s61
+
+--- Đơn hàng chi tiết
+select ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS stt, a.ma_cong, a.so_luong, a.cont_no, a.seal_no, a.ty_trong, a.tong_trong, a.ty_khoi, a.tong_khoi, a.dien_giai, a.hs_code, a.ma_dvt,
+     a.so_kien, a.ma_kien, 
+     b.ma_job ma_job_dt, b.ten_kh_g, b.ten_kh_s,
+     c.ten_kien,
+	 d.ten_dvt
+    into #v61 from v61 a with(nolock) 
+    left join dmkien c on c.ma_kien = a.ma_kien
+	left join dmdvt d on a.ma_dvt = d.dvt
+    left join #s61 b on a.id = @id
+    where a.id = @id 
+    select * from #v61
+	
+
+--- Phiếu mua chi tiết
+select ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS stt, a.dien_giai, a.ma_kh, a.ma_kh ma_kh_tt, a.ma_vt, a.dvt, a.ma_nt, a.so_luong, a.gia2, a.ty_gia,
+	a.gia_nt2, a.tien2, a.tien_nt2, a.thue_suat, a.thue_nt, a.thue, a.tt_nt, a.tt, 
+	b.t_tien2, b.t_tienx2, b.t_tieny2, b.t_thue, b.t_tt, b.t_ttx, b.t_tty,
+    c.ten_vt, c.ten_vt2,
+	d.ma_kh ma_kh_m72,
+    e.ten_kh ten_kh_tt  
+    into #d72 from d72 a with(nolock) 
+    left join (select a.id, b.id_dh, b.t_tien2, b.t_tienx2, b.t_tieny2, b.t_thue, b.t_tt, b.t_ttx, b.t_tty from m72 a left join (select a.id_dh, SUM(a.t_tien2) t_tien2, SUM(a.t_tienx2) t_tienx2, SUM(a.t_tieny2) t_tieny2, SUM(a.t_thue) t_thue, SUM(a.t_tt) t_tt,  SUM(a.t_ttx) t_ttx, SUM(a.t_tty) t_tty from m72 a 
+					  left join s61 b on a.id_dh = b.id group by a.id_dh
+					  ) b on a.id_dh = b.id_dh
+			   ) b on a.id = b.id
+    left join dmvt c on c.ma_vt = a.ma_vt
+	left join m72 d on a.id = d.id
+    left join dmkh e on e.ma_kh = d.ma_kh
+    where b.id_dh = @id 
+    select * from #d72 ORDER BY stt ASC
+ 
+--- Phiếu bán chi tiết 
+select ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS stt, 
+     /*Phiếu Bán*/ a.dien_giai, a.ma_kh, a.ma_vt, a.dvt, a.ma_nt, a.so_luong, a.gia2, a.gia_nt2, a.tien2, a.tien_nt2, a.thue_suat, a.thue_nt, a.thue, a.ty_gia,
+             a.tt, a.tt_nt, 
+             c.ten_vt, c.ten_vt2,
+             b.t_tien_nt2_m54, b.t_tien2_m54, b.t_tieny2_m54, b.t_tt_nt_m54, b.t_tt_m54, b.t_thue_m54,
+     /*Phiếu Mua*/ b.t_tien_nt2_m72, b.t_tien2_m72, b.t_tieny2_m72, b.t_tt_nt_m72, b.t_tt_m72,
+/*Tính Lợi Nhuận*/ b.t_ln_t_tax_nt, b.t_ln_t_tax, b.t_ln_s_tax_nt, b.t_ln_s_tax, b.t_lny_t_tax
+    into #d54 from d54 a with(nolock) 
+    left join (select 
+     /*Phiếu Bán*/ a.id, a.id_dh, ISNULL(SUM(a.t_tien_nt2), 0) t_tien_nt2_m54, ISNULL(SUM(a.t_tien2), 0) t_tien2_m54, ISNULL(SUM(a.t_tieny2), 0) t_tieny2_m54, a.t_thue t_thue_m54,
+				   ISNULL(SUM(a.t_tt_nt), 0) t_tt_nt_m54, ISNULL(SUM(a.t_tt), 0) t_tt_m54,
+     /*Phiếu Mua*/ ISNULL(SUM(b.t_tien_nt2), 0) t_tien_nt2_m72, ISNULL(SUM(b.t_tien2), 0) t_tien2_m72, ISNULL(SUM(b.t_tieny2), 0) t_tieny2_m72, ISNULL(SUM(b.t_tt_nt), 0) t_tt_nt_m72,
+				   ISNULL(SUM(b.t_tt), 0) t_tt_m72,
+/*Tính Lợi Nhuận*/ (ISNULL(a.t_tien_nt2, 0) - ISNULL(b.t_tien_nt2, 0)) t_ln_t_tax_nt,      
+				   (ISNULL(a.t_tien2, 0) - ISNULL(b.t_tien2, 0)) t_ln_t_tax,
+				   (ISNULL(a.t_tieny2, 0) - ISNULL(b.t_tieny2, 0)) t_lny_t_tax,
+				   (ISNULL(a.t_tt_nt, 0) - ISNULL(b.t_tt_nt, 0)) t_ln_s_tax_nt, 
+				   (ISNULL(a.t_tt, 0) - ISNULL(b.t_tt, 0)) t_ln_s_tax			 
+            from m54 a 
+            left join(select id_dh, SUM(t_tien_nt2) t_tien_nt2, SUM(t_tien2) t_tien2, SUM(t_tieny2) t_tieny2, SUM(t_tt_nt) t_tt_nt, SUM(t_tt) t_tt 
+                  from m72 GROUP BY id_dh) b on a.id_dh = b.id_dh 
+                  GROUP BY a.id, a.id_dh, a.t_tien_nt2, a.t_tien2, a.t_tieny2, a.t_tt_nt, a.t_tt,
+                       b.t_tien_nt2, b.t_tien2, b.t_tieny2, t_thue, b.t_tt_nt, b.t_tt                        
+           ) b on a.id = b.id 
+    left join dmvt c on a.ma_vt = c.ma_vt
+    where b.id_dh = @id 
+    select * from #d54 ORDER BY stt ASC
+
+--- Phiếu chi hộ chi tiết
+select ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS stt, a.dien_giai, a.ma_kh, a.ma_kh ma_kh_tt, a.ma_vt, a.dvt, a.ma_ntx, a.sox_luong, a.giax2, 
+	a.giax_nt2, a.tienx2, a.tienx_nt2, a.thuex_suat, a.thuex_nt, a.thuex, a.ttx_nt, a.ttx, 
+	b.t_tien2, b.t_tienx2, b.t_thue, b.t_tt, b.t_ttx, b.t_tty, b.t_sox_luong, b.t_thuex,
+    c.ten_vt, c.ten_vt2,
+    d.ten_kh ten_kh_tt  
+    into #f72 from f72 a with(nolock) 
+    left join (select a.id, b.id_dh, b.t_tien2, b.t_tienx2, b.t_thue, b.t_thuex, b.t_tt, b.t_ttx, b.t_tty, b.t_sox_luong from m72 a 
+			   left join (select a.id_dh, SUM(a.t_tien2) t_tien2, SUM(a.t_tienx2) t_tienx2, SUM(a.t_sox_luong) t_sox_luong, SUM(a.t_thue) t_thue, SUM(a.t_thuex) t_thuex, SUM(a.t_tt) t_tt, SUM(a.t_ttx) t_ttx,
+								 SUM(a.t_tty) t_tty 
+						  from m72 a 
+						  left join s61 b on a.id_dh = b.id group by a.id_dh
+						  ) b on a.id_dh = b.id_dh
+			   ) b on a.id = b.id
+    left join dmvt c on c.ma_vt = a.ma_vt
+    left join dmkh d on d.ma_kh = a.ma_kh
+    where b.id_dh = @id 
+    select * from #f72 ORDER BY stt ASC
+
+/*--- Chi hộ chi tiết
+select ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS stt, 
+    a.ma_vt, a.ma_nt, a.so_luong, a.gia2, a.gia_nt2, a.tien2, a.tien_nt2, a.thue_suat, a.thue_nt, a.thue, a.tt, a.tt_nt, a.ma_kh,
+	b.t_so_luong, b.t_tien2, b.t_tien_nt2, b.t_tt, b.t_tt_nt, b.t_thue, b.t_thue_nt, b.t_tienx2,
+    c.ten_vt, c.ten_vt2 
+    into #d63 from d63 a with(nolock) 
+	  left join (select a.id, b.id_dh, b.t_so_luong, b.t_tien_nt2, b.t_tt_nt, b.t_thue_nt, b.t_tien2, SUM(a.t_tienx2) t_tienx2,, b.t_thue, b.t_tt from m63 a left join (select a.id_dh, SUM(a.t_so_luong) t_so_luong, SUM(a.t_tien_nt2) t_tien_nt2,
+	  SUM(a.t_tt_nt) t_tt_nt ,SUM(a.t_tien2) t_tien2, SUM(a.t_tienx2) t_tienx2, SUM(a.t_thue) t_thue, SUM(a.t_tt) t_tt, SUM(a.t_thue_nt) t_thue_nt from m63 a 
+					  left join s61 b on a.id_dh = b.id group by a.id_dh
+					  ) b on a.id_dh = b.id_dh
+			   ) b on a.id = b.id
+      left join dmvt c on a.ma_vt = c.ma_vt
+      where b.id_dh = @id 
+    select * from #d63 ORDER BY stt ASC 
+*/
+    drop table #s61,#v61,#d72,#d54, #f72 --,#d63
+]]>
+    </text>
+  </query>
+
+  <forms>
+	<form id="005" fileName="s61_ExportAN_LCL" fileType="rdlc" exportExt="pdf" image="pdf">
+      <text v="ExportAN (.pdf)" e="ExportAN (.pdf)"></text>
+    </form>
+	<form id="010" fileName="s61_ExportAN_LCL" fileType="rdlc" exportExt="xlsx" image="excel">
+      <text v="ExportAN (.xlsx)" e="ExportAN (.xlsx)"></text>
+    </form>
+	<form id="split" >
+      <text v="-" e="-"></text>
+    </form>
+	<form id="006" fileName="s61_ExportAN_LCL_NT" fileType="rdlc" exportExt="pdf" image="pdf">
+      <text v="ExportAN NT(.pdf)" e="ExportAN NT(.pdf)"></text>
+    </form>
+	<form id="011" fileName="s61_ExportAN_LCL_NT" fileType="rdlc" exportExt="xlsx" image="excel">
+      <text v="ExportAN NT(.xlsx)" e="ExportAN NT(.xlsx)"></text>
+    </form>
+	<form id="split" >
+      <text v="-" e="-"></text>
+    </form>
+	<form id="007" fileName="s61_ExportAN_LCL_EV" fileType="rdlc" exportExt="pdf" image="pdf">
+      <text v="ExportAN EV(.pdf)" e="ExportAN EV(.pdf)"></text>
+    </form>
+	<form id="012" fileName="s61_ExportAN_LCL_EV" fileType="rdlc" exportExt="xlsx" image="excel">
+      <text v="ExportAN EV(.xlsx)" e="ExportAN EV(.xlsx)"></text>
+    </form>
+	<form id="split" >
+      <text v="-" e="-"></text>
+    </form>
+	<form id="020" fileName="s61_LenhGiaoHang_LCL" fileType="rdlc" exportExt="pdf" image="pdf">
+      <text v="Lệnh Giao Hàng (.pdf)" e="Delivery Order (.pdf)"></text>
+    </form>
+	<form id="025" fileName="s61_LenhGiaoHang_LCL" fileType="rdlc" exportExt="xlsx" image="excel">
+      <text v="Lệnh Giao Hàng (.xlsx)" e="Delivery Order (.xlsx)"></text>
+    </form>
+	<form id="split" >
+      <text v="-" e="-"></text>
+    </form>
+	<form id="030" fileName="s61_BOL_01" fileType="rdlc" exportExt="pdf" image="pdf">
+      <text v="Bill of Lading (.pdf)" e="Bill of Lading (.pdf)"></text>
+    </form>
+	<form id="033" fileName="s61_BOL_01" fileType="rdlc" exportExt="xlsx" image="excel">
+      <text v="Bill of Lading (.xlsx)" e="Bill of Lading (.xlsx)"></text>
+    </form>
+	<form id="split" >
+      <text v="-" e="-"></text>
+    </form>
+	<form id="035" fileName="s61_BOL_02" fileType="rdlc" exportExt="pdf" image="pdf">
+      <text v="Bill of Lading 2(.pdf)" e="Bill of Lading 2(.pdf)"></text>
+    </form>
+	<form id="037" fileName="s61_BOL_02" fileType="rdlc" exportExt="xlsx" image="excel">
+      <text v="Bill of Lading 2(.xlsx)" e="Bill of Lading 2(.xlsx)"></text>
+    </form>
+	<form id="split" >
+      <text v="-" e="-"></text>
+    </form>
+	<form id="040" fileName="s61_JobCosting" fileType="rdlc" exportExt="pdf" image="pdf">
+      <text v="Job Costing (.pdf)" e="Job Costing (.pdf)"></text>
+    </form>
+	<form id="045" fileName="s61_JobCosting" fileType="rdlc" exportExt="xlsx" image="excel">
+      <text v="Job Costing (.xlsx)" e="Job Costing (.xlsx)"></text>
+    </form>
+	<form id="split" >
+      <text v="-" e="-"></text>
+    </form>
+	<form id="055" fileName="s61_ManifestSystech" fileType="rdlc" exportExt="xlsx" image="pdf">
+      <text v="Manifest Systech (.xlsx)" e="Manifest Systech (.xlsx)"></text>
+    </form>
+	<form id="split" >
+      <text v="-" e="-"></text>
+    </form>
+	<form id="060" fileName="s61_CargoManifest_01" fileType="rdlc" exportExt="pdf" image="pdf">
+      <text v="Cargo Manifest (.pdf)" e="Cargo Manifest (.pdf)"></text>
+    </form>
+	<form id="065" fileName="s61_CargoManifest_01" fileType="rdlc" exportExt="xlsx" image="excel">
+      <text v="Cargo Manifest (.xlsx)" e="Cargo Manifest (.xlsx)"></text>
+    </form>
+  </forms>
+  
+  
+  
+  <fields>
+	<!-- Master -->
+    <field name="title" type="C">
+      <text v="ĐƠN HÀNG" e="ORDER"/>
+    </field>
+	<field name="title2" type="C">
+      <text v="LỆNH GIAO HÀNG" e="DELIVERY ORDER"/>
+    </field>
+    <field name="h_day" type="C">
+      <text v="Ngày" e="Date"/>
+    </field>
+    <field name="h_month" type="C">
+      <text v="tháng" e="Month"/>
+    </field>
+    <field name="h_year" type="C">
+      <text v="năm" e="Year"/>
+    </field>
+    <field name="h_so_ct" type="C">
+      <text v="Số đơn hàng: " e="Order No.: "/>
+    </field>
+    <field name="h_company" type="C">
+      <text v="Kính gửi:" e="Dear:"/>
+    </field>
+    <field name="h_address" type="C">
+      <text v="Địa chỉ:" e="Address:"/>
+    </field>
+    <field name="h_kh" type="C">
+      <text v="Tên đại lý:" e="Agent Name:"/>
+    </field>
+    <field name="h_noi_giao" type="C">
+      <text v="Nơi giao:" e="Place of Delivery:"/>
+    </field>
+	<field name="h_ong_ba" type="C">
+      <text v="Người liên hệ:" e="Contact:"/>
+    </field>
+	<field name="h_ngay_hl" type="C">
+      <text v="Ngày dự kiến đi:" e="Estimated Departure Date:"/>
+    </field>
+	<field name="h_ngay_hld" type="C">
+      <text v="Ngày dự kiến đến:" e="Estimated Arrival Date:"/>
+    </field>
+	
+	<field name="h_dien_giai" type="C">
+      <text v="Ghi chú" e="Note"/>
+    </field>
+    <field name="h_ma_noi_di" type="C">
+      <text v="Nơi đi: " e="Origin:"/>
+    </field>
+	<field name="h_ma_noi_den" type="C">
+      <text v="Nơi đến: " e="Destination:"/>
+    </field>
+	<field name="h_ds_cong" type="C">
+      <text v="Container: " e="Container:"/>
+    </field>
+	<field name="h_so_tk" type="C">
+      <text v="Số tờ khai:" e="Declaration Number:"/>
+    </field>
+	<field name="h_book_no" type="C">
+      <text v="Book No:" e="Book No:"/>
+    </field>
+	<field name="h_ma_hang" type="C">
+      <text v="Hãng tàu/ Đại lý:" e="Carrier/ Agent:"/>
+    </field>
+	
+    <field name="h_nguoi_lh" type="C">
+      <text v="ATT:" e="ATT:"/>
+    </field>
+	<field name="h_e_mail" type="C">
+      <text v="Email:" e="Email:"/>
+    </field>
+	<field name="h_dien_thoai" type="C">
+      <text v="Điện thoại:" e="Phone:"/>
+    </field>
+
+	<field name="h_ngay_ct" type="C">
+      <text v="Ngày làm/chạy :" e="Work/Run Days :"/>
+    </field>
+	<field name="h_ngay_vc" type="C">
+      <text v="Ngày vận chuyển :" e="Delivery Date :"/>
+    </field>
+	<field name="h_mbl_no" type="C">
+      <text v="Số MBL:" e="MBL No:"/>
+    </field>
+	<field name="h_hbl_no" type="C">
+      <text v="Số HBL:" e="HBL No:"/>
+    </field>
+	<field name="h_ma_tau" type="C">
+      <text v="Tàu:" e="Vessel:"/>
+    </field>
+	<field name="h_hanh_trinh" type="C">
+      <text v="Số hiệu:" e="Identifier:"/>
+    </field>
+	<field name="h_ma_nv" type="C">
+      <text v="Nhân viên:" e="Employee:"/>
+    </field>
+	<field name="h_ngay_hd" type="C">
+      <text v="Ngày hợp đồng:" e="Contract Date:"/>
+    </field>
+	<field name="h_so_ct_m54" type="C">
+      <text v="Ref No:" e="Ref No:"/>
+    </field>
+	<field name="h_ma_gd" type="C">
+      <text v="Mode:" e="Mode:"/>
+    </field>
+	<field name="h_ngay_hantra" type="C">
+      <text v="Ngày hạn trả:" e="Due Date:"/>
+    </field>
+	<field name="h_bank_name" type="C">
+      <text v="Tên ngân hàng:" e="Bank Name:"/>
+    </field>
+	<field name="h_tax_code" type="C">
+      <text v="Số tài khoản:" e="Account No:"/>
+    </field>
+	<field name="h_tax_swift_code" type="C">
+      <text v="Swift Code:" e="Swift Code:"/>
+    </field>
+
+	<!-- Detail-->
+	<field name="h_ma_cong" type="C">
+      <text v="Container" e="Container"/>
+    </field>
+	<field name="h_cont_no" type="C">
+      <text v="Số Cont" e="Cont No"/>
+    </field>
+	<field name="h_seal_no" type="C">
+      <text v="Số Seal" e="Seal No"/>
+    </field>
+	<field name="h_t_so_luong" type="C">
+      <text v="Tổng số lượng:" e="Total Quantity:"/>
+    </field>
+	<field name="h_ty_trong" type="C">
+      <text v="Trọng lượng(KGS)" e="Gross Weight(KGS)"/>
+    </field>
+	<field name="h_tong_trong" type="C">
+      <text v="Trọng lượng(KGS)" e="Gross Weight(KGS)"/>
+    </field>
+	<field name="h_t_tong_trong" type="C">
+      <text v="Tổng trọng lượng(KGS)" e="Total Weight(KGS)"/>
+    </field>
+	<field name="h_ty_khoi" type="C">
+      <text v="Khối lượng(CBM)" e="Volume(CBM)"/>
+    </field>
+	<field name="h_tong_khoi" type="C">
+      <text v="Tổng khối lượng" e="Total Volume(CBM)"/>
+    </field>
+	<field name="h_tong_trong_cw_tbd" type="C">
+      <text v="Trọng lượng(C.W)" e="Chargeable Weight(C.W)"/>
+    </field>
+	<field name="h_t_tong_khoi" type="C">
+      <text v="Tổng Khối lượng(CBM)" e="Total Volume(CBM)"/>
+    </field>	
+	
+	<!--Detail 2-->
+	<field name="h_ma_phi" type="C">
+      <text v="Diễn giải" e="Description"/>
+    </field>
+	<field name="h_ty_gia" type="C">
+      <text v="Tỷ giá" e="Exchange Rate"/>
+    </field>
+	<field name="h_ma_dvt" type="C">
+      <text v="Đơn vị" e="Unit"/>
+    </field>
+	<field name="h_so_luong" type="C">
+      <text v="Số lượng" e="Quantity"/>
+    </field>
+	<field name="h_ma_nt" type="C">
+      <text v="Ngoại tệ" e="Cur."/>
+    </field>
+	<field name="h_gia_nt2" type="C">
+      <text v="Đơn Giá" e="Unit Price."/>
+    </field>
+	<field name="h_tien2" type="C">
+      <text v="Thành tiền" e="Amount"/>
+    </field>
+	<field name="h_thue" type="C">
+      <text v="VAT" e="VAT"/>
+    </field>
+	<field name="h_thue_suat" type="C">
+      <text v="Thuế" e="Tax"/>
+    </field>
+	<field name="h_tt" type="C">
+      <text v="Tổng tiền" e="Total Amount"/>
+    </field>
+	<field name="h_dien_giais" type="C">
+      <text v="Tên hàng :" e="Row name :"/>
+    </field>
+
+
+<!-- Giấy Uỷ Quyền-->
+	<field name="h_hanh_trinh_uq" type="C">
+      <text v="Chuyến bay:" e="Flight:"/>
+    </field>
+	<field name="h_ngay_hl_uq" type="C">
+      <text v="Ngày:" e="Day:"/>
+    </field>
+	<field name="h_ma_job" type="C">
+      <text v="Số:" e="No:"/>
+    </field>
+	<field name="h_ma_kh" type="C">
+      <text v="Bên ủy quyền:" e="Authorized:"/>
+    </field>
+	<field name="h_ma_kh_g" type="C">
+      <text v="Đồng ý ủy quyền cho: " e="Authorized Party:"/>
+    </field>
+	<field name="h_hanh_trinh2" type="C">
+      <text v="Chuyến:" e="Voyage:"/>
+    </field>
+	<field name="h_so_kien" type="C">
+      <text v="Số kiện" e="No.Q"/>
+    </field>
+	<field name="h_ngay_phat_hanh" type="C">
+      <text v="Ngày phát hành: " e="Issued Date: "/>
+    </field>
+	<field name="h_ngay_in" type="C">
+      <text v="Ngày in: " e="Printed Date: "/>
+    </field>
+	<field name="h_ma_tc" type="C">
+      <text v="Mã tham chiếu: " e="Reference Code: "/>
+    </field>
+	<field name="h_so_do" type="C">
+      <text v="Số lệnh: " e="DO No.: "/>
+    </field>	
+	<field name="h_mbl_no_uq" type="C">
+      <text v="Số MBL: " e="MBL No.: "/>
+    </field>		
+	<field name="h_hbl_no_uq" type="C">
+      <text v="Số HBL: " e="HBL No.: "/>
+    </field>	
+	<field name="h_ma_noi_den_uq" type="C">
+      <text v="Cảng đến: " e="Destination: "/>
+    </field>	
+	<field name="h_ma_noi_di_uq" type="C">
+      <text v="Cảng đi: " e="Origin: "/>
+    </field>	
+	<field name="h_ma_noi_dodong_uq" type="C">
+      <text v="Nơi dỡ đóng: " e="Final Destination: "/>
+    </field>
+	<field name="h_cont_no_uq" type="C">
+      <text v="Số Container:" e="Container No.:"/> 
+    </field>
+	<field name="h_ngay_hld_uq" type="C">
+      <text v="Ngày cập:" e="Date of Arrival:"/>  
+    </field>	
+	<field name="h_hs_code_uq" type="C">
+      <text v="HS Code" e="HS Code"/>  
+    </field>		
+	<field name="h_dien_giai_uq" type="C">
+      <text v="Mô tả hàng hóa" e="Description of Goods"/>  
+    </field>	
+	<field name="h_ma_kien_uq" type="C">
+      <text v="Mã kiện" e="Package Code"/>  
+    </field>	
+	<field name="h_ngay_nhan_uq" type="C">
+      <text v="Ngày nhận:........................................." e="Receive Date: ........................................."/>  
+    </field>	
+	<field name="h_sdt_uq" type="C">
+      <text v="Số điện thoại:......................................" e="Phone:......................................"/>  
+    </field>
+	
+	
+<!-- Thông tin hàng đến -->
+	<!-- Master -->
+	<field name="title3" type="C">
+      <text v="THÔNG BÁO HÀNG ĐẾN" e="ARRIVAL NOTICE"/>
+    </field>
+	<field name="h_ma_job_hd" type="C">
+      <text v="Job file: " e="Job file:"/>
+    </field>
+	<field name="h_company_hd" type="C">
+      <text v="Kính gửi:" e="Dear:"/>
+    </field>
+    <field name="h_address_hd" type="C">
+      <text v="Địa chỉ:" e="Address:"/>
+    </field>
+	<field name="h_ma_kh_s_hd" type="C">
+      <text v="*Người gửi:" e="*Shipper:"/>
+    </field>
+	<field name="h_ma_tau_hd" type="C">
+      <text v="*Máy bay:" e="*Plane:"/>
+    </field>
+	<field name="h_ma_noi_den_hd" type="C">
+      <text v="*Từ:" e="*From:"/>
+    </field>
+	<field name="h_ngay_hld_hd" type="C">
+      <text v="*Ngày đến:" e="*ETA:"/>
+    </field>
+	<field name="h_dien_giai_hd" type="C">
+      <text v="*Ghi chú:" e="*Note:"/>
+    </field>
+	<field name="h_ty_gia_hd" type="C">
+      <text v="*Tỷ giá:" e="*Exchange Rate:"/>
+    </field>
+	<field name="h_t_tt_tbd" type="C">
+      <text v="Tổng thành tiền:" e="Total Amount:"/>
+    </field>
+	<!---->
+	<field name="h_hanh_trinh_hd" type="C">
+      <text v="*Chuyến bay:" e="*Flight:"/>
+    </field>
+	<field name="h_ma_noi_dodong_hd" type="C">
+      <text v="*Đến cảng:" e="*Terminal:"/>
+    </field>
+	<field name="h_mbl_no_hd" type="C">
+      <text v="*Vận đơn chính/MBL:" e="*Main Bill of Lading/MBL:"/>
+    </field>
+	<field name="h_hbl_no_hd" type="C">
+      <text v="*Vận đơn phụ/HBL :" e="*Secondary waybill/HBL:"/>
+    </field>
+	<field name="h_original_hbl_hd" type="C">
+      <text v="HBL gốc: " e="Original HBL required:"/>
+    </field>
+	<field name="h_notice_hd" type="C">
+      <text v="Thông báo hàng đến: " e="Notice of Arrival:"/>
+    </field>
+	<field name="h_recommendation_hd" type="C">
+      <text v="Thư giới thiệu: " e="Recommendation Letter:"/>
+    </field>
+	<field name="h_ma_svc_hd" type="C">
+      <text v="*Kho:" e="*Warehouse:"/>
+    </field>	
+	
+	<!-- Detail -->
+	<field name="h_cont_no_hd" type="C">
+      <text v="Số Cont" e="Cont No"/>
+    </field>
+	<field name="h_seal_no_hd" type="C">
+      <text v="Số Seal" e="Seal No"/>
+    </field>
+	<field name="h_so_kien_hd" type="C">
+      <text v="Số kiện" e="No.Q"/>
+    </field>
+	<field name="h_ma_kien_hd" type="C">
+      <text v="Mã kiện" e="Package"/>
+    </field>
+	<field name="h_dien_giai_dt_hd" type="C">
+      <text v="Mô tả hàng hoá" e="Description of goods"/>
+    </field>
+	<field name="h_ty_trong_hd" type="C">
+      <text v="G.W(KGS)" e="G.W(KGS)"/>
+    </field>
+	<field name="h_ty_khoi_hd" type="C">
+      <text v="Volume (CBM)" e="Volume (CBM)"/>
+    </field>
+	
+	<!-- Detail 2-->
+	<field name="h_ma_phi_hd" type="C">
+      <text v="Phí" e="Fee"/>
+    </field>
+	<field name="h_tien_nt2_hd" type="C">
+      <text v="Tiền" e="Money"/>
+    </field>
+	<field name="h_ma_nt_hd" type="C">
+      <text v="Ngoại tệ" e="Cur."/>
+    </field>
+	<field name="h_ma_dvt_hd" type="C">
+      <text v="Đơn vị" e="Unit"/>
+    </field>
+	<field name="h_thue_suat_hd" type="C">
+      <text v="VAT %" e="VAT %"/>
+    </field>
+	<field name="h_dien_giai_dt2_hd" type="C">
+      <text v="Ghi chú" e="Note"/>
+    </field>
+	
+	
+<!-- Thông báo đến -->
+	<!-- Master -->
+	<field name="title4" type="C">
+      <text v="THÔNG BÁO HÀNG ĐẾN" e="ARRIVAL NOTICE"/>
+    </field>
+	<field name="h_ma_job_tbd" type="C">
+      <text v="Job file: " e="Job file:"/>
+    </field>
+	<field name="h_ma_kh_g_tbd" type="C">
+      <text v="Kính gửi:" e="Dear:"/>
+    </field>
+	<field name="h_ma_kh_s_tbd" type="C">
+      <text v="Người gửi: " e="Shipper:"/>
+    </field>
+	<field name="h_ma_tau_tbd" type="C">
+      <text v="Tàu: " e="Vessel:"/>
+    </field>	
+	<field name="h_hanh_trinh_tbd" type="C">
+      <text v="Chuyến:" e="Voyage:"/>
+    </field>
+	<field name="h_ma_noi_den_tbd" type="C">
+      <text v="Cảng đến: " e="Port Of Loading:"/>
+    </field>
+	<field name="h_ma_noi_dodong_tbd" type="C">
+      <text v="Nơi dỡ/đóng:" e="Final Destination:"/>
+    </field>
+	<field name="h_hbl_no_tbd" type="C">
+      <text v="Số HBL:" e="HBL No:"/>
+    </field>
+	<field name="h_ngay_hld_tbd" type="C">
+      <text v="ETA: " e="ETA:"/>
+    </field>
+	<!---->
+	<field name="h_ma_noi_giaonhan_tbd" type="C">
+      <text v="Cảng giao/nhận: " e="Final Destination:"/>
+    </field>
+	<field name="h_mbl_no_tbd" type="C">
+      <text v="Số MBL:" e="MBL No:"/>
+    </field>
+	<field name="h_ma_svc_tbd" type="C">
+      <text v="Loại:" e="Type:"/>
+    </field>	
+	
+	<field name="h_original_hbl_tbd" type="C">
+      <text v="HBL gốc: " e="Original HBL required:"/>
+    </field>
+	<field name="h_notice_tbd" type="C">
+      <text v="Thông báo hàng đến: " e="Notice of Arrival:"/>
+    </field>
+	<field name="h_recommendation_tbd" type="C">
+      <text v="Thư giới thiệu: " e="Recommendation Letter:"/>
+    </field>
+	
+	<!-- Detail -->
+	<field name="h_cont_no_tbd" type="C">
+      <text v="Số Cont" e="Cont No"/>
+    </field>
+	<field name="h_seal_no_tbd" type="C">
+      <text v="Số Seal" e="Seal No"/>
+    </field>
+	<field name="h_so_kien_tbd" type="C">
+      <text v="Số kiện" e="No.Q"/>
+    </field>
+	<field name="h_ma_kien_tbd" type="C">
+      <text v="Mã kiện" e="Package"/>
+    </field>
+	<field name="h_dien_giai_dt_tbd" type="C">
+      <text v="Mô tả hàng hoá" e="Description of Goods"/>
+    </field>
+	<field name="h_ty_trong_tbd" type="C">
+      <text v="Trọng lượng(KGS)" e="Gross Weight(KGS)"/>
+    </field>
+	<field name="h_ty_khoi_tbd" type="C">
+      <text v="Khối lượng(CBM)" e="Volume(CBM)"/>
+    </field>
+	
+	<!-- Detail 2-->
+	<field name="h_ma_phi_tbd" type="C">
+      <text v="Diễn giải" e="Description"/>
+    </field>
+	<field name="h_so_luong_tbd" type="C">
+      <text v="Số lượng" e="QTY"/>
+    </field>
+	<field name="h_gia_nt2_tbd" type="C">
+      <text v="Đơn giá" e="Unit Price"/>
+    </field>
+	<field name="h_tien_nt2_tbd" type="C">
+      <text v="Thành tiền" e="Money"/>
+    </field>
+	<field name="h_ma_nt_tbd" type="C">
+      <text v="Ngoại tệ" e="Cur."/>
+    </field>
+	<field name="h_ma_dvt_tbd" type="C">
+      <text v="Đơn vị" e="Unit"/>
+    </field>
+	<field name="h_thue_suat_tbd" type="C">
+      <text v="VAT %" e="VAT %"/>
+    </field>
+	<field name="h_dien_giai_dt2_tbd" type="C">
+      <text v="Ghi chú" e="Note"/>
+    </field>
+	<field name="h_tt_tbd" type="C">
+      <text v="Tổng cộng" e="Total"/>
+    </field>
+	<!---->
+	<field name="h_ttk_tbd" type="C">
+      <text v="Tên tài khoản:" e="Account Name:"/>
+    </field>
+	<field name="h_stk_tbd" type="C">
+      <text v="Số tài khoản:" e="Account No:"/>
+    </field>
+	<field name="h_ten_nh_tbd" type="C">
+      <text v="Ngân hàng:" e="Bank:"/>
+    </field>
+	
+	
+<!-- Lệnh giao hàng -->
+	<!-- Master -->
+	<field name="title5" type="C">
+      <text v="LỆNH GIAO HÀNG" e="DELIVERY ORDER"/>
+    </field>
+	<field name="h_ma_job_lgh" type="C">
+      <text v="Job No: " e="Job No:"/>
+    </field>
+	<field name="h_ma_hq_lgh" type="C">
+      <text v="Kính gửi:" e="Dear:"/>
+    </field>
+	<field name="h_ma_hang_lgh" type="C">
+      <text v="Căn cứ theo lệnh giao hàng của:" e="Based on the delivery order of:"/>
+    </field>
+	<field name="h_ma_kh_g_lgh" type="C">
+      <text v="Đề nghị giao lô hàng sau đây cho:" e="Delivered to:"/>
+    </field>
+	<field name="h_ma_tau_lgh" type="C">
+      <text v="Tàu/Chuyến: " e="Vessel/Voyage:"/>
+    </field>
+	<field name="h_ma_noi_den_lgh" type="C">
+      <text v="Cảng đi(POL):  " e="POL:"/>
+    </field>
+	<field name="h_ma_noi_giaonhan_lgh" type="C">
+      <text v="Cảng đến:" e="Final destination:"/>
+    </field>
+	<field name="h_mbl_no_lgh" type="C">
+      <text v="Vận đơn chính số:" e="MBL No:"/>
+    </field>
+	<!---->
+	<field name="h_ngay_hld_lgh" type="C">
+      <text v="Cập cảng ngày:" e="Arrive on:"/>
+    </field>
+	<field name="h_ma_cang_dodong_lgh" type="C">
+      <text v="Cảng dỡ hàng(POD):" e="POD:"/>
+    </field>
+	<field name="h_ma_svc_lgh" type="C">
+      <text v="Loại:" e="Type:"/>
+    </field>
+	<field name="h_hbl_no_lgh" type="C">
+      <text v="Vận đơn phụ số:" e="HBL No:"/>
+    </field>
+	
+	<!-- Detail -->
+	<field name="h_cont_no_lgh" type="C">
+      <text v="Số Cont" e="Cont No"/>
+    </field>
+	<field name="h_seal_no_lgh" type="C">
+      <text v="Số Seal" e="Seal No"/>
+    </field>
+	<field name="h_so_kien_lgh" type="C">
+      <text v="Số kiện" e="No.Q"/>
+    </field>
+	<field name="h_ma_kien_lgh" type="C">
+      <text v="Mã kiện" e="Package"/>
+    </field>
+	<field name="h_dien_giai_dt_lgh" type="C">
+      <text v="Mô tả hàng hoá" e="Description of goods"/>
+    </field>
+	<field name="h_ty_trong_lgh" type="C">
+      <text v="G.W(KGS)" e="G.W(KGS)"/>
+    </field>
+	<field name="h_ty_khoi_lgh" type="C">
+      <text v="Volume (CBM)" e="Volume (CBM)"/>
+    </field>
+	
+	
+<!-- Export Billing -->
+	<!-- Master -->
+	<field name="title6" type="C">
+      <text v="THANH TOÁN CƯỚC VẬN CHUYỂN" e="FREIGHT BILLING"/>
+    </field>
+	<field name="h_ma_job_bill" type="C">
+      <text v="Job No: " e="Job No:"/>
+    </field>
+	<field name="h_ma_kh_g_bill" type="C">
+      <text v="Đến:" e="To:"/>
+    </field>
+	<field name="h_ma_kh_s_bill" type="C">
+      <text v="Người gửi: " e="Shipper:"/>
+    </field>
+	<field name="h_ma_tau_bill" type="C">
+      <text v="Tàu/Chuyến: " e="Vessel/Voyage:"/>
+    </field>
+	<field name="h_ma_noi_den_bill" type="C">
+      <text v="Cảng đi(POL):  " e="Port Of Loading:"/>
+    </field>
+	<field name="h_ma_noi_dodong_bill" type="C">
+      <text v="Cảng dỡ:" e="Port Of Discharge:"/>
+    </field>
+	<field name="h_hbl_no_bill" type="C">
+      <text v="HBL No:" e="HBL No:"/>
+    </field>
+	<field name="h_ngay_hld_bill" type="C">
+      <text v="ETA: " e="ETA:"/>
+    </field>
+	
+	<!-- Detail -->
+	<field name="h_ma_phi_bill" type="C">
+      <text v="Phí" e="Fee"/>
+    </field>
+	<field name="h_tien_nt2_bill" type="C">
+      <text v="Tiền" e="Money"/>
+    </field>
+	<field name="h_ma_nt_bill" type="C">
+      <text v="Ngoại tệ" e="Cur."/>
+    </field>
+	<field name="h_ma_dvt_bill" type="C">
+      <text v="Đơn vị" e="Unit"/>
+    </field>
+	<field name="h_thue_suat_bill" type="C">
+      <text v="VAT %" e="VAT %"/>
+    </field>
+	<field name="h_dien_giai_dt2_bill" type="C">
+      <text v="Ghi chú" e="Note"/>
+    </field>
+	
+		
+<!-- HBL-->
+	<!-- Master -->
+	<field name="h_mhbl_no_hbl" type="C">
+      <text v="Master No." e="Master No."/>
+    </field>
+	<field name="h_ma_job_hbl" type="C">
+      <text v="Job No. " e="Job No."/>
+    </field>
+	<field name="title7" type="C">
+      <text v="BILL OF LADING" e="BILL OF LADING"/>
+    </field>
+	<field name="h_ma_kh_s_hbl" type="C">
+      <text v="Người gửi: " e="Shipper:"/>
+    </field>
+	<field name="h_ma_dl_hbl" type="C">
+      <text v="Tên đại lý: " e="Issuing Carrier Agent Name and City:"/>
+    </field>
+	<field name="h_account_hbl" type="C">
+      <text v="Accounting Information: " e="Accounting Information:"/>
+    </field>
+	<field name="h_ma_kh_g_hbl" type="C">
+      <text v="Người nhận hàng:" e="Consignee:"/>
+    </field>
+	<field name="h_ma_noi_den_hbl" type="C">
+      <text v="Cảng chất hàng: " e="Port Of Loading:"/>
+    </field>
+	<field name="h_ma_noi_dodong_hbl" type="C">
+      <text v="Cảng giao hàng:" e="Port Of Delivery:"/>
+    </field>
+	
+	<field name="h_ts_cont_hbl" type="C">
+      <text v="Total number of containers" e="Total number of containers"/>
+    </field>
+	<field name="h_fr_payble_hbl" type="C">
+      <text v="FREIGHT PAYBLE AT" e="FREIGHT PAYBLE AT"/>
+    </field>	
+	<field name="h_fr_charges_hbl" type="C">
+      <text v="Freight Charges" e="Freight Charges"/>
+    </field>
+	<field name="h_prepaid_hbl" type="C">
+      <text v="Prepaid" e="Prepaid"/>
+    </field>
+	<field name="h_collect_hbl" type="C">
+      <text v="Collect" e="Collect"/>
+    </field>
+	<field name="h_place_date_hbl" type="C">
+      <text v="Place and Date of Issue" e="Place and Date of Issue"/>
+    </field>
+	<field name="h_original_hbl" type="C">
+      <text v="No.of original B (s)/L" e="No.of original B (s)/L"/>
+    </field>
+	<field name="h_handling" type="C">
+      <text v="Handling Information" e="Handling Information"/>
+    </field>
+	<field name="h_notify" type="C">
+      <text v="Notify: " e="Notify: "/>
+    </field>
+	<field name="h_ime" type="C">
+      <text v="AVI IMPORT AND EXPORT INC" e="AVI IMPORT AND EXPORT INC "/>
+    </field>
+	<!-- Detail -->
+	<field name="h_cont_no_hbl" type="C">
+      <text v="Số Cont" e="Cont No"/>
+    </field>
+	<field name="h_seal_no_hbl" type="C">
+      <text v="Số Seal" e="Seal No"/>
+    </field>
+	<field name="h_so_kien_hbl" type="C">
+      <text v="Số kiện" e="No.Q"/>
+    </field>
+	<field name="h_ma_cong_hbl" type="C">
+      <text v="Mã công" e="Container"/>
+    </field>
+	<field name="h_dien_giai_dt_hbl" type="C">
+      <text v="Mô tả hàng hoá" e="Description of goods"/>
+    </field>
+	<field name="h_ty_trong_hbl" type="C">
+      <text v="G.W(KGS)" e="G.W(KGS)"/>
+    </field>
+	<field name="h_ty_khoi_hbl" type="C">
+      <text v="Volume (CBM)" e="Volume (CBM)"/>
+    </field>
+	
+	<!-- Job Costing-->
+	<!-- Master -->
+	<field name="h_ma_job_jc" type="C">
+      <text v="Đơn hàng:" e="Order:"/>
+    </field>
+	<field name="title8" type="C">
+      <text v="CHI PHÍ CÔNG VIỆC" e="JOB COSTING"/>
+    </field>
+	<field name="h_ma_kh_jc" type="C">
+      <text v="Khách hàng:" e="Customer:"/>
+    </field>
+	<field name="h_hbl_no_jc" type="C">
+      <text v="HB/L:" e="HB/L:"/>
+    </field>
+	<field name="h_mbl_no_jc" type="C">
+      <text v="MBL:" e="MBL:"/>
+    </field>
+	<field name="h_ma_kh_g_jc" type="C">
+      <text v="Người gửi:" e="Shipper:"/>
+    </field>	
+	<field name="h_ma_kh_n_jc" type="C">
+      <text v="Người nhận" e="Consignee"/>
+    </field>
+	<!---->
+	<!---->
+	<!---->
+	<field name="h_ngay_hld_jc" type="C">
+      <text v="ETA: " e="ETA:"/>
+    </field>
+	<field name="h_ma_nv_jc" type="C">
+      <text v="Nhân viên: " e="Sales:"/>
+    </field>
+	<field name="h_ma_noi_den_jc" type="C">
+      <text v="Cảng đến:  " e="POL:"/>
+    </field>
+	<field name="h_ma_dl_jc" type="C">
+      <text v="Tên đại lý: " e="Agent:"/>
+    </field>
+	<!-- Detail -->
+	<field name="h_stt" type="C">
+      <text v="STT" e="NO."/>
+    </field>
+	<field name="h_ma_phi_jc" type="C">
+      <text v="Diễn giải" e="Description"/>
+    </field>
+	<field name="h_dtLeft_jc" type="C">
+      <text v="Diễn giải mua" e="Cost"/>
+    </field>
+	<field name="h_dtRight_jc" type="C">
+      <text v="Diễn giải bán" e="Bill"/>
+    </field>
+	<field name="h_tien_nt1_jc" type="C">
+      <text v="Tiền" e="Currency"/>
+    </field>
+	<field name="h_ma_nt_jc" type="C">
+      <text v="Ngoại tệ" e="Cur."/>
+    </field>
+	<field name="h_thue_suat_jc" type="C">
+      <text v="Thuế suất" e="VAT"/>
+    </field>
+	<field name="h_thue_jc" type="C">
+      <text v="Tiền thuế" e="Tax Amount"/>
+    </field>
+	<field name="h_tien1_jc" type="C">
+      <text v="Thành tiền" e="Total Amount"/>
+    </field>
+
+	<field name="h_ma_kh_n_jc" type="C">
+      <text v="Đối tượng" e="Object"/>
+    </field>
+	<field name="h_ma_kh_n1_jc" type="C">
+      <text v="Khách hàng" e="Customer"/>
+    </field>
+	
+	<field name="h_t_tt_jc" type="C">
+      <text v="Tổng tiền" e="Total"/>
+    </field>
+	<!--HOUSE BILL OF LADING-->
+	<!-- Master -->
+	<field name="title9" type="C">
+      <text v="VẬN ĐƠN GOM HÀNG" e="HOUSE BILL OF LADING"/>
+    </field>
+	<field name="h_doc_no_hb" type="C">
+      <text v="Số hồ sơ:" e="Documents No:"/>
+    </field>
+	<field name="h_doc_nam_hb" type="C">
+      <text v="Năm đăng ký hồ sơ:" e="Documents Year:"/>
+    </field>
+	<field name="h_ma_cnct_hb" type="C">
+      <text v="Chức năng của chứng từ:" e="Documents function:"/>
+    </field>
+	<field name="h_ma_kh_s_hb" type="C">
+      <text v="Người gửi hàng*:" e="Shipper:"/>
+    </field>
+	<field name="h_ma_kh_g_hb" type="C">
+      <text v="Người nhận hàng*:" e="Consignee:"/>
+    </field>
+	<field name="h_ma_kh_n_hb" type="C">
+      <text v="Người được thông báo:" e="Notify Party:"/>
+    </field>
+	
+	<field name="h_ma_cang_ct_hb" type="C">
+      <text v="Mã Cảng chuyển tải/quá cảnh:" e="Code of Port of transhipment/transit:"/>
+    </field>
+	<field name="h_ma_noi_dodong_hb" type="C">
+      <text v="Mã Cảng giao hàng/cảng đích:" e="Final destination:"/>
+    </field>
+	<field name="h_ma_noi_den_hb" type="C">
+      <text v="Mã Cảng xếp hàng:" e="Code of Port of Loading:"/>
+    </field>
+	<field name="h_ma_noi_dodong2_hb" type="C">
+      <text v="Mã Cảng dỡ hàng:" e="Port of unloading/discharging:"/>
+    </field>
+	<field name="h_ma_noi_giaonhan_hb" type="C">
+      <text v="Địa điểm giao hàng*:" e="Place of Delivery:"/>
+    </field>
+	
+	<field name="h_ma_svc_hb" type="C">
+      <text v="Loại hàng*:" e="Cargo Type/Terms of Shipment:"/>
+    </field>	
+	<field name="h_hbl_no_hb" type="C">
+      <text v="Số vận đơn *:" e="Bill of lading number:"/>
+    </field>	
+	<field name="h_ngay_hbl_hb" type="C">
+      <text v="Ngày phát hành vận đơn*:" e="Date of house bill of lading:"/>
+    </field>
+	<field name="h_mbl_no_hb" type="C">
+      <text v="Số vận đơn gốc*:" e="Master bill of lading number:"/>
+    </field>	
+	<field name="h_ngay_mbl_hb" type="C">
+      <text v="Ngày phát hành vận đơn gốc*:" e="Date of master bill of lading:"/>
+    </field>
+
+	<field name="h_dien_giai_hb" type="C">
+      <text v="Ghi chú:" e="Remark:"/>
+    </field>
+	<!-- detail -->
+	<field name="h_dien_giai_dt_hb" type="C">
+      <text v="Mô tả hàng hóa*" e="Description of Goods*"/>
+    </field>
+	<field name="h_ty_trong_hb" type="C">
+      <text v="Trọng lượng*" e="Gross weight*"/>
+    </field>
+	<field name="h_ty_khoi_hb" type="C">
+      <text v="Kích thước*" e="Demension*"/>
+    </field>
+	<field name="h_cont_no_hb" type="C">
+      <text v="Số Cont" e="Cont No"/>
+    </field>
+	<field name="h_seal_no_hb" type="C">
+      <text v="Số Seal" e="Seal No"/>
+    </field>
+	<field name="h_so_kien_hb" type="C">
+      <text v="Số kiện" e="Package"/>
+    </field>
+	<field name="h_loai_kien_hb" type="C">
+      <text v="Loại kiện" e="Unit P."/>
+    </field>
+		
+	<!--Cargo Manifest-->
+	<!-- Master -->
+	<field name="title10" type="C">
+      <text v="CARGO MANIFEST" e="CARGO MANIFEST"/>
+    </field>
+	<field name="h_ma_kh_cm" type="C">
+      <text v="From:" e="From:"/>
+    </field>
+	<field name="h_mhbl_no_cm" type="C">
+      <text v="MAWB:" e="MAWB:"/>
+    </field>
+	<field name="h_ma_job_cm" type="C">
+      <text v="MAWB: " e="MAWB:"/>
+    </field>
+	<field name="h_ma_kh_g_cm" type="C">
+      <text v="TO:" e="TO:"/>
+    </field>
+	<field name="h_total_cm" type="C">
+      <text v="Total:" e="Total:"/>
+    </field>
+	<!-- detail -->
+	<field name="h_ma_job_dt_cm" type="C">
+      <text v="MAWB" e="MAWB"/>
+    </field>
+	<field name="h_so_kien_cm" type="C">
+      <text v="No. of PK" e="No. of PK"/>
+    </field>
+	<field name="h_ty_trong_cm" type="C">
+      <text v="G.W(KGS)" e="G.W(KGS)"/>
+    </field>
+	<field name="h_ma_kh_s_dt_cm" type="C">
+      <text v="Shipper" e="Shipper"/>
+    </field>
+	<field name="h_ma_kh_g_dt_cm" type="C">
+      <text v="Consignee" e="Consignee"/>
+    </field>
+	<field name="h_dien_giai_cm" type="C">
+      <text v="Description of goods" e="Description of goods"/>
+    </field>
+	<field name="h_stt_no" type="C">
+      <text v="STT" e="NO."/>
+    </field>
+	<field name="h_require_dcm_tbd" type="C">
+      <text v="Để nhận D/O, vui lòng mang theo các giấy tờ sau: " e="To take D/O, Pls bring the following documents:"/>
+    </field>
+	<field name="h_loinhuan" type="C">
+      <text v="Lợi nhuận" e="Profit"/>
+    </field>
+	<field name="h_loinhuan_r" type="C">
+      <text v="Lợi nhuận thực" e="Profit Reality"/>
+    </field>
+	<field name="h_dtMid_jc" type="C">
+      <text v="Chi hộ" e="Disbursement Costs"/>
+    </field>
+	<field name="h_t_so_kien" type="C">
+      <text v="Tổng số kiện" e="Total Package"/>
+    </field>
+	<field name="h_tt_dh" type="C">
+      <text v="Thông tin đơn hàng" e="Information of Order"/>
+    </field>
+	<field name="h_ma_hs" type="C">
+      <text v="Mã hàng" e="HS Code"/>
+    </field>
+	<field name="h_ct_dh" type="C">
+      <text v="Chi tiết đơn hàng" e="Detail of Order"/>
+    </field>
+	<field name="h_gia_export" type="C">
+      <text v="Đơn giá" e="Price Per Unit"/>
+    </field>
+	<field name="h_tien_export" type="C">
+      <text v="Thành tiền" e="Total"/>
+    </field>
+	<field name="h_ma_noi_di_export" type="C">
+      <text v="Nơi giao hàng:" e="Departure:"/>
+    </field>
+  </fields>
+</report>

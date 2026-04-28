@@ -1,0 +1,242 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+]>
+
+<dir id="s42Close" dirViewType="Grid" selectMultiple="Table" voucherCode="BQ2" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Đóng báo giá" e="Đóng báo giá"></title>
+  <subtitle v="Xử lý &lt;b&gt;%s&lt;/b&gt; báo giá" e="&lt;b&gt;%s&lt;/b&gt; Quote Order"></subtitle>
+
+  <grids>
+    <grid table="s42" fieldKey="id" order="id desc" allowFilter="true" allowOrder="true">
+      
+      <fields>
+        <field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="100" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="so_ct" width="80" hidden="true"  >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+		<field name="ma_job" width="100" hidden = "false" link="V" >
+          <text v="Mã job" e="Job Code"></text>
+        </field>
+		<field name="so_job" width="100" link="V" >
+          <text v="Số job" e="Job Number"></text>
+        </field>
+
+        <field name="ma_kh" width="150" hidden = "false">
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="250" fieldType="EX" >
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>     
+		<field name="ma_noi_di" width="0" hidden="false">
+          <text v="Nơi đi" e="Origin"></text>
+        </field>
+		<field name="ten_noi_di" width="250" fieldType="EX">
+		  <text v="Nơi đi " e="Origin"></text>
+		</field>
+		<field name="ma_noi_den" width="0" hidden="false" >
+          <text v="Nơi đến" e="Destination"></text>
+        </field>	
+		<field name="ten_noi_den" width="250" fieldType="EX" >
+		  <text v="Nơi đến " e="Destination"></text>
+		</field>		
+		<field name="ma_hang" width="150" >
+          <text v="Mã Hãng tàu/Đại lý" e=" Carrier/Agent Code"></text>
+        </field>
+		<field name="ten_hang" width="250" fieldType="EX" >
+          <text v="Tên Hãng tàu/Đại lý" e="Carrier/Agent Name"></text>
+        </field>
+		<field name="ngay_hl" width="120" dataType="D">
+          <text v="Ngày hiệu lực" e="Effective Date"></text>
+        </field>
+		<field name="ngay_hld" width="120" dataType="D">
+          <text v="Hiệu lực đến" e="Expiry Date"></text>
+        </field>
+		<field name="ma_nt" width="0" >
+          <text v="Ngoại tệ" e="Currency"></text>
+        </field>
+		<field name="t_tong_trong" width="120" >
+          <text v="Tổng trọng lượng" e="Total Gross Weight"></text>
+        </field>
+		<field name="t_tong_khoi" width="120" >
+          <text v="Tổng volume" e="Total Volume"></text>
+        </field>
+		<field name="dien_giai" width="250">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+		<field name="ma_ngv" viewType="Combobox" inactivate="true" width="120">
+          <text v="Loại báo giá" e="Inv. Type"></text>
+          <viewInfo>
+            <options query="select ma_ngv, ten_ngv%l from dmngv where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+		<field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="id" dataType="N" fieldType="PK" format="0" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="close">
+          <text v="Đóng/Bỏ đóng" e="Close/Cancel Close"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="find">
+          <text v="$FindToolbar" e="$FindToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000); set @strKey = 'ngay_ct between ''' + convert(char(8), @ngay_ct1, 112) + ''' and ''' + convert(char(8), @ngay_ct2, 112) + ''' and ' + @strFinding
+if @status = -1
+  set @strKey = @strKey + ' and status not in (0, 9)'
+else
+  set @strKey = @strKey + ' and status = 9'
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmkh c on a.ma_kh = c.ma_kh left join vdmcangdi d on a.ma_noi_di = d.ma_noi_di left join vdmcangden f on a.ma_noi_den = f.ma_noi_den left join vdmhangtau k on a.ma_hang = k.ma_hang', 'b.ma_unit, c.ten_kh, d.ten_noi_di, f.ten_noi_den,k.ten_hang', '@@key',@strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </finding>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$s42Close(f){
+  this.constructor(f);
+}
+grid$s42Close.prototype = new DirEvent();
+grid$s42Close.prototype.afterInit = function(renderType){
+  var p = this._dir;
+  if (p.options._status == -1) p.find(".toolbar-close").attr('title', p.msg('close'))
+  else p.find(".toolbar-close").attr('title', p.msg('unclose'))
+}
+grid$s42Close.prototype.beforeButtonGridClick = function (id, gindex) {
+  var p = this._dir, g = p.grid(gindex), dt = g.data;
+  switch (id) {
+    case 'close':
+      var fees = p.selectedItems(), xstatus = p.options._status, msg = (xstatus == -1)? p.msg('msg1'): p.msg('msg2');
+      if (fees.count() > 0)
+        $.question(msg, $.msg.get("QuestionTitle"), p, function (q, v) {
+          q._close();
+          if (v){
+            p.request('CloseDH', '', [["tblKeys", "T", fees.sqlval()], ['xstatus', 'I', xstatus]], function(pp, d, run){
+              if (run) {
+                p._refresh();
+                p.clearSelectedItems();
+              }
+            });
+          }
+        });
+      return false;
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+         ]]>
+    </text>
+  </js>
+
+  <css>
+    <text>
+      <![CDATA[
+.toolbar-close > div {
+  background-position: -336px -400px !important;
+}
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+  
+  <script>
+    <request code="CloseDH">
+      <text>
+        <![CDATA[
+if @xstatus = -1 begin
+  update s42 set xstatus = status where status <> 9 and id in (select id from @tblKeys)
+  update s42 set status = 9, user_id2 = @@userId, datetime2 = getdate() where status <> 9 and id in (select id from @tblKeys)
+  update v42 set status = 9 where status <> 9 and id in (select id from @tblKeys)
+end else begin
+  select id, xstatus into #k1 from s42 where xstatus not in (0, 9) and id in (select id from @tblKeys)
+  if exists (select 1 from #k1) begin
+    update s42 set status = b.xstatus, xstatus = 0, user_id2 = @@userId, datetime2 = getdate() from s42 a join #k1 b on a.id = b.id
+    update v42 set status = b.xstatus from s42 a join #k1 b on a.id = b.id
+  end
+end
+
+select '' as message
+        ]]>
+      </text>
+    </request>
+  </script>
+
+  <messages>
+    <message val="msg1">
+      <text v="Bạn có chắc chắn sẽ &lt;b&gt;đóng&lt;/b&gt; các báo giá được chọn không?" e="Bạn có chắc chắn sẽ &lt;b&gt;đóng&lt;/b&gt; các báo giá được chọn không?"/>
+    </message>
+    <message val="msg2">
+      <text v="Bạn có chắc chắn sẽ &lt;b&gt;bỏ đóng&lt;/b&gt; các báo giá được chọn không?" e="Bạn có chắc chắn sẽ &lt;b&gt;bỏ đóng&lt;/b&gt; các báo giá được chọn không?"/>
+    </message>
+    <message val="close">
+      <text v="Đóng báo giá" e="Đóng báo giá"/>
+    </message>
+    <message val="unclose">
+      <text v="Bỏ đóng báo giá" e="Bỏ đóng báo giá"/>
+    </message>
+  </messages>
+</dir>

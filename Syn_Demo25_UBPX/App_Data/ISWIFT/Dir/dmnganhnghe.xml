@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmnganhnghe" table="dmnganhnghe" fieldKey="ma_nganhnghe" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục ngành nghề" e="Occupation List"></title>
+  <title0 v="Thêm mới - ngành nghề" e="New - Occupation"></title0>
+  <title1 v="Sửa - ngành nghề" e="Edit - Occupation"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+		<field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+		  <text v="" e=""></text>
+		</field>
+        <field name="ma_nganhnghe" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="5">
+          <text v="Mã ngành nghề" e="Occupation Code"></text>
+        </field>
+        <field name="ten_nganhnghe" label="1" field="-" allowBlank="false" importable="10">
+          <text v="Tên ngành nghề" e="Occupation Name"></text>
+        </field>
+		<field name="ten_nganhnghe2" label="1" field="-" allowBlank="true" importable="15">
+          <text v="Tên tiếng anh" e="English Name "></text>
+        </field>
+		<field name="ma_loai" viewType="Combobox" inactivate="false" label="1" field="1" nextRow="true" importable="20" >
+		  <text v="Mã loại" e="Type Code"></text>
+		  <viewInfo>
+			<options query="select ma_loai, ten_loai%l from dmloainganhnghe where status = 1 ">
+			</options>
+		  </viewInfo>
+		</field>
+		<field name="status" viewType="Combobox" inactivate="true" label="1" field="2" valueDefault="1" nextRow="true" importable="-1" >
+		  <text v="Trạng thái" e="Status"></text>
+		  <viewInfo>
+			<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 ">
+			</options>
+		  </viewInfo>
+		</field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmnganhnghe(p){
+  this.constructor(p);
+}
+dir$dmnganhnghe.prototype = new DirEvent();
+dir$dmnganhnghe.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid();
+  dir$dmnganhngheDisabledMasterField(p, g);
+}
+function dir$dmnganhngheDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_nganhnghe').trim() != '')
+  {
+    p.setDisabled('ma_nganhnghe', true);
+  }
+  else
+  {
+    p.setDisabled('ma_nganhnghe', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+		<text>
+		  <![CDATA[
+	.control-label.ma_nganhnghe, .control-label.ten_nganhnghe
+	{	
+		color: #499b98;;
+	}
+		  ]]>
+		</text>
+  </css>
+
+	<script>
+		<query>
+		  <text>
+			<![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+drop table #@@table
+			 ]]>
+		  </text>
+		</query>
+		<updated>
+		  <text>
+			<![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId where [%whereFieldKey]
+			 ]]>
+		  </text>
+		</updated>
+		<inserting>
+		  <text>
+			<![CDATA[
+if exists(select 1 from @@table a where [%whereFieldKey]) begin
+  select '$codeExistsNewMsg' as message, '@@firstFieldKey' as field
+  return
+end
+
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @unit_id = @@unit
+			]]>
+		  </text>
+		</inserting>
+		<importing>
+			<text>
+			<![CDATA[
+update #data set unit_id = @@unit
+@@insert
+			]]>
+			</text>
+		</importing>
+	</script>
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã ngành nghề đã tổn tại." e="Occupation code already exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã ngành nghề đã tổn tại." e="Occupation code already exists."/>
+    </message>
+  </messages>
+</dir>

@@ -1,0 +1,285 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<script>
+  <getStruct>
+    <text>
+      <![CDATA[
+SELECT DISTINCT COLUMN_NAME AS col
+			, CASE WHEN DATA_TYPE LIKE '%char%' THEN CHARACTER_MAXIMUM_LENGTH 
+				WHEN DATA_TYPE LIKE '%numeric%' THEN NUMERIC_PRECISION - NUMERIC_SCALE - 1
+				ELSE 0 END AS data_len
+			, CASE WHEN DATA_TYPE LIKE '%char%' THEN DATA_TYPE + '(' + RTRIM(CHARACTER_MAXIMUM_LENGTH) + ')'
+				WHEN DATA_TYPE LIKE '%numeric%' THEN DATA_TYPE + '(' + RTRIM(NUMERIC_PRECISION) + ',' + RTRIM(NUMERIC_SCALE) + ')'
+				ELSE DATA_TYPE END AS sql_data_type
+			, DATA_TYPE AS data_type, ORDINAL_POSITION AS pos
+		INTO #t
+		FROM INFORMATION_SCHEMA.COLUMNS 
+	WHERE TABLE_NAME = '[%table]' ORDER BY ORDINAL_POSITION
+
+UPDATE #t SET data_type = 'C' WHERE data_type LIKE '%char%'
+UPDATE #t SET data_type = 'I' WHERE data_type LIKE '%int%'
+UPDATE #t SET data_type = 'N' WHERE data_type LIKE '%numeric%'
+UPDATE #t SET data_type = 'DT' WHERE data_type LIKE '%datetime%'
+UPDATE #t SET data_type = 'D' WHERE data_type LIKE '%date%'
+SELECT * FROM #t ORDER BY pos
+DROP TABLE #t 
+         
+         ]]>
+    </text>
+  </getStruct>
+
+  <queryTable>
+    <text>
+      <![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+if @action = 'EDIT' and '@@firstFieldKey' = '@@fieldKey'
+  if exists(select 1 from syscodeexists with(nolock, index(code1)) where code1 = @@@firstFieldKey and field = '@@firstFieldKey')
+    select 'p.setDisabled(''@@firstFieldKey'', true); ' as script
+
+drop table #@@table
+         ]]>
+    </text>
+  </queryTable>
+
+  <updating>
+    <text>
+      <![CDATA[
+if exists(select 1 from @@table where [%whereFieldKeyOld]) begin
+  select '$codeExistsNewMsg' as message, '@@firstFieldKey' as field
+  return
+end
+         ]]>
+    </text>
+  </updating>
+
+  <updated>
+    <text>
+      <![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId where [%whereFieldKey]
+         ]]>
+    </text>
+  </updated>
+
+  <inserting>
+    <text>
+      <![CDATA[
+if exists(select 1 from @@table a where [%whereFieldKey]) begin
+  select '$codeExistsNewMsg' as message, '@@firstFieldKey' as field
+  return
+end
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId
+         ]]>
+    </text>
+  </inserting>
+
+  <deleting>
+    <text>
+      <![CDATA[
+         ]]>
+    </text>
+  </deleting>
+
+  <beforeVoucherEvent_query>
+    <text>
+      <![CDATA[
+select a.unit_id,a.i_so_ct,a.ma_nk,a.so_ct,a.ngay_ct,a.ma_nt,a.status,a.user_id0 into #$@@table from @@table a where id = @id
+if @action in ('VIEW', 'EDIT') and not exists(select 1 from #$@@table) begin
+  select '$VoucherNotExists' as message
+  return
+end
+if @action = 'EDIT' begin 
+  if exists(select 1 from #$@@table a join sysinfo b on a.ngay_ct <= b.ngay_ks) begin
+    select '$VoucherLockedDay' as message
+    return
+  end
+  if exists(select 1 from #$@@table a join sysunit b on a.unit_id = b.unit_id and a.ngay_ct <= b.ngay_ks) begin
+    select '$VoucherLockedDayUnit' as message
+    return
+  end
+  if exists(select 1 from #$@@table a join dmct b on ma_ct = '@@voucherCode' and a.ngay_ct <= b.ngay_ks) begin
+    select '$VoucherLockedDayCode' as message
+    return
+  end
+end
+if @@admin <> 1 begin 
+  if exists(select 1 from #$@@table where user_id0 not in (select user_id from sysuserinfo where user_ref like '@@userRef%')) and not exists(select 1 from sysmenu a where controller = '@@controller' and exists(select 1 from sysrightmenu b where b.user_id = @@userId and a.id = b.menu_id and (@action = 'NEW' or (@action = 'VIEW' and b.a_view_all = 1) or (@action = 'EDIT' and b.a_edit_all = 1)) )) begin
+    select '$VoucherUserNotAuthorize' as message
+    return
+  end
+  if @id <> 0 and 1 < (select count(1) from sysunit) and not exists(select 1 from #$@@table a where (@action = 'NEW' or exists(select 1 from sysrightunit b where a.unit_id = b.unit_id and b.user_id = @@userId and ((@action = 'VIEW' and b.a_view = 1) or (@action = 'EDIT' and b.a_edit = 1))))) begin
+    select '$VoucherUnitNotAuthorize' as message
+    return
+  end
+  if exists(select 1 from sysrightstatus where ma_ct = '@@voucherCode' and user_id = @@userId and ((@action = 'VIEW' and a_view = 1) or (@action = 'EDIT' and a_edit = 1))) 
+    if exists(select 1 from #$@@table where status in (select ma_ttct from sysrightstatus where ma_ct = '@@voucherCode' and user_id = @@userId and ((@action = 'VIEW' and a_view = 1) or (@action = 'EDIT' and a_edit = 1)))) begin
+      select '$VoucherStatusNotAuthorize' as message
+      return
+    end
+end
+drop table #$@@table
+         ]]>
+    </text>
+  </beforeVoucherEvent_query>
+
+  <beforeEvent_query>
+    <text>
+      <![CDATA[
+if @@admin <> 1
+  if not exists(select 1 from sysmenu a where controller = '@@controller' and exists(select 1 from sysrightmenu b where b.user_id = @@userId and a.id = b.menu_id and ((@action = 'VIEW' and b.a_view = 1) or (@action = 'EDIT' and b.a_edit = 1) or (@action = 'NEW' and b.a_new = 1)) )) begin
+    select '$NotAuthorize' as message
+    return
+  end
+if @action = 'EDIT' and not exists(select 1 from @@table a where [%whereFieldKey]) begin
+  select '$ListItemNotExists' as message
+  return
+end
+         ]]>
+    </text>
+  </beforeEvent_query>
+
+  <beforeVoucherEvent_inserting>
+    <text>
+      <![CDATA[
+if exists(select 1 from sysinfo where @ngay_ct <= ngay_ks) begin
+  select '$VoucherLockedDay' as message, 'ngay_ct' as field
+  return
+end
+if exists(select 1 from sysunit where unit_id = @unit_id and @ngay_ct <= ngay_ks) begin
+  select '$VoucherLockedDayUnit' as message, 'ngay_ct' as field
+  return
+end
+if exists(select 1 from dmct where ma_ct = '@@voucherCode' and @ngay_ct <= ngay_ks) begin
+  select '$VoucherLockedDayCode' as message, 'ngay_ct' as field
+  return
+end
+if @@admin <> 1 begin 
+  if exists(select 1 from sysrightstatus where ma_ct = '@@voucherCode' and user_id = @@userId and a_new = 1 and ma_ttct = @status) begin
+    select '$VoucherStatusNotAuthorize' as message, 'status' as field
+    return
+  end
+  if 1 < (select count(1) from sysunit) and not exists(select 1 from sysrightunit where unit_id = @unit_id and user_id = @@userId and a_new = 1) begin
+    select '$VoucherUnitNotAuthorize' as message, 'unit_id' as field
+    return
+  end
+end]]>
+    </text>
+  </beforeVoucherEvent_inserting>
+
+  <beforeVoucherEvent_updating>
+    <text>
+      <![CDATA[
+if exists(select 1 from sysinfo where @ngay_ct <= ngay_ks) begin
+  select '$VoucherLockedDay' as message, 'ngay_ct' as field
+  return
+end
+if exists(select 1 from sysunit where unit_id = @unit_id and @ngay_ct <= ngay_ks) begin
+  select '$VoucherLockedDayUnit' as message, 'ngay_ct' as field
+  return
+end
+if exists(select 1 from dmct where ma_ct = '@@voucherCode' and @ngay_ct <= ngay_ks) begin
+  select '$VoucherLockedDayCode' as message, 'ngay_ct' as field
+  return
+end
+if @@admin <> 1 begin 
+  if exists(select 1 from sysrightstatus where ma_ct = '@@voucherCode' and user_id = @@userId and a_edit = 1 and ma_ttct = @status) begin
+    select '$VoucherStatusNotAuthorize' as message, 'status' as field
+    return
+  end
+  if 1 < (select count(1) from sysunit) and not exists(select 1 from sysrightunit where unit_id = @unit_id and user_id = @@userId and a_edit = 1) begin
+    select '$VoucherUnitNotAuthorize' as message, 'unit_id' as field
+    return
+  end
+end]]>
+    </text>
+  </beforeVoucherEvent_updating>
+
+  <beforeVoucherEvent_deleting>
+    <text>
+      <![CDATA[
+select a.unit_id,a.i_so_ct,a.ma_nk,a.so_ct,a.ngay_ct,a.ma_nt,a.status,a.user_id0 into #$@@table from @@table a where id = @id
+if exists(select 1 from #$@@table a join sysinfo b on a.ngay_ct <= b.ngay_ks) begin
+  select '$VoucherLockedDay' as message
+  return
+end
+if exists(select 1 from #$@@table a join sysunit b on a.unit_id = b.unit_id and a.ngay_ct <= b.ngay_ks) begin
+  select '$VoucherLockedDayUnit' as message
+  return
+end
+if exists(select 1 from #$@@table a join dmct b on ma_ct = '@@voucherCode' and a.ngay_ct <= b.ngay_ks) begin
+  select '$VoucherLockedDayCode' as message
+  return
+end
+if @@admin <> 1 begin 
+  if exists(select 1 from #$@@table where user_id0 not in (select user_id from sysuserinfo where user_ref like '@@userRef%')) and not exists(select 1 from sysmenu a where controller = '@@controller' and exists(select 1 from sysrightmenu b where b.user_id = @@userId and a.id = b.menu_id and b.a_del_all = 1) ) begin
+    select '$VoucherUserNotAuthorize' as message
+    return
+  end
+  if 1 < (select count(1) from sysunit) and not exists(select 1 from #$@@table a where exists(select 1 from sysrightunit b where a.unit_id = b.unit_id and b.user_id = @@userId and b.a_del = 1)) begin
+    select '$VoucherUnitNotAuthorize' as message
+    return
+  end
+  if exists(select 1 from sysrightstatus where ma_ct = '@@voucherCode' and user_id = @@userId and a_del = 1)
+    if exists(select 1 from #$@@table where status in (select ma_ttct from sysrightstatus where ma_ct = '@@voucherCode' and user_id = @@userId and a_del = 1)) begin
+      select '$VoucherStatusNotAuthorize' as message
+      return
+    end
+end
+drop table #$@@table
+         ]]>
+    </text>
+  </beforeVoucherEvent_deleting>
+
+  <beforeEvent_deleting>
+    <text>
+      <![CDATA[
+if @@admin <> 1
+  if not exists(select 1 from sysmenu a where controller = '@@controller' and exists(select 1 from sysrightmenu b where b.user_id = @@userId and a.id = b.menu_id and b.a_del = 1)) begin
+    select '$NotAuthorize' as message
+    return
+  end
+if '@@firstFieldKey' = '@@fieldKey' and '@@voucherCode' = ''
+  if exists(select 1 from syscodeexists with(nolock, index(code1)) where code1 = @@@firstFieldKey and field = '@@firstFieldKey') begin
+    select '$ListDeleteError' as message, @@@firstFieldKey as [{0}]
+    return
+  end
+if not exists(select 1 from @@table a where [%whereFieldKey]) begin
+  select '$ListItemNotExists' as message
+  return
+end
+         ]]>
+    </text>
+  </beforeEvent_deleting>
+
+  <autoIncreaseCode>
+    <text>
+      <![CDATA[
+declare @q nvarchar(4000)
+set @q = 'declare @v varchar(32); select top 1 @v = rtrim(%s1) from %s2 where right(rtrim(%s1), 1) between ''0'' and ''9'' and %s1 like ''%s3%'' order by len(rtrim(%s1)), %s1 desc
+select isnull(@v, '''') as val'
+set @q = replace(replace(replace(@q, '%s1', dbo.ISWIFTFunctionReplaceSQLValue(@field)), '%s2', dbo.ISWIFTFunctionReplaceSQLValue(@table)), '%s3', replace(rtrim(@value), '''', ''''''))
+exec (@q)
+         ]]>
+    </text>
+  </autoIncreaseCode>
+
+  <getDirInfo>
+    <text>
+      <![CDATA[
+declare @q nvarchar(4000), @i int
+select @fieldKey = dbo.ISWIFTFunctionReplaceSQLValue(@fieldKey), @valKey = dbo.ISWIFTFunctionReplaceSQLValue(@valKey), @i = 1, @q = ''
+while @i <= dbo.sf_GetWordCount(@fieldKey) begin
+	set @q = @q + case when @i <> 1 then ' and ' else '' end + 'a.' + dbo.sf_GetWordNum(@fieldKey, @i) + ' = ''' + dbo.sf_GetWordNum(@valKey, @i) + ''''
+	set @i = @i + 1
+end
+
+set @q = 'select a.user_id0, b.username as username0, b.nickname as nickname0, a.user_id2, c.username as username2, c.nickname as nickname2, convert(varchar(20), a.datetime0, 103) + '' '' + convert(varchar(20), a.datetime0, 114) as datetime0, convert(varchar(20), a.datetime2, 103) + '' '' + convert(varchar(20), a.datetime2, 114) as datetime2 from @table a join sysuserinfo b on a.user_id0 = b.user_id join sysuserinfo c on a.user_id2 = c.user_id where ' + @q 
+set @q = replace(@q, '@table', dbo.ISWIFTFunctionReplaceSQLValue(@table))
+exec (@q)
+         ]]>
+    </text>
+  </getDirInfo>
+
+</script>

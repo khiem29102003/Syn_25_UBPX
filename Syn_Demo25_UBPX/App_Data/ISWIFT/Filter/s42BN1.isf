@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="s42BN1" fieldKey="id" voucherCode="BN1" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lọc báo giá" e="Quotation Entry Filter"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" allowBlank="false" dataType="D">
+          <text v="Ngày c/từ từ/đến" e="Date From"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" allowBlank="false" inactivate="true" dataType="D" nextRow="false">
+          <text v="Ngày đến" e="Date To"></text>
+        </field>
+		<field name="ngay_ct" label="" field="1" allowBlank="false" inactivate="true"  hidden="true" dataType="D" nextRow="true">
+          <text v="Ngày chứng từ" e="Voucher Date"></text>
+        </field>
+        <field name="ma_nt" hidden="true" label="1" field="1">
+          <text v="Mã ngoại tệ" e="Ex Code"></text>
+        </field>
+        <field name="unit_id" dataType="I" hidden="true" label="1" field="1">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="ma_noi_di" viewType="Lookup" disabled="true" inactivate="true" label="1" field="1">
+			<text v="Nơi đi" e="Origin "></text>
+			<viewInfo lookupType="One" lookupId="vdmcangdi" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_di" />
+		</field>
+		<field name="ten_noi_di" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+		<field name="ma_noi_den" viewType="Lookup" disabled="true" label="1" field="1" operation="like">
+			<text v="Nơi đến" e="Destination"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangden" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_den"  />
+		</field>
+		<field name="ten_noi_den" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field>  
+		
+		<field name="ma_hang" viewType="Lookup" disabled="true" inactivate="true" label="1" field="1">
+          <text v="Mã hãng tàu" e=" Carriers"></text>
+          <viewInfo lookupType="One" lookupId="dmhangtau" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_hang" />
+        </field>
+        <field name="ten_hang" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+		
+		<!-- <field name="ma_cong" viewType="Lookup" disabled="false" inactivate="true" label="1" field="1"> -->
+			  <!-- <text v="Loại Container" e="Container"></text> -->
+			  <!-- <viewInfo lookupType="One" lookupId="dmcong" lookupKey="status = 1 " lookupCheck="1=1" lookupRef="ten_cong" /> -->
+			<!-- </field> -->
+			<!-- <field name="ten_cong"  nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-"> -->
+			  <!-- <text v="" e=""></text> -->
+		<!-- </field> -->
+		
+		 <field name="ds_cong" allowBlank="false" viewType="Lookup" label="1" field="-"  hidden="true">
+			  <text v="Container" e="Container List"></text>
+			  <viewInfo lookupType="Multi" lookupId="dmcong2" lookupKey="status=1" lookupCheck="status=1" lookupRef="" lookupInfo="dmcong|ma_cong|ten_cong" />
+			</field>
+			
+        <!-- <field name="so_ct" label="1" field="1" allowBlank="true" hidden="true" viewType="Lookup"> -->
+          <!-- <text v="Số báo giá" e="Quot. Number"></text> -->
+          <!-- <viewInfo lookupType="One" lookupId="v311" lookupRef="ds_so_ct" lookupKey=" ![ngay_ct2]! >= ngay_hl  and  ngay_hld >= ![ngay_ct1]! and ma_noi_di = ![ma_noi_di]! and ma_noi_den = ![ma_noi_den]! and ma_kh like ![ma_hang]! +'%' and unit_id = ![unit_id]!" /> -->
+        <!-- </field> -->
+		
+			
+        <field name="so_ct" label="1" field="1" allowBlank="true" hidden="false" >
+          <text v="Số báo giá" e="Quot. Number"></text>
+        </field>
+		
+        <field name="ds_so_ct" nextRow="false" fieldType="EX" readOnly="true"   hidden="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+	
+	
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>gOOrg2vstELPXb5x/tsjwG5PmQ2+GbYNnU2d5ZQ2hshUkp+wWJ2EuKk1AN7PkSTRqx6zCuYM/fZN3H5BIA9XOgoCH9WNX785/qfqwOJOyOj1YFs00qNwx8/NCwwU06Yil7EC1NPkRAzQ/pIXz4Wzab3+VPsPPFeBVaSvuT5A+Vz61hSmeXqZAfQp0UlAJHgCVws8+3AedTiP48rVhOwJ6wt4XMbLJ6ecBG+ZQlZw93tScEGQkeYUrvCDh38njMIzsD3KvkTJmQ1m96hD+JxWd/UlNK2APHtUSm0Uz45K9El58h192A/akeM1aBgMxezJIMZFy5PoKnWP/gBQQ0IeJ4nZuvVFA9X9K9f058KrHIz9Z1uYFlC1H7LVZ0taprPw2MrdWaYILkcXe5Fo52X0SZ0r7b7yeihyGQF5ihvEW8GxVkE+Rul33LkEvNvYxZ2ysMLRg8FVTEpgrYIwJpfo5BtNUyJv9D/nWspIKDe18Y0ZncXurk6vPxoPHkNcYWfM4K4nQrwtUYvj5V+CSeCLBRFhDE23SKyAM/k2MtWIUx55tOtvo6enDmHIwwy6VDbFTlDhDTtWdwmaSvZTdGdX4nTE/UxApruOY03XACnzTKIBiNKSjRLO94Dh0Fw8mAOj</enc>]]>
+    </text>
+  </js>
+
+  <script>
+
+  </script>
+</dir>

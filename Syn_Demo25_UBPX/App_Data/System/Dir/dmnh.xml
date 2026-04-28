@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmnh" table="dmnh" fieldKey="ma_nh, ma_loai_nh" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục phân nhóm" e="List of customer"></title>
+  <title0 v="Mới [%s]" e="New [%s]"></title0>
+  <title1 v="Sửa [%s]" e="Edit [%s]"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,240,120"  >
+      <fields>
+        <field name="ma_loai_nh" hidden="true" fieldType="PK" viewType="Lookup" label="1" field="1">
+          <text v="Loại nhóm" e=""></text>
+          <viewInfo lookupType="One" lookupId="dmloainh" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_loai_nh" lookupInfo="dmloainh|ma_loai_nh|ten_loai_nh"/>
+        </field>
+        <field name="ten_loai_nh" hidden="true" nextRow="false" fieldType="EX" disabled="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_nh" fieldType="PK" format="U" label="1" field="1" allowBlank="false" >
+          <text v="Mã nhóm" e="Code"></text>
+        </field>
+        <field name="ten_nh" allowBlank="false" label="1" field="-">
+          <text v="Tên phân nhóm" e="Name"></text>
+        </field>
+        <field name="ten_nh2" label="1" field="-">
+          <text v="Tên 2" e="Name 2"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+&DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmnh(p){
+  this.constructor(p);
+}
+dir$dmnh.prototype = new DirEvent();
+dir$dmnh.prototype.afterInit = function(){
+  var p = this._dir, g = p.options.parent;
+  if (p.options.action == 'NEW')
+    p.valForm('ma_loai_nh', g.options._ma_loai_nh)
+  p.setTitle(['%s', g.options._ten_loai_nh]);
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã phân nhóm đã tồn tại' else N'Region Code is exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã phân nhóm đã tồn tại' else N'Region Code is exists' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+</dir>

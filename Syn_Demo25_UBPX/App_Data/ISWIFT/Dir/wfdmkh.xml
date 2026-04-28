@@ -1,0 +1,406 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+  <!ENTITY VoucherRequiredFields01 SYSTEM "..\Include\XML\VoucherRequiredFields09.xml">
+  <!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid01.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+
+  <!ENTITY VoucherSaleRequest SYSTEM "..\Include\XML\VoucherSaleRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from wfdmkh where id = @id and status in (5,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+    ">
+]>
+
+
+<dir id="wfdmkh" table="wfdmkh" fieldKey="id" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" voucherCode="WF1" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Cấu hình Workflow" e="Customer-Specific Workflow Configuration"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120" >
+      <fields>
+        <field name="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_wf" format="U" label="1" field="1" viewType="AutoIncrease" allowBlank="false">
+          <text v="Mã workflow" e="Workflow Code"></text>
+        </field>
+        <field name="dien_giai" label="1" rows="1" field="-">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+      </fields>
+    </form>
+	
+    <form gravity="TopRight" columns="120,120" >
+      <fields>
+			&VoucherRequiredFields01;
+      </fields>
+    </form>
+    <form tabPageIndex="1" gravity="MiddleLeft" height="400" columns="120,120,240" >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="wfdmkhct" allowBlank="false" label="" field="-" viewType="Grid">
+          <text v="Chi tiết" e="Detail"></text>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="7" gravity="MiddleLeft" height="0" columns="120,120,360" >
+      <text v="Đính kèm" e="Attach Files"></text>
+      <fields>
+        <field name="xfile" label="1" field="2" viewType="File" fieldType="EXParam">
+          <text v="Chọn files" e="Attach Files"></text>
+          <viewInfo fileFieldId0="id" fileGroup="WF1" fileExtension="*" maxFileSize="10240" maxFileCount="10"></viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  <grids>
+    <grid id="wfdmkhct" table="wfdmkhct" fieldKey="id, line" order="line" allowFilter="true" readOnly="false" allowOrder="true">
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+        <field name="ma_ntask" width="120" allowBlank="false" viewType="Lookup" readOnly="false" inactivate="false" >
+          <text v="Mã nhóm c/việc" e="Task Group Code"></text>
+          <viewInfo lookupType="One" lookupId="dmntask" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_ntask" lookupInfo="dmntask|ma_ntask|ten_ntask" />
+        </field>
+        <field name="ten_ntask" width="200" fieldType="EX" inactivate="true" readOnly="false" disabled="true" aliasName="b" join = 'left join dmntask b on a.ma_ntask = b.ma_ntask'>
+          <text v="Tên nhóm công việc" e="Task Group Name"></text>
+        </field>
+        <field name="ma_nv" width="120" allowBlank="true" viewType="Lookup" readOnly="false" inactivate="false">
+          <text v="Gán nhân viên" e="Assign Employee"></text>
+          <viewInfo lookupType="One" lookupId="dmnv" lookupKey="EXISTS (SELECT 1 FROM dmntask WHERE ma_ntask = #[ma_ntask]# AND ',' + ds_nv + ',' LIKE '%,' + ma_nv + ',%') " lookupCheck="1=1" lookupRef="ten_nv" lookupInfo="dmnv|ma_nv|ten_nv" />
+        </field>
+        <field name="ten_nv" width="200" fieldType="EX" inactivate="true" readOnly="false" disabled="true" aliasName="c" join = 'left join dmnv c on a.ma_nv = c.ma_nv'>
+          <text v="Tên nhân viên" e="Employee Name"></text>
+        </field>
+		<field name="dien_giai" width="250" inactivate="false" readOnly="false">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="paste">
+          <text v="$PasteToolbar" e="$PasteToolbar"></text>
+        </button>
+        <button id="moveup">
+          <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+        </button>
+        <button id="movedown">
+          <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+        </button>
+
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+	set nocount on
+	
+	SELECT @@fields into #t FROM wfdmkhct a @@join
+	WHERE @@key 
+	ORDER BY line
+	
+	SELECT * FROM #t ORDER BY line
+	drop table #t
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$wfdmkh(p){
+  this.constructor(p);
+    document._dir = p;
+}
+dir$wfdmkh.prototype = new DirEvent();
+dir$wfdmkh.prototype.beforeInit = function(renderType){
+  this._dir.options._files = null;
+}
+function getYear() {
+	var p = document._dir;
+
+let currentDate = new Date();
+var ngayhld = p.valForm('ngay_hld');
+//console.log(ngayhld)
+// Cộng thêm 10 năm
+let newDate = new Date(currentDate);
+newDate.setFullYear(currentDate.getFullYear() + 10);
+
+var formatDate = newDate.toLocaleDateString('en-GB');
+document.querySelector("input.ngay_hld").setAttribute('value', formatDate);
+
+//console.log(dateYear)
+
+
+// Hiển thị ngày mới nhất cộng thêm 10 năm
+console.log("Ngày mới nhất cộng thêm 10 năm: " + newDate.toISOString().slice(0, 10));
+}
+dir$wfdmkh.prototype.afterInit = function(renderType){
+  var p = this._dir, g = p.grid()
+
+  dir$wfdmkhDisabledMasterField(p, g);
+  dir$wfdmkhHiddenColumnByType(p);
+  dir$wfdmkhDisabledStatusByAction(p);
+}
+
+dir$wfdmkh.prototype.beforeButtonDialogClick = function (id) {
+  var p = this._dir, g = p.grid(0), dt = g.data;
+  switch (id) {
+    case 'ok':
+
+
+    default:
+      break;
+  }
+  return true;
+}
+dir$wfdmkh.prototype.beforeButtonGridClick = function (id, gindex) {
+  var p = this._dir;
+  switch (id) {
+
+  	case '10':
+      p.showFilter("wfdmkhFilter", null, {_ngay_thuchien2: p.valForm('ngay_ct'),_unit_id: p.valForm('unit_id')});	  
+	  return false;
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+
+dir$wfdmkh.prototype.gridCellValueChange = function (o, g, r, c, v) {
+  var p = this._dir;
+  switch (c){
+
+]]>&VoucherSaleRequestGrid;<![CDATA[
+    default:
+      break;
+  }
+}
+dir$wfdmkh.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+]]>&VoucherExRateValid01;<![CDATA[
+    case 'ma_gd':
+      dir$wfdmkhHiddenColumnByTran(p);
+      break;
+    case 'ma_ngv':
+      dir$wfdmkhHiddenColumnByType(p);
+      break;
+
+    default:
+      break;
+  }
+}
+]]>&VoucherExRateValid02;<![CDATA[
+dir$wfdmkh.prototype.gridDetailActionChange = function(gindex, action, r){
+  var p = this._dir;
+  if (action == 'AfterDeleteRow' || action == 'AfterAppendGrid') dir$wfdmkhDisabledMasterField(p, p.grid(gindex));
+  return true;
+}
+function dir$wfdmkhDisabledMasterField(p, g){
+
+}
+function dir$wfdmkhHiddenColumnByType(p){
+  var v = p.valForm('ma_ngv'), bc = p.options.struct.baseCurrency;
+}
+function dir$wfdmkhDisabledStatusByAction(p){
+  var o = p.jObject('status');
+  if (p.options.action != 'VIEW') o.find("[value=4],[value=0],[value=5],[value=6],[value=7],[value=9]").remove();
+}
+
+
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+      <![CDATA[
+		.control-label.ma_wf, .control-label.ds_kh {color: #499b98;}
+		.input-field.status, .input-field.unit_id {color: #ab6926;}	
+		.ma_ntask, .ma_nv span {color: #ab6926;}
+		.grid-input-field.ma_ntask, .grid-input-field.ma_nv {color: #ab6926;}
+      ]]>
+    </text>
+  </css>
+  <script>
+
+    &VoucherRequest;
+    &VoucherSaleRequest;
+
+    <query>
+      <text>
+        <![CDATA[
+if @action = 'EDIT' begin
+]]>&CheckUpdatingDeleting;<![CDATA[
+end
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+if @action in ('EDIT', 'VIEW') exec ISWIFTStoreGetListFiles 'xfile', @id, '@@voucherCode', '', @script output
+if @script is null set @script = ''
+
+if @action = 'NEW' begin
+  declare @ma_nk varchar(32), @ten_nk nvarchar(3000), @ngay_ct date, @so_ct varchar(32), @i_so_ct int, @unit_id int
+  select @ngay_ct = getdate(), @unit_id = @@unit
+]]>&VoucherNumberQuery;<![CDATA[
+  if @so_ct is null
+    select '' as [so_ct], 0 as [i_so_ct], @unit_id as [unit_id], '' as ma_nk, '' as ten_nk
+  else
+    select @so_ct as [so_ct], @i_so_ct as [i_so_ct], @unit_id as [unit_id], @ma_nk as ma_nk, @ten_nk as ten_nk
+end
+else select @script as script
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+
+    <declare>
+      <text>
+        <![CDATA[
+declare @warning nvarchar(256), @dOldVoucherDate date, @dVoucherDate date, @nVoucherType tinyint, @strIds varchar(256), @q nvarchar(4000)
+set @warning = ''
+         ]]>
+      </text>
+    </declare>
+
+    &VoucherJSLoading;
+
+    <beforesave>
+      <text>
+        &VoucherNumberBeforeSave;
+        <![CDATA[
+			if exists(select 1 from @wfdmkhct group by ma_ntask having count(1) > 1) begin
+			  select '$DuplicateJobGroup' as message
+			  return
+			end
+        ]]>		
+      </text>
+    </beforesave>
+
+    <deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct, @dVoucherDate = ngay_ct, @nVoucherType = ma_ngv from wfdmkh where id = @id
+        ]]>
+      </text>
+    </deleting>
+
+    <deleted>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+exec ISWIFTStoredDeleteDataWithKey 'wfdmkhct', @strIds, '', @dVoucherDate
+        ]]>
+      </text>
+    </deleted>
+
+    <updating>
+      <text>
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct from wfdmkh where id = @id
+        ]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId, i_so_ct = @i_so_ct, so_ct = @so_ct where [%whereFieldKey]
+update dmttin set status = 0 from dmttin where id0 = rtrim(@id) and xgroup = '@@voucherCode'
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+         ]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @ma_ct = '@@voucherCode'
+exec ISWIFTStoredGetIdentityNumber '@@voucherCode', '@@table', @id output
+         ]]>
+      </text>
+    </inserting>
+
+    <inserted>
+      <text>
+        <![CDATA[
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+]]>
+      </text>
+    </inserted>
+
+    <aftersave>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+if @action = 'NEW' set @dOldVoucherDate = @ngay_ct
+update @wfdmkhct set id = @id, ngay_ct = @ngay_ct, so_ct = @so_ct, status = @status, unit_id = @unit_id, ds_kh = @ds_kh, ma_wf = @ma_wf
+delete wfdmkhct where id = @id
+
+DELETE @wfdmkhct FROM @wfdmkhct WHERE ma_nv = ''
+insert wfdmkhct select * from @wfdmkhct
+
+
+exec ISWIFTStoredIncreaseVoucherNo @ma_nk, @ngay_ct, '@@voucherCode', @i_so_ct, @so_ct, '@@table'
+select '' as message, @warning as warning, @id as [#id], @so_ct as [#so_ct], @ma_unit as [#ma_unit]
+]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+    <message val="physicalRetrieve">
+      <text v="Chỉ xử lý nghiệp vụ sổ sách lấy dữ liệu từ thực tế" e="" />
+    </message>
+	<message val="DuplicateJobGroup">
+      <text v="Mã nhóm công việc không được trùng lặp" e="Duplicate job group codes are not allowed"/>
+    </message>
+  </messages>
+</dir>

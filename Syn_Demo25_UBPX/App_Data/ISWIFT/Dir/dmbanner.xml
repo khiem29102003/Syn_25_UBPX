@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmbanner" table="dmbanner" fieldKey="ma_banner" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục banner" e="Banner List"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_banner" format="U" label="1" field="2" allowBlank="false" fieldType="PK" >
+          <text v="Mã banner" e="Banner Code"></text>
+        </field>
+        <field name="ten_banner" label="1" field="2">
+          <text v="Tên banner" e="Banner Name"></text>
+        </field>
+        <field name="ten_banner2" label="1" field="2">
+          <text v="Tên khác" e="Other name"></text>
+        </field>
+		<field name="lien_ket" label="1" field="2">
+          <text v="Liên kết" e="Link"></text>
+        </field>
+		<field name="mo_ta" label="1" field="2">
+          <text v="Mô tả" e="Description"></text>
+        </field>
+		<field name="thu_tu" label="1" field="2" dataType="N">
+          <text v="Thứ tự" e="Position"></text>
+        </field>
+		
+		<field name="phan_loai" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Phân loại" e="Type"></text>
+          <viewInfo>
+            <options>
+              <option val="SL">
+                <text v="1 - Slider" e="1 - Slider"></text>
+              </option>
+              <option val="RB">
+                <text v="2 - Right banner" e="2 - Right banner"></text>
+              </option>
+			  <option val="CB">
+                <text v="3 - Center banner" e="3 - Center banner"></text>
+              </option>
+			  <option val="BB">
+                <text v="4 - Bottom banner" e="4 - Bottom banner"></text>
+              </option>
+			  <option val="VI">
+                <text v="5 - Video" e="5 - Video"></text>
+              </option>
+			  <option val="MB">
+                <text v="6 - Middle banner" e="6 - Middle banner"></text>
+              </option>
+			  <option val="SB1">
+                <text v="7 - Section banner 1" e="7 - Section banner 1"></text>
+              </option>
+			  <option val="SB2">
+                <text v="8 - Section banner 2" e="8 - Section banner 2"></text>
+              </option>
+			  <option val="SB3">
+                <text v="9 - Section banner 3" e="9 - Section banner 3"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+		
+		<field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+	<form gravity="TopRight" columns="120,120" >
+		<fields>
+			<field name="ximage1" label="1" field="0" importable="65">
+			  <text v="&lt;img class='image-single' id='img_ximage1' src='' onerror='src=`../Images/noImage.png`'/&gt; &lt;input type='button' value='Tải ảnh' onclick='browseServer(`ximage1`, `img_ximage1`);' value='Mở 1' style='text-align: center; display: block; margin: 0 auto;' /&gt;" e="Image 1"></text>
+			</field>
+	   </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmbanner(p){
+  this.constructor(p);
+  document._dir = p;
+}
+
+
+function uploadImages() {
+	var input = document.getElementById("fileInput");
+	var files = input.files;
+
+	var p = document._dir;
+
+	if (files.length > 5) {
+		alert("Chỉ được phép chọn tối đa 5 hình ảnh.");
+		return;
+	} else {
+		var formData = new FormData();
+		for (var i = 0; i < files.length; i++) {
+			formData.append("file" + i, files[i]);
+		}
+	}
+	
+	for (var i = 0; i < 5; i++) {
+		if (i < files.length) {
+			var fileName = files[i].name;
+			p.valForm('ximage' + (i + 1), "/Uploaded/" + fileName, true);
+		} else {
+			p.valForm('ximage' + (i + 1), "", true);
+		}
+	}
+
+	var btn = document.querySelector('button.btn-primary');
+	btn.addEventListener("click", function() {
+		$.ajax({
+			url: '/AppHandler/UploadHandler.ashx',
+			type: 'POST',
+			data: formData,
+			processData: false,
+			contentType: false,
+			success: function (response) {
+				alert(response); // Hiển thị thông báo thành công hoặc lỗi
+			}
+		});
+	});
+}
+function updateImage(index) {
+	var p = document._dir;
+
+	var input = document.getElementById("fileUpload" + index);
+	var selectedFile = input.files[0];
+	if (selectedFile) {
+		// Cập nhật đường dẫn ảnh trong input ẩn tương ứng
+		var path = "/Uploaded/" + selectedFile.name;
+		p.valForm('ximage' + index, path, true);
+		alert("Cập nhật ảnh thành công!");
+		console.log( p.valForm('ximage' + index))
+		var formData = new FormData();
+		formData.append("file", selectedFile);
+
+		var btn = document.querySelector('button.btn-primary');
+		btn.addEventListener("click", function() {
+			$.ajax({
+				url: '/AppHandler/UploadHandler.ashx',
+				type: 'POST',
+				data: formData,
+				processData: false,
+				contentType: false,
+				success: function (response) {
+					alert(response); // Hiển thị thông báo thành công hoặc lỗi
+				}
+			});
+		});
+	} else {
+		alert("Chọn ảnh mới không hợp lệ.");
+	}
+}
+function browseServer(value, src) {
+	var p = document._dir;
+	var finder = new CKFinder();
+	finder.selectActionFunction = function (url) {
+		p.valForm(value, url, true);
+		document.getElementById(src).src = url;
+	};
+	finder.popup();
+}
+function setImages(id, name, p) {
+	$('#' + id).attr("src", p.valForm(name));
+}
+
+
+dir$dmbanner.prototype = new DirEvent();
+dir$dmbanner.prototype.afterInit = function(){
+  var p = this._dir;
+  setTimeout(function() {		
+		setImages('img_ximage1', 'ximage1', p);
+	}, 500);
+}
+         ]]>
+    </text>
+  </js>
+
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã dịch vụ đã có hoặc lồng nhau trong danh mục dịch vụ." e="The Service is invalid or already exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã dịch vụ đã có hoặc lồng nhau trong danh mục dịch vụ." e="The Service is invalid or already exists."/>
+    </message>
+  </messages>
+
+</dir>

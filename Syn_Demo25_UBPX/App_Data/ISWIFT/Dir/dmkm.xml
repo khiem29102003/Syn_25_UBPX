@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmkm" table="dmkm" fieldKey="ma_km" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Khuyến Mãi" e="Service List"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_km" format="U" label="1" field="2" allowBlank="false" fieldType="PK" >
+          <text v="Mã Khuyến Mãi" e="Service Code"></text>
+        </field>
+        <field name="ten_km" label="1" field="2" allowBlank="false" >
+          <text v="Tên Khuyến Mãi" e="Description"></text>
+        </field>
+        <field name="ten_km2" label="1" field="2">
+          <text v="Tên khác" e="Other name"></text>
+        </field>
+		<field name="thu_tu" label="1" field="2" dataType="N">
+          <text v="Thứ tự" e="Position"></text>
+        </field>
+		<field name="noi_dung" label="1" field="2" allowBlank="false" >
+          <text v="Nội dung khuyến mãi" e="Description"></text>
+        </field>
+		<field name="noi_dung2" label="1" field="2" allowBlank="false" >
+          <text v="Nội dung khác" e="Description other"></text>
+        </field>
+       <!-- <field name="ma_clvt" viewType="Lookup" label="1" field="1" clientDefault="true" importable="35"> -->
+          <!-- <text v="Danh mục chính" e="Item Type"></text> -->
+          <!-- <viewInfo lookupType="One" lookupId="dmclvt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_clvt" lookupInfo="dmclvt|ma_clvt|ten_clvt" importCheck="@@DF and z.status=1"/> -->
+        <!-- </field> -->
+        <!-- <field name="ten_clvt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as " clientDefault="true"> -->
+          <!-- <text v="" e=""></text> -->
+        <!-- </field> -->
+  
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+	<form tabPageIndex="1" gravity="MiddleRight" height="300" columns="120,120,120,120,120,120,120,120" >
+		<text v="Chi tiết khuyến mãi" e="Promotion Details"></text>
+		<fields>
+			<field name="dmdkm" allowBlank="true" label="" field="-" viewType="Grid">
+			  <text v="Chi tiết khuyến mãi" e="Promotion Details"></text>
+			</field>
+		</fields>
+	</form>
+	<form tabPageIndex="2" gravity="MiddleRight" height="300" columns="120,120,120,120,120,120,120,120" >
+		<text v="Danh sách sản phẩm" e="Promotion Details"></text>
+		<fields>
+			<field name="dmkmvt" allowBlank="true" label="" field="-" viewType="Grid">
+			  <text v="Danh sách sản phẩm" e="List Product"></text>
+			</field>
+		</fields>
+	</form>
+  </forms>
+  <grids>
+		<grid id="dmdkm" table="dmdkm" fieldKey="ma_km" order="line" allowFilter="true" readOnly="false" allowOrder="true">
+		  <fields>
+			<!-- <field name="ma_km" fieldType="PK" foreignField="ma_km" copy="false" hidden="false"> -->
+			  <!-- <text v="Mã khuyến mãi" e="Promotion Code"></text> -->
+			<!-- </field>	 -->
+			<field name="loai_km" allowBlank="true" viewType="Lookup" width="140" readOnly="false">
+				<text v="Loại khuyến mãi" e="Category Promotion Code"></text>
+				<viewInfo lookupType="One" lookupId="dmloaikm" lookupKey="status = 1" lookupCheck="1=1" lookupInfo="dmloaikm|ma_loaikm|ten_loaikm" />
+			</field>
+			<field name="option_km" allowBlank="true" viewType="Lookup" width="150" readOnly="false">
+				<text v="Lựa chọn" e="Option"></text>
+				<viewInfo lookupType="One" lookupId="vdmvtvoucher" lookupKey="status = 1 and ma_loaikm = #[loai_km]#" lookupCheck="1=1" aliasName="b" join=""/>
+			</field>				
+			<field name="thu_tu" width="100" dataType="N" inactivate="true" readOnly="false">
+			  <text v="Thứ tự" e="Order"></text>
+			</field>		
+		  </fields>
+      <buttons>
+		<button id="add">
+          <text v="$AddToolbar" e="$AddToolbar"></text>
+        </button>
+		<button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+      </buttons>
+		  <script>
+			<query>
+			  <text>
+				<![CDATA[
+	set nocount on
+	select @@fields into #t from dmdkm a
+	left join dmkm b on a.ma_km = b.ma_km
+	where a.ma_km = @ma_km order by a.datetime0 desc
+	select * from #t
+	drop table #t
+			 ]]>
+			  </text>
+			</query>
+		  </script>
+		</grid>
+		<grid id="dmkmvt" table="dmkmvt" fieldKey="ma_km, ma_vt" order="line" allowFilter="true" readOnly="false" allowOrder="true">
+		  <fields>
+			<!-- <field name="ma_km" fieldType="PK" foreignField="ma_km" copy="false" hidden="true"> -->
+			  <!-- <text v="Mã khuyến mãi" e="Promotion Code"></text> -->
+			<!-- </field>	 -->
+			<field name="ma_vt" allowBlank="true" viewType="Lookup" width="150" readOnly="false">
+				<text v="Mã vật tư" e="Product Code"></text>
+				<viewInfo lookupType="One" lookupId="dmvt" lookupKey="status = 1 and ma_vt not in (select ma_vt from dmkmvt)" lookupCheck="1=1" aliasName="b" join="" />
+			</field>			
+			<field name="thu_tu" width="100" dataType="N" inactivate="true" readOnly="false">
+			  <text v="Thứ tự" e="Order"></text>
+			</field>		
+		  </fields>
+      <buttons>
+		<button id="add">
+          <text v="$AddToolbar" e="$AddToolbar"></text>
+        </button>
+		<button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+      </buttons>
+		  <script>
+			<query>
+			  <text>
+				<![CDATA[
+	set nocount on
+	select @@fields into #t from dmkmvt a
+	left join dmkm b on a.ma_km = b.ma_km
+	where a.ma_km = @ma_km order by a.datetime0 desc
+	select * from #t
+	drop table #t
+			 ]]>
+			  </text>
+			</query>
+		  </script>
+		</grid>
+	</grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmkm(p){
+    this.constructor(p);
+	document._dir = p;
+}
+dir$dmkm.prototype = new DirEvent();
+dir$dmkm.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  
+  <script>
+	<beforesave>
+      <text>
+        <![CDATA[
+if exists(select 1 from @dmkmvt group by ma_vt having count(1) > 1) begin
+  select '$DuplicateInv' as message
+  return
+end
+
+if exists(select 1 from @dmdkm group by option_km having count(1) > 1) begin
+  select '$DuplicateInv' as message
+  return
+end
+        ]]>
+      </text>
+    </beforesave>
+	<aftersave>
+      <text>
+        <![CDATA[
+--if @action = 'NEW' set @dOldVoucherDate = @ngay_ct
+update @dmkmvt set status = @status, ma_km = @ma_km
+delete dmkmvt where status = @status and ma_km = @ma_km
+insert into dmkmvt select * from @dmkmvt
+
+update @dmdkm set status = @status, ma_km = @ma_km
+delete dmdkm where status = @status and ma_km = @ma_km
+insert into dmdkm select * from @dmdkm
+
+UPDATE dmvt SET ma_km = @ma_km FROM dmvt a INNER JOIN @dmkmvt b ON a.ma_vt = b.ma_vt
+]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã dịch vụ đã có hoặc lồng nhau trong danh mục dịch vụ." e="The Service is invalid or already exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã dịch vụ đã có hoặc lồng nhau trong danh mục dịch vụ." e="The Service is invalid or already exists."/>
+    </message>
+	<message val="DuplicateInv">
+      <text v="Mã vật tư không được trùng" e="Duplicate Invoice Number"/>
+    </message>
+  </messages>
+
+</dir>

@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridFinding.xml">
+]>
+
+<dir id="dmnv" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục nhân viên" e="List of employee"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="dmnv" fieldKey="ma_nv" order="xstatus" allowFilter="true" allowOrder="true" >
+      <fields >
+		<field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+		<field name="ma_dv" width="120" hidden="true">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="ten_dv" width="120" fieldType="EX" align="Center" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+		<field name="ma_pb" width="120" hidden="true">
+          <text v="phòng ban" e="Position"></text>
+        </field>
+		<field name="ten_pb" width="120" fieldType="EX" align="left">
+          <text v="Phòng ban" e="Department name"></text>
+        </field>  
+		<field name="ma_bp" width="80" hidden="true" align="Center">
+          <text v="Nhóm" e="Team"></text>
+        </field>
+		<field name="ten_bp" width="80" fieldType="EX" align="center" >
+          <text v="Bộ phận" e="Department"></text>
+        </field>  
+        <field name="ma_nv" fieldType="PK" width="100" hidden="false">
+          <text v="Mã nhân viên" e="Employee code"></text>
+        </field>
+		<field name="xstatus" viewType="Combobox" inactivate="true" width="100">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="5">
+                <text v="Đang làm việc" e="Working"></text>
+              </option>
+              <option val="9">
+                <text v="Nghỉ việc" e="Quitting your job"></text>
+              </option>
+			  <option val="7">
+                <text v="Nghỉ chế độ" e="Vacation mode"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="ten_nv" width="200">
+          <text v="Tên nhân viên" e="Employee name"></text>
+        </field>
+		<field name="ngay_sinh" width="120" dataType="D" align="Center">
+          <text v="Ngày sinh" e="Brithday"></text>
+        </field>
+		<field name="ngay_bd_lv" width="120" dataType="D" align="Center">
+          <text v="Ngày vào cty" e="Date joining company"></text>
+        </field>
+		<field name="cmnd_so" width="100" align="right">
+          <text v="CMND/CCCD" e="Date joining company"></text>
+        </field>
+		<field name="ma_cv" width="120" hidden="true">
+          <text v="Chức vụ" e="Position"></text>
+        </field>
+		<field name="ten_cv" width="150" fieldType="EX" >
+          <text v="Chức vụ" e="Position name"></text>
+        </field>  
+		<field name="ma_vtcv" width="120" hidden="true">
+          <text v="Vị trí công việc" e="Job position"></text>
+        </field>
+		<field name="ten_vtcv" width="150" fieldType="EX" >
+          <text v="Vị trí công việc" e="Job position"></text>
+        </field> 
+		<field name="parent_nv" width="120">
+          <text v="NV quản lý" e="Managerial staff"></text>
+        </field>
+		<field name="parent_ten_nv" fieldType="EX" width="180">
+          <text v="NV quản lý" e="Managerial staff"></text>
+        </field>
+		<field name="dien_thoai" width="120">
+          <text v="Điện thoại" e="Phone"></text>
+        </field>
+		<field name="email" width="120">
+          <text v="Email" e="Email"></text>
+        </field>
+		<field name="dia_chi" width="200">
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+	  </fields>
+    <buttons>
+	   <button id="add">
+		 <text v="$AddToolbar" e="$AddToobar"></text>
+	   </button>
+	   <button id="edit">
+		<text v="$EditToolbar" e="$EditToolbar"></text>
+	  </button>
+	  <button id="delete">
+		<text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+	  </button>
+	  <button id="copy">
+		<text v="$CopyToolbar" e="$CopyToolbar"></text>
+	  </button>
+	  <button id="view">
+		<text v="$ViewToolbar" e="$ViewToolbar"></text>
+	  </button>
+	  <button id="split">
+		<text v="-" e="-"></text>
+	  </button>
+	   <button id="find">
+			<text v="$FindToolbar" e="$FindToolbar"></text>
+	   </button>
+	  <button id="refresh">
+		<text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+	  </button>
+	  <button id="freeze">
+		<text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+	  </button>
+	  <button id="split">
+		<text v="-" e="-"></text>
+	  </button>
+	   <button id="print">
+		<text v="$PrintToolbar" e="$PrintToolbar"></text>
+	  </button>
+	  <button id="export">
+		<text v="$ExportToolbar" e="$ExportToolbar"></text>
+	  </button>
+	   <button id="downtemplate">
+			<text v="Tải mẫu Excel" e="Down import template"></text>
+		</button>
+		<button id="import">
+			<text v="Lấy dữ liệu từ tập tin" e="Import data"></text>
+		</button>
+	</buttons>
+   <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @ma varchar(32)
+select @ma = SUBSTRING(username, 1, 2) from vdmnv where user_id_0 = @@userId
+
+set @strKey= ' a.xstatus not in (0) '
+
+if @ma = 'BD'
+begin
+	set @strKey = @strKey + ' and a.ma_nv like N''' + @ma + '%'' '
+	exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmdonvi b on a.ma_dv = b.ma_dv left join dmpb c on a.ma_pb = c.ma_pb left join dmbp r on a.ma_bp = r.ma_bp and a.ma_pb = r.ma_pb left join dmchucvu d on a.ma_cv = d.ma_cv left join dmvtcv e on a.ma_vtcv = e.ma_vtcv left join dmnv f on a.parent_nv = f.ma_nv', 'b.ten_dv, c.ten_pb, r.ten_bp, d.ten_cv, e.ten_vtcv, f.ten_nv parent_ten_nv', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+end
+else if @ma = 'TD'
+begin
+	set @strKey = @strKey + ' and a.ma_nv like N''' + @ma + '%'' '
+	exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmdonvi b on a.ma_dv = b.ma_dv left join dmpb c on a.ma_pb = c.ma_pb left join dmbp r on a.ma_bp = r.ma_bp and a.ma_pb = r.ma_pb left join dmchucvu d on a.ma_cv = d.ma_cv left join dmvtcv e on a.ma_vtcv = e.ma_vtcv left join dmnv f on a.parent_nv = f.ma_nv', 'b.ten_dv, c.ten_pb, r.ten_bp, d.ten_cv, e.ten_vtcv, f.ten_nv parent_ten_nv', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+end
+else if @ma = 'GL'
+begin
+	set @strKey = @strKey + ' and a.ma_nv like N''' + @ma + '%'' '
+	exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmdonvi b on a.ma_dv = b.ma_dv left join dmpb c on a.ma_pb = c.ma_pb left join dmbp r on a.ma_bp = r.ma_bp and a.ma_pb = r.ma_pb left join dmchucvu d on a.ma_cv = d.ma_cv left join dmvtcv e on a.ma_vtcv = e.ma_vtcv left join dmnv f on a.parent_nv = f.ma_nv', 'b.ten_dv, c.ten_pb, r.ten_bp, d.ten_cv, e.ten_vtcv, f.ten_nv parent_ten_nv', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+end
+else if @ma = 'DN'
+begin
+	set @strKey = @strKey + ' and a.ma_nv like N''' + @ma + '%'' '
+	exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmdonvi b on a.ma_dv = b.ma_dv left join dmpb c on a.ma_pb = c.ma_pb left join dmbp r on a.ma_bp = r.ma_bp and a.ma_pb = r.ma_pb left join dmchucvu d on a.ma_cv = d.ma_cv left join dmvtcv e on a.ma_vtcv = e.ma_vtcv left join dmnv f on a.parent_nv = f.ma_nv', 'b.ten_dv, c.ten_pb, r.ten_bp, d.ten_cv, e.ten_vtcv, f.ten_nv parent_ten_nv', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+end
+else if @ma = 'PT'
+begin
+	set @strKey = @strKey + ' and a.ma_nv like N''' + @ma + '%'' '
+	exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmdonvi b on a.ma_dv = b.ma_dv left join dmpb c on a.ma_pb = c.ma_pb left join dmbp r on a.ma_bp = r.ma_bp and a.ma_pb = r.ma_pb left join dmchucvu d on a.ma_cv = d.ma_cv left join dmvtcv e on a.ma_vtcv = e.ma_vtcv left join dmnv f on a.parent_nv = f.ma_nv', 'b.ten_dv, c.ten_pb, r.ten_bp, d.ten_cv, e.ten_vtcv, f.ten_nv parent_ten_nv', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+end
+else
+
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmdonvi b on a.ma_dv = b.ma_dv left join dmpb c on a.ma_pb = c.ma_pb left join dmbp r on a.ma_bp = r.ma_bp and a.ma_pb = r.ma_pb left join dmchucvu d on a.ma_cv = d.ma_cv left join dmvtcv e on a.ma_vtcv = e.ma_vtcv left join dmnv f on a.parent_nv = f.ma_nv', 'b.ten_dv, c.ten_pb, r.ten_bp, d.ten_cv, e.ten_vtcv, f.ten_nv parent_ten_nv', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = '' + @strFinding
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmdonvi b on a.ma_dv = b.ma_dv left join dmpb c on a.ma_pb = c.ma_pb left join dmbp r on a.ma_bp = r.ma_bp and a.ma_pb = r.ma_pb left join dmchucvu d on a.ma_cv = d.ma_cv left join dmvtcv e on a.ma_vtcv = e.ma_vtcv left join dmnv f on a.parent_nv = f.ma_nv', 'b.ten_dv, c.ten_pb, r.ten_bp, d.ten_cv, e.ten_vtcv, f.ten_nv parent_ten_nv', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+ 
+         ]]>
+          </text>
+        </finding>
+      </script>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmnv(f){
+  this.constructor(f);
+}
+grid$dmnv.prototype = new DirEvent();
+grid$dmnv.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+   <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

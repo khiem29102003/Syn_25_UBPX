@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="q64" dirViewType="Grid" dirObjectType="Voucher" voucherCode="TQ1" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Trả quỹ theo nhân viên ứng" e="Credit Note"></title>
+  <subtitle v="Thêm, sửa, xóa..." e="New, Edit, Delete..."></subtitle>
+
+  <grids>
+    <grid table="q64" fieldKey="id" order="id desc" allowFilter="true" allowOrder="true" key = " ma_ngv =2">
+      <fields>
+		<field name="ma_ct" width="80">
+          <text v="Mã c/từ" e="Voucher Code"></text>
+        </field>
+        <field name="so_ct" width="80" link="V" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+        <field name="ma_ngv" viewType="Combobox" valueDefault="" width="140" >
+          <text v="Loại phiếu chi" e="Voucher Type"></text>
+          <viewInfo>
+            <options query="select ma_ngv, ten_ngv%l from dmngv where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="ma_nt" width="100" >
+          <text v="Mã ngoại tệ" e="Currency Code"></text>
+        </field>
+        <field name="dien_giai" width="250">
+          <text v="Diễn giải" e="Pay for"></text>
+        </field>
+        <field name="t_tien_nt" dataType="N" format="FCAmount" width="100">
+          <text v="Tổng tiền" e="Total Amount"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="unit_id" hidden="true" dataType="I" width="80" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="80" fieldType="EX" >
+          <text v="Đơn vị" e="Customer Name"></text>
+        </field>
+        <field name="id" dataType="N" fieldType="PK" format="0" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id', 'b.ma_unit', '@@key', '', @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @strDetailKey nvarchar(3000); set @strDetailKey = ''
+if @ma_kh <> '' set @strDetailKey = @strDetailKey + ' and x.ma_kh like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@ma_kh) + '%'''
+if @strDetailKey <> '' set @strDetailKey = ' and exists(select 1 from l64 x where a.id = x.id ' + @strDetailKey + ')'
+
+set @strKey = 'ngay_ct between ''' + convert(char(8), @ngay_ct1, 112) + ''' and ''' + convert(char(8), @ngay_ct2, 112) + ''' and ' + @strFinding + ' and ' + dbo.ISWIFTFunctionGetUnitIDRightKeys(@@admin, @@userId, @ma_unit, 'a.unit_id') + @strDetailKey
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id', 'b.ma_unit', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </finding>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$q64(f){
+  this.constructor(f);
+}
+grid$q64.prototype = new DirEvent();
+grid$q64.prototype.afterInit = function(renderType){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+
+  <messages>
+    <message val="DaPhanBo">
+      <text v="Đã phân bổ phiếu chi này, không được sửa/xóa" e=""/>
+    </message>
+  </messages>
+</dir>

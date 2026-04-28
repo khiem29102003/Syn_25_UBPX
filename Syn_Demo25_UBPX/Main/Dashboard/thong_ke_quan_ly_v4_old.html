@@ -1,0 +1,1742 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thống kê Quản lý — IT NQK (v5.1)</title>
+
+	<!-- Tailwind v3 JIT -->
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script>
+		tailwind.config = {
+			theme: { extend: { fontFamily: { sans: ["Inter","system-ui","-apple-system","Segoe UI","Roboto","Arial","sans-serif"] } } }
+		}
+	</script>
+	<!-- Font -->
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+	<!-- jQuery + Chart.js -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+	
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+	<script>
+		// Bảng màu mặc định cho bar chart
+		window.CHART_PALETTE = [
+		  "#60a5fa","#34d399","#f472b6","#f59e0b",
+		  "#22d3ee","#a78bfa","#fb7185","#4ade80"
+		];
+
+		// Lấy đủ N màu (nếu thiếu thì tự tạo màu HSL)
+		function getPalette(n){
+		  const base = window.CHART_PALETTE || [];
+		  if (base.length >= n) return base.slice(0, n);
+		  const out = base.slice();
+		  for (let i = out.length; i < n; i++){
+			const hue = Math.round((i * 360) / Math.max(n, 8));
+			out.push(`hsl(${hue} 70% 60%)`);
+		  }
+		  return out;
+		}
+	
+		const DPR = Math.min(2, window.devicePixelRatio || 1);
+		Chart.defaults.devicePixelRatio = DPR;
+		Chart.defaults.responsive = true;
+		Chart.defaults.maintainAspectRatio = false;
+		Chart.defaults.elements.bar.borderRadius = 8;
+		Chart.defaults.font.family = "'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif";
+
+		/* Plugin vẽ text giữa donut */
+		const CenterTextPlugin = {
+		  id:'centerText',
+		  afterDraw(chart, args, opts){
+			if (chart.config.type !== 'doughnut') return;
+			const ds = chart.data.datasets?.[0]?.data || [];
+			const total = ds.reduce((s,n)=>s + (Number(n)||0), 0);
+			const label = opts?.label || '';
+			const ctx = chart.ctx;
+			const {width, height} = chart.chartArea;
+
+			ctx.save();
+			ctx.textAlign = 'center';
+			ctx.fillStyle = '#0f172a';
+			ctx.font = '700 20px Inter, system-ui, sans-serif';
+			ctx.fillText(total.toLocaleString('vi-VN'), width/2, (height/2) + chart.chartArea.top - 6);
+			if (label) {
+			  ctx.font = '500 11px Inter, system-ui, sans-serif';
+			  ctx.fillStyle = '#64748b';
+			  ctx.fillText(label, width/2, (height/2) + chart.chartArea.top + 14);
+			}
+			ctx.restore();
+		  }
+		};
+		Chart.register(CenterTextPlugin);
+
+		/* đợi font sẵn sàng rồi mới vẽ để không bị blur */
+		async function waitFonts(){ if (document.fonts?.ready) await document.fonts.ready; }
+	</script>
+
+  <style>
+    :root { --ring: rgba(59,130,246,0.25); }
+    body { 
+		font-family: "Segoe UI", "Helvetica Neue", "Lucida Grande", "Roboto", "Ebrima", "Nirmala UI", "Gadugi", "Segoe Xbox Symbol", "Segoe UI Symbol", "Meiryo UI", "Khmer UI", "Tunga", "Lao UI", "Raavi", "Iskoola Pota", "Latha", "Leelawadee", "Microsoft YaHei UI", "Microsoft JhengHei UI", "Malgun Gothic", "Estrangelo Edessa", "Microsoft Himalaya", "Microsoft New Tai Lue", "Microsoft PhagsPa", "Microsoft Tai Le", "Microsoft Yi Baiti", "Mongolian Baiti", "MV Boli", "Myanmar Text", "Cambria Math";
+		color: #000;
+		background-color: #fff;
+		font-size: 12px;
+		margin: 0;
+		padding: 0;
+		font-weight: 400;
+	}
+
+	#SYS_Calendar { display:none; }
+
+    /* Container */
+    .wrap { max-width: 1500px; margin-left:auto; margin-right:auto; }
+
+    /* Section / Card */
+    .section { border-radius:18px; background:#fff; border:1px solid #e5e7eb; box-shadow:0 10px 28px rgba(16,24,40,.06); }
+    .section-header { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid #eef2f7; }
+    .section-title { display:flex; align-items:center; gap:10px; font-weight:700; }
+    .section-title .dot { width:10px; height:10px; border-radius:9999px; }
+
+    .btn { border-radius:12px; padding:10px 14px; background:#2563eb; color:#fff; font-weight:700; }
+    .btn:hover { background:#1d4ed8; }
+    .toolbar input, .toolbar select { border:1px solid #e5e7eb; padding:8px 10px; border-radius:12px; background:#fff; min-width:140px; }
+
+    /* Quick strip */
+    .quick-strip { display:grid; gap:12px; grid-template-columns: repeat(2, minmax(0,1fr)); }
+    @media (min-width: 768px) { .quick-strip { grid-template-columns: repeat(4, minmax(0,1fr)); } }
+    .quick-tile { background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:14px 16px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 8px 24px rgba(16,24,40,.06); min-height:86px; }
+    .quick-tile h4 { font-size:12px; color:#64748b; font-weight:600; }
+    .quick-tile .val { font-weight:800; font-size:22px; color:#0f172a; }
+
+    /* KPI cards */
+    .kpi-grid { padding:16px; }
+    .kpi-card { border-radius:10px; padding:7px; transition:all .25s ease; color:#fff; position:relative; overflow:hidden; min-height:67px; }
+    .kpi-card:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(0,0,0,0.15); }
+    .kpi-label { font-size:12px; opacity:.9; }
+    .kpi-value { font-size:24px; font-weight:800; line-height:1.1; }
+    .kpi-icon { position:absolute; top:24px; right:3px; opacity:.18; font-size:36px; }
+    .bg-grad-1{background:linear-gradient(135deg,#4f46e5,#3b82f6)}
+    .bg-grad-2{background:linear-gradient(135deg,#059669,#10b981)}
+    .bg-grad-3{background:linear-gradient(135deg,#db2777,#f472b6)}
+    .bg-grad-4{background:linear-gradient(135deg,#b45309,#f59e0b)}
+    .bg-grad-5{background:linear-gradient(135deg,#0d9488,#14b8a6)}
+    .bg-grad-6{background:linear-gradient(135deg,#7e22ce,#a855f7)}
+    .bg-grad-7{background:linear-gradient(135deg,#be123c,#ef4444)}
+    .bg-grad-8{background:linear-gradient(135deg,#1e3a8a,#3b82f6)}
+    .bg-grad-9{background:linear-gradient(135deg,#14532d,#22c55e)}
+
+    /* Charts */
+    .chart-box { position:relative; height:280px; }
+    .chart-box canvas { width:100% !important; height:100% !important; }
+    /* .section-inner { background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:12px; } */
+
+    /* Skeleton */
+    .skeleton { position:relative; overflow:hidden; background:#f3f4f6; border-radius:12px; }
+    .skeleton::after { content:""; position:absolute; inset:0; transform: translateX(-100%);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
+      animation: shimmer 1.2s infinite; }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    /* HCC breakdown */
+    .card { min-height:320px; display:flex; flex-direction:column; justify-content:space-between; border-radius:14px; }
+    .card-title { font-size:13px; font-weight:700; line-height:1.3; overflow-wrap:anywhere; }
+    .legend-box { display:flex; flex-wrap:wrap; gap:8px 16px; font-size:13px; justify-content:space-between; }
+    .legend-box .dot { display:inline-block; width:10px; height:10px; border-radius:9999px; margin-right:4px; }
+    .legend-box .red { background-color:#ef4444; }
+    .legend-box .green { background-color:#22c55e; }
+    .legend-box .orange { background-color:#f97316; }
+    .legend-box .blue { background-color:#3b82f6; }
+
+    .hcc-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:5px; padding:5px; }
+
+    /* Header sticky */
+    .header-sticky { position:sticky; top:0; z-index:30; background:linear-gradient(to right,#eef2ff,#eff6ff); border-bottom:1px solid #e5e7eb; }
+	
+	/* ===== GOV card v2 ===== */
+	.gov-card{
+	  position:relative; overflow:hidden; border-radius:14px; background:var(--gov-bg,#fff);
+	  box-shadow: 0 8px 18px rgba(2,6,23,.06);
+	}
+	.gov-card::before{
+	  content:""; position:absolute; inset:0; pointer-events:none;
+	  /* Hoa văn trống đồng nâng cấp */
+	  background-image:
+		radial-gradient(circle at 50% 42%,
+		  transparent 0 70px, rgba(0,0,0,.03) 70px 72px, transparent 72px 100px,
+		  rgba(0,0,0,.03) 100px 102px, transparent 102px 128px,
+		  rgba(0,0,0,.03) 128px 130px, transparent 130px),
+		repeating-conic-gradient(from -90deg at 50% 42%, rgba(0,0,0,.025) 0 6deg, transparent 6deg 18deg),
+		radial-gradient(ellipse at center, transparent 0 58%, rgba(0,0,0,.03) 60%, transparent 65%);
+	  background-repeat:no-repeat;
+	  background-position:center 44px, center 44px, center 44px;
+	  background-size: 520px 520px, 520px 520px, 520px 520px;
+	  opacity:.95; mix-blend-mode:multiply;
+	}
+	/* viền gradient siêu mảnh */
+	.gov-card::after{
+	  content:""; position:absolute; inset:0; border-radius:14px; pointer-events:none;
+	  background:linear-gradient(135deg,rgba(99,102,241,.25),rgba(59,130,246,.25),rgba(34,197,94,.25));
+	  -webkit-mask:
+		linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+	  -webkit-mask-composite: xor; mask-composite: exclude;
+	  padding:1px; /* độ dày viền */
+	  opacity:.65;
+	}
+
+	/* nền theo thẻ (mỗi chart khác nhau) */
+	.gov-bg-1{ --gov-bg:#eff6ff; }  /* dương nhạt   */
+	.gov-bg-2{ --gov-bg:#ecfdf5; }  /* lục mint     */
+	.gov-bg-3{ --gov-bg:#fdf2f8; }  /* hồng phấn    */
+	.gov-bg-4{ --gov-bg:#fff7ed; }  /* cam nhạt     */
+	.gov-bg-5{ --gov-bg:#f0fdfa; }  /* teal nhạt    */
+	.gov-bg-6{ --gov-bg:#f5f3ff; }  /* tím nhạt     */
+
+	/* hover nâng khối + sáng nhẹ donut */
+	.gov-card:hover{ transform:translateY(-2px); transition:transform .18s ease; }
+	.gov-card .chart-wrap{ transition: transform .18s ease, filter .18s ease; }
+	.gov-card:hover .chart-wrap{ transform:scale(1.02); filter:saturate(1.05); }
+
+	/* legend dạng pill */
+	.legend-list{
+	  display:grid;
+	  grid-template-columns: repeat(2, minmax(0, 1fr));
+	  gap: 3px;
+	}
+
+	.legend-pill{ display: flex; align-items: center; gap: 3px; border-radius: 9999px; font-size: 10px; } 
+	.legend-pill .dot{ width:8px; height:8px; border-radius:9999px; }
+	.dot-black{ background:#000000; } 	
+	.dot-white{ background:#fff; } 	
+	.dot-red{ background:#ef4444; } 
+	.dot-green{ background:#22c55e; } 
+	.dot-orange{ background:#f59e0b; } 
+	.dot-blue{ background:#3b82f6; }
+	
+	/* Divider mảnh giữa ảnh và iframe */
+	.sep-soft {
+	  height: 1px;
+	  background: linear-gradient(90deg, transparent, rgba(15,23,42,.14), transparent);
+	  border-radius: 9999px;
+	}
+
+	/* Card cho iframe: border + shadow để có cảm giác tách rời */
+	.iframe-card {
+	  border: 1px solid #e5e7eb;
+	  border-radius: 14px;
+	  background: #fff;
+	  box-shadow: 0 12px 24px rgba(2,6,23,.06);
+	  overflow: hidden;
+	  position: relative;
+	}
+
+	/* Bóng “hắt” nhỏ phía trên card tạo khoảng cách với ảnh */
+	.iframe-card::before {
+	  content:"";
+	  position:absolute; left:18px; right:18px; top:-12px; height:22px;
+	  background: radial-gradient(ellipse at center, rgba(2,6,23,.12), transparent 70%);
+	  filter: blur(6px); opacity:.22; pointer-events:none;
+	}
+	
+	/* Map sizing */
+
+	.map-item{ padding:8px 6px; cursor:pointer; }
+	.map-item:hover{ background:#f9fafb; }
+	.map-item.active{ background:#eff6ff; outline:1px solid rgba(59,130,246,.25); }
+	.map-dot{ width:8px; height:8px; border-radius:9999px; display:inline-block; }
+	
+	/* Map sizing – full height trong section */
+	#mapSection { min-height: 320px; }
+	#mapBody{ min-height:260px; } /* để JS đặt height chính xác sau */
+	#leafletMap { height: 100% !important; min-height: 0; }
+	.leaflet-popup-content { margin: 8px 10px; font-size: 13px; }
+	.leaflet-popup-content b { font-weight: 700; }
+  </style>
+</head>
+<body>
+  <!-- Header + Filters -->
+	<div class="wrap px-1 pt-5">
+		<div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-2">
+			<div>
+				<h1 class="mt-1 text-xl font-bold tracking-tight">Bảng điều khiển thống kê</h1>
+			</div>
+			<div class="toolbar flex flex-wrap items-center gap-3">
+				<select id="unitId" title="unit_id">
+					<option value="">Tất cả đơn vị</option>
+				</select>
+				<input id="fromDate" type="date" />
+				<input id="toDate" type="date" />
+				<button id="btnRefresh" class="btn">Làm mới</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Quick totals -->
+	<!--
+	<section class="wrap px-1 md:px-2 pt-6">
+		<div class="quick-strip">
+			<div class="quick-tile"><h4>Quản lý công</h4><div class="val" data-kpi="totalPublic">—</div></div>
+			<div class="quick-tile"><h4>Hành chính công</h4><div class="val" data-kpi="totalHCC">—</div></div>
+			<div class="quick-tile"><h4>Quản lý cuộc họp</h4><div class="val" data-kpi="totalMeet">—</div></div>
+			<div class="quick-tile"><h4>Quản lý cư dân</h4><div class="val" data-kpi="totalCitizen">—</div></div>
+		</div>
+	</section>
+	-->
+
+	<!-- Main -->
+	<main class="wrap px-1 md:px-2 py-1 md:py-2">
+	<!-- Row 3: HCC breakdown + Map -->
+    	<div class="grid grid-cols-1 md:grid-cols-2 gap-2 items-start">
+			<!-- LEFT -->
+			<section class="section" id="hccSection">
+				<div class="section-header">
+					<div class="section-title">
+						<span class="dot" style="background:#0ea5e9"></span><span>HCC theo từng thủ tục</span>
+					</div>
+					<div class="text-sm text-gray-500">Phân rã theo trạng thái</div>
+				</div>
+				<div id="hccGroupContainer" class="hcc-grid"></div>
+			</section>
+
+			<!-- RIGHT -->
+			<section id="mapSection" class="section flex flex-col self-start min-h-0">
+				<div class="section-header">
+					<div class="section-title">
+					  <span class="dot" style="background:#10b981"></span><span>Bản đồ địa điểm</span>
+					</div>
+					<div class="text-sm text-gray-500 flex items-center gap-2">
+					  <select id="mapTypeFilter" class="border rounded-md px-2 py-1 text-sm">
+						<option value="">Tất cả loại</option>
+					  </select>
+					  <button id="btnMapRefresh" class="px-2 py-1 rounded-md border text-sm hover:bg-gray-50">Làm mới</button>
+					</div>
+				  </div>
+				<div id="mapBody" class="p-2 h-full min-h-0 overflow-hidden">
+				  <div class="grid grid-cols-1 md:grid-cols-3 gap-2 h-full min-h-0">
+					<!-- Trái: map + ảnh -->
+					<div class="md:col-span-2 h-full min-h-0 flex flex-col gap-3">
+					  <div class="flex-1 min-h-0">
+						<div id="leafletMap" class="w-full h-full rounded-xl border"></div>
+					  </div>
+					  <!-- Ảnh nhỏ: 20% + trần 240px -->
+					  <div class="flex-[0.8] min-h-0 max-h-[200px]">
+						<img id="mapExtraImg"
+							 src="z6899032708885_1e2d81208efbdeb7ff4d1b60153df609.jpg"
+							 class="w-full h-full rounded-xl border object-cover bg-white"
+							 alt="Minh họa bản đồ">
+					  </div>
+					</div>
+
+					<!-- Phải: list tràn dọc, scroll trong ô -->
+					<aside class="md:col-span-1 h-full min-h-0 flex">
+					  <div class="section-inner h-full min-h-0 w-full flex flex-col overflow-hidden">
+						<div class="flex-none flex items-center gap-2 mb-2">
+						  <input id="mapSearch" type="text" placeholder="Tìm địa điểm..."
+								 class="w-full border rounded-md px-2 py-1 text-sm">
+						  <button id="mapClear" class="px-2 py-1 rounded-md border text-sm hover:bg-gray-50">X</button>
+						</div>
+						<!-- Quan trọng: min-h-0 + flex-1 + overflow-auto -->
+						<ul id="mapList" class="flex-1 min-h-0 overflow-auto divide-y"></ul>
+					  </div>
+					</aside>
+				  </div>
+				</div>
+			</section>
+		</div>
+  
+    <!-- Row 1: Public + Meetings -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-4">
+		 <!-- Meetings -->
+		<section class="section">
+		  <div class="section-header">
+			<div class="section-title"><span class="dot" style="background:#22c55e"></span><span>Quản lý cuộc họp</span></div>
+			<div class="text-sm text-gray-500">Tổng cuộc họp: <span class="font-bold" data-kpi="totalMeet">—</span></div>
+		  </div>
+
+		  <!-- 3 KPI giữ nguyên -->
+		  <div class="kpi-grid grid grid-cols-1 sm:grid-cols-6 gap-3">
+			<div class="kpi-card bg-grad-2"><div class="kpi-label">Số loại cuộc họp</div><div id="dmlcuochop_total" class="kpi-value skeleton">&nbsp;</div>
+			  <div class="kpi-icon opacity-30"><img src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/book-open.svg" class="w-11 h-11" alt=""></div>
+			</div>
+			<div class="kpi-card bg-grad-1"><div class="kpi-label">Tổng cuộc họp</div><div id="qlcuochop_total" class="kpi-value skeleton">&nbsp;</div>
+			  <div class="kpi-icon opacity-30"><img src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/calendar-days.svg" class="w-11 h-11" alt=""></div>
+			</div>
+			<div class="kpi-card bg-grad-3"><div class="kpi-label">Trong khoảng lọc</div><div id="qlcuochop_range" class="kpi-value skeleton">&nbsp;</div>
+			  <div class="kpi-icon opacity-30"><img src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/clock.svg" class="w-11 h-11" alt=""></div>
+			</div>
+		  </div>
+
+		  <!-- Lịch thay cho 2 biểu đồ -->
+		  <div class="px-4 pb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+			<div class="section-inner md:col-span-2">
+			  <div class="flex items-center justify-between mb-3">
+				<div class="kpi-label">Lịch cuộc họp</div>
+				<div class="flex items-center gap-2">
+				  <button id="calPrev" class="px-2 py-1 rounded-md border text-sm hover:bg-gray-50">‹</button>
+				  <div id="calTitle" class="font-semibold"></div>
+				  <button id="calNext" class="px-2 py-1 rounded-md border text-sm hover:bg-gray-50">›</button>
+				</div>
+			  </div>
+
+			  <!-- Header thứ trong tuần -->
+			  <div class="grid grid-cols-7 text-center text-xs text-gray-500 mb-1 select-none">
+				<div>T2</div><div>T3</div><div>T4</div><div>T5</div><div>T6</div><div>T7</div><div>CN</div>
+			  </div>
+
+			  <div id="meetCalendar" class="grid grid-cols-7 gap-1 md:gap-2"></div>
+
+			  <!-- Agenda ngày -->
+			  <div id="meetAgenda" class="mt-3 hidden">
+				<div class="text-xs text-gray-500 mb-1">Sự kiện trong ngày</div>
+				<ul id="agendaList" class="text-sm space-y-1"></ul>
+			  </div>
+			</div>
+		  </div>
+		</section>
+		  
+		<!-- Public -->
+		<section class="section">
+			<div class="section-header">
+			  <div class="section-title"><span class="dot" style="background:#2563eb"></span><span>Quản lý công</span></div>
+			  <div class="text-sm text-gray-500">Tổng: <span class="font-bold" data-kpi="totalPublic">—</span></div>
+			</div>
+			<div class="kpi-grid grid grid-cols-1 sm:grid-cols-6 gap-3">
+			  <div class="kpi-card bg-grad-1"><div class="kpi-label">Cán bộ</div><div id="dmnv" class="kpi-value skeleton">&nbsp;</div>
+				<!-- Cán bộ -->
+				<div class="kpi-icon opacity-30">
+				  <img src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/user.svg" class="w-11 h-11" alt="">
+				</div>
+			  </div>
+			  <div class="kpi-card bg-grad-2"><div class="kpi-label">Hộ gia đình</div><div id="dmhogiadinh" class="kpi-value skeleton">&nbsp;</div>
+				<!-- Hộ gia đình -->
+				<div class="kpi-icon opacity-30">
+				  <img src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/home.svg" class="w-11 h-11" alt="">
+				</div>
+			  </div>
+			  <div class="kpi-card bg-grad-3"><div class="kpi-label">Dân cư (CCCD)</div><div id="qldctcccd" class="kpi-value skeleton">&nbsp;</div>
+				<!-- Dân cư (CCCD) -->
+				<div class="kpi-icon opacity-30">
+				  <img src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/identification.svg" class="w-11 h-11" alt="">
+				</div>
+			  </div>
+			</div>
+			<div class="px-4 pb-4">
+			  <div class="section-inner chart-box">
+				<div class="kpi-label mb-2">Xu hướng theo nhóm (Line)</div>
+				<canvas id="linePublic"></canvas>
+			  </div>
+			</div>
+		</section>
+	</div>
+
+    <!-- Row 2: HCC + Citizen -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-4">
+      <!-- HCC -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-title"><span class="dot" style="background:#f59e0b"></span><span>Hành chính công</span></div>
+          <div class="text-sm text-gray-500">Tổng: <span class="font-bold" data-kpi="totalHCC">—</span></div>
+        </div>
+        <div class="kpi-grid grid grid-cols-1 sm:grid-cols-6 gap-3">
+          <div class="kpi-card bg-grad-4"><div class="kpi-label">Chờ xử lý</div><div id="qlhccong_1" class="kpi-value skeleton">&nbsp;</div>
+			<!-- Chờ xử lý -->
+			<div class="kpi-icon opacity-30">
+			  <img src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/clock.svg" class="w-11 h-11" alt="">
+			</div>
+		  </div>
+          <div class="kpi-card bg-grad-5"><div class="kpi-label">Đã xử lý</div><div id="qlhccong_5" class="kpi-value skeleton">&nbsp;</div>
+			<!-- Đã xử lý -->
+			<div class="kpi-icon opacity-30">
+			  <img src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/check-circle.svg" class="w-11 h-11" alt="">
+			</div>
+		  </div>
+          <div class="kpi-card bg-grad-6"><div class="kpi-label">Chờ trả KQ</div><div id="qlhccong_6" class="kpi-value skeleton">&nbsp;</div>
+			<!-- Chờ trả KQ -->
+			<div class="kpi-icon opacity-30">
+			  <img src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/arrow-up-tray.svg" class="w-11 h-11" alt="">
+			</div>
+		  </div>
+          <div class="kpi-card bg-grad-7"><div class="kpi-label">Đã trả KQ</div><div id="qlhccong_7" class="kpi-value skeleton">&nbsp;</div>
+			<!-- Đã trả KQ -->
+			<div class="kpi-icon opacity-30">
+			  <img src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/sparkles.svg" class="w-11 h-11" alt="">
+			</div>
+		  </div>
+          <div class="kpi-card bg-grad-8"><div class="kpi-label">Số thủ tục</div><div id="dmhccong_total" class="kpi-value skeleton">&nbsp;</div></div>
+          <div class="kpi-card bg-grad-9"><div class="kpi-label">Tổng hồ sơ</div><div id="qlhccong_total" class="kpi-value skeleton">&nbsp;</div></div>
+        </div>
+        <div class="px-4 pb-4">
+		  <div class="section-inner chart-box">
+			<div class="kpi-label mb-2">Trạng thái hồ sơ (Số lượng & Tỷ trọng)</div>
+			<canvas id="dualHCC"></canvas>
+		  </div>
+		</div>
+      </section>
+
+      <!-- Citizen -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-title"><span class="dot" style="background:#10b981"></span><span>Quản lý cư dân</span></div>
+        <div class="text-sm text-gray-500">Tổng: <span class="font-bold" data-kpi="totalCitizen">—</span></div>
+        </div>
+        <div class="kpi-grid grid grid-cols-1 sm:grid-cols-6 gap-3">
+          <div class="kpi-card bg-grad-4"><div class="kpi-label">Hộ kinh doanh</div><div id="dmhokinhdoanh" class="kpi-value skeleton">&nbsp;</div>
+			<!-- Hộ kinh doanh -->
+			<div class="kpi-icon opacity-30">
+			  <img src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/document-text.svg" class="w-11 h-11" alt="">
+			</div>
+		  </div>
+          <div class="kpi-card bg-grad-5"><div class="kpi-label">Doanh nghiệp</div><div id="dmdoanhnghiep" class="kpi-value skeleton">&nbsp;</div>
+			<!-- Doanh nghiệp -->
+			<div class="kpi-icon opacity-30">
+			  <img src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/building-office.svg" class="w-11 h-11" alt="">
+			</div>
+		  </div>
+          <div class="kpi-card bg-grad-6"><div class="kpi-label">Nhà văn hóa phường</div><div id="dmnvhp" class="kpi-value skeleton">&nbsp;</div>
+			<!-- Nhà văn hóa phường -->
+			<div class="kpi-icon opacity-30">
+			  <img src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/building-library.svg" class="w-11 h-11" alt="">
+			</div>
+		  </div>
+          <div class="kpi-card bg-grad-7"><div class="kpi-label">Trạm y tế</div><div id="dmtramyte" class="kpi-value skeleton">&nbsp;</div>
+			<!-- Trạm y tế -->
+			<div class="kpi-icon opacity-30">
+			  <img src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/heart.svg" class="w-11 h-11" alt="">
+			</div>
+		  </div>
+          <div class="kpi-card bg-grad-8"><div class="kpi-label">Trường học</div><div id="dmtruonghoc" class="kpi-value skeleton">&nbsp;</div>
+			<!-- Trường học -->
+			<div class="kpi-icon opacity-30">
+			  <img src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/academic-cap.svg" class="w-11 h-11" alt="">
+			</div>
+		  </div>
+          <div class="kpi-card bg-grad-9"><div class="kpi-label">Địa điểm công cộng</div><div id="dmcongdong" class="kpi-value skeleton">&nbsp;</div>
+			<!-- Điểm công cộng -->
+			<div class="kpi-icon opacity-30">
+			  <img src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/building-storefront.svg" class="w-11 h-11" alt="">
+			</div>
+		  </div>
+        </div>
+        <div class="px-4 pb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="section-inner chart-box"><div class="kpi-label mb-2">Biểu đồ cột</div><canvas id="barChartCitizen"></canvas></div>
+          <div class="section-inner chart-box"><div class="kpi-label mb-2">Tỷ trọng</div><canvas id="pieChartCitizen"></canvas></div>
+        </div>
+      </section>
+    </div>
+  </main>
+  
+	<!-- đặt LÀ CON TRỰC TIẾP CỦA <body> -->
+	<div id="imgLightbox"
+		 class="fixed inset-0 hidden flex items-center justify-center bg-black/80 z-[2147483647] p-4">
+	  <!-- nút đóng -->
+	  <button id="imgLightboxClose"
+			  class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-black text-2xl leading-none grid place-items-center shadow">
+		×
+	  </button>
+
+	  <!-- khung ảnh -->
+	  <img id="imgLightboxImg"
+		   src=""
+		   alt=""
+		   class="max-w-[96vw] max-h-[92vh] rounded-xl shadow-2xl object-contain select-none" />
+
+	  <!-- nút tải -->
+	  <a id="imgLightboxDownload"
+		 href="#"
+		 download
+		 class="absolute bottom-4 right-4 px-3 py-1.5 rounded-md bg-white/90 hover:bg-white text-sm font-semibold shadow">
+		Tải ảnh
+	  </a>
+	</div>
+  
+	<script src="jquery-2.2.4.min.js"></script>
+	<script src="j0.js"></script>
+	<script src="j1.js"></script>
+	<script src="jAjax.js"></script>
+
+  <!-- =================== JS =================== -->
+  <script>
+    // ---- Chart defaults (đẹp & đồng bộ) ----
+    Chart.defaults.font.family = "'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
+    Chart.defaults.elements.bar.borderRadius = 8;
+    Chart.defaults.plugins.legend.labels.boxWidth = 14;
+    Chart.defaults.plugins.legend.labels.boxHeight = 14;
+
+    // ================= CONFIG =================
+    const CONFIG = {
+      DATE_EXPR: { qlhccong: "COALESCE(ngay_ct, datetime0)", qlcuochop: "ngay_hop" },
+      DATE_COLS: { dmnv: null, dmhogiadinh: null, qldctcccd: null, dmlocation: null }
+    };
+
+    // ================= requestDataSet =================
+    const requestDataSet = function(script) {
+      return new Promise((resolve, reject) => {
+        if (typeof Memvars !== "undefined") {
+          try {
+            var m = new Memvars();
+            var controller = "loaddulieutable";
+            var p = window.location.href.toString();
+            const idx = p.indexOf("Main/");
+            if (idx > 0) p = p.substring(0, idx) + 'AppService/EService.asmx/' + "GetData";
+            else p = 'AppService/EService.asmx/GetData';
+            m.val("query", 'C', script);
+            $.ajax({
+              type: "POST",
+              url: p,
+              header: '',
+              data: JSON.stringify({ controller, oMemvar: m.val() }),
+              contentType: "application/json; charset=utf-8",
+              dataType: "json",
+              timeout: 30000,
+              success: function(msg) { resolve(msg?.d?.length ? msg.d : []); },
+              error: function(e) { console.log(e); reject(e); }
+            });
+          } catch (err) { console.error(err); reject(err); }
+        } else {
+          // Demo fallback
+          console.warn("Memvars/GetData không khả dụng — dùng demo mode.");
+          if (/COUNT\(\*\)/i.test(script)) resolve([{cnt: Math.floor(Math.random()*30)+1}]);
+          else resolve([]);
+        }
+      });
+    };
+
+    // ================= Build SQL theo filter =================
+    function withDateFilter(table, baseWhere = "1=1", alias = null) {
+      const from = document.getElementById('fromDate').value;
+      const to   = document.getElementById('toDate').value;
+      const expr = (CONFIG.DATE_EXPR && CONFIG.DATE_EXPR[table]) ? CONFIG.DATE_EXPR[table] : null;
+      const colObj = (CONFIG.DATE_COLS && CONFIG.DATE_COLS[table]) ? CONFIG.DATE_COLS[table] : null;
+      const col = expr || colObj; if (!col || (!from && !to)) return baseWhere;
+
+      const target = expr
+        ? expr.replace(/(\b\w+\b)/g, (m) => (['COALESCE'].includes(m.toUpperCase()) || !alias ? m : `${alias}.${m}`))
+        : (alias ? `${alias}.${col}` : col);
+
+      let where = baseWhere;
+      if (from) where += ` AND ${target} >= '${from} 00:00:00'`;
+      if (to)   where += ` AND ${target} <  '${to} 23:59:59.997'`;
+      return where;
+    }
+    function whereUnit(baseWhere = "1=1", alias = null) {
+      const unit = document.getElementById('unitId').value.trim();
+      if (!unit) return baseWhere;
+      const col = alias ? `${alias}.unit_id` : `unit_id`;
+      return `${baseWhere} AND ${col} = ${unit}`;
+    }
+
+    function sqlCountDirect(table) { let where = whereUnit(); where = withDateFilter(table, where); return `SELECT COUNT(*) AS cnt FROM dbo.${table} WITH (NOLOCK) WHERE ${where}`; }
+    function sqlCountLocation(ma_lhhd) {
+      let where = whereUnit("1=1", "L"); where = withDateFilter('dmlocation', where, "L");
+      return `SELECT COUNT(*) AS cnt FROM dbo.dmlocation L WITH (NOLOCK) JOIN dbo.dmlhhd H WITH (NOLOCK) ON L.ma_lhhd = H.ma_lhhd WHERE ${where} AND H.ma_lhhd='${ma_lhhd}'`;
+    }
+
+    // HCC
+    function sqlCountQLHCCONGByStatus(stt){ let where = whereUnit("1=1"); where = withDateFilter('qlhccong', where); return `SELECT COUNT(*) AS cnt FROM dbo.qlhccong WITH (NOLOCK) WHERE ${where} AND status=${stt}`; }
+    function sqlCountQLHCCONGTotal(){ let where = whereUnit("1=1"); where = withDateFilter('qlhccong', where); return `SELECT COUNT(*) AS cnt FROM dbo.qlhccong WITH (NOLOCK) WHERE ${where}`; }
+    function sqlCountDMHCCONG(){ let where = whereUnit("1=1"); return `SELECT COUNT(*) AS cnt FROM dbo.dmhccong WITH (NOLOCK) WHERE ${where}`; }
+
+    // Meetings
+    function sqlCountDMLCUOCHOP(){ let where = whereUnit("1=1"); return `SELECT COUNT(*) AS cnt FROM dbo.dmlcuochop WITH (NOLOCK) WHERE ${where}`; }
+    function sqlCountQLCUOCHOPTotal(){ let where = whereUnit("1=1"); return `SELECT COUNT(*) AS cnt FROM dbo.qlcuochop WITH (NOLOCK) WHERE ${where}`; }
+    function sqlCountQLCUOCHOPInRange(){ let where = whereUnit("1=1"); where = withDateFilter('qlcuochop', where); return `SELECT COUNT(*) AS cnt FROM dbo.qlcuochop WITH (NOLOCK) WHERE ${where}`; }
+    function sqlMeetByType(){
+      let where = whereUnit("1=1","Q"); where = withDateFilter('qlcuochop', where,"Q");
+      return `SELECT C.ten_lcuochop AS name, COUNT(*) AS cnt
+              FROM dbo.qlcuochop Q WITH (NOLOCK)
+              JOIN dbo.dmlcuochop C WITH (NOLOCK) ON Q.ma_lcuochop=C.ma_lcuochop
+              WHERE ${where} GROUP BY C.ten_lcuochop ORDER BY C.ten_lcuochop`;
+    }
+	// Đếm theo ngày + loại để vẽ chấm màu trong từng ô
+	function sqlMeetTypesByDateMonth(y,m){
+	  const from = `${y}-${z2(m)}-01 00:00:00`;
+	  const to   = `${y}-${z2(m)}-${z2(lastDay(y,m))} 23:59:59.997`;
+	  let where = whereUnit("1=1","Q");
+	  where += ` AND Q.ngay_hop >= '${from}' AND Q.ngay_hop <= '${to}'`;
+	  return `
+		SELECT CONVERT(date,Q.ngay_hop) AS d, C.ten_lcuochop AS t, COUNT(*) AS cnt
+		FROM dbo.qlcuochop Q WITH (NOLOCK)
+		JOIN dbo.dmlcuochop C WITH (NOLOCK) ON Q.ma_lcuochop=C.ma_lcuochop
+		WHERE ${where}
+		GROUP BY CONVERT(date,Q.ngay_hop), C.ten_lcuochop
+		ORDER BY d, t`;
+	}
+
+    // HCC breakdown
+	// HCC breakdown (đã gộp theo status, lấy thêm bản ghi mới nhất để có ngay_ct, stt)
+	function sqlHCCByGroupStatus(){
+	  // filter theo unit + date giống logic cũ (áp vào bảng Q = qlhccong)
+	  let whereQ = whereUnit("1=1","Q");
+	  whereQ = withDateFilter('qlhccong', whereQ, "Q");
+
+	  return `
+		WITH ranked AS (
+		SELECT 
+			ql.ma_hccong,		
+			dm.ten_hccong,
+			ql.tg_dukienbd,
+			ql.tg_dukienkt,
+			ql.ngay_ct, 
+			ql.stt,
+			ROW_NUMBER() OVER (
+				PARTITION BY ql.ma_hccong 
+				ORDER BY ql.ngay_ct DESC, ql.stt DESC
+			) AS rn
+		FROM qlhccong ql join dmhccong dm on ql.ma_hccong = dm.ma_hccong
+		WHERE ql.ma_hccong IN (SELECT ma_hccong FROM dmhccong)
+	)
+	SELECT 
+		q.ma_hccong,
+		r.ten_hccong,
+		r.tg_dukienbd,
+		r.tg_dukienkt,
+		COUNT(*) AS t_sl,
+		SUM(CASE WHEN q.status = 1 THEN 1 ELSE 0 END) AS t_sl_cho_xu_ly,
+		SUM(CASE WHEN q.status = 5 THEN 1 ELSE 0 END) AS t_sl_da_xu_ly,
+		SUM(CASE WHEN q.status = 6 THEN 1 ELSE 0 END) AS t_sl_dang_cho_tra_kq,
+		SUM(CASE WHEN q.status = 7 THEN 1 ELSE 0 END) AS t_sl_da_tra_kq,
+		r.ngay_ct,
+		r.stt
+	FROM qlhccong q
+	LEFT JOIN ranked r 
+		ON q.ma_hccong = r.ma_hccong
+		AND r.rn = 1
+	WHERE q.ma_hccong IN (SELECT ma_hccong FROM dmhccong) 
+			GROUP BY q.ma_hccong, r.ngay_ct, r.stt, r.ten_hccong, r.tg_dukienbd, r.tg_dukienkt;`;
+	}
+
+    // KPI queries
+    const QUERIES = {
+      dmnv: () => sqlCountDirect('dmnv'),
+      dmhogiadinh: () => sqlCountDirect('dmhogiadinh'),
+      qldctcccd: () => sqlCountDirect('qldctcccd'),
+
+      dmhokinhdoanh: () => sqlCountLocation('HKD'),
+      dmdoanhnghiep: () => sqlCountLocation('DN'),
+      dmnvhp: () => sqlCountLocation('VHXP'),
+      dmtramyte: () => sqlCountLocation('YT'),
+      dmtruonghoc: () => sqlCountLocation('TRH'),
+      dmcongdong: () => sqlCountLocation('CD'),
+
+      qlhccong_1: () => sqlCountQLHCCONGByStatus(1),
+      qlhccong_5: () => sqlCountQLHCCONGByStatus(5),
+      qlhccong_6: () => sqlCountQLHCCONGByStatus(6),
+      qlhccong_7: () => sqlCountQLHCCONGByStatus(7),
+      qlhccong_total: () => sqlCountQLHCCONGTotal(),
+      dmhccong_total: () => sqlCountDMHCCONG(),
+
+      dmlcuochop_total: () => sqlCountDMLCUOCHOP(),
+      qlcuochop_total: () => sqlCountQLCUOCHOPTotal(),
+      qlcuochop_range: () => sqlCountQLCUOCHOPInRange()
+    };
+
+    const labelsMap = {
+      dmnv:"Nhân sự", dmhogiadinh:"Hộ gia đình", qldctcccd:"CCCD",
+      dmhokinhdoanh:"Hộ KD", dmdoanhnghiep:"Doanh nghiệp", dmnvhp:"Nhà VH phường",
+      dmtramyte:"Trạm y tế", dmtruonghoc:"Trường học", dmcongdong:"Điểm công cộng"
+    };
+    const GROUPS = {
+      PUBLIC:['dmnv','dmhogiadinh','qldctcccd'],
+      CITIZEN:['dmhokinhdoanh','dmdoanhnghiep','dmnvhp','dmtramyte','dmtruonghoc','dmcongdong'],
+      HCC:['qlhccong_1','qlhccong_5','qlhccong_6','qlhccong_7']
+    };
+
+    function destroyIfExist(chartId){ const inst = Chart.getChart(chartId); if(inst) inst.destroy(); }
+
+    // ---- helpers ----
+    const fmt = (n)=> Number(n||0).toLocaleString('vi-VN');
+    function setTotals(map){
+      Object.entries(map).forEach(([key,val])=>{
+        document.querySelectorAll(`[data-kpi="${key}"]`).forEach(el=> el.textContent = fmt(val));
+      });
+    }
+    function debounce(fn, delay=400){ let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), delay); }; }
+	
+	function px(v){ return parseFloat(v||0) || 0; }
+	function clamp(n, min, max){ return Math.max(min, Math.min(n, max)); }
+
+	function syncRightHeight(){
+	  const left = document.getElementById('hccSection');
+	  const body = document.getElementById('mapBody');            // dùng mapBody làm scope cố định
+	  const right = document.getElementById('mapSection') || body; // nếu không có mapSection thì lấy luôn body
+	  if (!left || !body) return;
+
+	  const isMdUp = window.matchMedia('(min-width:768px)').matches;
+	  if (!isMdUp){
+		// mobile: thả nổi
+		if (right && right.id === 'mapSection') right.style.height = '';
+		body.style.height = '';
+		if (typeof _leaflet !== 'undefined') requestAnimationFrame(()=>_leaflet.invalidateSize(true));
+		return;
+	  }
+
+	  const leftH = Math.round(left.getBoundingClientRect().height);
+
+	  // chỉ có header khi bạn đặt mapSection; còn không thì headH = 0
+	  const header = (right.id === 'mapSection') ? right.querySelector('.section-header') : null;
+	  const headH  = header ? Math.round(header.getBoundingClientRect().height) : 0;
+
+	  // padding của mapBody (p-4)
+	  const cs = getComputedStyle(body);
+	  const bodyPad = (parseFloat(cs.paddingTop)||0) + (parseFloat(cs.paddingBottom)||0);
+
+	  const minMapBody = 420;
+	  const bodyH = clamp(leftH - headH - bodyPad, minMapBody, 2200);
+
+	  // Nếu có mapSection thì set height cho container; còn không thì thôi
+	  if (right.id === 'mapSection') right.style.height = `${leftH}px`;
+	  body.style.height = `${bodyH}px`;
+
+	  // chốt chiều cao cho list để đảm bảo scroll
+	  const listWrap = body.querySelector('aside .section-inner');
+	  const listEl   = document.getElementById('mapList');
+	  if (listWrap && listEl){
+		const searchRow = listWrap.firstElementChild; // hàng search
+		const wrapH  = listWrap.getBoundingClientRect().height;
+		const searchH = searchRow ? searchRow.getBoundingClientRect().height : 0;
+		listEl.style.maxHeight = Math.max(120, wrapH - searchH - 8) + 'px';
+		listEl.style.overflow = 'auto'; // đề phòng class bị override
+	  }
+
+	  if (typeof _leaflet !== 'undefined') requestAnimationFrame(()=>_leaflet.invalidateSize(true));
+	}
+
+	const _roL = new ResizeObserver(()=>requestAnimationFrame(syncRightHeight));
+	['hccSection','hccGroupContainer'].forEach(id=>{
+	  const el = document.getElementById(id); if (el) _roL.observe(el);
+	});
+	window.addEventListener('resize', ()=>requestAnimationFrame(syncRightHeight));
+	window.addEventListener('load',  ()=>requestAnimationFrame(syncRightHeight));
+	requestAnimationFrame(syncRightHeight);
+
+	// ====== MEETINGS CALENDAR ======
+	const CAL = {
+	  // Khởi tạo theo toDate nếu có, else theo hôm nay
+	  year: (()=>{
+		const v = document.getElementById('toDate')?.value;
+		return v ? Number(v.slice(0,4)) : (new Date()).getFullYear();
+	  })(),
+	  month: (()=>{
+		const v = document.getElementById('toDate')?.value;
+		return v ? Number(v.slice(5,7)) : (new Date()).getMonth()+1; // 1-12
+	  })(),
+	};
+
+	function z2(n){ return String(n).padStart(2,'0'); }
+	function lastDay(y,m){ return new Date(y, m, 0).getDate(); } // m: 1-12
+	function viMonth(y,m){
+	  const names = ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
+	  return `${names[m-1]} ${y}`;
+	}
+
+	// Lấy map ngày -> số cuộc họp trong tháng
+	function sqlMeetDatesMonth(y,m){
+	  const from = `${y}-${z2(m)}-01 00:00:00`;
+	  const to   = `${y}-${z2(m)}-${z2(lastDay(y,m))} 23:59:59.997`;
+	  let where = whereUnit("1=1","Q");
+	  where += ` AND Q.ngay_hop >= '${from}' AND Q.ngay_hop <= '${to}'`;
+	  return `
+		SELECT CONVERT(date, Q.ngay_hop) AS d, COUNT(*) AS cnt
+		FROM dbo.qlcuochop Q WITH (NOLOCK)
+		WHERE ${where}
+		GROUP BY CONVERT(date, Q.ngay_hop)
+		ORDER BY d`;
+	}
+
+	// Lấy danh sách cuộc họp trong 1 ngày (để hiện Agenda)
+	function sqlMeetListByDate(dateStr /* YYYY-MM-DD */){
+	  let where = whereUnit("1=1","Q");
+	  where += ` AND CONVERT(date, Q.ngay_hop)='${dateStr}'`;
+	  return `
+		SELECT 
+		  Q.ngay_hop, 
+		  Q.gio_bd, 
+		  Q.gio_kt, 
+		  Q.dia_chi,
+		  C.ten_lcuochop
+		FROM dbo.qlcuochop Q WITH (NOLOCK)
+		JOIN dbo.dmlcuochop C WITH (NOLOCK) ON Q.ma_lcuochop = C.ma_lcuochop
+		WHERE ${where}
+		ORDER BY ISNULL(Q.gio_bd, Q.ngay_hop), Q.ngay_hop`;
+	}
+
+	// Tạo ma trận ngày (bắt đầu từ Thứ 2), gồm cả ngày lấp trống đầu/cuối tháng
+	function buildMonthMatrix(y,m){
+	  const first = new Date(y, m-1, 1);
+	  // JS: 0=CN,1=T2.. => đổi sang Monday-first
+	  let startIdx = first.getDay(); // 0..6
+	  startIdx = (startIdx === 0) ? 6 : startIdx - 1; // 0=Mon
+	  const daysInMonth = lastDay(y,m);
+
+	  const prevMonthDays = startIdx;
+	  const prevMonthLastDay = lastDay(y, m-1 <= 0 ? 12 : m-1);
+	  const cells = [];
+
+	  // ngày lấp từ tháng trước
+	  for(let i=prevMonthDays; i>0; i--){
+		const d = prevMonthLastDay - i + 1;
+		const dy = (m===1? y-1 : y);
+		const dm = (m===1? 12 : m-1);
+		cells.push({ y:dy, m:dm, d, other:true });
+	  }
+	  // ngày trong tháng
+	  for(let d=1; d<=daysInMonth; d++){
+		cells.push({ y, m, d, other:false });
+	  }
+	  // lấp đến hết tuần
+	  while(cells.length % 7 !== 0){
+		const len = cells.length;
+		const dy = (m===12? y+1 : y);
+		const dm = (m===12? 1 : m+1);
+		const d  = len - (prevMonthDays + daysInMonth) + 1;
+		cells.push({ y:dy, m:dm, d, other:true });
+	  }
+	  return cells;
+	}
+	
+	function fmtHM(v){
+	  if (!v && v!==0) return null;
+	  // Chuỗi "HH:mm" hoặc "HH:mm:ss"
+	  if (typeof v === 'string') {
+		const m = v.match(/^(\d{1,2}):(\d{2})/);
+		if (m) return `${m[1].padStart(2,'0')}:${m[2]}`;
+	  }
+	  // Date
+	  if (v instanceof Date && !isNaN(v)) {
+		const hh = String(v.getHours()).padStart(2,'0');
+		const mm = String(v.getMinutes()).padStart(2,'0');
+		return `${hh}:${mm}`;
+	  }
+	  // Số phút từ 0..?
+	  if (typeof v === 'number' && v>=0) {
+		const hh = String(Math.floor(v/60)).padStart(2,'0');
+		const mm = String(v%60).padStart(2,'0');
+		return `${hh}:${mm}`;
+	  }
+	  // fallback chuỗi có thể là "HHmm"
+	  if (typeof v === 'string' && /^\d{3,4}$/.test(v)) {
+		const s = v.padStart(4,'0');
+		return `${s.slice(0,2)}:${s.slice(2,4)}`;
+	  }
+	  return null;
+	}
+	
+	// Hợp nhất nhiều nguồn thời gian: cột gio_bd/gio_kt & các cột JSON (nếu có)
+	function extractTimeSlots(row){
+	  const slots = [];
+
+	  // 1) Ưu tiên cột chuẩn
+	  const bd = row.gio_bd ?? row.GIO_BD ?? null;
+	  const kt = row.gio_kt ?? row.GIO_KT ?? null;
+	  const bdF = fmtHM(bd);
+	  const ktF = fmtHM(kt);
+	  if (bdF || ktF) slots.push({ bd: bdF, kt: ktF });
+
+	  // 2) Tự dò các cột dạng JSON (chuỗi bắt đầu bằng "{" hoặc "[")
+	  Object.keys(row).forEach(k=>{
+		const val = row[k];
+		if (typeof val === 'string' && (/^\s*[\[{]/.test(val))) {
+		  try{
+			const parsed = JSON.parse(val);
+			if (Array.isArray(parsed)) {
+			  // Mảng slot [{bd,kt}] hoặc [{start,end}] hoặc ["11:00-12:00", ...]
+			  parsed.forEach(it=>{
+				if (typeof it === 'string') {
+				  const m = it.match(/(\d{1,2}:\d{2}).*?(\d{1,2}:\d{2})/);
+				  if (m) slots.push({ bd: fmtHM(m[1]), kt: fmtHM(m[2]) });
+				} else if (it && typeof it === 'object') {
+				  const s = it.bd ?? it.start ?? it.gio_bd ?? it.from ?? null;
+				  const e = it.kt ?? it.end   ?? it.gio_kt ?? it.to   ?? null;
+				  const sF = fmtHM(s), eF = fmtHM(e);
+				  if (sF || eF) slots.push({ bd: sF, kt: eF });
+				}
+			  });
+			} else if (parsed && typeof parsed === 'object') {
+			  const s = parsed.bd ?? parsed.start ?? parsed.gio_bd ?? parsed.from ?? null;
+			  const e = parsed.kt ?? parsed.end   ?? parsed.gio_kt ?? parsed.to   ?? null;
+			  const sF = fmtHM(s), eF = fmtHM(e);
+			  if (sF || eF) slots.push({ bd: sF, kt: eF });
+			}
+		  }catch(_){}
+		}
+	  });
+
+	  // Loại trùng, chuẩn hoá
+	  const uniq = new Map();
+	  slots.forEach(s=>{
+		const key = `${s.bd||''}-${s.kt||''}`;
+		if (!uniq.has(key)) uniq.set(key, s);
+	  });
+	  return [...uniq.values()];
+	}
+
+	function timesToText(slots){
+	  if (!slots.length) return null;
+	  return slots.map(s=>{
+		if (s.bd && s.kt) return `${s.bd}–${s.kt}`;
+		if (s.bd) return `${s.bd}`;
+		if (s.kt) return `…–${s.kt}`;
+		return '';
+	  }).filter(Boolean).join(', ');
+	}
+	
+	// ==== COLOR UTILS (màu theo loại cuộc họp) ====
+	const MEET_PALETTE = [
+	  '#3b82f6', '#22c55e', '#f59e0b', '#a855f7', '#ef4444',
+	  '#14b8a6', '#eab308', '#06b6d4', '#8b5cf6', '#f97316'
+	];
+	function colorForType(name=''){
+	  let h=0; for (let i=0;i<name.length;i++) h=(h*31 + name.charCodeAt(i))|0;
+	  return MEET_PALETTE[Math.abs(h)%MEET_PALETTE.length];
+	}
+	function hexToRgba(hex, a=0.12){
+	  const m = hex.replace('#','');
+	  const r = parseInt(m.slice(0,2),16), g = parseInt(m.slice(2,4),16), b = parseInt(m.slice(4,6),16);
+	  return `rgba(${r},${g},${b},${a})`;
+	}
+
+	async function renderMeetCalendar(){
+	  // Title
+		document.getElementById('calTitle').textContent = viMonth(CAL.year, CAL.month);
+
+		// Map ngày -> tổng số cuộc họp
+		const rows = await requestDataSet(sqlMeetDatesMonth(CAL.year, CAL.month));
+		const countByDate = {};
+		rows.forEach(r=>{
+		  const key = (r.d ?? r.D ?? '').toString().slice(0,10);
+		  const cnt = Number(r.cnt ?? r.CNT ?? 0);
+		  if (key) countByDate[key] = cnt;
+		});
+
+		// Map ngày -> mảng {t, cnt} theo loại để vẽ chấm màu
+		const typed = await requestDataSet(sqlMeetTypesByDateMonth(CAL.year, CAL.month));
+		const typesByDate = {};
+		typed.forEach(r=>{
+		  const key = (r.d ?? r.D ?? '').toString().slice(0,10);
+		  const t   = r.t ?? r.T ?? '';
+		  const cnt = Number(r.cnt ?? r.CNT ?? 0);
+		  if (!key || !t) return;
+		  (typesByDate[key] ||= []).push({ t, cnt });
+		});
+
+	  const map = {};
+	  rows.forEach(r=>{
+		const key = (r.d ?? r.D ?? '').toString().slice(0,10); // YYYY-MM-DD
+		const cnt = Number(r.cnt ?? r.CNT ?? 0);
+		if (key) map[key] = cnt;
+	  });
+
+	  // Vẽ lưới ngày
+	  const cal = document.getElementById('meetCalendar');
+	  cal.innerHTML = '';
+	  const cells = buildMonthMatrix(CAL.year, CAL.month);
+	  const todayStr = (new Date()).toISOString().slice(0,10);
+
+	  cells.forEach(c=>{
+		const key = `${c.y}-${z2(c.m)}-${z2(c.d)}`;
+		const has = map[key] > 0;
+		const isToday = key === todayStr;
+		const baseCls = [
+		  'relative','h-8','md:h-10','rounded-lg','border',
+		  c.other ? 'bg-gray-50 text-gray-400 border-gray-200' : 'bg-white border-gray-200',
+		  'hover:shadow-sm','transition','p-1','flex','flex-col','items-start','justify-between','select-none'
+		].join(' ');
+
+		const btn = document.createElement('button');
+		btn.setAttribute('type','button');
+		btn.className = baseCls;
+
+		// góc trên: số ngày
+		const dayNum = document.createElement('div');
+		dayNum.className = 'text-xs font-semibold';
+		dayNum.textContent = c.d;
+
+		// huy hiệu số sự kiện
+		const badge = document.createElement('div');
+		badge.className = 'absolute top-1 right-1';
+		badge.innerHTML = has
+		  ? `<span class="inline-block min-w-6 h-6 leading-6 text-center rounded-full bg-emerald-600 text-white text-xs font-semibold">${map[key]}</span>`
+		  : '';
+
+		// chấm nhỏ nếu có họp (mobile dễ nhìn)
+		const dot = has ? `<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-600 mt-1"></span>` : '';
+
+		// nền “hôm nay”
+		if (isToday) btn.classList.add('!bg-orange-500', 'ring-1','ring-offset-1','ring-blue-500/40');
+
+		// nội dung
+		btn.innerHTML = `
+		  <div class="flex items-center gap-1">
+			${dayNum.outerHTML}
+			${dot}
+		  </div>
+		  <div class="w-full"></div>
+		`;
+		btn.insertAdjacentHTML('beforeend', badge.outerHTML);
+		
+		// dải chấm màu theo loại (tối đa 4)
+		const arr = (typesByDate[key] || []);
+		const dotHtml = arr.slice(0,4).map(x=>{
+		  const c = colorForType(x.t);
+		  return `<span class="inline-block w-2 h-2 rounded-full" title="${x.t} (${x.cnt})" style="background:${c}"></span>`;
+		}).join('');
+		const extra = arr.length>4 ? `<span class="text-[10px] text-gray-500">+${arr.length-4}</span>` : '';
+		btn.insertAdjacentHTML('beforeend',
+		  `<div class="absolute bottom-1 left-1 right-1 flex gap-1 justify-end items-center">${dotHtml}${extra}</div>`
+		);
+
+		// click -> load agenda
+		btn.addEventListener('click', async ()=>{
+		  const listEl = document.getElementById('agendaList');
+		  const wrapEl = document.getElementById('meetAgenda');
+		  listEl.innerHTML = '<li class="text-gray-500">Đang tải…</li>';
+		  wrapEl.classList.remove('hidden');
+
+		  const r2 = await requestDataSet(sqlMeetListByDate(key));
+		  if (!r2.length){
+			listEl.innerHTML = '<li class="text-gray-500">Không có cuộc họp.</li>';
+			return;
+		  }
+
+		  const items = r2.map(x=>{
+			  const typeName = x.ten_lcuochop || x.TEN_LCUOCHOP || 'Cuộc họp';
+			  const col = colorForType(typeName);
+			  const slots = extractTimeSlots(x);
+			  const timeText = timesToText(slots) || (()=>{ const dt=new Date(x.ngay_hop||x.NGAY_HOP); return isNaN(dt)?null:fmtHM(dt); })();
+			  const addr = x.dia_chi || x.DIA_CHI || '';
+
+			  return `<li class="flex justify-between gap-3">
+				<span class="flex items-center gap-2">
+				  <span class="inline-block w-2.5 h-2.5 rounded-full" style="background:${col}"></span>
+				  <span class="px-2 py-0.5 rounded-full text-[11px] font-medium"
+						style="background:${hexToRgba(col,0.12)}; color:${col}; border:1px solid ${hexToRgba(col,0.35)}">
+					${typeName}
+				  </span>
+				</span>
+				<span class="shrink-0 text-right">
+				  ${timeText ? `<span class="text-gray-600">${timeText}</span>` : ''}
+				  ${addr ? `<span class="text-gray-500"> · ${addr}</span>` : ''}
+				</span>
+			  </li>`;
+			}).join('');
+
+		  listEl.innerHTML = items;
+		  wrapEl.scrollIntoView({ behavior:'smooth', block:'nearest' });
+		});
+
+		cal.appendChild(btn);
+	  });
+	}
+
+	// Điều hướng tháng
+	document.addEventListener('click', (e)=>{
+	  if (e.target?.id === 'calPrev'){
+		CAL.month--; if (CAL.month<=0){ CAL.month=12; CAL.year--; }
+		renderMeetCalendar();
+	  }
+	  if (e.target?.id === 'calNext'){
+		CAL.month++; if (CAL.month>12){ CAL.month=1; CAL.year++; }
+		renderMeetCalendar();
+	  }
+	});
+
+	// Khi đổi filter unit/date -> re-render lịch
+	['unitId','fromDate','toDate'].forEach(id=>{
+	  document.getElementById(id)?.addEventListener('change', ()=>{
+		// nếu user đổi toDate, sync tháng theo toDate
+		if (id==='toDate'){
+		  const v = document.getElementById('toDate').value;
+		  if (v){
+			CAL.year = Number(v.slice(0,4));
+			CAL.month = Number(v.slice(5,7));
+		  }
+		}
+	  });
+	});
+	
+	/* ======= MAP: dmlocation + dmlhhd ======= */
+	// Bảng màu theo loại (fallback hash để mở rộng vô hạn)
+	const TYPE_COLORS = {
+	  YT: '#10b981',   // Y tế
+	  TRH: '#3b82f6',  // Trường học
+	  DN: '#f59e0b',   // Doanh nghiệp
+	  HKD: '#ef4444',  // Hộ KD
+	  VHXP: '#8b5cf6', // Văn hoá phường
+	  CD: '#14b8a6'    // Cộng đồng
+	};
+	const PALETTE = ['#3b82f6','#22c55e','#f59e0b','#a855f7','#ef4444','#14b8a6','#06b6d4','#eab308','#8b5cf6','#f97316'];
+	function colorForKey(k=''){
+	  const key = (k||'').toString();
+	  if (TYPE_COLORS[key]) return TYPE_COLORS[key];
+	  // hash name để ra màu
+	  let h=0; for (let i=0;i<key.length;i++) h=(h*31 + key.charCodeAt(i))|0;
+	  return PALETTE[Math.abs(h)%PALETTE.length];
+	}
+
+	// SQL lấy điểm toạ độ + loại
+	function sqlDMLocationPoints(ma_lhhd){
+	  let where = whereUnit("1=1","L");
+	  where = withDateFilter('dmlocation', where, "L");
+	  if (ma_lhhd) where += ` AND L.ma_lhhd='${ma_lhhd}'`;
+
+	  return `
+		SELECT 
+		  L.ma_location,           -- thêm ID
+		  L.ten_location,
+		  L.ten_location2,
+		  L.dia_chi,
+		  L.dien_thoai,
+		  L.linkweb,
+		  L.tdx, L.tdy,
+		  L.ma_lhhd,
+		  H.ten_lhhd
+		FROM dbo.dmlocation L WITH (NOLOCK)
+		LEFT JOIN dbo.dmlhhd H WITH (NOLOCK) ON L.ma_lhhd = H.ma_lhhd
+		WHERE ${where}
+		  AND L.tdx IS NOT NULL AND L.tdy IS NOT NULL`;
+	}
+
+	// SQL lấy danh sách loại hiện có (để fill filter)
+	function sqlLocationTypes(){
+	  let where = whereUnit("1=1","L");
+	  where = withDateFilter('dmlocation', where, "L");
+	  return `
+		SELECT DISTINCT L.ma_lhhd, ISNULL(H.ten_lhhd, L.ma_lhhd) AS ten_lhhd
+		FROM dbo.dmlocation L WITH (NOLOCK)
+		LEFT JOIN dbo.dmlhhd H WITH (NOLOCK) ON L.ma_lhhd = H.ma_lhhd
+		WHERE ${where} AND L.tdx IS NOT NULL AND L.tdy IS NOT NULL
+		ORDER BY ten_lhhd`;
+	}
+
+	let _leaflet, _layer;
+	const _markersById = new Map();
+	let _currentLocations = [];
+
+	// chuẩn hoá chuỗi để search
+	function norm(s){ return (s||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(); }
+
+	function renderLocationList(){
+	  const ul = document.getElementById('mapList');
+	  if (!ul) return;
+	  const q = norm(document.getElementById('mapSearch')?.value || '');
+	  const rows = _currentLocations.filter(r=>{
+		if (!q) return true;
+		return [r.name, r.name2, r.addr, r.typeName].some(x=> norm(x).includes(q));
+	  });
+
+	  if (!rows.length){
+		ul.innerHTML = `<li class="text-sm text-gray-500 px-2 py-3">Không có địa điểm.</li>`;
+		return;
+	  }
+
+	  ul.innerHTML = rows.map(r=>{
+		const color = r.color;
+		const sub = [r.typeName, r.addr].filter(Boolean).join(' · ');
+		return `
+		  <li class="map-item flex items-start gap-2" data-id="${r.id}">
+			<span class="map-dot" style="background:${color}"></span>
+			<div class="min-w-0">
+			  <div class="font-semibold truncate">${r.name}</div>
+			  ${r.name2 ? `<div class="text-xs text-gray-600 truncate">${r.name2}</div>`:''}
+			  ${sub ? `<div class="text-xs text-gray-500 truncate">${sub}</div>`:''}
+			</div>
+		  </li>`;
+	  }).join('');
+
+	  // click list item → bay tới marker
+	  ul.querySelectorAll('.map-item').forEach(li=>{
+		li.addEventListener('click', ()=>{
+		  const id = li.getAttribute('data-id');
+		  const mk = _markersById.get(id);
+		  if (!mk) return;
+		  _leaflet.setView(mk.getLatLng(), Math.max(_leaflet.getZoom(), 15), { animate:true });
+		  mk.openPopup();
+		  ul.querySelectorAll('.map-item.active').forEach(x=>x.classList.remove('active'));
+		  li.classList.add('active');
+		  li.scrollIntoView({ block:'nearest' });
+		});
+	  });
+	}
+	
+	function waitForVisibleSize(elOrId, min=120){
+	  return new Promise(resolve=>{
+		const el = typeof elOrId==='string' ? document.getElementById(elOrId) : elOrId;
+		if(!el) return resolve();
+		const ready = ()=> el.offsetHeight >= min && el.offsetWidth >= min;
+		if (ready()) return resolve();
+		const ro = new ResizeObserver(()=>{ if(ready()){ ro.disconnect(); resolve(); }});
+		ro.observe(el);
+	  });
+	}
+
+	document.getElementById('mapSearch')?.addEventListener('input', debounce(renderLocationList, 200));
+	document.getElementById('mapClear')?.addEventListener('click', ()=>{
+	  const i = document.getElementById('mapSearch'); if(i){ i.value=''; }
+	  renderLocationList();
+	});
+
+	async function populateTypeFilter(){
+	  const sel = document.getElementById('mapTypeFilter');
+	  if (!sel) return;
+	  const rows = await requestDataSet(sqlLocationTypes());
+	  const items = rows.map(r=>{
+		const code = r.ma_lhhd || r.MA_LHHD || '';
+		const name = r.ten_lhhd || r.TEN_LHHD || code || 'Khác';
+		return { code, name };
+	  }).filter(x=>x.code);
+	  // clear giữ option đầu
+	  sel.querySelectorAll('option:not(:first-child)').forEach(o=>o.remove());
+	  items.forEach(({code,name})=>{
+		const opt = document.createElement('option');
+		opt.value = code; opt.textContent = name;
+		sel.appendChild(opt);
+	  });
+	}
+
+	async function renderLocationMap(){
+		 // đảm bảo thân map có kích thước thật sau khi bên trái render xong
+		syncRightHeight();
+		await waitForVisibleSize('mapBody', 150);
+	  
+	  const filter = document.getElementById('mapTypeFilter')?.value || '';
+	  const rows = await requestDataSet(sqlDMLocationPoints(filter));
+
+	  // init map 1 lần
+	  if (!_leaflet){
+		const mapEl = document.getElementById('leafletMap');
+		await waitForVisibleSize(mapEl, 150);        // ⟵ quan trọng
+		_leaflet = L.map(mapEl, { zoomControl:true, scrollWheelZoom:true });
+		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		  maxZoom:19, attribution:'&copy; OpenStreetMap'
+		}).addTo(_leaflet);
+
+		// Nếu chiều cao/width đổi (sau khi bên trái render), cập nhật lại tiles
+		new ResizeObserver(()=> _leaflet.invalidateSize(false)).observe(mapEl);
+	  }
+	  if (_layer){ _layer.remove(); }
+	  _layer = L.layerGroup().addTo(_leaflet);
+	  _markersById.clear();
+	  _currentLocations = [];
+
+	  const bounds = [];
+	  rows.forEach(r=>{
+		const id   = r.ma_location || r.MA_LOCATION || `${r.tdx},${r.tdy},${r.ten_location}`;
+		const lon  = parseFloat(r.tdx ?? r.TDX);
+		const lat  = parseFloat(r.tdy ?? r.TDY);
+		if (isNaN(lat) || isNaN(lon)) return;
+
+		const code = r.ma_lhhd || r.MA_LHHD || '';
+		const typeName = r.ten_lhhd || r.TEN_LHHD || code || 'Khác';
+		const color = colorForKey(code || typeName);
+
+		const name  = r.ten_location  || r.TEN_LOCATION  || 'Địa điểm';
+		const name2 = r.ten_location2 || r.TEN_LOCATION2 || '';
+		const addr  = r.dia_chi || r.DIA_CHI || '';
+		const phone = r.dien_thoai || r.DIEN_THOAI || '';
+		const link  = r.linkweb || r.LINKWEB || '';
+
+		// lưu cho danh sách
+		_currentLocations.push({ id, lat, lon, name, name2, addr, phone, link, typeName, color });
+
+		const marker = L.circleMarker([lat,lon],{
+		  radius: 7, color, weight: 2, opacity: 1,
+		  fillColor: color, fillOpacity: 0.85
+		});
+
+		const html = `
+		  <div>
+			<div style="font-weight:800">${name}</div>
+			${name2 ? `<div class="text-xs text-gray-600">${name2}</div>` : ''}
+			${typeName ? `<div class="mt-1 text-xs"><span style="background:${color}22;border:1px solid ${color}55;color:${color};padding:2px 6px;border-radius:9999px;">${typeName}</span></div>` : ''}
+			${addr ? `<div class="mt-1">${addr}</div>` : ''}
+			${phone || link ? `<div class="mt-1 text-xs text-gray-600">${phone ? `☎ ${phone}` : ''} ${link ? ` · <a href="${link}" target="_blank" rel="noopener noreferrer">Website</a>` : ''}</div>` : ''}
+		  </div>`;
+		marker.bindPopup(html, { maxWidth: 300 });
+		marker.addTo(_layer);
+		_markersById.set(id, marker);
+		bounds.push([lat,lon]);
+
+		// marker → highlight list
+		marker.on('click', ()=>{
+		  const ul = document.getElementById('mapList');
+		  const li = ul?.querySelector(`.map-item[data-id="${CSS.escape(id)}"]`);
+		  if (!li) return;
+		  ul.querySelectorAll('.map-item.active').forEach(x=>x.classList.remove('active'));
+		  li.classList.add('active');
+		  li.scrollIntoView({ block:'nearest' });
+		});
+	  });
+
+	  // Fit map
+	  if (bounds.length){ _leaflet.fitBounds(bounds, { padding:[20,20] }); }
+		else { _leaflet.setView([15.9,105], 5); }
+
+	  // render danh sách
+	  renderLocationList();
+
+	  // reflow map khi card tính lại chiều cao
+	  setTimeout(()=> _leaflet.invalidateSize(true), 0);
+	}
+
+    async function refreshAll(){
+      // skeleton on (KPI chi tiết)
+      [...GROUPS.PUBLIC, ...GROUPS.CITIZEN, ...GROUPS.HCC,
+        'dmhccong_total','qlhccong_total','dmlcuochop_total','qlcuochop_total','qlcuochop_range'
+      ].forEach(id=>{ const el=document.getElementById(id); if(el){ el.classList.add('skeleton'); el.textContent=' '; } });
+
+      // fetch counts
+      const results = {};
+      await Promise.all(Object.entries(QUERIES).map(async ([id, buildSql])=>{
+        const rows = await requestDataSet(buildSql());
+        const cnt = rows?.[0]?.cnt ?? rows?.[0]?.CNT ?? rows?.[0]?.Count ?? rows?.[0]?.COUNT ?? 0;
+        results[id] = Number(cnt);
+        const el = document.getElementById(id);
+        if(el){ el.classList.remove('skeleton'); el.textContent = fmt(cnt); }
+      }));
+
+      // totals
+	  /*
+      const totalPublic  = GROUPS.PUBLIC.reduce((s,k)=>s+(results[k]||0),0);
+      const totalCitizen = GROUPS.CITIZEN.reduce((s,k)=>s+(results[k]||0),0);
+      const totalHCC     = GROUPS.HCC.reduce((s,k)=>s+(results[k]||0),0);
+      const totalMeet    = (results['qlcuochop_total']||0);
+      setTotals({ totalPublic, totalCitizen, totalHCC, totalMeet });
+	  */
+
+		await waitFonts();
+
+      // chart options
+      const commonBarOpts = {
+        plugins:{ legend:{ display:false } },
+        scales:{
+          y:{ beginAtZero:true, ticks:{ precision:0 } },
+          x:{ ticks:{ autoSkip:false, maxRotation:45 } }
+        },
+        elements:{ bar:{ borderRadius:8 } },
+        animation:{ duration:400 }
+      };
+      const commonPieOpts = { plugins:{ legend:{ position:'bottom' } }, cutout:'68%', animation:{ duration:400 } };
+
+      destroyIfExist('linePublic');
+
+	const pubLabels = GROUPS.PUBLIC.map(id => labelsMap[id]);
+	const pubData   = GROUPS.PUBLIC.map(id => results[id] || 0);
+
+	const baseColor = (getPalette(1)[0] || '#3b82f6');
+	const bgColor   = (typeof hexToRgba === 'function') ? hexToRgba(baseColor, 0.18) : baseColor + '2D';
+
+	new Chart(document.getElementById('linePublic'), {
+	  type: 'line',
+	  data: {
+		labels: pubLabels,
+		datasets: [{
+		  label: 'Số lượng',
+		  data: pubData,
+		  borderColor: baseColor,
+		  backgroundColor: bgColor,   // tô vùng dưới đường
+		  fill: true,
+		  tension: 0.35,              // bo tròn đường
+		  pointRadius: 3.5,
+		  pointHoverRadius: 5,
+		  borderWidth: 2
+		}]
+	  },
+	  options: {
+		responsive: true,
+		maintainAspectRatio: false,
+		plugins: {
+		  legend: { display: false },
+		  tooltip: {
+			callbacks: {
+			  label: (ctx) => `${ctx.label}: ${Number(ctx.raw||0).toLocaleString('vi-VN')}`
+			}
+		  }
+		},
+		scales: {
+		  y: { beginAtZero: true, ticks: { precision: 0 } }, // số nguyên
+		  x: { ticks: { autoSkip: false, maxRotation: 0 } }
+		},
+		animation: { duration: 450 }
+	  }
+	});
+
+      // Citizen charts
+      destroyIfExist('barChartCitizen'); destroyIfExist('pieChartCitizen');
+      const ctzLabels = GROUPS.CITIZEN.map(id=>labelsMap[id]); const ctzData = GROUPS.CITIZEN.map(id=>results[id]||0);
+      new Chart(document.getElementById('barChartCitizen'),{ type:'bar', data:{ labels:ctzLabels, datasets:[{ label:'Số lượng', data:ctzData, backgroundColor: getPalette(ctzData.length), borderWidth: 0 }] }, options:commonBarOpts });
+      new Chart(document.getElementById('pieChartCitizen'),{ type:'doughnut', data:{ labels:ctzLabels, datasets:[{ data:ctzData }] }, options:commonPieOpts });
+
+      // HCC charts
+      destroyIfExist('dualHCC');
+
+		const hccLabels = ['Chờ xử lý','Đã xử lý','Chờ trả KQ','Đã trả KQ'];
+		const hccCounts = [
+		  results.qlhccong_1 || 0,
+		  results.qlhccong_5 || 0,
+		  results.qlhccong_6 || 0,
+		  results.qlhccong_7 || 0
+		];
+		const totalHcc = hccCounts.reduce((a,b)=>a+b,0);
+		const hccPct   = totalHcc ? hccCounts.map(x=> +(x*100/totalHcc).toFixed(2)) : [0,0,0,0];
+
+		const barColors  = ['#ef4444','#22c55e','#f59e0b','#3b82f6'];
+		const lineColor  = '#111827'; // slate-900
+		const lineFill   = (typeof hexToRgba === 'function') ? hexToRgba(lineColor, 0.15) : lineColor + '26';
+
+		new Chart(document.getElementById('dualHCC'), {
+		  type: 'bar',
+		  data: {
+			labels: hccLabels,
+			datasets: [
+			  {
+				type: 'bar',
+				label: 'Hồ sơ',
+				data: hccCounts,
+				backgroundColor: barColors,
+				borderWidth: 0,
+				yAxisID: 'y'
+			  },
+			  {
+				type: 'line',
+				label: 'Tỷ trọng (%)',
+				data: hccPct,
+				borderColor: lineColor,
+				backgroundColor: lineFill,
+				fill: true,
+				tension: 0.35,
+				pointRadius: 3.5,
+				pointHoverRadius: 5,
+				borderWidth: 2,
+				yAxisID: 'y1'
+			  }
+			]
+		  },
+		  options: {
+			responsive: true,
+			maintainAspectRatio: false,
+			scales: {
+			  x: { ticks: { autoSkip: false } },
+			  y: {
+				beginAtZero: true,
+				ticks: { precision: 0 },
+				title: { display: true, text: 'Số hồ sơ' }
+			  },
+			  y1: {
+				beginAtZero: true,
+				position: 'right',
+				grid: { drawOnChartArea: false }, // không vẽ lưới trùng
+				ticks: { callback: v => v + '%' },
+				title: { display: true, text: 'Tỷ trọng (%)' }
+			  }
+			},
+			plugins: {
+			  legend: { position: 'bottom' },
+			  tooltip: {
+				mode: 'index',
+				intersect: false,
+				callbacks: {
+				  label: (ctx) => ctx.dataset.yAxisID === 'y'
+					? `${ctx.dataset.label}: ${Number(ctx.raw||0).toLocaleString('vi-VN')}`
+					: `${ctx.dataset.label}: ${Number(ctx.raw||0).toFixed(1)}%`
+				}
+			  }
+			},
+			animation: { duration: 450 }
+		  }
+		});
+
+		// Meetings calendar (thay cho barChartMeet & pieChartMeet)
+		await renderMeetCalendar();
+
+      // Meetings charts
+	  /*
+      destroyIfExist('barChartMeet'); destroyIfExist('pieChartMeet');
+      const meetRows = await requestDataSet(sqlMeetByType());
+      const meetLabels = meetRows.map(r=>r.name); const meetData = meetRows.map(r=>Number(r.cnt||0));
+      new Chart(document.getElementById('barChartMeet'),{ type:'bar', data:{ labels:meetLabels, datasets:[{ label:'Cuộc họp', data:meetData, backgroundColor: getPalette(meetData.length), borderWidth: 0 }] }, options:commonBarOpts });
+      new Chart(document.getElementById('pieChartMeet'),{ type:'doughnut', data:{ labels:meetLabels, datasets:[{ data:meetData }] }, options:commonPieOpts });
+	  */
+
+      // HCC breakdown
+      // HCC breakdown (DONUT trái, meta phải, legend dưới)
+		const hcRows = await requestDataSet(sqlHCCByGroupStatus());
+
+		function fmtTime(val){
+		  if(!val && val!==0) return '—';
+		  const s = String(val);
+		  if (/^\d{1,2}:\d{2}/.test(s)) return s.slice(0,5);
+		  const d = new Date(s);
+		  if (!isNaN(d)) {
+			const hh = String(d.getHours()).padStart(2,'0');
+			const mm = String(d.getMinutes()).padStart(2,'0');
+			return `${hh}:${mm}`;
+		  }
+		  return s;
+		}
+
+		const container = document.getElementById("hccGroupContainer");
+		container.innerHTML = "";
+		const bgPatterns = ["gov-bg-1","gov-bg-2","gov-bg-3","gov-bg-4","gov-bg-5","gov-bg-6"];
+
+		(hcRows || []).forEach((r, index) => {
+		  const bgClass = bgPatterns[index % bgPatterns.length];
+
+		  const choXL = Number(r.t_sl_cho_xu_ly || r.T_SL_CHO_XU_LY || 0);
+		  const daXL  = Number(r.t_sl_da_xu_ly || r.T_SL_DA_XU_LY || 0);
+		  const choKQ = Number(r.t_sl_dang_cho_tra_kq || r.T_SL_DANG_CHO_TRA_KQ || 0);
+		  const daKQ  = Number(r.t_sl_da_tra_kq || r.T_SL_DA_TRA_KQ || 0);
+
+		  const total = choXL + daXL + choKQ + daKQ;
+		  const pct = (v)=> total ? Math.round(v * 100 / total) : 0;  // % làm tròn
+
+		  const sttCur = r.stt ?? r.STT ?? '—';
+		  const sttNext = (sttCur && !isNaN(Number(sttCur))) ? Number(sttCur) + 1 : '—';
+
+		  const html = `
+			<div class="gov-card ${bgClass} border border-gray-200 p-2">
+			  <div class="card-title mb-2">${r.ten_hccong || r.TEN_HCCONG || r.ma_hccong}</div>
+			  <div class="hcc-row flex gap-1 items-start">
+				<!-- Trái: DONUT -->
+				<div class="chart-wrap flex-none shrink-0" style="width:70px;height:70px">
+				  <canvas id="donut-${r.ma_hccong}" class="w-full h-full"></canvas>
+				</div>
+
+				<!-- Phải: FULL phần còn lại -->
+				<div class="flex-1 min-w-0 grid grid-cols-1 gap-1 mb-2">
+				  <div class="legend-list">
+					<div class="legend-pill">TG BĐ: <strong>${r.tg_dukienbd ?? '—'}</strong></div>
+					<div class="legend-pill">TG KT: <strong>${r.tg_dukienkt ?? '—'}</strong></div>
+					<div class="legend-pill">Hiện tại: <strong>${sttCur}</strong></div>
+					<div class="legend-pill">Kế tiếp: <strong>${sttNext}</strong></div>
+				  </div>
+
+				  <div class="legend-list">
+					<div class="legend-pill"><span class="dot dot-red"></span> Chờ xử lý: <strong>${choXL}</strong></div>
+					<div class="legend-pill"><span class="dot dot-green"></span> Đã xử lý: <strong>${daXL}</strong></div>
+					<div class="legend-pill"><span class="dot dot-orange"></span> Chờ trả KQ: <strong>${choKQ}</strong></div>
+					<div class="legend-pill"><span class="dot dot-blue"></span> Đã trả KQ: <strong>${daKQ}</strong></div>
+				  </div>
+				</div>
+			  </div>
+			</div>
+		  `;
+		  container.insertAdjacentHTML("beforeend", html);
+
+		  // vẽ DONUT + tooltip có %
+		  const id = `donut-${r.ma_hccong}`;
+		  destroyIfExist(id);
+		  new Chart(document.getElementById(id), {
+			type:'doughnut',
+			data:{
+			  labels:['Chờ xử lý','Đã xử lý','Chờ trả KQ','Đã trả KQ'],
+			  datasets:[{
+				data:[choXL, daXL, choKQ, daKQ],
+				backgroundColor:['#ef4444','#22c55e','#f59e0b','#3b82f6'],
+				borderColor:'#fff',
+				borderWidth:3,
+				hoverOffset:6
+			  }]
+			},
+			options:{
+			  cutout:'68%',
+			  plugins:{
+				legend:{ display:false },
+				tooltip:{
+				  callbacks:{
+					label: (ctx)=>{
+					  const v = Number(ctx.raw||0);
+					  const p = total ? Math.round(v*100/total) : 0;
+					  return `${v.toLocaleString('vi-VN')} (${p}%)`;
+					}
+				  }
+				},
+				centerText:{ label:'' } // plugin của bạn: vẫn hiện tổng ở giữa
+			  },
+			  animation:{ duration:450, animateRotate:true }
+			}
+		  });
+		});
+
+		syncRightHeight();
+		
+		if (typeof _leaflet !== 'undefined') { setTimeout(()=> _leaflet.invalidateSize(true), 0); }
+    }
+	
+	async function refreshAllThenMap(){
+	  // 1) render toàn bộ số liệu + HCC breakdown + calendar
+	  await refreshAll();
+
+	  // 2) đồng bộ chiều cao cột map theo layout mới
+	  syncRightHeight();
+
+	  // 3) nạp lại loại địa điểm và render map (sau khi bố cục đã ổn định)
+	  await populateTypeFilter();
+	  await renderLocationMap();
+	}
+
+	// --- events --- (tuần tự: data → layout → map)
+	const debouncedRefresh = debounce(refreshAllThenMap, 400);
+
+	document.getElementById('btnRefresh').addEventListener('click', refreshAllThenMap);
+	['unitId','fromDate','toDate'].forEach(id=>{
+	  document.getElementById(id)?.addEventListener('change', debouncedRefresh);
+	});
+
+	// Bộ lọc riêng của map (loại địa điểm) thì chỉ refresh map
+	document.getElementById('btnMapRefresh')?.addEventListener('click', renderLocationMap);
+	document.getElementById('mapTypeFilter')?.addEventListener('change', renderLocationMap);
+
+	// init
+	window.addEventListener('load', async ()=>{
+	  const to = new Date();
+	  const yyyy = to.getFullYear();
+	  const mm = String(to.getMonth()+1).padStart(2,'0');
+	  const dd = String(to.getDate()).padStart(2,'0');
+	  if(!document.getElementById('toDate').value){
+		document.getElementById('toDate').value = `${yyyy}-${mm}-${dd}`;
+	  }
+
+	  // chạy tuần tự: dữ liệu (trái) → đồng bộ height → fill loại → render map (phải)
+	  await refreshAllThenMap();
+	});
+	
+	(function portalLightboxToBody(){
+	  const lb = document.getElementById('imgLightbox');
+	  if (lb && lb.parentElement !== document.body) document.body.appendChild(lb);
+	})();
+  </script>
+  
+  <script>
+	(function () {
+	  const thumb = document.getElementById('mapExtraImg');
+	  const lb    = document.getElementById('imgLightbox');
+	  const big   = document.getElementById('imgLightboxImg');
+	  const btnX  = document.getElementById('imgLightboxClose');
+	  const dl    = document.getElementById('imgLightboxDownload');
+
+	  if (!thumb || !lb) return;
+
+	  function openLB(src, alt=''){
+		big.src = src; big.alt = alt;
+		dl.href = src;
+		lb.classList.remove('hidden');
+		document.documentElement.style.overflow = 'hidden'; // khoá scroll toàn trang
+	  }
+	  function closeLB(){
+		lb.classList.add('hidden');
+		big.src = '';
+		document.documentElement.style.overflow = '';
+	  }
+
+	  thumb.style.cursor = 'zoom-in';
+	  thumb.addEventListener('click', () => openLB(thumb.src, thumb.alt));
+	  btnX.addEventListener('click', closeLB);
+	  lb.addEventListener('click', (e) => { if (e.target === lb) closeLB(); });
+	  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !lb.classList.contains('hidden')) closeLB(); });
+	})();
+	</script>
+</body>
+</html>

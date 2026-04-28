@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="dmdmxd" dirViewType="Grid" dirObjectType="Voucher" voucherCode="VL1" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Khai báo định mức xăng dầu" e="Declare petrol prices"></title>
+  <subtitle v="Thêm, sửa, xóa..." e="New, Edit, Delete..."></subtitle>
+
+  <grids>
+    <grid table="dmdmxd" fieldKey="id" order="id desc" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="unit_id" hidden="true" dataType="I" width="80" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="id" dataType="N" fieldType="PK" format="0" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày hiệu lực" e="Effective date"></text>
+        </field>
+		    <field name="ma_xd" width="100">
+          <text v="Nhiên liệu" e="Fuel"></text>
+        </field>
+      <field name="ten_xd" width="150" fieldType="EX">
+        <text v="Nhiên liệu" e="Fuel"></text>
+      </field>
+      <field name="ten_xe" width="150" fieldType="EX">
+        <text v="Nhiên liệu" e="Fuel"></text>
+      </field>
+		<field name="km_md" width="100">
+          <text v="KM áp đặt" e="Imposing km"></text>
+        </field>
+		<field name="dien_giai" width="220">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+          <script>
+        <query>
+          <text>
+            <![CDATA[
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmxd d on a.ma_xd = d.ma_xd left join dmdmxdct t on a.id = t.id left join dmxe x on t.ma_xe = x.ma_xe', 'b.ma_unit, d.ten_xd, x.ten_xe', '@@key', '', @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @strDetailKey nvarchar(3000); set @strDetailKey = ''
+if @ma_cong <> '' set @strDetailKey = @strDetailKey + ' and x.ma_cong like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@ma_cong) + '%'''
+if @strDetailKey <> '' set @strDetailKey = ' and exists(select 1 from y11 x where a.id = x.id ' + @strDetailKey + ')'
+
+set @strKey = 'ngay_ct between ''' + convert(char(8), @ngay_ct1, 112) + ''' and ''' + convert(char(8), @ngay_ct2, 112) + ''' and ' + @strFinding + ' and ' + dbo.ISWIFTFunctionGetUnitIDRightKeys(@@admin, @@userId, @ma_unit, 'a.unit_id') + @strDetailKey
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmkh c on a.ma_kh = c.ma_kh', 'b.ma_unit, c.ten_kh', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </finding>
+      </script>  
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmdmxd(f){
+  this.constructor(f);
+}
+grid$dmdmxd.prototype = new DirEvent();
+grid$dmdmxd.prototype.afterInit = function(renderType){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  <script>
+    &VoucherJSLoading;
+  </script>
+</dir>

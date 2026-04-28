@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="dmlinegoi" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục line gọi" e="Call Line Directory"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="dmlinegoi" fieldKey="ma_line" order="ma_line" allowFilter="true" allowOrder="true">
+      <fields >
+        <field name="ma_line" fieldType="PK" width="120">
+          <text v="Mã line" e="Line Code"></text>
+        </field>
+        <field name="ten_line" width="250">
+          <text v="Tên line" e="Line Name"></text>
+        </field>
+        <field name="ten_line2" width="250">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+		<field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+
+      &DefaultButton;
+	  <script>
+		<query>
+			<text>
+			<![CDATA[
+				declare @strKey nvarchar(3000) = ''
+				exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey , @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+			]]>
+			</text>
+		</query>
+
+		<finding>
+			<text>
+			<![CDATA[
+				declare @strKey nvarchar(3000)
+				set @strKey = @strFinding
+				exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+			]]>
+			</text>
+		</finding>
+	  </script>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmlinegoi(f){
+  this.constructor(f);
+}
+grid$dmlinegoi.prototype = new DirEvent();
+grid$dmlinegoi.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+ <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmtau" table="dmtau" fieldKey="ma_tau" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục tàu" e="List of ships"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_tau" format="U" label="1" field="1" allowBlank="false" fieldType="PK" >
+          <text v="Mã tàu" e="Train code"></text>
+        </field>
+        <field name="ten_tau" label="1" field="2" allowBlank="false" fieldType="PK" >
+          <text v="Tên tàu" e="Train name"></text>
+        </field>
+		<field name="ten_tau2" label="1" field="2" allowBlank="false" fieldType="PK" >
+          <text v="Tên khác" e="Aother Name"></text>
+        </field>
+		<field name="ma_loai" viewType="Lookup" label="1" field="1">
+           <text v="Mã loại" e="Type code"></text>
+           <viewInfo lookupType="One" lookupId="dmloaitau" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_loai" lookupInfo="dmloaitau|ma_loai|ten_loai" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_loai" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		<field name="ma_qg" viewType="Lookup" label="1" field="[120]"  >
+           <text v="Mã quốc gia" e="Country code"></text>
+           <viewInfo lookupType="One" lookupId="dmquocgia" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_qg" lookupInfo="dmquocgia|ma_qg|ten_qg" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_qg" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		<field name="so_imo" format="U" label="1" field="1" allowBlank="false" fieldType="PK" >
+          <text v="Số imo" e="imo"></text>
+        </field>
+		<field name="hieu_tau" label="1" field="1" allowBlank="false" fieldType="PK" >
+          <text v="Hiệu tàu" e="Ship Sign"></text>
+        </field>
+		<field name="so_dk" format="U" label="1" field="1" allowBlank="false" fieldType="PK" >
+          <text v="Số đăng kí" e="Registration Number"></text>
+        </field>
+		
+		
+		<field name="ma_cang" viewType="Lookup" label="1" field="[120]"  >
+           <text v="Mã cảng" e="Port Code"></text>
+           <viewInfo lookupType="One" lookupId="dmcang" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_cang" lookupInfo="dmcang|ma_cang|ten_cang" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_cang" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		
+
+		
+		<field name="ma_hang" viewType="Lookup" label="1" field="[120]"  >
+           <text v="Mã hãng" e="Brand Code"></text>
+           <viewInfo lookupType="One" lookupId="dmhangtau" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_hang" lookupInfo="dmhangtau|ma_hang|ten_hang" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_hang" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		
+		
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmtau(p){
+  this.constructor(p);
+}
+dir$dmtau.prototype = new DirEvent();
+dir$dmtau.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmtau.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+  dir$dmtauDisabledMasterField(p, g);
+
+}
+
+function dir$dmtauDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_tau').trim() != '')
+  {
+    p.setDisabled('ma_tau', true);
+  }
+  else
+  {
+    p.setDisabled('ma_tau', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã tàu đã tồn tại' else N'Train code already exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã tàu đã tồn tại' else N'Train code already exists' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+
+</dir>

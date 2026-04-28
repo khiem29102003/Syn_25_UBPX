@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmvb_ck" table="dmvb" fieldKey="ma_vb" transaction="true" tryCatch="true" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục văn bản công khai" e="Public Document List"></title>
+  <title0 v="Mới - văn bản" e="New - document"></title0>
+  <title1 v="Sửa - văn bản" e="Edit - document"></title1>
+
+  <forms>
+	<form gravity="TopLeft" columns="120,120,120,120,120,120">
+		<fields>
+			<field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ngay_ct" nextRow="true" dataType="D" valueDefault="new Date()" label="1" field="1" importable="5" >
+				<text v="Ngày phát hành" e="Issue Date"></text>
+			</field>
+			<field name="ma_nvb" label="1" field="1" viewType="Lookup" allowBlank="false" importable="10"> 
+			  <text v="Nhóm văn bản" e="Document group"></text>
+			  <viewInfo lookupType="One" lookupId="dmnhomvb" lookupKey="status = 1 and ma_loai='VB'" lookupCheck="1=1" lookupRef="ten_nvb" lookupInfo="dmnhomvb|ma_nvb|ten_nvb" />
+			</field>
+			<field name="ten_nvb" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="" field="[360]" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_vb" label="1" field="-" allowBlank="false" fieldType="PK" disabled="true" importable="-1">
+				<text v="Mã văn bản" e="Document code"></text>
+			</field>
+			<field name="ten_vb" label="1" field="-" allowBlank="true" disabled="false" importable="15">
+			  <text v="Tên văn bản" e="Document name"></text>
+			</field>
+			<field name="ten_vb2" label="1" field="-" allowBlank="true" disabled="false"  importable="20">
+			  <text v="Tên tiếng anh" e="Name English"></text>
+			</field>
+			<field name="ky_hieu" label="1" field="1" allowBlank="true" disabled="false" nextRow="true" importable="25" >
+			  <text v="Ký hiệu" e="Symbol"></text>
+			</field>
+			<field name="ma_tg" label="1" field="1" viewType="Lookup" allowBlank="false" importable="30"> 
+			  <text v="Thời hạn lưu trữ" e="Retention period"></text>
+			  <viewInfo lookupType="One" lookupId="dmtgluuvb" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_tg" lookupInfo="dmtgluuvb|ma_tg|ten_tg" />
+			</field>
+			<field name="ten_tg" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="" field="[360]" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="status" viewType="Combobox" inactivate="false" label="1" field="2" valueDefault="1" nextRow="true" importable="-1" >
+			  <text v="Trạng thái" e="Status"></text>
+			  <viewInfo>
+				<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 ">
+				</options>
+			  </viewInfo>
+			</field>
+			<field name="ma_loai" label="" field="" allowBlank="true" disabled="false" importable="-1">
+			  <text v="" e=""></text>
+			</field>
+			<field name="xstatus" label="" field="" dataType="N" format="0" allowBlank="true" disabled="false" importable="-1">
+			  <text v="" e=""></text>
+			</field>
+      </fields>
+    </form>
+	<form tabPageIndex="1" gravity="MiddleLeft" height="300" columns="120,120,360" >
+      <text v="Đính kèm" e="Attach Files"></text>
+      <fields>
+        <field name="xfile" label="1" field="2" viewType="File" fieldType="EXParam">
+          <text v="Chọn files" e="Attach Files"></text>
+          <viewInfo fileFieldId0="ma_vb" fileGroup="dmvb_ck" fileExtension="*" maxFileSize="10240" maxFileCount="10"></viewInfo>
+        </field>
+      </fields>
+    </form>
+</forms>
+
+&DefaultButton;
+
+<js>
+<text>
+  <![CDATA[<enc>5Vu4H7HiBCCdGh5dR7v6zmcJMTHf071/jO/PYIzbcs+/dMS5FYyIsWpqDqou/phLEw+RdIaL9+mknA3D7xiFanBJ58ffeihcZCMfG2XI3FkZTblBKV+wmGnZzuENkffYcboiZ8JTlwqZyt2vNzm9YP9VqeaExByNukqyMsZXzsp2VcoGoENjrxjNg1RSI7q1uA2lZ3g+mp58/IwAfIrVpb3rFd82qkf2HBnQBkz5xyWgK5gTid8Dl1U4e+Uh9TbNPuDOVNkdrwwxJZkQgHdnyfyq3491x8DtBclymBwcq1GTKfAK9yzMR2/Ykjgq0zeRVbTh9uKDHH5EHrUGe6O1PKYbuU4zaWn2g9aguum+DG/DH5VInG9EEpHsu4Lsu2UUWLexDDjvA5oWttYvpSZQ3ZlqmBTqDZE6H7sLPIkb1V6Gm27ei4cEYZOc+6M4X2+h+sokh21ufhOrYC6uhCIhNERu2bVJzFMIN+uuFxZs1XomcqI/ZYCPhrB2/uspqUC3mqq9iB04nxXvJWWpfseLqtYHCzapJ6ilFvwM7uSYc5DLBvrKwjD4ozV5tXkubaN6bAP90RLWdL4QVTFQzRTLAnDmxecfWvo3nPu6ch1Qud93jFYKv+ZkRUhHaUag+HNOXPnb7Pxt8afxcmxUJ9zxWQ==</enc>]]>
+    </text>
+  </js>
+	<css>
+		<text>
+			  <![CDATA[<enc>oQzagFEVvgZSRpzoWY9G1hb85u572QIbDHrl5oqzczW3HfrE7nQu9JzIb4WwTzFbRoqfsTFD8U5glAIOUGy47fD+9PjU0VujT4FHD6fU8Yax2KqWf5FjMjEGKbDuN6pwXuAh9SW5Xyew1RwskTxO9UJIuTxSc+eLorzAXEn7oKBHOLu4aeV5gPEQup0gfHLjIvWGQFazwUoqmJVTXHnKNQ==</enc>]]>
+		</text>
+	</css>
+	<script>
+		<request code="LoadMavb">
+		<text>		
+			<![CDATA[<enc>KeGj6rYqiUccvXDvBhfBlGm/0jccz72o2EDmvwI9tnSyQSpzc9XBJwqfiQdPADMqcF4R32uyG7UzytCdx0SUMcnIEFCHRkKjKlWfM4uw37LtONSKYI7RLW83Qu2FPbmy</enc>]]>				
+		</text>
+		</request>
+  		<query>
+		  <text>
+			<![CDATA[<enc>rT4b949ZPN/pQ/jIMttU6F4gvAPmUBBWNpa5Oa4MWzb4YL4rPGVQ0Fn6svWY+jhrlvfpd8FoQYdGuWqFtoQMndsq1qUcdvzFHNzn2dzMmucZVvwAkAEiFDzxjFMAVnNpOiAZkCg3H2Qu0uY3/KfT8W0ZbkQGd/41NZJOvoYmC0uJwZdgTdxuFlOpbP4Ywp4NIImC9k8V79W9aIKSrfKcp9M23WYq/c6YmL16YcVm8gLMtA/9rViUt5iVyFd1cw0uAY5lQNdLNzt56MjsNKbszKXAo8aHLnSwIn2GkTZ8ImmLx9IUK/LhU8ZkhcwL1vFwYGE72+dFnIagmUbEzZHUDA==</enc>]]>
+		  </text>
+		</query>
+		<updated>
+		  <text>
+			<![CDATA[<enc>Iv6TporDeFgja82JV0esh6ZRZzRu9kR+fygbyZWAlyKyUN63gPXJry8zfOhmJjZCbAhhVpDeFss7mkHafCGJsG65pYF8IIRUOWwIGvKBFYfoFhggRcyqXGC4xTRsUH+iKznlMt4diVfV2RtJkuRSYZB9JXjZ2wIwApRyxfdKgPlWiRTeXltcQWkys5woilmJViqx1DCV2NlytdprNs2QzC2p56QtVHTIMzVQzVdaqkcGySdONf+Udtn4nCd7F2jFnrWgv65GqNj7qQvyCf6Vfg==</enc>]]>
+		  </text>
+		</updated>
+		<inserting>
+		  <text>
+			<![CDATA[<enc>vGSI5s4Xk5tVgbhXp3nNA/AKwAqEZkYtGetUleqfbop9R84O2scRIYbgnBsGrRsyH4zC15smHSmQDMTOm1hNPD+lAYWnBNN1Kqyqc4EhzFTqEIk+QkYUEO0UGzNfnCQpAWz9i42a3d+AipnF+w6Essq3gXCakHm5R2cIppIXl+/H1lsUcNR9Z4zAraBIJ6w9IuyEOfiaRV4t7px+ZZLOnE4iBsxYrIaoPi8FsA1ZGWciJ7tVsQp00VEDr6SYte6LtynCNvB6zNSTCUjoGkVow2VxxxlWMbeSTywMO4ddw/0=</enc>]]>
+		  </text>
+		</inserting>
+		<inserted>
+		  <text>
+			<![CDATA[<enc>6qIHK6hRqJDwFoBb+K+kEn9UyZoht9NSdAs04Xy2EDwdzNLOPedl5etA/YXpxKYFhEEmg7aa6zel/wMKTr+zklO4BYWV2CpxjU9KksgFvpZaqIyjim2iCPRbJPRKFxD4DTrrdCv3Df0PlkQvpwHS3WHnyuYKWknw5Ubd3Uq0ghnIgI6fTTpc4aIW06EkukEB</enc>]]>
+		  </text>
+		</inserted>
+		<importing>
+			<text>
+			<![CDATA[<enc>sxD5Swu0R4mcxEHdwcy2yi46ZbQRyi0uEDh1tGVfNVNRcvUP6dkPQS2QqQDWYbio5mPQapuTl4Ggnc+7rMRw1U6nbR5l0VTnAOtUzvv4u8dDuN4sW+gAcX7thI6f8VKP</enc>]]>
+			</text>
+		</importing>
+	</script>
+  <messages>
+	<message val="RequireMaNVB">
+      <text v="Vui lòng chọn nhóm văn bản để tạo mã văn bản" e="Please select a document group to generate a document code."/>
+    </message>
+	<message val="codeExistsNewMsg">
+	  <text v="Mã văn bản đã tồn tại trong danh mục." e="The document code already exists in the list."/>
+	</message>
+  </messages>
+</dir>

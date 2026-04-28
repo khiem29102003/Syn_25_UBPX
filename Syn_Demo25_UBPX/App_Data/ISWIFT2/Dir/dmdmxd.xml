@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+  <!ENTITY VoucherRequiredFields01 SYSTEM "..\Include\XML\VoucherRequiredFields01.xml">
+  <!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid01.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+
+  <!ENTITY VoucherSaleRequest SYSTEM "..\Include\XML\VoucherSaleRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from dmdmxd where id = @id and status in (6,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+    ">
+]>
+
+
+<dir id="dmdmxd" table="dmdmxd" fieldKey="id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+	<title v="Khai báo định mức xăng dầu" e="Declare petrol prices"></title>
+	<title0 v="Khai báo định mức xăng dầu" e="Declare petrol prices"></title0>
+	<title1 v="Sửa" e="Edit"></title1>
+
+	<forms>
+		<form gravity="TopLeft" columns="120,120,120,120,120" >
+			<fields>
+				<field name="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+					<text v="" e=""></text>
+				</field>
+				<field name="ma_xd" viewType="Lookup" label="1" field="1">
+					<text v="Nhiên liệu" e="Close/withdraw place code"></text>
+					<viewInfo lookupType="One" lookupId="dmxd" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_xd" />
+				</field>
+				<field name="ten_xd" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+					<text v="" e=""></text>
+				</field> 
+				<field name="km_md" allowBlank="false" label="1" field="1" dataType="N" fomat="Amoust">
+					<text v="KM áp đặt" e="Explain"></text>
+				</field>
+				<field name="dien_giai" label="1" field="-">
+					<text v="Diễn giải" e="Explain"></text>
+				</field>
+			</fields>
+		</form>	
+		<form gravity="TopRight" columns="120,120" >
+      		<fields>
+				<field name="unit_id" viewType="Combobox" dataType="I" clientDefault="true" inactivate="true" label="[60]" field="[180]" >
+					<text v="Đơn vị" e="Unit"></text>
+					<viewInfo>
+						<options cache="false" query="select unit_id, ten_unit%l from sysunit where unit_id in (select unit_id from dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @@admin, ''))">
+						</options>
+					</viewInfo>
+				</field>
+				<field name="ngay_ct" label="1" field="1" valueDefault="new Date()" copy="false" allowBlank="false" dataType="D">
+				<text v="Ngày chứng từ" e="Voucher Date"></text>
+				</field>
+      		</fields>
+    	</form>
+	
+		<form tabPageIndex="1" gravity="MiddleLeft" height="320" columns="120,120,240" >
+			<text v="Chi tiết" e="Detail"></text>
+			<fields>
+				<field name="dmdmxdct" allowBlank="false" label="" field="-" viewType="Grid">
+					<text v="Chi tiết" e="Detail"></text>
+				</field>
+			</fields>
+		</form>
+	
+	</forms>
+
+	<grids>
+		<grid id="dmdmxdct" table="dmdmxdct" fieldKey="id, line_nbr" order="line_nbr" readOnly="false">
+			<fields>
+				<field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+				<text v="" e=""></text>
+				</field>
+
+				<field name="line_nbr" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+				<text v="Dòng" e="Line"></text>
+				</field>
+
+				<field name="ma_xe" width="100" viewType="Lookup" readOnly="false" >
+					<text v="Mã xe" e="Vehicle code"></text>
+					<viewInfo lookupType="One" lookupId="dmxe" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_xe" lookupInfo="dmxe|ma_xe|ten_xe" />
+				</field>
+				<field name="ten_xe" width="150" fieldType="EX" inactivate="true" readOnly="true" aliasName="c" join=" left join dmxe c on a.ma_xe = c.ma_xe ">
+					<text v="Tên xe" e="Vehicle name"></text>
+				</field>	
+				<field name="km_md" dataType="N" format="Amount" width="100" readOnly="false">
+					<text v="KL nhiên liệu" e="Explain"></text>
+				</field>
+				<field name="ma_dvt" width="100" viewType="Lookup" readOnly="false" >
+					<text v="ĐVT" e="Vehicle code"></text>
+					<viewInfo lookupType="One" lookupId="dmdvt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_dvt" lookupInfo="dmdvt|dvt|ten_dvt" />
+				</field>
+				<field name="ten_dvt" width="150" fieldType="EX" inactivate="true" readOnly="true" aliasName="d" join=" left join dmdvt d on a.ma_dvt = d.dvt ">
+					<text v="Tên ĐVT" e="Vehicle name"></text>
+				</field>	
+				<field name="dien_giai" width="220" readOnly="false">
+					<text v="Diễn giải" e="Explain"></text>
+				</field>
+			</fields>
+
+			 <buttons>
+				<button id="add">
+					<text v="$AddToolbar" e="$AddToobar"></text>
+				</button>
+				<button id="delete">
+					<text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+				</button>
+				<button id="copy">
+					<text v="$CopyToolbar" e="$CopyToolbar"></text>
+				</button>
+				<button id="paste">
+					<text v="$PasteToolbar" e="$PasteToolbar"></text>
+				</button>
+				<button id="moveup">
+					<text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+				</button>
+				<button id="movedown">
+					<text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+				</button>
+				<button id="split">
+					<text v="-" e="-"></text>
+				</button>
+				<button id="freeze">
+					<text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+				</button>
+			 </buttons>
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+set nocount on
+select @@fields into #t from dmdmxdct a @@join where @@key order by line_nbr
+select * from #t order by line_nbr
+drop table #t
+         ]]>
+          </text>
+        </query>
+      </script>
+		</grid>
+	</grids>
+
+&DefaultButton;
+
+<js>
+	<text>
+<![CDATA[
+function dir$dmdmxd(p){
+	this.constructor(p);
+}
+dir$dmdmxd.prototype = new DirEvent();
+dir$dmdmxd.prototype.beforeInit = function(renderType){
+	this._dir.options._files = null;
+}
+dir$dmdmxd.prototype.afterInit = function(){
+	var p = this._dir;
+}
+]]>
+	</text>
+</js>
+	<script>
+
+	</script>
+</dir>

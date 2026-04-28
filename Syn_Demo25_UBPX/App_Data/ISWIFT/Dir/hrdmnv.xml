@@ -1,0 +1,645 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY InformationBeforeSave "
+  declare @_i_so_ct int, @_so_ct varchar(32), @_exists_so_ct int, @ma_unit nvarchar(256)
+exec ISWIFTStoredCheckVoucherNo @ma_nk, @ngay_ct, '@@voucherCode', @unit_id, @@userId, @@admin, @i_so_ct, @so_ct, '@@controller', @id, 1, @_exists_so_ct output, @_i_so_ct output, @_so_ct output
+    ">
+]>
+
+
+<dir id="hrdmnv" table="hrdmnv" fieldKey="id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Thông tin nhân viên" e="Employee Information"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120" >
+      <fields>
+        <field name="ma_nv" format="U" label="1" field="1" allowBlank="false" >
+          <text v="Mã nhân viên" e="Employee ID"></text>
+        </field>
+        <field name="image_id" label="0" field="1" viewType="Image">
+          <text v="" e=""></text>
+          <viewInfo fileFieldId0="id" fileGroup="Employee" fileExtension="jpg,png" maxFileSize="10240" maxFileCount="1"></viewInfo>
+        </field>
+        <field name="ho_nv" label="1" field="3" allowBlank="false" >
+          <text v="Họ và chữ lót" e="Last Name"></text>
+        </field>
+        <field name="ten_nv" label="1" field="3" allowBlank="false" >
+          <text v="Tên" e="First Name"></text>
+        </field>
+        <field name="ngay_vao" label="1" field="1" valueDefault="new Date()" copy="false" allowBlank="false" dataType="D">
+          <text v="Ngày nhận việc" e="Join date"></text>
+        </field>
+        <field name="ngay_thu_viec" label="1" field="1" valueDefault="new Date()" copy="false" allowBlank="false" dataType="D">
+          <text v="Ngày ký hđ chính thức" e="Official date"></text>
+        </field>
+        <field name="ma_vtr" format="U" viewType="Lookup" label="1" field="1" clientDefault="true" >
+          <text v="Vị trí, chức vụ" e="Position"></text>
+          <viewInfo lookupType="One" lookupId="hrdmvtr" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_vtr" lookupInfo="hrdmvtr|ma_vtr|ten_vtr" />
+        </field>
+        <field name="ten_vtr" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_bp" format="U" viewType="Lookup" label="1" field="1" clientDefault="true" >
+          <text v="Bộ phận" e="Department"></text>
+          <viewInfo lookupType="One" lookupId="hrdmbp" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_bp" lookupInfo="hrdmbp|ma_bp|ten_bp" />
+        </field>
+        <field name="ten_bp" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+
+        <field name="gioi_tinh" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Giới tính" e="Gender"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Nam" e="1 - Male"></text>
+              </option>
+              <option val="2">
+                <text v="2 - Nữ" e="2 - Female"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Đang làm việc" e="1 - Active"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Đã nghỉ" e="0 - Inactive"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+
+        <field name="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+    <form tabPageIndex="1" gravity="MiddleLeft" height="350" columns="120,120,120,120" >
+      <text v="Thông tin chung" e="General Information"></text>
+      <fields>
+        <field name="ngay_sinh" label="1" field="1" copy="false" dataType="D">
+          <text v="Ngày sinh" e="Date of Birth"></text>
+        </field>
+        <field name="noi_sinh" nextRow="false" label="1" field="-">
+          <text v="Nơi sinh" e="Place of Birth"></text>
+        </field>
+        <field name="nam_sinh" label="1" field="1" dataType="I" format="-1" maxLength="4">
+          <text v="Năm sinh" e="Year of Birth"></text>
+        </field>
+        <field name="cmnd_so"  label="1" field="1">
+          <text v="Số CMND" e="Identity No."></text>
+        </field>
+        <field name="cmnd_ngay_hl" label="1" field="1"  copy="false" dataType="D">
+          <text v="Ngày cấp" e="Issue date"></text>
+        </field>
+        <field name="cmnd_noi_cap" format="U" viewType="Lookup" nextRow="false" label="1" field="1">
+          <text v="Nơi cấp" e="Issue place"></text>
+          <viewInfo lookupType="One" lookupId="hrdmtinh" lookupKey="status=1" lookupCheck="1=1" lookupRef="cmnd_ten_noi_cap" lookupInfo="hrdmtinh|ma_tinh|ten_tinh" />
+        </field>
+        <field name="cmnd_ten_noi_cap" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+
+        <!--<field name="cmnd_ngay_hh" label="1" field="1" copy="false" dataType="D">
+          <text v="Ngày hết hạn" e="Expiry date"></text>
+        </field>-->
+        <field name="dia_chi"  label="1" field="-">
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+        <field name="dien_thoai_dd"  label="1" field="1">
+          <text v="Điện thoại" e="Phone Number"></text>
+        </field>
+        <field name="email_cty" nextRow="false" label="1" field="-">
+          <text v="Email" e="Email"></text>
+        </field>
+
+        <field name="ma_qt" format="U" viewType="Lookup" label="1" field="1" clientDefault="true" >
+          <text v="Quốc tịch" e="Nationality"></text>
+          <viewInfo lookupType="One" lookupId="hrdmqt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_qt" lookupInfo="hrdmqt|ma_qt|ten_qt" />
+        </field>
+        <field name="ten_qt" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_dt" format="U" viewType="Lookup" label="1" field="1" clientDefault="true" >
+          <text v="Dân tộc" e="Ethnic"></text>
+          <viewInfo lookupType="One" lookupId="hrdmdt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_dt" lookupInfo="hrdmdt|ma_dt|ten_dt" />
+        </field>
+        <field name="ten_dt" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_tgiao" format="U" viewType="Lookup" label="1" field="1" >
+          <text v="Tôn giáo" e="Religion"></text>
+          <viewInfo lookupType="One" lookupId="hrdmtgiao" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_tgiao" lookupInfo="hrdmtgiao|ma_tgiao|ten_tgiao" />
+        </field>
+        <field name="ten_tgiao" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        
+        <field name="hon_nhan" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Tình trạng hôn nhân" e="Marital status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Độc thân" e="1 - Single"></text>
+              </option>
+              <option val="2">
+                <text v="2 - Đã lập gia đình" e="2 - Married"></text>
+              </option>
+              <option val="3">
+                <text v="3 - Khác" e="3 - Other"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+
+      </fields>
+    </form>
+
+    <form tabPageIndex="2" gravity="MiddleLeft" height="325" columns="120,120,240" >
+      <text v="Thông tin bảo hiểm" e="Insurance information"></text>
+      <fields>
+        <field name="bhxh_so_so" label="1" field="1">
+          <text v="Sổ sổ BHXH" e="SI Book No."></text>
+        </field>
+        <field name="bhxh_ngay_cap" label="1" field="1" copy="false" dataType="D">
+          <text v="Ngày cấp sổ BHXH" e="Issue date"></text>
+        </field>
+        <field name="bhxh_ngay_tham_gia" label="1" field="1" copy="false" dataType="D">
+          <text v="Ngày tham gia BHXH" e="Join date"></text>
+        </field>
+        <field name="bhyt_so_the" label="1" field="1">
+          <text v="Số thẻ BHYT" e="HI card No."></text>
+        </field>
+        <field name="bhyt_ngay_tham_gia" label="1" field="1" copy="false" dataType="D">
+          <text v="Ngày tham gia BHYT" e="Join date"></text>
+        </field>
+        <field name="bhyt_noi_dk" format="U" viewType="Lookup" label="1" field="1" clientDefault="true" >
+          <text v="Nơi đăng ký KCB" e="Medical Care Center"></text>
+          <viewInfo lookupType="One" lookupId="hrdmkcb" lookupKey="status=1" lookupCheck="1=1" lookupRef="bhyt_ten_noi_dk" lookupInfo="hrdmkcb|ma_kcb|ten_kcb" />
+        </field>
+        <field name="bhyt_ten_noi_dk" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="cdoan_ngay_tham_gia" label="1" field="1" copy="false" dataType="D">
+          <text v="Ngày tg công đoàn" e="Union join date"></text>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="3" gravity="MiddleLeft" height="325" columns="120,120,120,120" >
+      <text v="Thuế TNCN" e="PIT"></text>
+      <fields>
+        <field name="tncn_ms_thue" label="1" field="1">
+          <text v="Mã số thuế TNCN" e="PIT ID"></text>
+        </field>
+        <field name="tncn_dtuong" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Đối tượng thuế" e="Kind"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Cư trú" e="1 - resident"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không cư trú" e="0 - non-resident"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="tncn_tinh_thue" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Tính thuế" e="Tax assessment"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Tính" e="1 - Yes"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không tính" e="0 - No"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="tncn_luy_tien" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Tính thuế Lũy tiến" e="PIT by Flat rate method"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Tính" e="1 - Yes"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không tính" e="0 - No"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="tncn_giam_tru" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Giảm trừ bản thân" e="Deduction"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Có" e="1 - Yes"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không" e="0 - No"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="tncn_quyet_toan" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Quyết toán thuế TNCN" e="PIT Finalization"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Có" e="1 - Yes"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không" e="0 - No"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="4" gravity="MiddleLeft" height="325" columns="120,120,120,120">
+      <text v="Quá trình học vấn" e="Education"></text>
+      <fields>
+        <field name="hretdhv" allowBlank="true" label="" field="-" viewType="Grid">
+          <text v="Quá trình học vấn" e="Education"></text>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="5" gravity="MiddleLeft" height="325" columns="120,120,120,120">
+      <text v="Ngoại ngữ" e="Language"></text>
+      <fields>
+        <field name="hrenn" allowBlank="true" label="" field="-" viewType="Grid">
+          <text v="Ngoại ngữ" e="Language"></text>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="9" gravity="MiddleLeft" height="325" columns="120,120,120,120" >
+      <text v="Thông tin khác" e="Other Information"></text>
+      <fields>
+        <field name="so_the_nh" label="1" field="1">
+          <text v="Số thẻ/Ngân hàng" e="Card No./Bank"></text>
+        </field>
+        <field name="ngan_hang" nextRow="false" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="dia_chi_th_tru" label="1" field="-">
+          <text v="Địa chỉ thường trú" e="Permanent address"></text>
+        </field>
+        <field name="que_quan" label="1" field="-">
+          <text v="Quê quán" e="Native country"></text>
+        </field>
+
+        <field name="ho_chieu_so" label="1" field="1">
+          <text v="Số hộ chiếu" e="Passport ID"></text>
+        </field>
+        <field name="ho_chieu_noi_cap" format="U" viewType="Lookup" nextRow="false" label="1" field="1" clientDefault="true" >
+          <text v="Nơi cấp hộ chiếu" e="Place of issue"></text>
+          <viewInfo lookupType="One" lookupId="hrdmqt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ho_chieu_noi_cap_ten" lookupInfo="hrdmqt|ma_qt|ten_qt" />
+        </field>
+        <field name="ho_chieu_noi_cap_ten" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ho_chieu_ngay_hl" label="1" field="1" copy="false" dataType="D">
+          <text v="Ngày cấp hộ chiếu" e="Date of issue"></text>
+        </field>
+        <field name="ho_chieu_ngay_hh" label="1" field="1" nextRow="false" copy="false" dataType="D">
+          <text v="Ngày hh hộ chiếu" e="Valid until date"></text>
+        </field>
+
+        <field name="visa_so" label="1" field="1">
+          <text v="Số thị thực (Visa)" e="Visa"></text>
+        </field>
+        <field name="visa_noi_cap" format="U" viewType="Lookup" nextRow="false" label="1" field="1" clientDefault="true" >
+          <text v="Nơi cấp thị thực" e="Place of issue"></text>
+          <viewInfo lookupType="One" lookupId="hrdmqt" lookupKey="status=1" lookupCheck="1=1" lookupRef="visa_noi_cap_ten" lookupInfo="hrdmqt|ma_qt|ten_qt" />
+        </field>
+        <field name="visa_noi_cap_ten" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="visa_ngay_hl" label="1" field="1" copy="false" dataType="D">
+          <text v="Ngày cấp thị thực" e="Issue date"></text>
+        </field>
+        <field name="visa_ngay_hh" label="1" field="1" nextRow="false" copy="false" dataType="D">
+          <text v="Ngày hh thị thực" e="Expiry date"></text>
+        </field>
+
+        <field name="nh_nv1" viewType="Lookup" label="1" field="1" importable="40">
+          <text v="Nhóm 1" e="Group 1"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'EM1' and status=1" lookupCheck="ma_loai_nh = 'EM1'" lookupRef="ten_nh_nv1" lookupInfo="hrdmnh|ma_nh|ten_nh" />
+        </field>
+        <field name="ten_nh_nv1" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="nh_nv2" viewType="Lookup" label="1" field="1" importable="45">
+          <text v="Nhóm 2" e="Group 2"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'EM2' and status=1" lookupCheck="ma_loai_nh = 'EM2'" lookupRef="ten_nh_nv2" lookupInfo="dmnh|ma_nh|ten_nh" importCheck="@@DF and z.ma_loai_nh = 'VT2' and z.status=1"/>
+        </field>
+        <field name="ten_nh_nv2" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="nh_nv3" viewType="Lookup" label="1" field="1" importable="50">
+          <text v="Nhóm 3" e="Group 3"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'EM3' and status=1" lookupCheck="ma_loai_nh = 'EM3'" lookupRef="ten_nh_nv3" lookupInfo="dmnh|ma_nh|ten_nh" importCheck="@@DF and z.ma_loai_nh = 'VT3' and z.status=1"/>
+        </field>
+        <field name="ten_nh_nv3" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+
+  </forms>
+
+  <grids>
+
+    <grid id="hretdhv" table="hretdhv" fieldKey="id, line" order="line" readOnly="false">
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+
+        <field name="trinh_do" width="100" allowBlank="false" viewType="Lookup" readOnly="false">
+          <text v="Mã trình độ" e="Code"></text>
+          <viewInfo lookupType="One" lookupId="hrdmtdhv" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_tdhv" lookupInfo="hrdmtdhv|ma_tdhv|ten_tdhv" />
+        </field>
+        <field name="ten_tdhv" width="250" fieldType="EX" inactivate="true" readOnly="true" aliasName="b" join=" left join hrdmtdhv b on a.trinh_do = b.ma_tdhv ">
+          <text v="Tên trình độ" e="Description"></text>
+        </field>
+
+        <field name="truong" width="250" readOnly="false">
+          <text v="Trường" e="School"></text>
+        </field>
+        <field name="chuyen_nganh" width="250" readOnly="false">
+          <text v="Chuyên ngành" e="Major"></text>
+        </field>
+        <field name="ngay_tot_nghiep" dataType="D" width="100" readOnly="false" >
+          <text v="Ngày tốt nghiệp" e="Date"></text>
+        </field>
+        <field name="loai_tot_nghiep" width="300" readOnly="false">
+          <text v="Loại tốt nghiệp" e="Grade"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="paste">
+          <text v="$PasteToolbar" e="$PasteToolbar"></text>
+        </button>
+        <button id="moveup">
+          <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+        </button>
+        <button id="movedown">
+          <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+set nocount on
+select @@fields into #t from hretdhv a
+    @@join
+  where @@key order by line
+
+select * from #t order by line
+drop table #t
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+
+    <grid id="hrenn" table="hrenn" fieldKey="id, line" order="line" readOnly="false">
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+        <field name="ma_nn" width="100" allowBlank="false" viewType="Lookup" readOnly="false">
+          <text v="Mã ngoại ngữ" e="Language"></text>
+          <viewInfo lookupType="One" lookupId="hrdmnn" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_nn" lookupInfo="hrdmnn|ma_nn|ten_nn" />
+        </field>
+        <field name="ten_nn" width="250" fieldType="EX" inactivate="true" readOnly="true" aliasName="b" join=" left join hrdmnn b on a.ma_nn = b.ma_nn ">
+          <text v="Tên ngoại ngữ" e="Description"></text>
+        </field>
+        <field name="trinh_do" width="100" readOnly="false">
+          <text v="Trình độ" e="Level"></text>
+        </field>
+        <field name="diem" width="100" readOnly="false">
+          <text v="Điểm" e="Mark"></text>
+        </field>
+        <field name="ngay_cap" dataType="D" width="100" readOnly="false" >
+          <text v="Ngày cấp" e="Date"></text>
+        </field>
+        <field name="ghi_chu" width="300" readOnly="false">
+          <text v="Ghi chú" e="Note"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="paste">
+          <text v="$PasteToolbar" e="$PasteToolbar"></text>
+        </button>
+        <button id="moveup">
+          <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+        </button>
+        <button id="movedown">
+          <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+set nocount on
+select @@fields into #t from hrenn a
+    @@join
+  where @@key order by line
+
+select * from #t order by line
+drop table #t
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$hrdmnv(p){
+  this.constructor(p);
+}
+dir$hrdmnv.prototype = new DirEvent();
+dir$hrdmnv.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+
+  <css>
+    <text>
+      <![CDATA[
+@media only screen and (min-width: 768px){
+  .css4control-image_id{
+      position: absolute;
+      right: 0px;
+      top: 5px;
+  }
+}
+         ]]>
+    </text>
+  </css>
+
+  <script>
+
+    <query>
+      <text>
+        <![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @fscript nvarchar(4000)
+if @action in ('EDIT', 'VIEW') exec ISWIFTStoreGetListFiles 'image_id', @id, 'Employee', '', @fscript output
+if @fscript is null set @fscript = ''
+if @action in ('EDIT', 'VIEW') begin
+    select @fscript as script
+end
+drop table #@@table
+]]>
+      </text>
+    </query>
+
+
+
+    <beforesave>
+      <text>
+        <![CDATA[
+if exists(select 1 from hrdmnv where ma_nv = @ma_nv and id <> @id)
+begin
+	select '$codeExistsNewMsg' as message, '@@firstFieldKey' as field
+	return
+end
+				 ]]>
+      </text>
+    </beforesave>
+
+    <updated>
+      <text>
+        <![CDATA[
+update dmttin set status = 0 from dmttin where id0 = rtrim(@id) and xgroup = 'Employee'
+if @image_id <> '' update dmttin set status = 1, id0 = rtrim(@id) from dmttin where charindex(id, @image_id) > 0 and xgroup = 'Employee'
+update @@table set datetime2 = getdate(), user_id2 = @@userId, image_id = @image_id where [%whereFieldKey]
+]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId
+exec ISWIFTStoredGetIdentityNumber 'HRM', '@@table', @id output, 'HRM'
+         ]]>
+      </text>
+    </inserting>
+
+    <inserted>
+      <text>
+        <![CDATA[
+if @image_id <> '' update dmttin set status = 1, id0 = rtrim(@id) from dmttin where charindex(id, @image_id) > 0 and xgroup = 'Employee'
+
+if @action = 'NEW'
+  insert into hreqtct(id, line, ma_bp, ma_vtr, ngay_tu) select @id, 1, @ma_bp, @ma_vtr, @ngay_vao
+
+select '' as message, @id as [#id]
+]]>
+      </text>
+    </inserted>
+
+    <aftersave>
+      <text>
+        <![CDATA[
+delete hrenn where id = @id
+insert hrenn select * from @hrenn
+
+
+delete hretdhv where id = @id
+insert hretdhv select * from @hretdhv
+
+update hrdmnv set bp_ref = b.bp_ref from hrdmnv a join hrdmbp b on a.ma_bp = b.ma_bp where id = @id
+select @ho_nv + space(1) + @ten_nv as [#ho_ten_nv], @id as [#id], '' as message
+return
+				 ]]>
+      </text>
+    </aftersave>
+
+  </script>
+
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã nhân viên đã tồn tại trong danh mục." e="The record already exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã nhân viên đã tồn tại trong danh mục." e="The record already exists."/>
+    </message>
+  </messages>
+
+</dir>

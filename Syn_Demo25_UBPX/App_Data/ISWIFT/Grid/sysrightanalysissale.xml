@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="sysrightanalysissale" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Phân quyền thông tin truy vấn dữ liệu bán hàng" e=""></title>
+  <subtitle v="Phân quyền" e="Permission"></subtitle>
+  <grids>
+    <grid table="vsysuserinfo" fieldKey="user_id" order="user_id" allowFilter="true" allowOrder="true" key="(@@admin = 1 or user_id = @@userId)" >
+      <fields>
+        <field name="user_id" fieldType="PK" dataType="N" align="Right" width="40" filterType="Code" aliasName="a">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="username" width="120" filterType="Code" aliasName="a">
+          <text v="Tên" e="Name"></text>
+        </field>
+        <field name="nickname" width="300" aliasName="a">
+          <text v="Tên đầy đủ" e="Fullname"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="permission">
+          <text v="Phân quyền (Ctrl + E, Alt + E)" e="Permission (Ctrl + E, Alt + E)"></text>
+        </button>
+        <button id="view">
+          <text v="$ViewToolbar" e="$ViewToolbar"></text>
+        </button>
+        <button id="find">
+          <text v="$FindToolbar" e="$FindToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(128)
+set @strKey = 'is_user = ' + dbo.ISWIFTFunctionReplaceSQLParam(@xtype) + ' and admin = 0 and status = 1'
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+  
+  <js>
+    <text>
+      <![CDATA[
+function grid$sysrightanalysissale(f){
+  this.constructor(f);
+}
+grid$sysrightanalysissale.prototype = new DirEvent();
+grid$sysrightanalysissale.prototype.afterInit = function(){
+  var p = this._dir;
+  p.options.buttonGridKeys[69] = 'permission';
+  if (p.options._xtype == 1)
+    p.options.dirController = 'sysuserinfo';
+  else
+    p.options.dirController = 'sysgroupinfo';
+}
+grid$sysrightanalysissale.prototype.formActionChange = function(action, m){
+  var p = this._dir;
+  if (p.options._xtype == 0 && action == 'BeforeShowViewDir') {
+    m.get('user_id').Name = 'group_id';
+  }
+  return true;
+}
+grid$sysrightanalysissale.prototype.beforeButtonGridClick = function(id, gindex){
+  var p = this._dir, dt = p.grid().data;
+  if (id == 'permission') {
+    var r = p.curr("r", undefined, gindex);
+    if (r != null) {
+      p.request('CheckRight', '', [['user_id', 'C', dt.val(r, 'user_id')]], function(p, d, run){
+        if (run) {
+          p.showFilter('sysrightanalysissale2', null, {backdropclick: false});
+        }
+      })
+      return false;
+    }
+  }
+  return true
+}
+
+         ]]>
+    </text>
+  </js>
+<css>
+    <text>
+		<![CDATA[
+		.toolbar-close > div {
+			background-position: -336px -400px !important;
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+  <script>
+    <request code="CheckRight">
+      <text>
+        <![CDATA[
+if @@admin = 0 select '$AdminAccess' as message
+else if @user_id = @@userId select '$NotAuthorized' as message
+else select '' as message
+        ]]>
+      </text>
+    </request>
+  </script>
+</dir>

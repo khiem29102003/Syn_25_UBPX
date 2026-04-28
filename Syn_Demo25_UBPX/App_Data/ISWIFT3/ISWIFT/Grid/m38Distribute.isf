@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="m38Distribute" dirViewType="Grid" voucherCode="QT0" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách các quỹ chi" e="Allocation to Fund"></title>
+  <subtitle v="Phân bổ thu tiền cho các hóa đơn..." e=""></subtitle>
+
+  <grids>
+    <grid table="ctquy20" fieldKey="id" order="ngay_ct, so_ct, id" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="so_ct" width="100" link="V" >
+          <text v="Số quỹ chi" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày quỹ chi" e="Voucher Date"></text>
+        </field>
+        <field name="ma_unit" width="120" >
+          <text v="Mã Đơn vị" e="Unit Code"></text>
+        </field>
+        <field name="ten_unit" width="250" fieldType="EX" >
+          <text v="Tên đơn vị" e="Unit Name"></text>
+        </field>
+        <field name="ma_nt" width="80" >
+          <text v="Ngoại tệ" e="FC"></text>
+        </field>
+        <field name="tien_nt" dataType="N" format="FCAmount" width="100">
+          <text v="Tiền thu" e="Pcs UOM"></text>
+        </field>
+        <field name="da_pb_nt" dataType="N" format="FCAmount" width="100" aliasName="0*tien_nt as ">
+          <text v="Đã phân bổ" e="Cash Allotment"></text>
+        </field>
+		 <field name="cl_nt" dataType="N" format="FCAmount" width="100" aliasName="0*tien_nt as ">
+          <text v="Chưa phân bổ" e="Cash In Return"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="unit_id" hidden="true" dataType="I" width="80" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        
+        <field name="ma_ct" width="80" >
+          <text v="Chứng từ" e="Voucher"></text>
+        </field>
+        <field name="id" dataType="N" fieldType="PK" format="0" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" dataType="N" fieldType="PK" format="0" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="find">
+          <text v="$FindToolbar" e="$FindToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="export">
+          <text v="$ExportToolbar" e="$ExportToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[<enc>oRMbCoOWntsYvA8Fi9jElYL673YXTY5pIn/q81d5UwQldvGg+qVRCwzyr+2rE1pitp2uNmeO4temRAAzKjTfKI9a6DXDx5aKfzUzxxrc1xysKB1ciGaJQ7cSqI/fVBrSvZWKRlO0xvfgtIklrG8AzofvzEi6wtJYHHCWTBeBT04ucns30VvvALw3MXnpeZlB1+u7WAezIa7D7ddSXyPRcaVvdsDxuaw/Vw2SJNGsZ/mfZZAvlY16tXJC2wS5RcrybyjyA7l7R2wITdjrrGRhIRr3uL68sUsdGT1+P+HvV/WoEmbNWBAaicOGl5enqpZB1AY+kzlJVRExUuL0CVr+Fd7g2Tv+gHZGO3kdociEEZCibe3jXWJmmjtimvermBxoWb876ahkIRnU6M8v5AaBG2pg7z0agEhjfvTVEdrZTpD8/2rdLZxeTbuGqsynAQuMDExCxyX9D0QTnFQVIdEL577Pqk93OMXLoJhKcgRsk4VYZR2WRNB+6hqRKYuXfJ40j8CNryEKjq2nGwoIiYxmPO9mKfAaNpx0rK91U4DGseM=</enc>]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[<enc>W82LRqtsHTstnBHXr0KXPOW4oy4V07uJLuZW8T98rvM+YF0+NB8EQJWOAXoGKUHsEAZbJF0vjEFs1yWiqSVvmzhXK2NTdTw4TzO8F83Ln7odWdCuhVAYXEzfdx5vfR/oh9Hp8c4/5JIVSHrFfTOhPqJG8NiicP3pUUjYk62tzBiGIIq/U7FzxZCS3KAEEFHyTNx/FNZYjSJr3GFlUbkExinr1LY0GXkA1RPzPTsDS2Xv9mQkU6vb6metRM0LNlMdGrqMzbNaQdooXsxfAInMEM6RG/rE3oqtd/+Qg09752NUtwJ/mEKosp7L7p/09TOdPUCL8kbTLLfMuLMR9LHG7oXBHeCYJMAVuebropjiZOnpRRrlfFqbaF6ozl56vxP/XGONGV7U5X96LCjRQZl9R8sA+Cpfc1SmJImHUCfGJaSRwKrCWdUspqPnYSyDXWmaMukoL5Xmiv+L4aHJbNWkt7OYfwB35ofA1lWFT4ut0pdykFV2rA8Fh0dRpR6Ohuv4/ubo6/U0ruKhrTtoeP3YrDwZANZYcP+x4GSazzfPD18ONTc/2fB2JcB9Pdz8O8C9grGv3UGvqXH5ZK3cqWfTAY4MG57p03KSxVoPT4E2dU/lL4ahaPhMFVMxaxV91nhbLeUEuYAnW+njWuSbxl0WREWposhaEj3ZErVgE/N+h/rjvtIywpfxxUn3uBqDXr588/IsIWuPPTSrrBFBdbXICQbDYLaAAJ4whFEZUOlLwZtXbWJYPtIQKw9evt7k6wiF4pCbwpU1nUm0PgJbOsuZM2c2Ha6CIXTiA4nHMCCeIlJsrf9yKBNC3VUqpP3F5XlH+kZK6x4p7AgyoEFqeUSWulmu7gNzOnp9jmKhA08paWfMk3LT72ygh+M68j+5veca6l6z7mcbHT5isve9ESR90ZlFZ22iabaIi1k4Y1qwVQahlLyOgBSFP+LH1L7rF8+ifAdlU8NYaCNprhUDvzgryRNkCLSPUxT5vJ3U2N6z+UPKPj+zp1NF8Rd5PsETbipHfXy9WZUNIdEFhTGsB4QnlJIBwwMadX5cVWUugGrMOJ/6kUaGBUWZ8ZA4Sr3J4rUBvUiys0Aw1Y834owE2dx+kbDC2PcKjnXkwwF0yhsvm8gbydEqVIxaKhCBu5nrh8kpuz7dAixaFpVfuOkL93yCB8PjHGRoUIXB4jgYK+jWOg5+4fSxR9Bo3sPdN7jmvd3rJC8lYFMFJFhH/J1l4DqZRjDQB1ASjO0IZuBPFSBQbKvAof7cf4HKsinDAgA7kZpFugVV0W6RwioCPYG9kn30U6CMBXdY7Amf2JxNrD8W/nCx6XPevI5vg6TpSSSbJgvEn077a4OuxhGbWfBS6lDWOg==</enc>]]>
+    </text>
+  </js>
+
+  <css>
+    <text>
+      <![CDATA[<enc>omBOv6UuMwU1yaIrt6AkAnJ634eTh/T7U4UegBLBcXsP8A/+MD9lezfA80wrOiqqieO5213Eq6CmWzfKhBUkuTSf4lHlgIPlu5+6NjtgnqUO/EV8ndhZ9fS6NneydaO2Bydcd7/5+OTl1FIRduyjOcFX127dyQcid4E6+zA5BJqJPOyhid40sFwafPNrc/mMHYUdqsNI5wxRZAvKrhmuK/vOrfGezXq5urOQmPCWxU5o1aFXlZ+2KTpG2G6Y1LhcGjCVyP84fkDpR/LHkc7EoxsivbfFR5TJ/SyiJx4EMjNQP3dFhT8hbrxIM9XXK8/P</enc>]]>
+    </text>
+  </css>
+
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+  
+</dir>

@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="dmttcall" table="" height="" fieldKey="ma_ttcall" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Điều kiện lọc" e="Filter"></title>
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120"  >
+      <fields>
+		<field name="ma_ttcall" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Mã t/thái cuộc gọi" e="Call Status code"></text>
+			<viewInfo lookupType="One" lookupId="dmttcall" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_ttcall" lookupInfo="dmttcall|ma_ttcall|ten_ttcall" />
+		</field>
+		<field name="ten_ttcall" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[150]"  aliasName="cast('' as nvarchar(4000)) as ">
+			<text v="" e=""></text>
+		</field> 	
+      </fields>
+    </form>
+	<form gravity="BottomLeft" columns="120,120,120"  >
+      <fields>
+		<field name="status" viewType="Combobox" label="1" field="2" valueDefault="1">
+		  <text v="Trạng thái" e="Status"></text>
+		  <viewInfo>
+			<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 order by ma_tt">
+			</options>
+		  </viewInfo>
+		</field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$dmttcall(p){
+  this.constructor(p);
+}
+filter$dmttcall.prototype = new DirEvent();
+filter$dmttcall.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+ 
+</dir>

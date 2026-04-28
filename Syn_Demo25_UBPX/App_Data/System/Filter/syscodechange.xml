@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="syscodechange" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Điều kiện lọc" e="Filter"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,240,120"  >
+      <fields>
+        <field name="code_type" viewType="Combobox" label="1" field="2">
+          <text v="Loại mã" e=""></text>
+          <viewInfo>
+            <options query="select code, name%l from syslistchangecode where status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="status" viewType="Combobox" dataType="I" inactivate="true" valueDefault="5" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="0">
+                <text v="Tất cả" e="All"></text>
+              </option>
+              <option val="5">
+                <text v="Chờ thực hiện" e="Pedding"></text>
+              </option>
+              <option val="7">
+                <text v="Hoàn thành" e="Hoàn thành"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$syscodechange(p){
+  this.constructor(p);
+}
+filter$syscodechange.prototype = new DirEvent();
+filter$syscodechange.prototype.afterInit = function(){
+  var p = this._dir;
+}
+filter$syscodechange.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir;
+  sub.push('{code_type_text}');
+  sub.push(p.jObject('code_type').find('option:selected').text());
+  
+  return [m2, opt, sub];
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+
+  </script>
+</dir>

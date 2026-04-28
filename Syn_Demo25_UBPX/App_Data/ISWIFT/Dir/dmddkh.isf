@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmddkh" table="dmddkh" fieldKey="ma_so_thue, ma_noi_di, ma_noi_den" transaction="true" tryCatch="true" dirViewType="Dialog" voucherCode="TC1" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục nơi đi/ đến của khách hàng" e="Customer Pickup/Delivery Location List"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+	<form gravity="TopLeft" columns="120,120,120" >
+		<fields>
+
+			<field name="tt" nextRow="true" fieldType="EX" readOnly="true" inactivate="true" label="[200]" field="0">
+				<text v="Thông tin khách hàng:" e="Customer information: "></text>
+			</field>
+		      <field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+			  <text v="" e=""></text>
+			</field>			
+			<field name="ma_so_thue" allowBlank="false" viewType="Lookup" label="1" field="1" fieldType="PK">
+			  <text v="Mã số thuế" e="Tax Code"></text>
+			  <viewInfo lookupType="One" lookupId="dmkh0" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_kh" lookupInfo="dmkh|ma_so_thue|ten_kh" />
+			</field>
+			<field name="ten_kh" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_noi_di" viewType="Lookup" label="1" field="1" allowBlank="false" fieldType="PK">
+				<text v="Nơi đi" e="Origin"></text>
+				<viewInfo lookupType="One" lookupId="vdmcangdi" lookupKey="(kkh_yn = 1 or hc_yn = 1) and status = 1" lookupCheck="1=1" lookupRef="ten_noi_di" lookupInfo="vdmcangdi|ma_noi_di|ten_noi_di" />
+			</field>
+			<field name="ten_noi_di" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[150]"  aliasName="cast('' as nvarchar(4000)) as ">
+				<text v="" e=""></text>
+			</field> 	
+			<field name="ma_noi_den" viewType="Lookup" label="1" field="1" allowBlank="false" fieldType="PK">
+				<text v="Nơi đến" e="Destination"></text>
+				<viewInfo lookupType="One" lookupId="vdmcangden" lookupKey="(kkh_yn = 1 or hc_yn = 1) and status = 1" lookupCheck="1=1" lookupRef="ten_noi_den" lookupInfo="vdmcangden|ma_noi_den|ten_noi_den"/>
+			</field>
+			<field name="ten_noi_den" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="true" label="" field="[150]" aliasName="cast('' as nvarchar(200)) as ">
+				<text v="" e=""></text>
+			</field> 
+			<field name="status" viewType="Combobox" label="1" field="1" valueDefault="1">
+			  <text v="Trạng thái" e="Status"></text>
+			  <viewInfo>
+				<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 order by ma_tt">
+				</options>
+			  </viewInfo>
+			</field>
+      </fields>
+    </form>
+  </forms>
+
+	<buttons>
+		<button id="ok" default="true">
+		<text v="$AcceptLabel" e="$AcceptLabel"></text>
+		</button>
+	</buttons>
+
+  <js>
+    <text>
+      <![CDATA[<enc>m0GRitCI4bB1Z3d28rqzWlrWI6bbNfLXytN5TO4XZJwSKJgRXZQA5EC5LbW/+yQlt7iVfON3Y6J8ZQY1hXbFk2qFTFnU+R6fSClMZBbTKacEeDdCEtUYwDxvD/iQJUOjM7j4g8bAeeFoev7LfB/sQXRyYrmdxoHEC0WU6fFmwc8XJfuHyIZ5FhWvIO/5d+qRBKnqsM2qlermi3ateg9vSIgoesVrEtN+O94OBU4eIkIQUqfPZccGxPYuNXqb7B8vGKNt6VqIsuQY8OFKDd1WgBDtE0hkHXR86gDWfOWzMPtS6/j6FUi8nntSWZGKRvxeZ9aSfa45+ZVPWo4/fgYAeg==</enc>]]>
+    </text>
+  </js>
+<css>
+	<text>
+		  <![CDATA[<enc>xWUFyUfGHP5zepzuad8FNpr4alQM8KqJjnBX0uDWgqbQQ2XYzvvzCRy7pPo4PAgcz1vG7CiFAnRFSygwBWO49c0hDzNvf4EznljOBFJMw0EIDfVUSVEPus0zU3Y0HleGIbMTEaDZcCG3KIuKVLSnZMbFLFro4xzzndb4chUlCrfPcwbfjMyEDF3vLzSLq8zTkUNmZgEJNeTuH/8kSLv1Ng==</enc>]]>
+	</text>
+</css>
+  <script>
+  
+  <inserting>
+      <text>
+        <![CDATA[<enc>qSibm796KHzTjltPx3ASfBJS3Slq3OhU64lN0N/Xa+7rh9PmO4e9o63d0euJ/IXsdL5ukrdrQCzIM8QLWr7MpxAQ+/ZvEOSnKjsUEpbZui2ulN9Tho9gwdxtLD7qbzXBVrYZ/Ew+PttGwPfU5tzhpe+9EDAc8KB0rEGQFtKLS+f5hvtZTNTEPCoOS1ChvdoD+Gx8bxaSdZSnA6buggrW7uP4hP9/GSb+AS7L0sN8LHnXatPxonFOvwcBL/bsTv8r043NaxWVQYYwoPSi4jv6tg==</enc>]]>
+      </text>
+    </inserting>
+	<importing>
+      <text>
+        <![CDATA[<enc>OJTGoSIy8QCZeoyJMmdxeUd7FCB/9CUKI3D1cWkrCmCczF6fKYxFNFvElWRVu3fA</enc>]]>
+      </text>
+    </importing>
+  </script>
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã số thuế, mã nơi đi và nơi đến đã tồn tại trong danh sách" e="The tax code, origin code, and destination code already exist in the list."/>
+    </message>
+	 <message val="codeExistsEditMsg">
+      <text v="Mã số thuế, mã nơi đi và nơi đến đã tồn tại trong danh sách" e="The tax code, origin code, and destination code already exist in the list."/>
+    </message>
+  </messages>
+</dir>

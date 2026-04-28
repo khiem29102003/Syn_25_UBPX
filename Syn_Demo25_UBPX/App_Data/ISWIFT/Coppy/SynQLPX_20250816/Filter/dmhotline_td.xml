@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="dmhotline_td" table="dmhotline" height="" fieldKey="ma_hl" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Điều kiện lọc" e="Filter Condition"></title>
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120"  >
+      <fields>
+		<field name="ma_hl" label="1" field="1" hidden="true">
+          <text v="Mã hl" e="Hotline Code"></text>
+		</field>
+		<field name="hl_name" label="1" field="-" disabled="false" operation="a.hl_name like N'%%s%'">
+		  <text v="Tên hiển thị" e="Display Name"></text>
+		</field>
+		<field name="hl_lienhe" label="1" field="-" operation="a.hl_lienhe like N'%%s%'">
+		  <text v="Người liên hệ" e="Contact Person"></text>
+		</field>
+		<field name="dien_thoai" nextRow="true" label="1" field="1" operation="a.dien_thoai like N'%%s%'">
+			<text v="Điện thoại" e="Phone Number"></text>
+		</field>
+		<field name="ma_ttp" allowBlank="true" viewType="Lookup" label="1" field="1" operation="like">
+		  <text v="Tỉnh thành phố" e="Province/City"></text>
+		  <viewInfo lookupType="One" lookupId="dmttp" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_ttp" lookupInfo="dmttp|ma_ttp|ten_ttp" />
+		</field>
+		<field name="ten_ttp" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+		  <text v="" e=""></text>
+		</field>
+		<field name="ma_phuongxa" allowBlank="true" viewType="Lookup" label="1" field="1" operation="like">
+		  <text v="Phường/xã" e="Ward/Commune"></text>
+		  <viewInfo lookupType="One" lookupId="dmphuongxa" lookupKey="ma_ttp = ![ma_ttp]! and status = 1" lookupCheck="1=1" lookupRef="ten_phuongxa" lookupInfo="dmphuongxa|ma_phuongxa|ten_phuongxa" />
+		</field>
+		<field name="ten_phuongxa" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+		  <text v="" e=""></text>
+		</field>
+		<field name="ghi_chu" nextRow="true" label="1" field="2" operation="a.ghi_chu like N'%%s%'" >
+			<text v="Ghi chú" e="Note"></text>
+		</field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$dmhotline_td(p){
+  this.constructor(p);
+}
+filter$dmhotline_td.prototype = new DirEvent();
+filter$dmhotline_td.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+ 
+</dir>

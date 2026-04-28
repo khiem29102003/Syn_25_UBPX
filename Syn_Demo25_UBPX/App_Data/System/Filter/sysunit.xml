@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="sysunit" table="" fieldKey="name" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Chọn đơn vị cơ sở làm việc" e="Select Current Unit"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,240,120"  >
+      <fields>
+        <field name="unit_id" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Chọn đơn vị" e="Unit"></text>
+          <viewInfo>
+            <options cache="false" query="select unit_id, ma_unit + ' - ' + ten_unit from sysunit where unit_id in (select unit_id from dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @@admin, ''))">
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$sysunit(p){
+  this.constructor(p);
+}
+filter$sysunit.prototype = new DirEvent();
+filter$sysunit.prototype.afterInit = function(){
+  var p = this._dir;
+}
+filter$sysunit.prototype.beforeButtonDialogClick = function (id) {
+  var p = this._dir;
+  if (id == 'filterOk') {
+    var time = $.userinfo.val('CommandTimeout');
+    p.wait(true);
+    $.invoke('SetUnit', { iUnit: p.valForm('unit_id') }, this, time, function (d) {
+      $.clearClientCache();
+      p.wait(false);
+      if (d == null) {
+        $.alert(p.msg('errorSelectUnit'));
+        return;
+      }
+      d = new DataRow(d);
+      $.userinfo.val('unit_id', d.val("unit_id"));
+      $("#header").sysmenu("setUnit", d.val("ma_unit"), d.val("ten_unit"));
+      p._close();
+    })
+    return false;
+  }
+  return true;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <loading code="1">
+      <text>
+        <![CDATA[
+if 1 = (select count(1) from dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @@admin, '')) begin
+  select '$OnlyOneUnitRight' as pauseToast
+  return
+end
+select 'p.field(''unit_id'').valueDefault = ''@@unit''' as script
+        ]]>
+      </text>
+    </loading>
+  </script>
+
+  <messages>
+    <message val="errorSelectUnit">
+      <text v="Có lỗi trong quá trình chọn đơn vị, phân quyền có thể đã bị thay đổi hãy trở lại màn hình đăng nhập và đăng nhập lại hệ thống" e=""/>
+    </message>
+  </messages>
+</dir>

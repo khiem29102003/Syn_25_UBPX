@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridFinding.xml">
+]>
+
+<dir id="dmnv" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục nhân viên" e="List of employee"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="dmnv" fieldKey="ma_nv" order="ma_nv" allowFilter="true" allowOrder="true" >
+      <fields >
+        <field name="ma_nv" fieldType="PK" width="120" hidden="false">
+          <text v="Mã nhân viên" e="Employee code"></text>
+        </field>
+        <field name="ten_nv" width="250">
+          <text v="Tên nhân viên" e="Employee name"></text>
+        </field>
+		<field name="ngay_sinh" width="120" dataType="D">
+          <text v="Ngày sinh" e="Brithday"></text>
+        </field>
+		<field name="ma_bp" width="120" hidden="true">
+          <text v="Bộ phận" e="Position"></text>
+        </field>
+		<field name="ten_bp" width="150" fieldType="EX" >
+          <text v="Bộ phận" e="Department name"></text>
+        </field>  
+		<field name="ma_cv" width="150" hidden="true">
+          <text v="Chức vụ" e="Position"></text>
+        </field>
+		<field name="ten_cv" width="150" fieldType="EX" >
+          <text v="Chức vụ" e="Position name"></text>
+        </field>  
+		<field name="dt_mobil" width="120">
+          <text v="Điện thoại" e="Phone"></text>
+        </field>
+		<field name="email" width="120">
+          <text v="Email" e="Email"></text>
+        </field>
+		<field name="dia_chi" width="250">
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+		<field name="status" viewType="Combobox" inactivate="true" width="120">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="5">
+                <text v="Đang làm việc" e="1 - Use"></text>
+              </option>
+              <option val="7">
+                <text v="Nghỉ thai sản" e="0 - Not use"></text>
+              </option>
+			  <option val="9">
+                <text v="Nghỉ làm" e="1 - Use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+
+      </fields>
+
+      &DefaultButton;
+   <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey ='ma_nv <> '''''	
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmbp c on a.ma_bp = c.ma_bp left join dmchucvu d on a.ma_cv = d.ma_cv', ' c.ten_bp, d.ten_cv', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = @strFinding
+select @filterKey = @filterKey +  'ma_nv <> '''' '
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmbp c on a.ma_bp = c.ma_bp left join dmchucvu d on a.ma_cv = d.ma_cv', ' c.ten_bp, d.ten_cv', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+ 
+         ]]>
+          </text>
+        </finding>
+      </script>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmnv(f){
+  this.constructor(f);
+}
+grid$dmnv.prototype = new DirEvent();
+grid$dmnv.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+</dir>

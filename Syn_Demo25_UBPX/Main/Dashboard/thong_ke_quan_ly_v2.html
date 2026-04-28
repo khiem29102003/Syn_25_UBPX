@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thống kê Quản lý — IT NQK</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root { --ring: rgba(59,130,246,0.25); }
+    body { background:#f6f8fb; color:#0f172a; }
+    .btn { border-radius: 12px; padding: 10px 14px; background:#2563eb; color:white; font-weight:600; }
+    .btn:hover { background:#1d4ed8; }
+    .toolbar input, .toolbar select {
+      border:1px solid #e5e7eb; padding:8px 10px; border-radius:12px;
+      background:#fff; min-width: 140px;
+    }
+    .section {
+      border-radius: 18px; background: #fff; border: 1px solid #e5e7eb;
+      box-shadow: 0 8px 24px rgba(16,24,40,.06);
+    }
+    .section-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 18px; border-bottom:1px solid #eef2f7;
+    }
+    .section-title { display:flex; align-items:center; gap:10px; font-weight:800; }
+    .section-title .dot { width:10px; height:10px; border-radius:9999px; }
+    .section-total { font-weight:800; font-size:26px; }
+    .kpi-grid { padding:16px; }
+    .kpi-card { border:1px solid #eef2f7; border-radius:14px; padding:14px; }
+    .kpi-card:hover { box-shadow: 0 8px 20px rgba(16,24,40,.06); transform:translateY(-1px); }
+    .kpi-label { font-size:12px; color:#ffffff; }
+    .kpi-value { font-size:28px; font-weight:800; line-height:1.1; }
+    .chart-box { position:relative; height: 280px; }
+    .chart-box canvas { width:100% !important; height:100% !important; }
+    .skeleton { position:relative; overflow:hidden; background:#f3f4f6; border-radius:12px; }
+    .skeleton::after {
+      content:""; position:absolute; inset:0; transform: translateX(-100%);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
+      animation: shimmer 1.2s infinite;
+    }
+    #SYS_Calendar { display:none; }
+	.kpi-card {
+	  position: relative;
+	  border-radius: 14px;
+	  padding: 14px;
+	  color: #fff;
+	  overflow: hidden;
+	  transition: all 0.25s ease;
+	}
+	.kpi-card:hover {
+	  transform: translateY(-3px);
+	  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+	}
+	.kpi-icon {
+	  position: absolute;
+	  top: 12px;
+	  right: 12px;
+	  opacity: 0.15;
+	  font-size: 48px;
+	}
+	.kpi-label {
+	  font-size: 12px;
+	  opacity: 0.85;
+	}
+	.kpi-value {
+	  font-size: 28px;
+	  font-weight: 800;
+	}
+	
+	.kpi-card.color { position:relative; color:#fff; overflow:hidden; }
+	.kpi-card.color .kpi-label{opacity:.9}
+	.kpi-card.color .kpi-icon{position:absolute; right:10px; top:10px; opacity:.18; font-size:44px}
+	.bg-grad-1{background:linear-gradient(135deg,#4f46e5,#3b82f6)}
+	.bg-grad-2{background:linear-gradient(135deg,#059669,#10b981)}
+	.bg-grad-3{background:linear-gradient(135deg,#db2777,#f472b6)}
+	.bg-grad-4{background:linear-gradient(135deg,#b45309,#f59e0b)}
+	.bg-grad-5{background:linear-gradient(135deg,#0d9488,#14b8a6)}
+	.bg-grad-6{background:linear-gradient(135deg,#7e22ce,#a855f7)}
+	.bg-grad-7{background:linear-gradient(135deg,#be123c,#ef4444)}
+	.bg-grad-8{background:linear-gradient(135deg,#1e3a8a,#3b82f6)}
+	.bg-grad-9{background:linear-gradient(135deg,#14532d,#22c55e)}
+
+
+  </style>
+</head>
+<body>
+	<script src="jquery-2.2.4.min.js"></script>
+	<script src="j0.js"></script>
+	<script src="j1.js"></script>
+	<script src="jAjax.js"></script>
+  <!-- Hero -->
+  <div class="bg-gradient-to-r from-indigo-50 to-blue-50 border-b border-gray-200">
+    <header class="w-full mx-auto px-3 py-5">
+      <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5">
+        <div>
+			<!--
+          <div class="inline-flex items-center gap-2 text-xs px-3 py-1 rounded-full border border-indigo-200 bg-indigo-50 text-indigo-800">
+            IT NQK • Dashboard
+          </div>
+		  -->
+          <h1 class="mt-2 text-3xl font-extrabold tracking-tight">Bảng điều khiển thống kê</h1>
+          <p class="text-gray-600 mt-1">Tổng hợp nhanh số liệu theo danh mục quản lý. Cập nhật trực tiếp từ SQL (GetData).</p>
+        </div>
+
+        <!-- GLOBAL FILTERS -->
+        <div class="toolbar flex flex-wrap items-center gap-3">
+          <select id="unitId" title="unit_id">
+            <option value="">Tất cả đơn vị</option>
+            <!-- Có thể đổ danh sách bằng SQL nếu muốn -->
+          </select>
+          <input id="fromDate" type="date" />
+          <input id="toDate" type="date" />
+          <button id="btnRefresh" class="btn">Làm mới</button>
+        </div>
+      </div>
+    </header>
+  </div>
+
+  <!-- Content -->
+  <main class="w-full mx-auto px-5 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- PANEL: Quản lý công -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="dot" style="background:#2563eb"></span>
+            <span>I. Quản lý công</span>
+          </div>
+          <div class="text-sm text-gray-500">Tổng: <span id="totalPublic" class="section-total">—</span></div>
+        </div>
+
+        <div class="kpi-grid grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="kpi-card bg-grad-1"><div class="kpi-label">1) Nhân sự</div><div id="dmnv" class="kpi-value skeleton">&nbsp;</div><div class="kpi-icon">👤</div></div>
+          <div class="kpi-card bg-grad-2"><div class="kpi-label">2) Hộ gia đình</div><div id="dmhogiadinh" class="kpi-value skeleton">&nbsp;</div><div class="kpi-icon">🏠</div></div>
+          <div class="kpi-card bg-grad-3"><div class="kpi-label">3) CCCD</div><div id="qldctcccd" class="kpi-value skeleton">&nbsp;</div><div class="kpi-icon">🆔</div></div>
+        </div>
+
+        <div class="px-4 pb-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="kpi-card">
+            <div class="kpi-label mb-2">Biểu đồ cột: Quản lý công</div>
+            <div class="chart-box"><canvas id="barChartPublic"></canvas></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label mb-2">Tỷ trọng: Quản lý công</div>
+            <div class="chart-box"><canvas id="pieChartPublic"></canvas></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PANEL: Quản lý cư dân -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="dot" style="background:#10b981"></span>
+            <span>II. Quản lý cư dân</span>
+          </div>
+          <div class="text-sm text-gray-500">Tổng: <span id="totalCitizen" class="section-total">—</span></div>
+        </div>
+
+        <div class="kpi-grid grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="kpi-card bg-grad-4"><div class="kpi-label">4) Hộ kinh doanh</div><div id="dmhokinhdoanh" class="kpi-value skeleton">&nbsp;</div><div class="kpi-icon">👤</div></div>
+          <div class="kpi-card bg-grad-5"><div class="kpi-label">5) Doanh nghiệp</div><div id="dmdoanhnghiep" class="kpi-value skeleton">&nbsp;</div><div class="kpi-icon">👤</div></div>
+          <div class="kpi-card bg-grad-6"><div class="kpi-label">6) Nhà văn hóa phường</div><div id="dmnvhp" class="kpi-value skeleton">&nbsp;</div><div class="kpi-icon">👤</div></div>
+          <div class="kpi-card bg-grad-7"><div class="kpi-label">7) Trạm y tế</div><div id="dmtramyte" class="kpi-value skeleton">&nbsp;</div><div class="kpi-icon">👤</div></div>
+          <div class="kpi-card bg-grad-8"><div class="kpi-label">8) Trường học</div><div id="dmtruonghoc" class="kpi-value skeleton">&nbsp;</div><div class="kpi-icon">👤</div></div>
+          <div class="kpi-card bg-grad-9"><div class="kpi-label">9) Địa điểm công cộng</div><div id="dmcongdong" class="kpi-value skeleton">&nbsp;</div><div class="kpi-icon">👤</div></div>
+        </div>
+
+        <div class="px-4 pb-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="kpi-card">
+            <div class="kpi-label mb-2">Biểu đồ cột: Quản lý cư dân</div>
+            <div class="chart-box"><canvas id="barChartCitizen"></canvas></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label mb-2">Tỷ trọng: Quản lý cư dân</div>
+            <div class="chart-box"><canvas id="pieChartCitizen"></canvas></div>
+          </div>
+        </div>
+      </section>
+	  
+	  <!-- PANEL: Hành chính công (số thứ tự & trạng thái) -->
+		<section class="section mt-6">
+		  <div class="section-header">
+			<div class="section-title">
+			  <span class="dot" style="background:#f59e0b"></span>
+			  <span>III. Hành chính công (số thứ tự & trạng thái)</span>
+			</div>
+			<div class="text-sm text-gray-500">Tổng: <span id="totalHCC" class="section-total">—</span></div>
+		  </div>
+
+		  <div class="kpi-grid grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+			<div class="kpi-card color bg-grad-4">
+			  <div class="kpi-label">Chờ xử lý (status=1)</div>
+			  <div id="qlhccong_1" class="kpi-value skeleton">&nbsp;</div>
+			  <div class="kpi-icon">⏳</div>
+			</div>
+			<div class="kpi-card color bg-grad-5">
+			  <div class="kpi-label">Đã xử lý (5)</div>
+			  <div id="qlhccong_5" class="kpi-value skeleton">&nbsp;</div>
+			  <div class="kpi-icon">✅</div>
+			</div>
+			<div class="kpi-card color bg-grad-6">
+			  <div class="kpi-label">Chờ trả KQ (6)</div>
+			  <div id="qlhccong_6" class="kpi-value skeleton">&nbsp;</div>
+			  <div class="kpi-icon">📤</div>
+			</div>
+			<div class="kpi-card color bg-grad-7">
+			  <div class="kpi-label">Đã trả KQ (7)</div>
+			  <div id="qlhccong_7" class="kpi-value skeleton">&nbsp;</div>
+			  <div class="kpi-icon">🎉</div>
+			</div>
+			<div class="kpi-card color bg-grad-8">
+			  <div class="kpi-label">Số thủ tục (dmhccong)</div>
+			  <div id="dmhccong_total" class="kpi-value skeleton">&nbsp;</div>
+			</div>
+			<div class="kpi-card color bg-grad-9">
+			  <div class="kpi-label">Tổng hồ sơ (qlhccong)</div>
+			  <div id="qlhccong_total" class="kpi-value skeleton">&nbsp;</div>
+			</div>
+		  </div>
+
+		  <div class="px-4 pb-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+			<div class="kpi-card">
+			  <div class="kpi-label mb-2">Biểu đồ cột: Trạng thái hồ sơ</div>
+			  <div class="chart-box"><canvas id="barChartHCC"></canvas></div>
+			</div>
+			<div class="kpi-card">
+			  <div class="kpi-label mb-2">Tỷ trọng: Trạng thái hồ sơ</div>
+			  <div class="chart-box"><canvas id="pieChartHCC"></canvas></div>
+			</div>
+		  </div>
+		</section>
+
+		<!-- PANEL: Quản lý cuộc họp -->
+		<section class="section mt-6">
+		  <div class="section-header">
+			<div class="section-title">
+			  <span class="dot" style="background:#22c55e"></span>
+			  <span>IV. Quản lý cuộc họp</span>
+			</div>
+			<div class="text-sm text-gray-500">Tổng cuộc họp: <span id="totalMeet" class="section-total">—</span></div>
+		  </div>
+
+		  <div class="kpi-grid grid grid-cols-1 sm:grid-cols-3 gap-3">
+			<div class="kpi-card color bg-grad-2">
+			  <div class="kpi-label">Số loại cuộc họp</div>
+			  <div id="dmlcuochop_total" class="kpi-value skeleton">&nbsp;</div>
+			  <div class="kpi-icon">📚</div>
+			</div>
+			<div class="kpi-card color bg-grad-1">
+			  <div class="kpi-label">Tổng cuộc họp</div>
+			  <div id="qlcuochop_total" class="kpi-value skeleton">&nbsp;</div>
+			  <div class="kpi-icon">🗓️</div>
+			</div>
+			<div class="kpi-card color bg-grad-3">
+			  <div class="kpi-label">Trong khoảng lọc</div>
+			  <div id="qlcuochop_range" class="kpi-value skeleton">&nbsp;</div>
+			  <div class="kpi-icon">⏱️</div>
+			</div>
+		  </div>
+
+		  <div class="px-4 pb-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+			<div class="kpi-card">
+			  <div class="kpi-label mb-2">Biểu đồ cột: Số cuộc họp theo loại</div>
+			  <div class="chart-box"><canvas id="barChartMeet"></canvas></div>
+			</div>
+			<div class="kpi-card">
+			  <div class="kpi-label mb-2">Tỷ trọng: Số cuộc họp theo loại</div>
+			  <div class="chart-box"><canvas id="pieChartMeet"></canvas></div>
+			</div>
+		  </div>
+		</section>
+    </div>
+  </main>
+
+  <script>
+    // ================= CONFIG (sửa tên cột thời gian tại đây nếu có) =================
+    const CONFIG = {
+	  DATE_COLS: {
+		dmnv: null,
+		dmhogiadinh: null,
+		qldctcccd: null,
+		dmlocation: null,
+		qlhccong: 'datetime0',   // cột ngày của hồ sơ (sửa nếu tên khác)
+		qlcuochop: 'ngay_hop'    // nếu cột ngày là 'ngay_hop' / 'ngay_bd' hãy sửa đúng
+	  }
+	};
+
+    // ================= requestDataSet (webservice của bạn) =================
+    const requestDataSet = function(script) {
+      return new Promise((resolve, reject) => {
+        var m = new Memvars();
+        var controller = "loaddulieutable";
+        var p = window.location.href.toString();
+        p = p.substring(0, p.indexOf("Main/")) + 'AppService/EService.asmx/' + "GetData";
+        var query = `${script}`;
+        m.val("query", 'C', query);
+        $.ajax({
+          type: "POST",
+          url: p,
+          header: '',
+          data: JSON.stringify({ controller: controller, oMemvar: m.val() }),
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+          timeout: 30000,
+          success: function(msg) { resolve(msg.d && msg.d.length ? msg.d : []); },
+          error: function(e) { console.log(e); reject(e); }
+        });
+      });
+    };
+
+    // ================= Build SQL theo filter =================
+    function withDateFilter(table, baseWhere = "1=1") {
+      const from = document.getElementById('fromDate').value;
+      const to   = document.getElementById('toDate').value;
+      const col  = (table === 'dmlocation') ? CONFIG.DATE_COLS.dmlocation : CONFIG.DATE_COLS[table];
+
+      if (!col || (!from && !to)) return baseWhere;
+
+      let where = baseWhere;
+      if (from) where += ` AND ${col} >= '${from} 00:00:00'`;
+      if (to)   where += ` AND ${col} <  '${to} 23:59:59.997'`;
+      return where;
+    }
+
+    function whereUnit(baseWhere = "1=1", alias = null) {
+      const unit = document.getElementById('unitId').value.trim();
+      if (!unit) return baseWhere;
+      const col = alias ? `${alias}.unit_id` : `unit_id`;
+      return `${baseWhere} AND ${col} = ${unit}`;
+    }
+
+    function sqlCountDirect(table) {
+      // đếm trực tiếp theo 3 bảng riêng
+      let where = whereUnit();
+      where = withDateFilter(table, where);
+      return `SELECT COUNT(*) AS cnt FROM dbo.${table} WITH (NOLOCK) WHERE ${where}`;
+    }
+
+    function sqlCountLocation(ma_lhhd) {
+      // đếm theo dmlocation + ma_lhhd (join dmlhhd cho chắc)
+      let where = whereUnit("1=1", "L");
+      where = withDateFilter('dmlocation', where);
+      return `
+        SELECT COUNT(*) AS cnt
+        FROM dbo.dmlocation L WITH (NOLOCK)
+        JOIN dbo.dmlhhd H WITH (NOLOCK) ON L.ma_lhhd = H.ma_lhhd
+        WHERE ${where} AND H.ma_lhhd = '${ma_lhhd}'
+      `;
+    }
+	
+	function sqlCountQLHCCONGByStatus(stt) {
+	  let where = whereUnit("1=1");
+	  where = withDateFilter('qlhccong', where);
+	  return `SELECT COUNT(*) AS cnt FROM dbo.qlhccong WITH (NOLOCK) WHERE ${where} AND status = ${stt}`;
+	}
+	function sqlCountQLHCCONGTotal() {
+	  let where = whereUnit("1=1");
+	  where = withDateFilter('qlhccong', where);
+	  return `SELECT COUNT(*) AS cnt FROM dbo.qlhccong WITH (NOLOCK) WHERE ${where}`;
+	}
+	function sqlCountDMHCCONG() {
+	  let where = whereUnit("1=1");
+	  return `SELECT COUNT(*) AS cnt FROM dbo.dmhccong WITH (NOLOCK) WHERE ${where}`;
+	}
+
+	// Meetings
+	function sqlCountDMLCUOCHOP() {
+	  let where = whereUnit("1=1");
+	  return `SELECT COUNT(*) AS cnt FROM dbo.dmlcuochop WITH (NOLOCK) WHERE ${where}`;
+	}
+	function sqlCountQLCUOCHOPTotal() {
+	  let where = whereUnit("1=1");
+	  return `SELECT COUNT(*) AS cnt FROM dbo.qlcuochop WITH (NOLOCK) WHERE ${where}`;
+	}
+	function sqlCountQLCUOCHOPInRange() {
+	  let where = whereUnit("1=1");
+	  where = withDateFilter('qlcuochop', where);
+	  return `SELECT COUNT(*) AS cnt FROM dbo.qlcuochop WITH (NOLOCK) WHERE ${where}`;
+	}
+	function sqlMeetByType() {
+	  // trả về {ten_lcuochop, cnt}
+	  let where = whereUnit("1=1", "Q");
+	  where = withDateFilter('qlcuochop', where);
+	  return `
+		SELECT C.ten_lcuochop AS name, COUNT(*) AS cnt
+		FROM dbo.qlcuochop Q WITH (NOLOCK)
+		JOIN dbo.dmlcuochop C WITH (NOLOCK) ON Q.ma_lcuochop = C.ma_lcuochop
+		WHERE ${where}
+		GROUP BY C.ten_lcuochop
+		ORDER BY C.ten_lcuochop
+	  `;
+	}
+
+    // ================= KPI QUERIES =================
+    const QUERIES = {
+      // 1-3: theo bảng riêng
+      dmnv:        () => sqlCountDirect('dmnv'),
+      dmhogiadinh: () => sqlCountDirect('dmhogiadinh'),
+      qldctcccd:   () => sqlCountDirect('qldctcccd'),
+
+      // 4-9: theo dmlocation + ma_lhhd
+      dmhokinhdoanh: () => sqlCountLocation('HKD'),
+      dmdoanhnghiep: () => sqlCountLocation('DN'),
+      dmnvhp:        () => sqlCountLocation('VHXP'),
+      dmtramyte:     () => sqlCountLocation('YT'),
+      dmtruonghoc:   () => sqlCountLocation('TRH'),
+      dmcongdong:    () => sqlCountLocation('CD'),
+	  
+	  // HCC (hành chính công)
+		qlhccong_1: () => sqlCountQLHCCONGByStatus(1),
+		qlhccong_5: () => sqlCountQLHCCONGByStatus(5),
+		qlhccong_6: () => sqlCountQLHCCONGByStatus(6),
+		qlhccong_7: () => sqlCountQLHCCONGByStatus(7),
+		qlhccong_total: () => sqlCountQLHCCONGTotal(),
+		dmhccong_total: () => sqlCountDMHCCONG(),
+
+		// Meetings
+		dmlcuochop_total: () => sqlCountDMLCUOCHOP(),
+		qlcuochop_total:  () => sqlCountQLCUOCHOPTotal(),
+		qlcuochop_range:  () => sqlCountQLCUOCHOPInRange(),
+    };
+
+    const labelsMap = {
+      dmnv: "Nhân sự",
+      dmhogiadinh: "Hộ gia đình",
+      qldctcccd: "CCCD",
+      dmhokinhdoanh: "Hộ KD",
+      dmdoanhnghiep: "Doanh nghiệp",
+      dmnvhp: "Nhà VH phường",
+      dmtramyte: "Trạm y tế",
+      dmtruonghoc: "Trường học",
+      dmcongdong: "Địa điểm công cộng"
+    };
+
+    const GROUPS = {
+	  PUBLIC:  ['dmnv','dmhogiadinh','qldctcccd'],
+	  CITIZEN: ['dmhokinhdoanh','dmdoanhnghiep','dmnvhp','dmtramyte','dmtruonghoc','dmcongdong'],
+	  HCC:     ['qlhccong_1','qlhccong_5','qlhccong_6','qlhccong_7'], // dùng tính total
+	  MEETKPI: ['dmlcuochop_total','qlcuochop_total','qlcuochop_range']
+	};
+
+    // ================= Charts helpers =================
+    function destroyIfExist(chartId) {
+      const inst = Chart.getChart(chartId);
+      if (inst) inst.destroy();
+    }
+
+    Chart.defaults.responsive = true;
+    Chart.defaults.maintainAspectRatio = false;
+
+    async function refreshAll() {
+      // skeleton on
+      [...GROUPS.PUBLIC, ...GROUPS.CITIZEN].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.classList.add('skeleton'); el.textContent = ' '; }
+      });
+
+      // fetch counts
+      const results = {};
+      await Promise.all(Object.entries(QUERIES).map(async ([id, buildSql]) => {
+        const rows = await requestDataSet(buildSql());
+        const cnt = rows && rows[0] && (rows[0].cnt ?? rows[0].CNT ?? rows[0].Count ?? rows[0].COUNT) || 0;
+        results[id] = Number(cnt);
+        const el = document.getElementById(id);
+        if (el) { el.classList.remove('skeleton'); el.textContent = Number(cnt).toLocaleString('vi-VN'); }
+      }));
+
+      // totals
+      const totalPublic  = GROUPS.PUBLIC.reduce((s, k) => s + (results[k] || 0), 0);
+      const totalCitizen = GROUPS.CITIZEN.reduce((s, k) => s + (results[k] || 0), 0);
+      document.getElementById('totalPublic').textContent  = totalPublic.toLocaleString('vi-VN');
+      document.getElementById('totalCitizen').textContent = totalCitizen.toLocaleString('vi-VN');
+
+      // PUBLIC charts
+      destroyIfExist('barChartPublic'); destroyIfExist('pieChartPublic');
+      const pubLabels = GROUPS.PUBLIC.map(id => labelsMap[id]);
+      const pubData   = GROUPS.PUBLIC.map(id => results[id] || 0);
+      new Chart(document.getElementById('barChartPublic'), {
+        type: 'bar',
+        data: { labels: pubLabels, datasets: [{ label: 'Số lượng', data: pubData }] },
+        options: { plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true, ticks:{ precision:0 } } } }
+      });
+      new Chart(document.getElementById('pieChartPublic'), {
+        type: 'doughnut',
+        data: { labels: pubLabels, datasets: [{ data: pubData }] },
+        options: { plugins:{ legend:{ position:'bottom' } } }
+      });
+
+      // CITIZEN charts
+      destroyIfExist('barChartCitizen'); destroyIfExist('pieChartCitizen');
+      const ctzLabels = GROUPS.CITIZEN.map(id => labelsMap[id]);
+      const ctzData   = GROUPS.CITIZEN.map(id => results[id] || 0);
+      new Chart(document.getElementById('barChartCitizen'), {
+        type: 'bar',
+        data: { labels: ctzLabels, datasets: [{ label: 'Số lượng', data: ctzData }] },
+        options: { plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true, ticks:{ precision:0 } } } }
+      });
+      new Chart(document.getElementById('pieChartCitizen'), {
+        type: 'doughnut',
+        data: { labels: ctzLabels, datasets: [{ data: ctzData }] },
+        options: { plugins:{ legend:{ position:'bottom' } } }
+      });
+	  
+	  // === TOTAL cho Hành chính công & Meetings
+		const totalHCC  = GROUPS.HCC.reduce((s,k)=>s+(results[k]||0),0);
+		document.getElementById('totalHCC').textContent = totalHCC.toLocaleString('vi-VN');
+
+		const totalMeet = (results['qlcuochop_total'] || 0);
+		document.getElementById('totalMeet').textContent = totalMeet.toLocaleString('vi-VN');
+
+		// === Chart: Hành chính công (status)
+		destroyIfExist('barChartHCC'); destroyIfExist('pieChartHCC');
+		const hccLabels = ['Chờ xử lý','Đã xử lý','Chờ trả KQ','Đã trả KQ'];
+		const hccData   = [results.qlhccong_1||0, results.qlhccong_5||0, results.qlhccong_6||0, results.qlhccong_7||0];
+		new Chart(document.getElementById('barChartHCC'), {
+		  type:'bar', data:{labels:hccLabels, datasets:[{label:'Hồ sơ', data:hccData}]},
+		  options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true, ticks:{precision:0}}}}
+		});
+		new Chart(document.getElementById('pieChartHCC'), {
+		  type:'doughnut', data:{labels:hccLabels, datasets:[{data:hccData}]},
+		  options:{plugins:{legend:{position:'bottom'}}}
+		});
+
+		// === Chart: Meetings theo loại
+		destroyIfExist('barChartMeet'); destroyIfExist('pieChartMeet');
+		const meetRows = await requestDataSet(sqlMeetByType());
+		const meetLabels = meetRows.map(r=> r.name);
+		const meetData   = meetRows.map(r=> Number(r.cnt||0));
+		new Chart(document.getElementById('barChartMeet'), {
+		  type:'bar', data:{labels:meetLabels, datasets:[{label:'Cuộc họp', data:meetData}]},
+		  options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true, ticks:{precision:0}}}}
+		});
+		new Chart(document.getElementById('pieChartMeet'), {
+		  type:'doughnut', data:{labels:meetLabels, datasets:[{data:meetData}]},
+		  options:{plugins:{legend:{position:'bottom'}}}
+		});
+
+    }
+
+    // Events
+    document.getElementById('btnRefresh').addEventListener('click', refreshAll);
+    window.addEventListener('load', () => {
+      // mặc định toDate = hôm nay
+      const to = new Date(); const yyyy = to.getFullYear(); const mm = String(to.getMonth()+1).padStart(2,'0'); const dd = String(to.getDate()).padStart(2,'0');
+      if (!document.getElementById('toDate').value) document.getElementById('toDate').value = `${yyyy}-${mm}-${dd}`;
+      refreshAll();
+    });
+  </script>
+</body>
+</html>

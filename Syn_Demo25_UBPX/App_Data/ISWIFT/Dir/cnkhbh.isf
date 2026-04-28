@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="cnkhbh" table="cnkhbh" fieldKey="ky,nam,ma_nvbh,ma_vt,ma_kh" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Cập nhật kế hoạch bán hàng" e="Sale Plan Input"></title>
+  <title0 v="Cập nhật kế hoạch" e="New Sale Plan"></title0>
+  <title1 v="Sửa kế hoạch" e="Edit Sale Plan"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ky" label="1" field="1" format="-1" maxLength="2" allowBlank="false" hidden="true" fieldType="PK" dataType="I">
+          <text v="Kỳ" e="Month"></text>
+        </field>
+        <field name="nam" label="1" field="1" format="-1" maxLength="4" allowBlank="false" hidden="true" fieldType="PK" dataType="I">
+          <text v="Năm" e="Year"></text>
+        </field>
+        <field name="ma_nvbh" format="U" label="1" field="1" viewType="Lookup" clientDefault="true" fieldType="PK" >
+          <text v="Mã nhân viên" e="Saleman Code"></text>
+          <viewInfo lookupType="One" lookupId="dmnvbh" lookupKey="status = 1 and (@@admin = 1 or ma_nvbh in (select ma_nvbh from dbo.sf_GetEmployeeList(@@userId)))" lookupCheck="@@admin = 1 or ma_nvbh in (select ma_nvbh from dbo.sf_GetEmployeeList(@@userId))"  lookupRef="ten_nvbh" lookupInfo="dmnvbh|ma_nvbh|ten_nvbh" />
+        </field>
+        <field name="ten_nvbh" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_kh" format="U" label="1" field="1" viewType="Lookup" fieldType="PK" >
+          <text v="Mã khách hàng" e="Customer Code"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="ma_nvbh = ![ma_nvbh]!" lookupCheck="1=1" lookupRef="ten_kh" lookupInfo="dmkh|ma_kh|ten_kh" />
+        </field>
+        <field name="ten_kh" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="nh_kh1" viewType="Lookup" label="1" field="1" importable="60" fieldType="PK">
+          <text v="Nhóm khách hàng 1" e="Customer Group 1"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH1' and status=1" lookupCheck="ma_loai_nh = 'KH1'" lookupRef="ten_nh_kh1" lookupInfo="dmnh|ma_nh|ten_nh" importCheck="@@DF and z.ma_loai_nh = 'KH1' and z.status=1"/>
+        </field>
+        <field name="ten_nh_kh1" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="nh_kh2" viewType="Lookup" label="1" field="1" importable="65" fieldType="PK">
+          <text v="Nhóm khách hàng 2" e="Customer Group 2"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH2' and status=1" lookupCheck="ma_loai_nh = 'KH2'" lookupRef="ten_nh_kh2" lookupInfo="dmnh|ma_nh|ten_nh" importCheck="@@DF and z.ma_loai_nh = 'KH2' and z.status=1"/>
+        </field>
+        <field name="ten_nh_kh2" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="nh_kh3" viewType="Lookup" label="1" field="1" importable="70" fieldType="PK">
+          <text v="Nhóm khách hàng 3" e="Customer Group 3"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH3' and status=1" lookupCheck="ma_loai_nh = 'KH3'" lookupRef="ten_nh_kh3" lookupInfo="dmnh|ma_nh|ten_nh" importCheck="@@DF and z.ma_loai_nh = 'KH3' and z.status=1"/>
+        </field>
+        <field name="ten_nh_kh3" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+
+        <field name="ma_vt" format="U" label="1" field="1" viewType="Lookup" fieldType="PK" >
+          <text v="Mã vật tư" e="Item Code"></text>
+          <viewInfo lookupType="One" lookupId="dmvt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_vt" lookupInfo="dmvt|ma_vt|ten_vt" />
+        </field>
+        <field name="ten_vt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <!--<field name="ma_nt" format="U" label="1" field="1" viewType="Lookup" clientDefault="true" allowBlank="false"  >
+          <text v="Mã ngoại tệ" e="Saleman Code"></text>
+          <viewInfo lookupType="One" lookupId="dmnt" lookupKey="status = 1" lookupCheck="1=1"  lookupRef="ten_nt" lookupInfo="dmnt|ma_nt|ten_nt" />
+        </field>
+        <field name="ten_nt" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>-->
+        <field name="so_luong" label="1" field="1" allowBlank="true" format="Qty" dataType="N">
+          <text v="Số lượng" e="Packing Qty"></text>
+        </field>
+        <field name="tien2" label="1" field="1" allowBlank="true" format="Amount" dataType="N">
+          <text v="Doanh Số" e="Sales"></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>n2ohD4FgLfMTK2Il3d/EqdLfFLCQoyjJnHyH3mQXIvHOX5/NIR63BI3nX7i47pvdwvfe+aL4T6qniCN+SgTfyOcEoMhFjGL+dstUQAQqbS3LWbUa26sgb6IBvyxDiTnvuia6dcvAso6sTNLfT+0iEI7y8DUszt4Lt0zHAkWF14cHmBlmV0oZG+XC/3Y7+oR6TSFpzq5XDjyHEnBbsejJaPkGdmIpeWm2ATI5rtEo+PX/QEDmzBduO7xK+wIcX0DBUcHMXvgYn8flVJokPHm8yANzwR4cP1YbT32MNYNKeeXG1SLTjLeejx8f20/yzEUbHMm5BBh5xFXaxGGIb2enie5hbNLV26I7Sd6o0FgwDPvA/yn3+K24NVGkZjZrb4tWcw6MOk8n2Dc3C+Zd0GT2QA==</enc>]]>
+    </text>
+  </js>
+
+  <script>
+    <request code="GetUserId">
+      <text>
+        <![CDATA[<enc>C9UYsdcKT5G2TrKNTgpkyyJe+uhfOKLuJ8mnI5bIuXeRi4M/yv39WPGPXgBaPxNBnQFWkItkP/ETqvHzPKjMPzfq7x0r1G907069kqt0y/PpIxZOQxXgk0T8gmVT7UDAnP2z1GDanqwLt7qmSQWFJpOQLcN50k307RI3EzFlipw=</enc>]]>
+      </text>
+    </request>
+
+    <query>
+      <text>
+        <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOOdXdTQbLjDNG098RVYG+mqJrACGNi8MwNsRrtmQkuMIYyR65+M+8FdE2nQkBtdUjjGtkBSGsDqbRbA3vrYN89ZzUnQVJ+W1/9AMkiZ8xTjP+2RTNpSxyNoYjrbfEIJzqQ==</enc>]]>
+      </text>
+    </query>
+
+  </script>
+
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Kế hoạch bán hàng đã tồn tại." e="Sales Target is exists." />
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Kế hoạch bán hàng đã tồn tại." e="Sales Target is exists." />
+    </message>
+  </messages>
+
+</dir>

@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY HreScript SYSTEM "..\Include\XML\HreScript.xml">
+]>
+
+<dir id="hreqtct" table="hreqtct" fieldKey="id, line" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Quá trình công tác" e=""></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120" >
+      <fields>
+        <field name="id" dataType="N" fieldType="PK" label="1" field="1" format="0" hidden="true" importable="-1">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="line" dataType="N" fieldType="PK" label="1" field="1" format="0" hidden="true" importable="-1">
+          <text v="Dòng" e="Line"></text>
+        </field>
+        <field name="ma_bp" format="U" viewType="Lookup" allowBlank="false" label="1" field="1" clientDefault="true" importable="5">
+          <text v="Bộ phận" e="Department"></text>
+          <viewInfo lookupType="One" lookupId="hrdmbp" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_bp" lookupInfo="hrdmbp|ma_bp|ten_bp" importCheck="@@DF and status = 1" />
+        </field>
+        <field name="ten_bp" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_vtr" format="U" viewType="Lookup" allowBlank="false" label="1" field="1" clientDefault="true" importable="10">
+          <text v="Vị trí công việc" e="Position"></text>
+          <viewInfo lookupType="One" lookupId="hrdmvtr" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_vtr" lookupInfo="hrdmvtr|ma_vtr|ten_vtr" importCheck="@@DF and status = 1"/>
+        </field>
+        <field name="ten_vtr" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ngay_tu" dataType="D" allowBlank="false" label="1" field="1" importable="15">
+          <text v="Ngày bđ/k.thúc" e=""></text>
+        </field>
+        <field name="ngay_den" nextRow="false" dataType="D" label="1" field="1" importable="20">
+          <text v="Ngày kết thúc" e=""></text>
+        </field>
+        <field name="so_quyet_dinh" format="U" label="1" field="1" importable="25">
+          <text v="Số quyết định" e=""></text>
+        </field>
+        <field name="ngay_quyet_dinh" dataType="D" nextRow="false" label="1" field="1" importable="30">
+          <text v="Ngày" e="Date"></text>
+        </field>
+        <field name="nguoi_quyet_dinh" label="1" field="-" importable="35" importWidth="150">
+          <text v="Người quyết định" e=""></text>
+        </field>
+        <field name="ghi_chu" rows="3" label="1" field="-" importable="40" importWidth="350">
+          <text v="Ghi chú" e="Notes"></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$hreqtct(p){
+  this.constructor(p);
+}
+dir$hreqtct.prototype = new DirEvent();
+dir$hreqtct.prototype.afterInit = function(){
+  var p = this._dir, pa = p.options.parent;
+  if (p.options.action == 'NEW') p.valForm('id', pa.options._id);
+}
+]]>
+    </text>
+  </js>
+
+  <script>
+    <aftersave>
+      <text>
+        <![CDATA[
+if @action = 'NEW'
+  update hrdmnv set ma_bp = @ma_bp, ma_vtr = @ma_vtr where id = @id
+return
+]]>
+      </text>
+    </aftersave>
+
+    &HreScript;
+  </script>
+</dir>

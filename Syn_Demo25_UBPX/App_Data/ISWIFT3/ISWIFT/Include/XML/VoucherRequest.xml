@@ -1,0 +1,29 @@
+﻿  <request code="GetExRate">
+      <text>
+        <![CDATA[
+select dbo.sf_GetExRate(@ma_nt, @ngay_ct) as [!ty_gia]
+        ]]>
+      </text>
+    </request>
+    <request code="GetVoucherNumber">
+      <text>
+        <![CDATA[
+declare @_so_ct varchar(32), @_i_so_ct int, @_ten_nk nvarchar(3000)
+exec ISWIFTStoredGetVoucherNo @ma_nk, @ngay_ct, '@@voucherCode', @unit_id, @@userId, @@admin, @_i_so_ct output, @ma_nk output, @_ten_nk output, @_so_ct output, @old_ma_nk, @old_ngay_ct, @old_i_so_ct
+if @ma_nk = '' select @_so_ct = @so_ct, @_i_so_ct = case when isnumeric(@so_ct) = 1 then @so_ct else 0 end, @_ten_nk = ''
+if @_so_ct is null
+  select '' as message, '' as [!so_ct], 0 as [!i_so_ct], '' as [!ma_nk], '' as [!ten_nk]
+else
+  select '' as message, @_so_ct as [!so_ct], @_i_so_ct as [!i_so_ct], @ma_nk as [!ma_nk], @_ten_nk as [!ten_nk]
+        ]]>
+      </text>
+    </request>
+    <request code="EditVoucherNumber">
+      <text>
+        <![CDATA[
+declare @_so_ct varchar(32), @i_so_ct int, @_ma_nk varchar(32), @_ten_nk nvarchar(3000)
+exec ISWIFTStoredEditVoucherNo @ma_nk, @ngay_ct, @so_ct, '@@voucherCode', @unit_id, @@userId, @@admin, @i_so_ct output, @_so_ct output, @_ma_nk output, @_ten_nk output, @old_ma_nk, @old_ngay_ct, @old_i_so_ct
+select @_so_ct as [!so_ct], @i_so_ct as [!i_so_ct], @_ma_nk as [!ma_nk], @_ten_nk as [!ten_nk], case when @i_so_ct = 0 then '$VoucherNumberInvalid' else '' end as toast
+        ]]>
+      </text>
+    </request>

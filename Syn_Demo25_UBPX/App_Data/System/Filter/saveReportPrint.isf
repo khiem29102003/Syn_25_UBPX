@@ -1,0 +1,321 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="saveReportPrint" table="sysreportprint" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Thêm mới mẫu in" e="Save New Print Form"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,360" >
+      <fields>
+        <field name="xid" label="1" viewType="Combobox" field="1" >
+          <text v="Loại giấy"  e="Portrait"></text>
+          <viewInfo>
+            <options cache="false" query="select rtrim(user_id) + '_' + rtrim(id) as id, report_name%l from sysreportprint where (user_id in (@@userId, 0) or form_type = 1) and controller = @xcontroller">
+              <option val="">
+                <text v="Thêm mới mẫu" e="New Form"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="btn_delete" nextRow="false" label="" field="[100]" viewType="Command">
+          <text v="Xóa mẫu" e="Delete"></text>
+        </field>
+        <field name="btn_copy" nextRow="false" label="" field="[100]" viewType="Command">
+          <text v="Sao chép mẫu" e="Copy"></text>
+        </field>
+        <field name="report_name" allowBlank="false" label="1" field="1" >
+          <text v="Nhập tên mẫu mới"  e="Name"></text>
+        </field>
+        <field name="report_name2" label="1" field="1" >
+          <text v="Tên khác"  e="Name 2"></text>
+        </field>
+        <field name="report_file" label="1" viewType="Combobox" field="[240]" >
+          <text v="Mẫu"  e="Form"></text>
+          <viewInfo>
+            <options query="select filename, description%l from sysreportrdlcform where status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="portrait" label="" nextRow="false" viewType="Combobox" field="[120]" >
+          <text v="Loại giấy"  e="Portrait"></text>
+          <viewInfo>
+            <options>
+              <option val="0">
+                <text v="Giấy in ngang" e="Landscape"/>
+              </option>
+              <option val="1">
+                <text v="Giấy in đứng" e="Portrait"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="title" allowBlank="false" label="1" field="1" >
+          <text v="Tiêu đề in"  e="Title"></text>
+        </field>
+        <field name="title2" label="1" field="1" >
+          <text v="Tiêu đề 2"  e="Title 2"></text>
+        </field>
+        <field name="subtitle" label="1" field="1" >
+          <text v="Tiêu đề phụ"  e="Sub Title"></text>
+        </field>
+        <field name="subtitle2" label="1" field="1" >
+          <text v="Tiêu đề phụ 2"  e="Sub Title 2"></text>
+        </field>
+        <field name="form_type" label="1" viewType="Combobox" field="1" >
+          <text v="Loại mẫu"  e="Form Type"></text>
+          <viewInfo>
+            <options>
+              <option val="0">
+                <text v="Mẫu cho người sử dụng hiện tại"  e="Form For Current User"></text>
+              </option>
+              <option val="1">
+                <text v="Mẫu chung cho tất cả người dùng"  e="Common Form For All User"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+    <form tabPageIndex="1" gravity="MiddleLeft" height="250" >
+      <text v="Cột in" e="Print Columns"></text>
+      <fields>
+        <field name="sysreportprint2" label="" field="-" viewType="Grid">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  <grids>
+    <grid id="sysreportprint2" table="sysreportprint2" key="line" order="line" readOnly="false">
+      <fields>
+        <field name="stt" foreignField="@@ROW" dataType="I" hidden="true">
+          <text v="Stt" e="Line"></text>
+        </field>
+        <field name="field" width="120" readOnly="false" viewType="Combobox" >
+          <text v="Cột" e="Field"></text>
+        </field>
+        <field name="header" width="250" readOnly="false" >
+          <text v="Tên cột" e="Header"></text>
+        </field>
+        <field name="header2" width="250" readOnly="false" >
+          <text v="Tên cột 2" e="Header"></text>
+        </field>
+        <field name="data_type" width="120" hidden="true" readOnly="true" >
+          <text v="Kiểu DL" e="DataType"></text>
+        </field>
+        <field name="width" width="120" readOnly="false" dataType="N" >
+          <text v="Độ rộng" e="Width"></text>
+        </field>
+        <field name="format" width="100" readOnly="false" viewType="Combobox" >
+          <text v="Định dạng" e="Format"></text>
+          <viewInfo>
+            <options>
+              <option val="">
+                <text v="Mặc định" e="Default"/>
+              </option>
+              <option val="Amount">
+                <text v="Tiền" e="Amount"/>
+              </option>
+              <option val="FCAmount">
+                <text v="Tiền ngoại tệ" e="FC Amount"/>
+              </option>
+              <option val="Rate">
+                <text v="Tỷ lệ" e="Rate"/>
+              </option>
+              <option val="ExRate">
+                <text v="Tỷ giá" e="Ex Rate"/>
+              </option>
+              <option val="Price">
+                <text v="Giá" e="Price"/>
+              </option>
+              <option val="FCPrice">
+                <text v="Giá ngoại tệ" e="FC Price"/>
+              </option>
+              <option val="Qty">
+                <text v="Số lượng" e="Quanlity"/>
+              </option>
+              <option val="-1">
+                <text v="Không phân cách" e="No Space"/>
+              </option>
+              <option val="1">
+                <text v="1 sổ lẻ" e="1 Decimal"/>
+              </option>
+              <option val="2">
+                <text v="2 sổ lẻ" e="2 Decimals"/>
+              </option>
+              <option val="3">
+                <text v="3 sổ lẻ" e="3 Decimals"/>
+              </option>
+              <option val="4">
+                <text v="4 sổ lẻ" e="4 Decimals"/>
+              </option>
+              <option val="5">
+                <text v="5 sổ lẻ" e="5 Decimals"/>
+              </option>
+              <option val="6">
+                <text v="6 sổ lẻ" e="6 Decimals"/>
+              </option>
+              <option val="7">
+                <text v="7 sổ lẻ" e="7 Decimals"/>
+              </option>
+              <option val="8">
+                <text v="8 sổ lẻ" e="8 Decimals"/>
+              </option>
+              <option val="9">
+                <text v="9 sổ lẻ" e="9 Decimals"/>
+              </option>
+              <option val="12">
+                <text v="12 sổ lẻ" e="12 Decimals"/>
+              </option>
+              <option val="DT">
+                <text v="Ngày giờ" e="Datetime"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="align" width="80" readOnly="false" viewType="Combobox" >
+          <text v="Căn chỉnh" e="Align"></text>
+          <viewInfo>
+            <options>
+              <option val="L">
+                <text v="Trái" e="Left"/>
+              </option>
+              <option val="C">
+                <text v="Giữa" e="Center"/>
+              </option>
+              <option val="R">
+                <text v="Phải" e="Right"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="bold" width="100" readOnly="false" dataType="B" >
+          <text v="In đậm" e="Bold"></text>
+        </field>
+        <field name="italic" width="100" readOnly="false" dataType="B" >
+          <text v="Nghiêng" e="Italic"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="moveup">
+          <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+        </button>
+        <button id="movedown">
+          <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[<enc>6047k8Qms+WY5WeBXOHiv1gNYMr5OCLK5rXY1bocHlbaUyaBeUIQiotrIcRWES+DTEPEv0pC2BZ+NecilXfx2au/tgT9fB6mrwywqa8UBblVBwYwzQa9OOpgIzeksjxynSv2wsKOWizSVQEe5ewX4IA8k6qnNKUGjLU48jWCXvD3vK8MRt6yXLGw+4mr+PC4UrhP9BkVywo1jqMzwAwLSZlzv+xNsOIDSPkOly9ZHM9Sy5UK9aypjlsPEhwzp+5e/u1XPnj+88bfvkqpAYufjw==</enc>]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  <buttons>
+    <button id="ok" default="true">
+      <text v="$AcceptLabel" e="$AcceptLabel"></text>
+    </button>
+    <button id="filterCancel">
+      <text v="$CancelLabel" e="$CancelLabel"></text>
+    </button>
+  </buttons>
+
+  <js>
+    <text>
+      <![CDATA[<enc>lyL3QZt9WiBeqI1LwOsG3EJdVNyvwiBDmMPYOBxXXdSG7Gcv/EW8lVTP0/SKEeJczecvN+f4zlLr4Z+TsuC2msrWk4lz4DUbybVFhZSigNIHs5lDl6Ujpl5bPg8sfsC0IgMArTUrXnOH0aj4Nb4+Aub8LVI1hqpICjJ1NXrSxyb28jO8I9bg0HVJ5GFqblkKIAJPxO7v30Ww9WvuGVVDMEjY7d5xqWOv6fvGwGSaUDZlOxQhC3jcxlJBRgSVUEZ6+u2AwI9QTRPO2w1BltKSU+YqysvWrjHRbP1Y0qjYd1Yxk947JoG2kmSoXFWPkJWoqz9WZ4cyPiaiajy4ya8/Bx0kNI0A2ZHImTouhNM01Ul+53S9kLhfk3uBbPxIYxY5b3pBzA5j+LvZEDvNagoYV6iwAh1CZmR6vyN9syigmlMDU1DN0mj7fivRyEWADtaumzQwvfWPv859C2c/Q1OVEIutVGjRhcy7Z8It84yuxP9vk4DXb0mY9UvybHA4/H8JqmoTDEcKTIaQKwoO+zgw1Fv7kJp/H3JUk9MMXlsFhcEmsRefaCjznlPeK34HG2tNhsLsBwDis1hGc8O826UyMjLw8wHCyb6R6Ja2hITvEWXxViF0VLcmoxa2XX2h0vkv39ZW6Z2JX2XqGFQk7ngeurPXlwW1Mgr5Pcj7KoDZT/B1R+3sTjlWr24kJKNIczRZJBb7iZwQnYOSgHDKqJsmYiI7Vv5Nw2lar6xsJEo1SzcZFVZaOlS63/V/rZi5Imzi+9PEbxA1m0LsbMkAt1cUTlEkT56+IeZJQo4MKT3AciKUc+mJF0UbIQHWol/KvhALiMuo1Xtc7LC8zO+zk/Id4RbXjWDEtrDcvnoItiYgpxvXZZru/Q9yP0TWwNZjKj1D0w0K73eG5kizKuHc8YEO/ZjUdQvopFwXEeZbcfXmTjoGx96brq8foNdnPlMO9+tnztfOxMCuZUkdEGiT9aALXy+iRyIolLbxhXjgSV/fuUeVEUkGMbArMkalxVnBIAQpLkQ64eDxL5/Ny0vwNDuFTv8hLa8RzbLH41LmKV70tOiSMx1vObj3oF4QtNZETSHldT3pA49rnM7D8KjPNADc8K6BFW1Nxf3n74QQC0vtek+NYFqAD4ikx2D/ICdxg1PuYw+uA9pQHEAbOVm0U9SsntcEuw6AxGbWsdAz+q6GLKxDTR5YtwQJGh0joXZFwDTY9Vy73kWbQPDrx1YPCIguNPT0mseGvunglzVFzsvbBgYUKFQICleg8e27llKt78cv4DPX44ZjUMsTwotSFtFWexVbPm4QusOBWKINxjSDFLxWBHmRNuAxTfM8sOxmzPkkTAxfeabgp8MRUDyPN/DCe4lmK4ALIFVUOfpFlS1ax4NY9FJOWbxnuOO1kESmgWiICY4+a6roJRAnBxJhrHkm7ee4IrOYJM0BJQylk3XhWj3jLX9oe3C1tqxlzyaDdW4HRVMKhsUyUWmCV+kYRUrylH8T5tq6bLstFRYW+bI0ZHIigVUhJbZsFsT1Hu8SlxzhAVm/jTcHepKhmYLfrDwqUQ==</enc>]]>
+    </text>
+  </js>
+  <css>
+    <text>
+      <![CDATA[<enc>gUvd4wZ35UlOSsGh5TkGLBadUrdIb55X2eZao0obdCc=</enc>]]>
+    </text>
+  </css>
+  <script>
+    <request code="GetForm">
+      <text>
+        <![CDATA[<enc>WpWnNoJjbnMzHt75NGMDSPqlYhH4zbVF0mAjYZkFCAWEKiWOGrn4c17N70rJ0FXWs21UdOTAkMT+hMyRkX+Fe9B3ZcuVko2fQx6re1foRSgECNzBpsvfDbwy7SlpO/X1HKdejF/exminHKQgupf79Vlcr+2ojcYKCkFI2MGElYBJOd5soUdYqoPgTdA+NhifPGq9QA+v3XoJ2dCqzkI9MpY47uhS+ccR7U5Rz+9fVBd2/4jjoT7uX9Y9Eln/oDU+K7Mk5x7nw55/H0OB6U2rzT0cT7hIzV040tKcYcIdR9VeqYVP10F0xROH/zo2VS8Nf0IIS2zPx8kcBa2mPhTFzg==</enc>]]>
+      </text>
+    </request>
+
+    <request code="DeleteForm">
+      <text>
+        <![CDATA[<enc>JHzEkaFQp9qqvbzcXj8Uh6w8xSMRA9x3cMWZFv2UBesVOqsQJGkO+6b+kzA6VLp9nhGrzFuGBBJ8eaOXzKmacOsucnMI4oDP3cy2GAwzm41t2q3ulEBxs7TIAB2WGPJW21sHiKBTimG2g9viCrypHoRS9U7+cAHlI/Azipt8VXiSH/612IxIA185A2kLnqDBcCVWwgIGcogMHiZKcBA5TikUEYnAbfepKJezHcHYqKGFNgyBYAZr8E9rPn/OZfsi</enc>]]>
+      </text>
+    </request>
+    
+    <loading code="2">
+      <text>
+<![CDATA[<enc>r07gHy2a1YsWBN5sJQoNxb4xjNEuroiUKExJ8zUOMf14SHtN1i+jLi34jTaMFPVDE1kRr3zQRnxVlvzJ8jIRwtf7eZ26swpV1BAk/bGKcZ/jWIpIzPiE1bY1C72GYtEEpJm+wqFtdBTj0uQeOcYXrw==</enc>]]>
+      </text>
+    </loading>
+
+    <beforesave>
+      <text>
+        <![CDATA[<enc>Wtyoslg0UMlcVwlYiROYmkcR+TMMhGDIr+92lpu0srFGY8xm9pDCEr9KVyakBlRUN6N9XkD4BMshvFlSyWXrvPB9iK7uqodpPg6m9YD631GArA2HIJSRDoFjy4ErdS/qc5wfg4K5YV2DIteHIDwrOAlnRE2fyI8Kfcg1MVhFrYP3sI+5Gd6oFjt2wkuc+6dSxYxccQT2voRrCU5EqRVZ13KYA4XZd+hLm/hVd62oVCWr5/1/DzDpH6u4drprYbIqyc0LTyz52iXRO6XLMISDWWjXjXnz+Rf6YZKcFj1XGR9w0M9u/xy4B08geeu6JCDQm8Zly+qVeqZjlNs6/2gukvjSmnWSdqP6XiBdQ3bX88HsirLxLT3UQNWXnso4GpQ9LCUKtA4k4XFBhPx8xwh9Q55FgF7gSDV79gQB4mt0GSAebEz1a19LlvmDpexr6mz9W209MjOGTiJxLVmMXl/lHQ==</enc>]]>
+      </text>
+    </beforesave>
+
+    <updating>
+      <text>
+        <![CDATA[<enc>ZWJAKZoCmjRH6Cwc2f9ZKB6b5uGFwneb+IJCiBtLnDhR0ILYMcqKjBf2LhkSvDucgAv6EFU++0QU4497RBA4rwt8MJ6uFJGPshg/afHyGNL+cBHJlnVFhemTolGYi2pC7ZJ7+JkBRL7nYVFG/HfNC1j1WrnDcebH35smA4P6QifuY5r0rWoDtGs7e4MIQC4t5suKFQ4xg2BrIJtnqoiadmDCz1g0sfan1MdUTTmhDhg=</enc>]]>
+      </text>
+    </updating>
+    <updated>
+      <text>
+        <![CDATA[<enc>IYvxR88j6lchtQDxyl4ovInTmvm0JvL6AutHb5MCFOA=</enc>]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[<enc>e1QjgaIeJKleeW91HBRiSjL3ueiif2FEJ2Ue+Rhd0HA=</enc>]]>
+      </text>
+    </inserting>
+
+    <aftersave>
+      <text>
+        <![CDATA[<enc>3nh36s8rna/ayBwGQTkM+NY9PHmFOjE1KO3YTiY/iJFXyrxR1KGmKIn1TpCUxmCpWWhIg8BXDEey1lOcYBt2J7ultZQe0jleL/9/p2lNsRWWTwc3wKRyEaPfgbvPDd0qsgt/UXvlaQte6qDtvHVk9D2shH4LD5jD/JFAZqZwpqA=</enc>]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+    <message val="notSaveCommonForm">
+      <text v="Không thể sửa/lưu vào mẫu chung" e="No Change Common Form"/>
+    </message>
+    <message val="columnNotBlank">
+      <text v="Chưa nhập thông tin các cột cần in" e="Columns Is Empty"/>
+    </message>
+    <message val="columnDuplicate">
+      <text v="Có cột dữ liệu bị trùng, kiểm tra lại dữ liệu" e="Columns Is Duplicate"/>
+    </message>
+    <message val="mustReload">
+      <text v="Cần làm tươi lại để theo dõi thay đổi mẫu in" e="Reload To Change"/>
+    </message>
+    <message val="notEdit">
+      <text v="Không thể thay đổi mẫu chung hoặc đã được sửa bởi người khác" e="Unable to change the common form or another has been fixed by"/>
+    </message>
+  </messages>
+
+</dir>

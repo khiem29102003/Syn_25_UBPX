@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<report xmlns="urn:schemas-iswift:struct-report">
+  <query>
+    <text>
+      <![CDATA[
+
+select s.ma_pttt, q.ten_pttt , s.tien, s.dien_giai, 
+	convert(varchar(10),s.ngay_tt,103) ngay_tt
+into #v643 from v643 s with(nolock) 
+	left join dmpttt q on s.ma_pttt = q.ma_pttt 
+where s.id = @id
+
+declare @t numeric(19, 5)
+select @t = sum(tien) from #v643
+select a.unit_id, a.so_ct, a.ma_noi_di, a.ma_kh, b.ten_kh, b.ten_kh2, b.dia_chi, d.ten_nv, a.dien_giai, a.t_tien_tu, a.id_dh, f.ma_bp, f.ten_bp, a.t_tien, a.ma_nt, dbo.iswiftFunctionReadCurrency(a.ma_nt, @t) as t_tt_in_word
+	  , replace(str(day(a.ngay_ct),2),' ','0') day, replace(str(month(a.ngay_ct),2),' ','0') month, cast(year(a.ngay_ct) as char(4)) year, a.ngay_ct
+		from s643 a with(nolock)
+		left join dmkh b with(nolock) on a.ma_kh = b.ma_kh
+		left join dmnv d on a.ma_nv = d.ma_nv
+		left join dmtt e on a.ma_tt = e.ma_tt
+		left join dmbp f on d.ma_bp = f.ma_bp
+		left join sysunit u on a.unit_id = u.unit_id
+	where a.id = @id 
+select * from #v643
+drop table #v643
+]]>
+    </text>
+  </query>
+
+  <forms>
+    <form id="030" fileName="s652_02" fileType="rdlc" exportExt="pdf" image="pdf">
+      <text v="Hoàn ứng (.pdf)" e="Refund (.pdf)"></text>
+    </form>
+	<form id="040" fileName="s652_02" fileType="rdlc" exportExt="docx" image="word">
+      <text v="Hoàn ứng (.docx)" e="Refund (.docx)"></text>
+    </form>
+	<form id="050" fileName="s652_02" fileType="rdlc" exportExt="xlsx" image="xlsx">
+      <text v="Hoàn ứng (.xlsx)" e="Refund (.xlsx)"></text>
+    </form>
+  </forms>
+
+	<!-- Master -->
+
+  <fields>
+    <field name="title" type="C">
+      <text v="PHIẾU HOÀN ỨNG AIR" e="REFUND SLIP AIR"/>
+    </field>
+    <field name="h_day" type="C">
+      <text v="Ngày" e="Date"/>
+    </field>
+    <field name="h_month" type="C">
+      <text v="tháng" e="Month"/>
+    </field>
+    <field name="h_year" type="C">
+      <text v="năm" e="Year"/>
+    </field>
+    <field name="h_so_ct" type="C">
+      <text v="Số đơn hàng: " e="Order no.: "/>
+    </field>
+    <field name="h_company" type="C">
+      <text v="Kính gửi :" e="Dear :"/>
+    </field>
+    <field name="h_address" type="C">
+      <text v="Địa chỉ:" e="Address:"/>
+    </field>
+    <field name="h_kh" type="C">
+      <text v="Tên đại lý:" e="Agent name:"/>
+    </field>
+    <field name="h_noi_giao" type="C">
+      <text v="Nơi giao:" e="Delivery place:"/>
+    </field>
+	<field name="h_ong_ba" type="C">
+      <text v="Người liên hệ:" e="Contact:"/>
+    </field>
+
+	
+	
+
+	
+	<field name="h_ma_nv" type="C">
+      <text v="Họ và tên :" e="Full name :"/>
+    </field>
+	<field name="h_ma_nt" type="C">
+      <text v="Ngoại tệ :" e="Foreign currency :"/>
+    </field>
+	<field name="h_t_tien_tu" type="C">
+      <text v="Tiền tạm ứng :" e="Advance money :"/>
+    </field>
+	<field name="h_id_dh" type="C">
+      <text v="ID đơn hàng :" e="Order ID :"/>
+    </field>
+	<field name="h_ma_bp" type="C">
+      <text v="Bộ phận :" e="Department :"/>
+    </field>
+	<field name="h_t_tien" type="C">
+      <text v="Tổng tiền hoàn ứng" e="Total refund"/>
+    </field>
+	<field name="h_bang_chu" type="C">
+      <text v="Bằng chữ:" e="In words:"/>
+    </field>
+	<!-- Detail-->
+	
+	
+	<field name="h_ma_pttt" type="C">
+      <text v="HT Thanh toán" e="Forms of payment"/>
+    </field>
+	<field name="h_tien" type="C">
+      <text v="Tiền" e="Money"/>
+    </field>
+	<field name="h_ngay_tt" type="C">
+      <text v="Ngày thanh toán" e="=Payment date"/>
+    </field>
+	<field name="h_dien_giai" type="C">
+      <text v="Diễn giải" e="Explain"/>
+    </field>
+	
+  </fields>
+  
+</report>

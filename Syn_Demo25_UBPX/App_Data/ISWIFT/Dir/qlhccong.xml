@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="qlhccong" table="qlhccong" fieldKey="ma_hccong, stt, ngay_ct" transaction="true" tryCatch="true" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Quản lý hành chính công" e="Public Administration Management."></title>
+  <title0 v="Thêm mới - hành chính công" e="New - public administration"></title0>
+  <title1 v="Sửa - hành chính công" e="Edit - Public Administration"></title1>
+
+  <forms>
+	<form gravity="TopLeft" columns="120,120,120,120,120" >
+		<fields>
+			<field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_hccong" allowBlank="false" viewType="Lookup" label="1" field="1"  hidden="false" fieldType="PK">
+			  <text v="Mã hành chính công" e="Public Administration Code"></text>
+			  <viewInfo lookupType="One" lookupId="dmhccong" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_hccong" lookupInfo="dmhccong|ma_hccong|ten_hccong" />
+			</field>
+			<field name="ten_hccong" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="stt" dataType="N" label="1" field="1" disabled="true" format="0" hidden="false" nextRow="true" fieldType="PK">
+				<text v="Số thứ tự" e="STT"></text>
+			</field>
+			<field name="thoi_gian" label="1" field="1" allowBlank="true" disabled="true" nextRow="true" >
+				<text v="Thời gian" e="Time"></text>
+			</field>
+			<field name="tg_dukienbd" label="1" field="1" allowBlank="true" disabled="true" nextRow="true" >
+				<text v="TG dự kiến bắt đầu" e="Estimated Start Time"></text>
+			</field>
+			<field name="tg_dukienkt" label="1" field="1" allowBlank="true" disabled="true" nextRow="true" >
+				<text v="TG dự kiến kết thúc" e="Estimated End Time"></text>
+			</field>
+			<field name="error" label="1" field="1" fieldType="EX" readOnly="true" inactivate="true" hidden="true">
+			  <text v="" e=""></text>
+			</field>
+      </fields>
+    </form>
+	<form gravity="TopRight" columns="120,120" >
+		<fields>
+			<field name="ngay_ct" label="1" field="1" valueDefault="new Date()" copy="false" allowBlank="false" dataType="D" fieldType="PK">
+			  <text v="Ngày đăng ký" e="Resgiter Date"></text>
+			</field>
+			<field name="status" viewType="Combobox" valueDefault="5" inactivate="true" label="[60]" field="[180]" >
+			  <text v="Trạng thái" e="Status"></text>
+			  <viewInfo>
+				<options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = 'HC1' and status = 1 order by stt">
+				</options>
+			  </viewInfo>
+			</field>
+		</fields>
+    </form>
+</forms>
+
+&DefaultButton;
+
+<js>
+    <text>
+  <![CDATA[
+function dir$qlhccong(p){
+  this.constructor(p);
+}
+dir$qlhccong.prototype = new DirEvent();
+dir$qlhccong.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$qlhccong.prototype.afterInit = function(renderType){
+  var p = this._dir;
+dir$qlhccongDisabledMasterField(p);
+dir$tlhccongDisabledStatusByAction(p);
+}
+dir$qlhccong.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+    case 'ma_hccong':
+      dir$qlhccongLoadDulieu(p);
+      break;
+    default:
+      break;
+  }
+}
+function dir$qlhccongDisabledMasterField(p){
+var maPl = p.valForm('ma_hccong');
+	if(maPl) {
+		p.setDisabled('ma_hccong', true);
+	} else {
+		p.setDisabled('ma_hccong', false);
+	}
+}
+function dir$qlhccongLoadDulieu(p){
+var maHcCong = p.valForm('ma_hccong');
+
+	if (p.options.action == 'NEW') {
+		p.request('requestHCCONG', '', [['ma_hccong', 'C', maHcCong]])
+	}
+}
+function dir$tlhccongDisabledStatusByAction(p){
+  var o = p.jObject('status');
+  if (p.options.action != 'VIEW') o.find("[value=4],[value=6],[value=7],[value=9],[value=5],[value=0]").remove();
+}
+         ]]>
+    </text>
+  </js>
+	<css>
+		<text>
+			  <![CDATA[
+.modal-dialog-lg{min-width:720px!important;}
+.control-label.tt {color: #499b98; text-decoration: underline}
+.control-label.ma_hccong, .control-label.stt {color: #499b98;}
+			  ]]>
+		</text>
+	</css>
+	<script>
+	<request code="requestHCCONG">
+		<text> <![CDATA[ 
+		IF EXISTS (SELECT 1 FROM dmhccong WHERE ma_hccong = @ma_hccong) BEGIN
+			exec [st_QueryHCCONG] @ma_hccong
+
+		END
+		ELSE BEGIN
+			SELECT 0 [!stt], '' [!thoi_gian], '' [!tg_dukienbd], '' [!tg_dukienkt], N'Chưa khai báo hành chính công vui lòng thử lại' as warning
+		END
+		]]> </text>
+	</request>
+		<query>
+		  <text>
+			<![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+drop table #@@table
+			 ]]>
+		  </text>
+		</query>
+		<updated>
+		  <text>
+			<![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId where [%whereFieldKey]
+			 ]]>
+		  </text>
+		</updated>
+		<inserting>
+		  <text>
+			<![CDATA[
+if exists(select 1 from @@table a where [%whereFieldKey]) begin
+  select '$codeExistsNewMsg' as message, '@@firstFieldKey' as field
+  return
+end
+
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @unit_id = @@unit
+			]]>
+		  </text>
+		</inserting>
+		<importing>
+			<text>
+			<![CDATA[
+update #data set unit_id = @@unit
+@@insert
+			]]>
+			</text>
+		</importing>
+	</script>
+	<messages>
+		<message val="codeExistsNewMsg">
+		  <text v="Mã hành chính công và stt đã tồn tại trong ngày" e="The circulation document code already exists in the list."/>
+		</message>
+	</messages>
+</dir>

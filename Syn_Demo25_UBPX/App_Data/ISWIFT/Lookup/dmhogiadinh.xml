@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="dmhogiadinh" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách hộ gia đình" e="Household List"></title>
+  <grids>
+    <grid table="dmhogiadinh" fieldKey="ma_hogiadinh" fieldName="ten_hogiadinh" order="ma_hogiadinh" allowFilter="true" allowOrder="true">
+      <fields>
+		<field name="ma_hogiadinh" width="120" fieldType="PK" format="U" filterType="Code">
+          <text v="Mã hộ gia đình" e="Household Code"></text>
+        </field>
+		<field name="ma_chuho" width="120">
+		  <text v="Mã chủ hộ" e="Household Lead Code"></text>
+		</field>
+		<field name="ten_chuho" width="200" fieldType="EX">
+		  <text v="Tên chủ hộ" e="Household Lead Name"></text>
+		</field>
+		<field name="dia_chi" width="200">
+		  <text v="Địa chỉ" e="Address"></text>
+		</field>
+		<field name="ma_khupho" width="120">
+		  <text v="Mã khu phố" e="Neighborhood Code"></text>
+		</field>
+		<field name="ten_khupho" width="200" fieldType="EX">
+		  <text v="Tên khu phố" e="Neighborhood Name"></text>
+		</field>
+		<field name="ma_phuongxa" width="120">
+			<text v="Mã phường/xã" e="Ward/Commune Code"></text>
+		</field>
+		<field name="ten_phuongxa" width="200" fieldType="EX">
+			<text v="Tên phường/xã" e="Ward/Commune Name"></text>
+		</field>
+		<field name="ma_ttp" width="120">
+		  <text v="Mã tỉnh thành" e="Province/City Code"></text>
+		</field>
+		<field name="ten_ttp" width="200" fieldType="EX">
+		  <text v="Tên tỉnh thành" e="Province/City Code"></text>
+		</field>
+      </fields>
+	<script>
+	<query>
+	  <text>
+		<![CDATA[
+declare @key2 nvarchar(3000)
+SELECT @key2 = (CASE WHEN @lookupKey = '' THEN '1=1' ELSE @lookupKey END) + CASE WHEN @val = '' THEN ''ELSE ' AND (@@fieldKey LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%''' + ' OR @@fieldName LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' END;
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join qldctcccd c on a.ma_chuho = c.ma_dancu left join dmkhupho d on a.ma_khupho = d.ma_khupho and a.ma_phuongxa = d.ma_phuongxa left join dmphuongxa e on a.ma_phuongxa = e.ma_phuongxa left join dmttp f on a.ma_ttp = f.ma_ttp', 'c.ten_dancu ten_chuho, d.ten_khupho, e.ten_phuongxa, f.ten_ttp', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+	 ]]>
+	  </text>
+	</query>
+	</script>
+    </grid>
+  </grids>
+</dir>

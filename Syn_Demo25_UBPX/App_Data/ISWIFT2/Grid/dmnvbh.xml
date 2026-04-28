@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="dmnvbh" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục nhân viên bán hàng" e="Saleman List"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="dmnvbh" fieldKey="ma_nvbh" order="ma_nvbh" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="ma_nvbh" fieldType="PK" width="120" >
+          <text v="Mã nhân viên" e="Saleman Code"></text>
+        </field>
+        <field name="ten_nvbh" width="250">
+          <text v="Tên nhân viên" e="Description"></text>
+        </field>
+        <field name="user_id" hidden="true" width="120" >
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="username" width="120" fieldType="EX" aliasName="b">
+          <text v="Tên đăng nhập" e="Username"></text>
+        </field>
+        <field name="ma_bp" width="120" >
+          <text v="Mã bộ phận" e="Department Code"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysuserinfo b on a.user_id = b.user_id left join dmbp c on a.ma_bp = c.ma_bp', 'b.username, c.ten_bp', '@@key', '', @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmnvbh(f){
+  this.constructor(f);
+}
+grid$dmnvbh.prototype = new DirEvent();
+grid$dmnvbh.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+</dir>

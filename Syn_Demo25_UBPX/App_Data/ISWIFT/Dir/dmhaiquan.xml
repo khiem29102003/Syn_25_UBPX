@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmhaiquan" table="dmhaiquan" fieldKey="ma_hq" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục hải quan" e="List of Customs"></title>
+  <title0 v="Thêm mới" e="Create New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_hq" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="1" >
+          <text v="Mã hải quan" e="Customs Code"></text>
+        </field>
+        <field name="ten_hq" label="1" field="-" allowBlank="false" importable="5" >
+          <text v="Tên hải quan" e="Customs Name"></text>
+        </field>
+        <field name="ten_hq2" label="1" field="-" importable="15" >
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+		<field name="ten_cd" label="1" field="-" importable="20">
+          <text v="Tên chức danh" e="Position Title"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" valueDefault="1" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmhaiquan(p){
+  this.constructor(p);
+}
+dir$dmhaiquan.prototype = new DirEvent();
+dir$dmhaiquan.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmhaiquan.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+dir$dmhaiquanDisabledMasterField(p, g);
+
+}
+
+function dir$dmhaiquanDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_hq').trim() != '')
+  {
+    p.setDisabled('ma_hq', true);
+  }
+  else
+  {
+    p.setDisabled('ma_hq', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+  
+  <css>
+	<text>
+	  <![CDATA[
+		.control-label.ma_hq, .control-label.ten_hq
+		{	
+			//font-weight:bold;	
+			color: #499b98;;
+		}
+	  ]]>
+	</text>
+  </css>
+  
+  <script>
+	<importing>
+      <text>
+        <![CDATA[
+		@@insert
+        ]]>
+      </text>
+    </importing>
+  </script>
+  
+  <messages>
+	<message val="codeExistsNewMsg">
+		<text v="Mã hải quan đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The customs code already exists in the catalog, please choose a different code."/>
+	</message>
+	<message val="codeExistsEditMsg">
+		<text v="Mã hải quan đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The customs code already exists in the catalog, please choose a different code."/>
+	</message>
+  </messages>
+
+</dir>

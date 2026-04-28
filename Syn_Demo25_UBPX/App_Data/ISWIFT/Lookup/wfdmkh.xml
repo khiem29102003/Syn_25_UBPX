@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+]>
+
+<dir id="wfdmkh" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách cấu hình workflow" e="Workflow Configuration List"></title>
+
+  <grids>
+    <grid table="wfdmkh" fieldKey="id" fieldName="ma_wf" order="ngay_ct" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="id" dataType="N" fieldType="PK" width="80" format="0" filterType="Code">
+          <text v="ID" e="ID"></text>
+        </field>
+		<field name="ma_wf" width="100" hidden="false" >
+          <text v="Mã worfkflow" e="Worfkflow Code"></text>
+        </field>
+		<field name="ds_ntask" width="250" fieldType="EX">
+          <text v="D/s nhóm công việc" e="Explain"></text>
+        </field>
+        <field name="ngay_ct" width="80" dataType="D">
+          <text v="Ngày c/từ" e="Voucher date"></text>
+        </field>
+        <field name="dien_giai" width="250" >
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+      </fields>
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @key2 nvarchar(3000),@sUpdate nvarchar(4000);
+select @key2 = @lookupKey + case when @val = '' then '' else ' and (@@fieldKey like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or @@fieldName like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+SET @sUpdate = 'UPDATE a SET ds_ntask = (SELECT STRING_AGG(b.ma_ntask, '' , '') FROM wfdmkhct b WHERE a.id = b.id) FROM #v a';
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', 'CAST('''' AS VARCHAR(4000)) ds_ntask', N'@@key', @key2, @@filterKey, @sUpdate , @pageIndex, 10, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+</dir>

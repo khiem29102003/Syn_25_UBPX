@@ -1,0 +1,252 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmbh" table="dmbh" fieldKey="ma_bh" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục bảo hành" e="Insurance list"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_bh" format="U" label="1" field="2" allowBlank="false" fieldType="PK" >
+          <text v="Mã bảo hành" e="Insurance code"></text>
+        </field>
+        <field name="ten_bh" label="1" field="2" allowBlank="false"  >
+          <text v="Tên bảo hành" e="Insurance name"></text>
+        </field>
+        <!-- <field name="model" label="1" field="2" fieldType="PK"> -->
+          <!-- <text v="Model" e="Modal name"></text> -->
+        <!-- </field> -->
+		<field name="model" allowBlank="false" viewType="Lookup" label="[120]" field="[120]"  hidden="false" nextRow="true" disabled="false">
+			<text v="Mã Model" e="Product Code"></text>
+			<viewInfo lookupType="One" lookupId="dmvt" lookupKey="status = 1" lookupCheck="1=1" lookupRef="" lookupInfo="dmvt|ma_vt|ten_vt" />
+		</field>
+		<!-- <field name="ten_vt" nextRow="true" fieldType="EX" readOnly="false"  disabled = "true" inactivate="true"  hidden="false" label="1" field="2" aliasName="cast('' as nvarchar(200)) as "> -->
+			<!-- <text v="Tên vật tư" e="Product Name"></text> -->
+		<!-- </field> -->
+		<field name="ten_vt" label="1" field="2" disabled ="true" fieldType="EX">
+          <text v="Tên sản phẩm" e="Product name"></text>
+        </field>
+		<field name="so_ngay_bh" label="1" field="2" disabled="true" dataType="I" fieldType="EX">
+          <text v="Bảo hành (tháng)" e="Guarantee"></text>
+        </field>
+		
+		<field name="ngay_bh" label="1" field="2" allowBlank="false" dataType="D">
+          <text v="Ngày bảo hành" e="Guarantee start"></text>
+        </field>
+		<field name="ngay_hbh" label="1" field="2" allowBlank="true" dataType="D" disabled="true">
+          <text v="Ngày hết bảo hành" e="Guarantee end"></text>
+        </field>
+		<field name="series" label="1" field="2" allowBlank="true" viewType="Lookup" readOnly="false" >
+          <text v="Serial number(S/N)" e="Serial number(S/N)"></text>
+          <viewInfo lookupType="One" lookupId="dmmodelvt" lookupKey="ma_vt = ![model]! and xstatus = 0 and xstatus2 = 0" lookupCheck="1=1" lookupRef="" lookupInfo="dmmodelvt|ma_model" />
+        </field>
+		<field name="pn" label="1" field="2" allowBlank="true" readOnly="false" >
+          <text v="P/N" e="P/N"></text>         
+        </field>
+		<field name="ma_kh" allowBlank="false" viewType="Lookup" label="[120]" field="[120]" hidden="false" nextRow="true" disabled="false">
+			<text v="Mã khách hàng" e="Custom Code"></text>
+			<viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1=1" lookupRef="" lookupInfo="dmkh|ma_kh|ten_kh" />
+		</field>
+		<field name="ten_kh" label="1" field="2" allowBlank="false" disabled="true">
+          <text v="Tên khách hàng" e="Customer name"></text>
+        </field>
+		<field name="dien_thoai" label="1" field="2" allowBlank="false" disabled="true">
+          <text v="Điện thoại" e="Phone"></text>
+        </field>
+		<field name="noi_mua" label="1" field="2" allowBlank="false">
+          <text v="Nơi mua" e="Where"></text>
+        </field>
+		<field name="khoang_trang_action" label="1" field="2" fieldType="EX" hidden="true">
+          <text v="Action" e="Action"></text>
+        </field>
+		<field name="so_luong" label="1" field="2" allowBlank="false" dataType="I">
+          <text v="Số lượng" e="Quantity"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+	<form gravity="TopRight" columns="120,120" >
+		<fields>
+			<field name="ximage1" label="1" field="0" importable="65">
+			  <text v="&lt;img class='image-single' id='img_ximage1' src='' onerror='src=`../Images/noImage.png`'/&gt; &lt;input type='button' value='Tải ảnh' onclick='browseServer(`ximage1`, `img_ximage1`);' value='Mở 1' style='text-align: center; display: block; margin: 0 auto;' /&gt;" e="Image 1"></text>
+			</field>
+	   </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmbh(p){
+    this.constructor(p);
+	document._dir = p;
+}
+dir$dmbh.prototype = new DirEvent();
+dir$dmbh.prototype.afterInit = function() {
+  	var p = this._dir;
+  	if (p.options.action == 'NEW') p.request('LoadBHCode','',['ma_bh']);
+  	setTimeout(function() {		
+		setImages('img_ximage1', 'ximage1', p);
+	}, 500);
+	dir$LoadDataProduct(p);
+	dir$LoadDataCustom(p);
+}
+
+dir$dmbh.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  
+  switch (cF){
+	case 'model':
+		dir$LoadDataProduct(p);
+		dir$dmbhLoadNgayBh(p);
+		break;
+	case 'ma_kh':
+		dir$LoadDataCustom(p);
+		break;
+	case 'ngay_bh':
+		dir$dmbhLoadNgayBh(p);
+		break;
+    default:
+      break;
+  }
+}
+function dir$dmbhLoadNgayBh(p) {
+	setTimeout(function () {	
+		if (p.valForm('ngay_bh') != null && p.valForm('so_ngay_bh') >= 0) {
+			var startDate = new Date(p.valForm('ngay_bh'));
+			startDate.setMonth(startDate.getMonth() + p.valForm('so_ngay_bh'));
+			p.valForm('ngay_hbh', startDate, true);
+			console.log(startDate);
+		}
+	}, 500);
+}
+function browseServer(value, src) {
+	var p = document._dir;
+	var finder = new CKFinder();
+	finder.selectActionFunction = function (url) {
+		p.valForm(value, url, true);
+		document.getElementById(src).src = url;
+	};
+	finder.popup();
+}
+function setImages(id, name, p) {
+	$('#' + id).attr("src", p.valForm(name));
+}
+function dir$LoadDataProduct(p) {
+	if (p.options.action == 'NEW' || p.options.action == 'EDIT' || p.options.action == 'VIEW')
+	{
+		if(p.valForm('model') != '') p.request('LoadInfoProduct','',['model']);
+		else {
+			p.valForm('ten_vt','',true)
+			p.valForm('so_ngay_bh','',true)
+		}
+	}
+}
+function dir$LoadDataCustom(p) {
+	if (p.options.action == 'NEW' || p.options.action == 'EDIT' || p.options.action == 'VIEW')
+	{
+		if(p.valForm('ma_kh') != '') p.request('LoadInfoCustom','',['ma_kh']);
+		else {
+			p.valForm('ten_kh','',true)
+			p.valForm('dien_thoai','',true)
+		}
+	}
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+	<query>
+      <text>
+        <![CDATA[
+			select @@fields into #@@table from @@table a where [%whereFieldKey]
+			[%updateRef]
+			select * from #@@table
+			
+			select @action as [khoang_trang_action]
+
+			declare @script nvarchar(4000)
+
+			if @script is null set @script = ''
+
+			if @action in ('EDIT', 'VIEW') select @script as script
+			drop table #@@table
+         ]]>
+      </text>
+    </query>
+	<request code="LoadBHCode">
+	<text>		
+	  <![CDATA[
+		exec [st_GetGuaranteeCode] @@table ,'BH' 
+	]]>
+	</text>
+  </request>
+  <request code="LoadInfoProduct">
+	<text>		
+	  <![CDATA[
+		select ten_vt [!ten_vt], so_ngay_bh [!so_ngay_bh] from dmvt where ma_vt = @model
+	]]>
+	</text>
+  </request>
+  <request code="LoadInfoCustom">
+	<text>		
+	  <![CDATA[
+		select ten_kh [!ten_kh], dien_thoai [!dien_thoai] from dmkh where ma_kh = @ma_kh
+	]]>
+	</text>
+  </request>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã tỉnh/ thành phố đã tồn tại' else N'City code already exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã tỉnh/ thành phố đã tồn tại' else N'City code already exists' end
+         ]]>
+      </text>
+    </declare>
+	
+	
+	<deleting>
+      <text>
+        <![CDATA[
+-- Update data xstatus trong dmmodelvt 
+Update a set a.xstatus2 = 0 from dmmodelvt a where EXISTS (select 1 from @@table b where a.ma_vt =  b.model and a.ma_model = b.series)
+
+]]>
+      </text>
+    </deleting>
+	
+	 <aftersave>
+      <text>
+        <![CDATA[
+-- Update data xstatus trong dmmodelvt 
+IF @status = 1 update a set a.xstatus2 = 5 from dmmodelvt a where EXISTS (select 1 from @@table b where a.ma_vt =  b.model and a.ma_model = b.series)
+]]>
+      </text>
+    </aftersave>
+	
+
+  </script>
+
+</dir>

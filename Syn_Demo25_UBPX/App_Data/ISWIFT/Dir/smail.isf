@@ -1,0 +1,267 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+  <!ENTITY VoucherRequiredFields01 SYSTEM "..\Include\XML\VoucherRequiredFields09.xml">
+  <!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid01.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+
+  <!ENTITY VoucherSaleRequest SYSTEM "..\Include\XML\VoucherSaleRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from smail where id = @id and status in (5,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+    ">
+]>
+
+
+<dir id="smail" table="smail" fieldKey="id" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" voucherCode="SM1" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Mail" e="Mail"></title>
+  <title0 v="Mới - Mail" e="New - Mail"></title0>
+  <title1 v="Sửa - Mail" e="Edit - Mail"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120" >
+      <fields>
+
+        <field name="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true" importable = "-1">
+          <text v="" e=""></text>
+        </field>
+		<field name="s_mail" format="L" allowBlank="false" viewType="Lookup" label="1" field="2" importable ="10">
+			<text v="Email gửi" e="Email Sent"></text>
+			<viewInfo lookupType="One" lookupId="dmsmail" lookupKey=" status = 1" lookupCheck="1=1" lookupRef="ten_mail" lookupInfo="dmsmail|s_mail|ten_mail" />
+		</field>
+		<field name="ten_mail" allowBlank="true" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[150]"  aliasName="cast('' as nvarchar(4000)) as ">
+			<text v="" e=""></text>
+		</field> 
+		<field name="ngay_hl" label="1" field="[120]" valueDefault="new Date()" dataType="D" allowBlank="false" importable ="15">
+			<text v="Ngày hiệu lực " e="Effective date"></text>
+		</field>
+		<field name="di_ngay" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="" field="1" >
+			<text v="" e=""></text>
+		</field>
+		<field name="ngay_hld" label="[100]" field="[120]" dataType="D" allowBlank="false" nextRow="false" importable ="20">
+			<text v="Hiệu lực đến" e="Expiry date"></text>
+		</field>
+		<field name="title" label="1" rows="1" field="-" allowBlank="false" importWidth="300" importable ="25">
+          <text v="Tiêu đề" e="Subject"></text>
+        </field>
+		<field name="link" label="1" rows="1" field="-" allowBlank="true" importable ="-1">
+          <text v="CC" e="CC"></text>
+        </field>
+		<!-- <field name="email_body" rows="10" label="0" allowBlank="false" field="-" importWidth="500" importable = "30"> -->
+          <!-- <text v="Nội dung" e="Body"></text> -->
+        <!-- </field> -->
+      </fields>
+    </form>
+	
+    <form gravity="TopRight" columns="120,120" >
+      <fields>
+			&VoucherRequiredFields01;
+      </fields>
+    </form>
+    <form tabPageIndex="1" gravity="MiddleLeft" height="200" columns="120,120,240" >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="smailct" allowBlank="false" label="" field="-" viewType="Grid">
+          <text v="Chi tiết" e="Detail"></text>
+        </field>
+      </fields>
+    </form>
+
+	<form tabPageIndex="2" gravity="MiddleLeft" height="0" columns="120,120" >
+	  <text v="Đính kèm" e="Attach Files"></text>
+	  <fields>
+		<field name="xfile" label="1" field="-" viewType="File" fieldType="EXParam">
+		  <text v="Chọn files" e="Attach Files"></text>
+		  <viewInfo fileFieldId0="id" fileGroup="SM1" fileExtension="*" maxFileSize="10240" maxFileCount="10"></viewInfo>
+		</field>
+	  </fields>
+	</form>
+    <form gravity="BottomLeft" columns="120,120" >
+      <fields>
+		<field name="email_body" rows="10" label="1" allowBlank="true" field="-" importWidth="500" importable = "30" hidden="true" >
+          <text v="Nội dung" e="Body"></text>
+        </field>
+		
+		<field name="email_body_con" rows="10" label="1" allowBlank="true" field="-" importWidth="500" fieldType="EX" >
+          <text v="Nội dung" e="Body"></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  <grids>
+    <grid id="smailct" table="smailct" fieldKey="id, line" order="line" allowFilter="true" readOnly="false" allowOrder="true" >
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+		<field name="r_mail" format="L" allowBlank="true" viewType="Lookup" width= "120" hidden="false" disabled="false" readOnly="false" importable = "35">
+          <text v="Email nhận" e="Email Recipient"></text>
+          <viewInfo lookupType="One" lookupId="dmrmail" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_mail" lookupInfo="dmrmail|r_mail|ten_mail"/>
+        </field>
+		<field name="ten_mail" allowBlank="true" width= "450" inactivate="false" readOnly="true" aliasName="b" join=" left join dmrmail b on a.r_mail = b.r_mail " >
+          <text v="Tên mail" e="Mail Name"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="paste">
+          <text v="$PasteToolbar" e="$PasteToolbar"></text>
+        </button>
+        <button id="moveup">
+          <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+        </button>
+        <button id="movedown">
+          <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="retrieve">
+          <text v="$RetrieveToolbar" e="$RetrieveToolbar"></text>
+          <items>
+            <button id="80">
+              <text v="-"  e="-"/>
+            </button>
+          </items>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[<enc>U/mDQPPo7y8u4tUKy47DCbwoFxQK/K35+gTQlTp0FMMnRldg9FhGs38N8aL1BlUXvBcc1Uy3pqLSKvEdXtk3WglFku2o9YOW1/CalxF0lRInm9rISJI6OEZzNkJrGGxWYt2QowdT+ebaIdPPikOmHrnsSSrrc5a76MNCGG2hDD4=</enc>]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>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</enc>]]>
+    </text>
+  </js>
+  <css>
+    <text>
+      <![CDATA[<enc>yXRDyp6iZEnM5uZqrGi/phfvRcBjlgSW1Yl/V7VBw0hqhGUfNMyY82bGhGo+3nsXmhu5/h5TaoI/orpMNsWGqKEzPYrVcXvHykxlaYfxjZLM4fIg8cZ3wJUVneqTOa/ker1IirIyRIsY5IG1eo/f2q3JKYmdD6kK3Rfg3CG4HbLiS6NVMlcd+qVGjT4wTdtD6CSRfxumLsaRJ0F4OFPk7tYq+1EFxP6s5gTb1Xyh+m5Wz5nar7JPGmh9AF51UzjlHQNL+6FsyfCZ8lLTzj/kukkOJZsd69t2wAw9T2evafQfHGUyQOY39LEW84QTyXS7SlclP/nC0x8ayq+OuPFFJK05Sa5huSKkbOC+2dCn09073ffpIGZsk1H28hIglMK18SRH+///J7DOaOk3tcKSsMwKbbpOnpSnreTLpKFBpiJ1sR4PyYv16xA0Hl1udRyHhq0Hz7zABuzQFOpzTaA7C2M8t24ykNleoZyunjbT1rUcIiL86+iqIy33Mmswmw2krCyvppLCu5Iq6HagtJkWOaa97PxcAh21yz1vpTFQ6zzYncoTzd0G62nhb26YXs3iKqmb2pDy9RwvYOhYGTd5yoBV81RalB6LO4ZS36m6d3zrqgJ5NxV90w+tk+ZMWrjfx4PmWKyg3yte6yYZNmLF1xTiZ3pCDraeFFl6xWnaRq9e/evsaZVns67jbw6JM4JXAWG1/xkCcb8SrjnQRajF9xXTnIlOjBKauD52GhquxUG3958t20MlVkO0zuCyHuEjrzWgdu7di+mtCUnAWOREA/Wloj5llSHHPeID7Jr/QvkrgUeIKpbr2kRtZah0Q1dFxvWPaIwFWQCFTvBaQSTNpGnI5SyWwW/kPJy5/VfFrCu+XeuCgCgWDmmwgyn8QD7lgnIOo4GSe66iE9v8iqnV+HXJXkDpNTbp76kIGpXyIHhHHlmIZkXeXRYKJNEq7QBs0VsUYY3hA9X92rMltK0yUAN3VtZFoXSwkGHPIGoMdMD2NTSfDmw839e6fcj45gnl</enc>]]>
+    </text>
+  </css>
+  <script>
+	<request code="ma_kh_request">
+		<text>
+		  <![CDATA[<enc>cUwF8Y5JLN/N22dCYRQL0535C/dzVAHEjyOJn4K1EW9Rfpykj4RlwxC9AZChm7eBoWEYiHRSpeqOXqnf6KXdF/oLVebaGH0UEafGl82tRdnUl0/BaG004j+/q5qfJAfEIAxMNdBDbsvRNPWFNbuHCA==</enc>]]>
+		</text>
+	  </request>
+    &VoucherRequest;
+    &VoucherSaleRequest;
+
+    <query>
+      <text>
+        <![CDATA[<enc>r07gHy2a1YsWBN5sJQoNxYa1sI4hSbyxaZPELeOK4RcruMCpSWfc9UthMqmOvYHTE2MipIQ+y/ONHqRuYxwMTw==</enc>]]>&CheckUpdatingDeleting;<![CDATA[<enc>t2Qblm/iKiSKIZpFhUih9XP26HzIDDPeD6n3eA8By4pgl/oQvea7dizviX+gPen/iMrWjB06aP3ThXTEZlPTmGtxz6kQFApWEX8tSwEknDGwPKEUmjVzWymrmA58sQ6PqkNqHx6xzc1OTx3W/zKk7bmN4iiyubmljMkdvNxOiyAvtbyv8Ajpsfq4HtioTPpD8cR0dn90Qb8E9nOmye6pcenRl09EfpkkVKb1XTI26xrsvLGuPMQ1dkrnd6zfYGEIaknyJMgLes1HmOqKMC4y/JGpioxrntDwxihQTxIkwl4YiDDz77sU7q4fG/gosWWVl/KtR6LncV1AqsM4lShaXjUojuPSNOiXpgpM6cJJWF8Pgs83gnX8wmiL1Pm4gPpgFTJJXDGVKCi6iGTKNhv7c/UhUtQLOtSyhQYHpgYc3Bo=</enc>]]>&VoucherNumberQuery;<![CDATA[<enc>+5mLMTNJcvZTJbBjCjbo+cIrPcfaGX7+KR00EEE3U1NtiuNYcGSxxXIYWnaNUSuqHkYOyALhgjz8xbZu31/xojKCwemqRN+7rjKu7hFd4/Gpa8QBU9zmlOs6VN38KPx5+FyWr1pRh/+Lyfh0vREcLHq0HaAUPRkRMwxlJ9Xij9fpvCChlIKX3ELUNoGN04PhBBZ8NcpdIM1rl3tBXL9r6w==</enc>]]>
+      </text>
+    </query>
+
+    <declare>
+      <text>
+        <![CDATA[<enc>hxQPm/hYhpvPifcenBxj7h7oN0snZYZljPmd/kTMe5whTFFwkDsDfoO5JwiPltwxLjPx0ikYFWniqwhGnBg2yIKR1GXkzLJhZhasObH3kRsMi+yMMT3AHG3z2B+SI1eCCrPOdwmDriuX/H8XOx0xOim7vyZI7voBdH/C8DCIXPxgV3ZiUgn4gWl1Upx03XBYQcblLyZFvRvlTM/SKhn6wf7BLDR6wjTF0V2Iq6LDn4Q=</enc>]]>
+      </text>
+    </declare>
+
+    &VoucherJSLoading;
+
+    <beforesave>
+      <text>
+        &VoucherNumberBeforeSave;
+      </text>
+    </beforesave>
+
+    <deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOHo2m/I5r6vL/VnI32yTLjZo3g4lV17JTn1w4Idh5UQXELGRDhj3lfaPmenquxV6LDIF4l78ZbP1CV83410uhbnHXlPVEuaM0AAV0N2lhoFwmdY8lNp9E1E6jj6AIcJzmg==</enc>]]>
+      </text>
+    </deleting>
+
+    <deleted>
+      <text>
+        <![CDATA[<enc>D6VK3ZTsw7ZYuqpEFC1RIkaC/WXXh6oT3o8klsKxv8N3XwUw1QdW37bPOYd2wxiPXMIeZZY7pbgW+OsnlVHrXi1EkzTMo6QCxpJF+Pj8DW8S+TqCdLktUUDACLwK84OM64sK5A2hOoozvQeY/L39d11K+nPtX6CjZYfmeyQpVc0=</enc>]]>
+      </text>
+    </deleted>
+
+    <updating>
+      <text>
+        <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOHo2m/I5r6vL/VnI32yTLjY8ejKRS/cnXnUMMtEqL1MMg/DQ3yp/GyemlbvEq+/tt/hqA0kiv3+jTZSg3vdhs3bakx3La841zgFSL/efn73H</enc>]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[<enc>ArurPA4yt4an7w7h9QL0RmqL9Zj9oRpzGQf0F/cns3IvpolVKnuljyreH4wA8QSzWnoIFOCR/WNftHaMvdd1aWHjeKKc38LCvp4LMQzdbhrfHV5vMwHoNRMTypn4J2euyYYS/IrT7apos8oIisCF2Qz8967stH8AXTPc6vUdBLywTWBOSlkKKO1DKTR1SlOMGXfIp7Hl5cW6dzCPajxVHByW+h7cLUjRsWexeeKaFN+znFvvN+lSTmGhrpFND+e9eMx1EQ/kmg+rbYNjlSixJlk2hAd6cgw7UjvNGppOibY=</enc>]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[<enc>z1s4NkrNk+40z3uOtt5qcgjBOPYOzc+u7EaQcyfDObcxnFyoQqy6mMZGCZarMI4LSWp2P3/8eRlbzAG73r5Kulnr3XU9FzoZaiSs6K4ommATqb6GbtHXoTTeK790QdTK52hhuJpcl9ZGjbJ6cuMdEDyrFWidTTfvqUJkn5qDmFqdfxxjRdTWlVTCSLVUBLU5/J3K0kf53EvwOF/dPnLByA==</enc>]]>
+      </text>
+    </inserting>
+
+    <inserted>
+      <text>
+        <![CDATA[<enc>PEkln3eTAnPCpw3uVehh1o191X9u7CShGF/ROrh7x6uom6/B3UU8WHyeKALX54fe6XdnLOhrzSTEp/DlCdZQTm1Jwe8NQmzSEQpCYplKtvOR2IPNcsds/Q/rXXPvi0bASjjafCJPBSqsSMy6iLwVaPgcBZIx2T/Rc7qxuzvtasybCmyUxPic2c3lCx6octDl</enc>]]>
+      </text>
+    </inserted>
+
+    <aftersave>
+      <text>
+        <![CDATA[<enc>1zfbKe13ho7//ctZXu6Qvkm35vM3KpyYc5lLOCXtLme/Y6aTrxZmpQPAHnGCbAkufC4z3vZjczN3J7duTXcx62WQGbvwmXsC81+S3vvskd+k99iy3wUv1+TWmxinJBMZ2KJGGQKYQ/OYfKYD1OnwRn+KOgv9BS//9InUyHpIoS0ntR1tWk1z1N3uU7wo3VDVaBb41aONfAm/GT6zzqcHKb67X7B9clqSLBmDKVV2XpG/ZUCW6mPHX2q7SgdyXa6Ag4Zf1tIOGy/RrQMTiX2MEfUqPV0mN+lKq+PUXftQSpkCt2LAxjYa5UlgFLXlpH8zpnY8TvbnVkTi3Ho6TECWpKD5jzUzIRv+7Cbg3pzj0UUwqCqhqmlQvDJjex2cAt9jKkIMeVPOZ58POkouvHRLHizvqqWDYP6SUj0QFsMpZ6g=</enc>]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+    <message val="physicalRetrieve">
+      <text v="Chỉ xử lý nghiệp vụ sổ sách lấy dữ liệu từ thực tế" e="" />
+    </message>
+  </messages>
+</dir>

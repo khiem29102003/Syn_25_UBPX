@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmtkkt" table="dmtkkt" fieldKey="ma_tk" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục tài khoản" e="List of customer"></title>
+  <title0 v="Thêm" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120" >
+      <fields>
+        <field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_tk" format="U" label="1" field="1" viewType="AutoIncrease" allowBlank="false" fieldType="PK" importable="5">
+          <text v="Mã tài khoản" e="Account code"></text>
+        </field>
+        <field name="ten_tk" allowBlank="false" label="1" field="-" importWidth="250" importable="10">
+          <text v="Tên tài khoản" e="Account name"></text>
+        </field>
+        <field name="ten_tk2" label="1" field="-" importWidth="250" importable="15">
+          <text v="Tên khác" e="Other name"></text>
+        </field>
+	
+        <field name="ten_ngan" label="1" field="-" importWidth="250" importable="30">
+          <text v="Tên ngắn" e="Short name"></text>
+        </field>
+		<field name="ten_ngan2" label="1" field="-" importWidth="250" importable="30">
+          <text v="Tên ngắn khác" e="Another short name"></text>
+        </field>
+        <field name="ttcn_yn" dataType="B" clientDefault="true" label="[120]" field="[60]" inactivate="true" importable="25">
+          <text v="Tk theo dõi công nợ" e="Debt monitoring account"></text>
+        </field>
+        <field name="tksc_yn" dataType="B" clientDefault="true" label="[120]" field="[60]" nextRow="false" inactivate="true" importable="30">
+          <text v="Tài khoản sổ cái" e="Ledger account"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" valueDefault="1" importable="-1">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+<js>
+    <text>
+      <![CDATA[
+function dir$dmtkkt(p){
+  this.constructor(p);
+}
+dir$dmtkkt.prototype = new DirEvent();
+
+dir$dmtkkt.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+    default:
+      break;
+  }
+}
+
+
+dir$dmtkkt.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+  dir$dmtkktDisabledMasterField(p, g);
+  var p = this._dir;
+  document._dir = p;
+}
+
+function dir$dmtkktDisabledMasterField(p, g){
+	if(p.valForm('ma_tk').trim() != '')
+  {
+    p.setDisabled('ma_tk', true);
+  }
+  else
+  {
+    p.setDisabled('ma_tk', false);
+  }
+}
+         ]]>
+		
+    </text>
+  </js>
+   <css>
+		<text>
+		  <![CDATA[
+	.control-label.ma_tk, .control-label.ten_kh, .control-label.dien_thoai
+	{		
+		color: #499b98;;
+	}
+		  ]]>
+		</text>
+  </css>
+
+  <script>
+    
+    <query>
+      <text>
+        <![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+select @script = '';
+if @action = 'EDIT'
+  if exists(select 1 from syscodeexists with(nolock, index(code1)) where code1 = @ma_tk and field = 'ma_tk')
+    select @script = @script + 'p.setDisabled(''ma_tk'', true); '
+
+if @action in ('EDIT', 'VIEW') select @script as script
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+    <inserting>
+      <text>
+        <![CDATA[
+if exists(select 1 from @@table a where [%whereFieldKey]) begin
+  select '$codeExistsNewMsg' as message, '@@firstFieldKey' as field
+  return
+end
+
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @unit_id = @@unit
+]]>
+      </text>
+    </inserting>
+
+
+    <importing>
+      <text>
+        <![CDATA[
+update #data set unit_id = @@unit
+@@insert
+        ]]>
+      </text>
+
+    </importing>
+  </script>
+
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã tài khoản đã tồn tại trong danh mục tài khoản." e="The record already exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã tài khoản đã tồn tại trong danh mục tài khoản." e="The record already exists."/>
+    </message>
+    <message val="taxtCodeExists">
+      <text v="Mã số thuế đã tồn tại trong danh mục, &lt;span class='Highlight'&gt;Lưu ý:&lt;/span&gt; hệ thống vẫn lưu dữ liệu vừa cập nhật." e="The tax code is already exists, &lt;span class='Highlight'&gt;Warning:&lt;/span&gt; Updated data has been saved."/>
+    </message>
+  </messages>
+</dir>

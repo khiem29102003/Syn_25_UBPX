@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY ReportFiltering SYSTEM "..\Include\XML\ReportFiltering.xml">
+]>
+
+<dir id="hrbsvaora" table="" height="" fieldKey="id" dirViewType="Dialog" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Cập nhật nhanh giờ vào ra" e=""></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_tu" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" dataType="D">
+          <text v="Ngày từ/đến" e="Date From/To"></text>
+        </field>
+        <field name="ngay_den" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+				<field name="ma_nv" viewType="Lookup" label="1" field="1" clientDefault="true"  aliasName="b">
+					<text v="Nhân viên" e="Employee ID"></text>
+					<viewInfo lookupType="One" lookupId="hrdmnv" lookupKey="status=1" lookupCheck="1=1" lookupRef="ho_ten_nv" lookupInfo="vhrdmnv|ma_nv|ho_ten_nv"/>
+				</field>
+				<field name="ho_ten_nv" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+					<text v="Tên nhân viên" e="Employee Name"></text>
+				</field>
+				<field name="ma_bp"  format="U" viewType="Lookup" label="1" field="1" clientDefault="true" >
+					<text v="Bộ phận" e="Department"></text>
+					<viewInfo lookupType="One" lookupId="hrdmbp" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_bp" lookupInfo="hrdmbp|ma_bp|ten_bp" />
+				</field>
+				<field name="ten_bp" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+					<text v="" e=""></text>
+				</field>
+      </fields>
+    </form>
+
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$hrbsvaora(p){
+  this.constructor(p);
+}
+filter$hrbsvaora.prototype = new DirEvent();
+filter$hrbsvaora.prototype.afterInit = function(){
+  var p = this._dir, ev = this;
+}
+filter$hrbsvaora.prototype.commandActionClick = function(action, xid, po){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+
+	<script>
+		<processing>
+			<text>
+				<![CDATA[
+exec hs_bsvaora @ngay_tu, @ngay_den ,@ma_nv, @ma_bp, 1, 1
+        ]]>
+			</text>
+		</processing>
+
+	</script>
+
+</dir>

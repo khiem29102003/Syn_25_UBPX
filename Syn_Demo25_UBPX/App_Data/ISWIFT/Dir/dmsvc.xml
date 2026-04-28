@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmsvc" table="dmsvc" fieldKey="ma_svc" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục SVC" e="List of SVC"></title>
+  <title0 v="Thêm mới" e="Create New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_svc" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="1" >
+          <text v="Mã SVC" e="SVC Code"></text>
+        </field>
+        <field name="ten_svc" label="1" field="-" allowBlank="false" importable="5" >
+          <text v="Tên SVC" e="SVC Name"></text>
+        </field>
+        <field name="ten_svc2" label="1" field="-" importable="15">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" valueDefault="1" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmsvc(p){
+  this.constructor(p);
+}
+dir$dmsvc.prototype = new DirEvent();
+dir$dmsvc.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmsvc.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+  dir$dmsvcDisabledMasterField(p, g);
+
+}
+
+function dir$dmsvcDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_svc').trim() != '')
+  {
+    p.setDisabled('ma_svc', true);
+  }
+  else
+  {
+    p.setDisabled('ma_svc', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+  
+  <css>
+	<text>
+	  <![CDATA[
+		.control-label.ma_svc, .control-label.ten_svc
+		{	
+			//font-weight:bold;	
+			color: #499b98;;
+		}
+	  ]]>
+	</text>
+   </css>
+  
+   <script>
+	<importing>
+      <text>
+        <![CDATA[
+		@@insert
+        ]]>
+      </text>
+    </importing>
+   </script>
+  
+   <messages>
+	<message val="codeExistsNewMsg">
+		<text v="Mã SVC đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The SVC code already exists in the catalog, please choose a different code."/>
+	</message>
+	<message val="codeExistsEditMsg">
+		<text v="Mã SVC đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The SVC code already exists in the catalog, please choose a different code."/>
+	</message>
+   </messages>
+
+</dir>

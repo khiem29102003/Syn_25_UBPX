@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmlhhd" table="dmlhhd" fieldKey="ma_lhhd" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục loại hình hoạt động" e="Activity Type Catalog"></title>
+  <title0 v="Thêm mới - loại hình hoạt động" e="New - Activity Type"></title0>
+  <title1 v="Sửa - loại hình hoạt động" e="Edit - Activity Type"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+	    <field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_lhhd" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="1">
+          <text v="Mã loại hình hoạt động" e="Activity Type Code"></text>
+        </field>
+        <field name="ten_lhhd" label="1" field="-" allowBlank="false" fieldType="PK"  importable="2">
+          <text v="Tên loại hình hoạt động" e="Activity Type Name"></text>
+        </field>
+		 <field name="ten_lhhd2" label="1" field="-" allowBlank="true" importable="3">
+          <text v="Tên tiếng anh" e="English Name"></text>
+        </field>
+		<field name="status" viewType="Combobox" inactivate="true" label="1" field="1" valueDefault="1" nextRow="true" importable="-1" >
+          <text v="Trạng thái" e="Status"></text>
+		  <viewInfo>
+			<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 ">
+			</options>
+		  </viewInfo>
+		</field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmlhhd(p){
+  this.constructor(p);
+}
+dir$dmlhhd.prototype = new DirEvent();
+dir$dmlhhd.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmlhhd.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+}
+         ]]>
+    </text>
+  </js>
+<css>
+	<text>
+	  <![CDATA[
+.control-label.ma_lhhd, .control-label.ten_lhhd
+{	
+	//font-weight:bold;	
+	color: #499b98;;
+}
+	  ]]>
+	</text>
+</css>
+
+<script>
+    <query>
+      <text>
+        <![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+select @script = '';
+if @action = 'EDIT'
+  if exists(select 1 from dmlocation where ma_lhhd = @ma_lhhd)
+    select @script = @script + 'p.setDisabled(''ma_lhhd'', true); '
+
+if @action in ('EDIT', 'VIEW') select @script as script
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+	<updated>
+      <text>
+        <![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId where [%whereFieldKey]
+         ]]>
+      </text>
+    </updated>
+	<inserting>
+      <text>
+        <![CDATA[
+if exists(select 1 from @@table a where [%whereFieldKey]) begin
+  select '$codeExistsNewMsg' as message, '@@firstFieldKey' as field
+  return
+end
+
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @unit_id = @@unit
+]]>
+      </text>
+    </inserting>
+	<importing>
+		<text>
+		<![CDATA[
+			update #data set unit_id = @@unit
+			@@insert
+		]]>
+		</text>
+	</importing>
+</script>
+<messages>
+	<message val="codeExistsNewMsg">
+	  <text v="Mã loại địa điểm đã tồn tại." e="Location type code already exists."/>
+	</message>
+	<message val="codeExistsEditMsg">
+	  <text v="Mã loại địa điểm đã tồn tại." e="Location type code already exists."/>
+	</message>
+</messages>
+</dir>

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+   <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="dmhogiadinh" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách hộ gia đình" e="Household List"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="dmhogiadinh" fieldKey="ma_hogiadinh" order="ma_hogiadinh desc" allowFilter="true" allowOrder="true" >
+	  <fields>
+	  	<field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="100" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+		<field name="ma_hogiadinh" width="120" fieldType="PK">
+		  <text v="Mã hộ gia đình" e="Circulation Document Code"></text>
+		</field>
+		<field name="ma_chuho" width="120">
+		  <text v="Mã chủ hộ" e="Household Lead Code"></text>
+		</field>
+		<field name="ten_chuho" width="200" fieldType="EX">
+		  <text v="Tên chủ hộ" e="Household Lead Name"></text>
+		</field>
+		<field name="dia_chi" width="200">
+		  <text v="Địa chỉ" e="Address"></text>
+		</field>
+		<field name="ma_khupho" width="120">
+		  <text v="Mã khu phố" e="Neighborhood Code"></text>
+		</field>
+		<field name="ten_khupho" width="200" fieldType="EX">
+		  <text v="Tên khu phố" e="Neighborhood Name"></text>
+		</field>
+		<field name="ma_phuongxa" width="120">
+			<text v="Mã phường/xã" e="Ward/Commune Code"></text>
+		</field>
+		<field name="ten_phuongxa" width="200" fieldType="EX">
+			<text v="Tên phường/xã" e="Ward/Commune Name"></text>
+		</field>
+		<field name="ma_ttp" width="120">
+		  <text v="Mã tỉnh thành" e="Province/City Code"></text>
+		</field>
+		<field name="ten_ttp" width="200" fieldType="EX">
+		  <text v="Tên tỉnh thành" e="Province/City Code"></text>
+		</field>
+		<field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_tt, ten_tt%l from dmttsd where status = 1">
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+		
+	  &DefaultButton;
+	  
+	  
+	<script>
+        <query>
+			<text>
+            <![CDATA[
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join qldctcccd c on a.ma_chuho = c.ma_dancu left join dmkhupho d on a.ma_khupho = d.ma_khupho and a.ma_phuongxa = d.ma_phuongxa left join dmphuongxa e on a.ma_phuongxa = e.ma_phuongxa left join dmttp f on a.ma_ttp = f.ma_ttp', 'b.ma_unit, c.ten_dancu ten_chuho, d.ten_khupho, e.ten_phuongxa, f.ten_ttp', '@@key', '', @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+			]]>
+			</text>
+        </query>
+
+        <finding>
+			<text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = @strFinding
+  
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join qldctcccd c on a.ma_chuho = c.ma_dancu left join dmkhupho d on a.ma_khupho = d.ma_khupho and a.ma_phuongxa = d.ma_phuongxa left join dmphuongxa e on a.ma_phuongxa = e.ma_phuongxa left join dmttp f on a.ma_ttp = f.ma_ttp', 'b.ma_unit, c.ten_dancu ten_chuho, d.ten_khupho, e.ten_phuongxa, f.ten_ttp', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+			</text>
+        </finding>
+      </script>
+    </grid>
+  </grids>
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmhogiadinh(f){
+  this.constructor(f);
+}
+grid$dmhogiadinh.prototype = new DirEvent();
+grid$dmhogiadinh.prototype.cellFocus = function(o){
+  DirEvent.prototype.cellFocus.apply(this, arguments);
+  this.reloadInvGrid(o);
+}
+grid$dmhogiadinh.prototype.beforeInit = function(renderType){
+  var p = this._dir;
+  if (renderType == 0) {
+    $("<div>").addClass('bottom-resize').attr('id', 'bar_resize_grid').appendTo($("#content"))
+    p.options.renderCompleted = function() {
+      var g = p.grid(), dt = g.data, m = new Memvars(), r = (dt.count() > 0)? 0: null;
+	  var dataValue = (dt.count() <= 0) ? 0 : 1;
+
+      if (r !== null){
+	  	m.add([['xu_ly', 'I', 1], ['ma_hogiadinh', 'C', dt.val(r, 'ma_hogiadinh')], ['ma_ttp', 'C', dt.val(r, 'ma_ttp')], ['ma_phuongxa', 'C', dt.val(r, 'ma_phuongxa')], ['ma_khupho', 'C', dt.val(r, 'ma_khupho')], ['dia_chi', 'C', dt.val(r, 'dia_chi')], ['unit_id', 'I', dt.val(r, 'unit_id')], ['data', 'I', dataValue]]);
+        p.options._currentCode = dt.val(r, 'ma_hogiadinh') + '#' + dt.val(r, 'id');
+      }
+      else {
+		m.add([['xu_ly', 'I', 1], ['ma_hogiadinh', 'C', ''], ['ma_ttp', 'C', ''], ['ma_phuongxa', 'C', ''], ['ma_khupho', 'C', ''], ['ma_khupho', 'C', ''], ['dia_chi', 'C', ''], ['unit_id', 'I', 0], ['data', 'I', dataValue]]);
+        p.options._currentCode = '#'
+      }
+
+      p.options._dirHD = $.createDir(false, { controller: "qldctcccd_1", memvars: m, focusWhenCreated: false, applyShortWhenCreated: false, folder: "Grid", dirViewType: "",subtitle:"", dirAbove: p, renderCompleted: function() {
+        var gridDir = $("#content").find(".dir");
+        var oG1Resize = $(gridDir.get(0));
+        var oG2Resize = $(gridDir.get(1));
+        $("#bar_resize_grid").boxresize({ divBox1: oG1Resize, divBox2: oG2Resize, resizeWidth: false});
+      } });
+      p.options.renderCompleted = null;
+    }
+  }
+}
+grid$dmhogiadinh.prototype.afterInit = function(renderType){
+  var p = this._dir, phd = p.options._dirHD, m = new Memvars(), g = p.grid(), dt = g.data;
+  
+  if (renderType == 0) {
+    var wHeight = $(window).height(), hBar = 70;
+    if($(window).width() < 767)
+      hBar = 60;
+    $("#content").css("height", (wHeight - hBar) + "px");
+  } else {
+
+	if(dt.count() <= 0) {
+		this.reloadInvGridNull();
+	} else {
+	    p.options._currentCode = '#';
+		this.reloadInvGrid();
+	}
+  }
+}
+grid$dmhogiadinh.prototype.selectItemChanged = function(dt){
+  var p = this._dir;
+  this.reloadInvGrid();
+}
+grid$dmhogiadinh.prototype.reloadInvGrid = function(){
+  var p = this._dir, phd = p.options._dirHD, m = phd.options.memvars, g = p.grid(), r = g._currRow||0, dt = g.data, curr = dt.val(r, 'ma_hogiadinh') + '#' + + dt.val(r, 'ma_chuho');
+  if (phd && dt.count() > 0 && curr != p.options._currentCode) {
+	m.add([['xu_ly', 'I', 1], ['ma_hogiadinh', 'C', dt.val(r, 'ma_hogiadinh')], ['ma_ttp', 'C', dt.val(r, 'ma_ttp')], ['ma_phuongxa', 'C', dt.val(r, 'ma_phuongxa')], ['ma_khupho', 'C', dt.val(r, 'ma_khupho')], ['dia_chi', 'C', dt.val(r, 'dia_chi')], ['unit_id', 'I', dt.val(r, 'unit_id')], ['data', 'I', 1]]);
+    p.options._currentCode = curr;
+    phd._refresh();
+  }
+}
+grid$dmhogiadinh.prototype.reloadInvGridNull = function(){
+  var p = this._dir, phd = p.options._dirHD, m = phd.options.memvars, g = p.grid(), r = g._currRow||0, dt = g.data;
+  var dataValue = (dt.count() <= 0) ? 0 : 1;
+	m.add([['xu_ly', 'I', 1], ['ma_hogiadinh', 'C', ''], ['ma_ttp', 'C', ''], ['ma_phuongxa', 'C', ''], ['ma_khupho', 'C', ''], ['ma_khupho', 'C', ''], ['dia_chi', 'C', ''], ['unit_id', 'I', 0], ['data', 'I', dataValue]]);
+	phd._refresh();
+}
+grid$dmhogiadinh.prototype.beforeButtonGridClick = function (id, gindex, r) {
+  var p = this._dir, g = p.grid(), dt = g.data;
+  switch (id) {
+    case 'refresh':
+	if(dt.count() > 0) {
+      p.options._currentCode = '#';
+      this.reloadInvGrid();
+	}
+    default:
+      break;
+  }
+  return true;
+}
+         ]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 50%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+  <script>
+
+  </script>
+
+</dir>

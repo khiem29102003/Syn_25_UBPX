@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="qlcncstbls" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Quản lý cá nhân chính sách Thương binh - Liệt sĩ" e="War Invalids and Martyrs Policy Beneficiaries Management"></title>
+  <grids>
+    <grid table="pldancu" fieldKey="ma_dancu" fieldName="ten_dancu" order="ma_dancu" allowFilter="true" allowOrder="true">
+      <fields>
+		<field name="ma_dancu" width="120" fieldType="PK">
+			<text v="Mã cư dân" e="Resident Code"></text>
+		</field>
+		<field name="ten_dancu" width="200" fieldType="EX">
+			<text v="Tên cư dân" e="Resident Name"></text>
+		</field>
+		<field name="ngay_sinh" width="200" fieldType="EX">
+			<text v="Ngày sinh" e="Birthday"></text>
+		</field>
+		<field name="gioi_tinh"  width="150" viewType="Combobox" fieldType="EX">
+		  <text v="Giới tính" e="Sex"></text>
+		  <viewInfo>
+			<options query="select ma_gt, ten_gt%l from dmgioitinh where status = 1 ">
+			</options>
+		  </viewInfo>
+		</field>
+		<field name="so_cccd" width="120" fieldType="EX">
+		  <text v="Số CCCD" e="ID Number"></text>
+		</field>
+		<field name="ma_pldancu" width="120">
+		  <text v="Mã phân loại" e="Classification Code"></text>
+		</field>
+		<field name="ten_pldancu" width="200" fieldType="EX">
+		  <text v="Phân loại" e="Classification"></text>
+		</field>
+		<field name="so_giay_cn" width="200">
+		  <text v="Số giấy chứng nhận" e="Certificate No."></text>
+		</field>
+		<field name="cap_boi" width="200">
+		  <text v="Cơ quan cấp" e="Issuing Authority"></text>
+		</field>
+		<field name="muc_tro_cap" dataType="N" format="Amount" width="120">
+		  <text v="Mức trợ cấp" e="Allowance Amount"></text>
+		</field>
+		<field name="ngay_bd" dataType="D" width="120">
+		  <text v="Từ ngày" e="From Date"></text>
+		</field>
+		<field name="ngay_kt" dataType="D" width="120">
+		  <text v="Đến ngày" e="To Date"></text>
+		</field>
+      </fields>
+	<script>
+	<query>
+	  <text>
+		<![CDATA[
+DECLARE @key2 nvarchar(3000)
+SELECT @key2 = (CASE WHEN @lookupKey = '' THEN '1=1' ELSE @lookupKey END) + CASE WHEN @val = '' THEN ''ELSE ' AND (@@fieldKey LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%''' + ' OR @@fieldName LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' END;
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+	 ]]>
+	  </text>
+	</query>
+	</script>
+    </grid>
+  </grids>
+</dir>

@@ -1,0 +1,576 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+  <!ENTITY VoucherRequiredFields01 SYSTEM "..\Include\XML\VoucherRequiredFields09.xml">
+  <!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid01.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+
+  <!ENTITY VoucherSaleRequest SYSTEM "..\Include\XML\VoucherSaleRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from smail where id = @id and status in (5,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+    ">
+]>
+
+
+<dir id="smail" table="smail" fieldKey="id" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" voucherCode="SM1" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Mail" e="Mail"></title>
+  <title0 v="Mới - Mail" e="New - Mail"></title0>
+  <title1 v="Sửa - Mail" e="Edit - Mail"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120" >
+      <fields>
+
+        <field name="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true" importable = "-1">
+          <text v="" e=""></text>
+        </field>
+		<field name="s_mail" format="L" allowBlank="false" viewType="Lookup" label="1" field="2" importable ="10">
+			<text v="Email gửi" e="Email Sent"></text>
+			<viewInfo lookupType="One" lookupId="dmsmail" lookupKey=" status = 1" lookupCheck="1=1" lookupRef="ten_mail" lookupInfo="dmsmail|s_mail|ten_mail" />
+		</field>
+		<field name="ten_mail" allowBlank="true" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[150]"  aliasName="cast('' as nvarchar(4000)) as ">
+			<text v="" e=""></text>
+		</field> 
+		<field name="ngay_hl" label="1" field="[120]" valueDefault="new Date()" dataType="D" allowBlank="false" importable ="15">
+			<text v="Ngày hiệu lực " e="Effective date"></text>
+		</field>
+		<field name="di_ngay" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="" field="1" >
+			<text v="" e=""></text>
+		</field>
+		<field name="ngay_hld" label="[100]" field="[120]" dataType="D" allowBlank="false" nextRow="false" importable ="20">
+			<text v="Hiệu lực đến" e="Expiry date"></text>
+		</field>
+		<field name="title" label="1" rows="1" field="-" allowBlank="false" importWidth="300" importable ="25">
+          <text v="Tiêu đề" e="Subject"></text>
+        </field>
+		<field name="link" label="1" rows="1" field="-" allowBlank="true" importable ="-1">
+          <text v="CC" e="CC"></text>
+        </field>
+		<!-- <field name="email_body" rows="10" label="0" allowBlank="false" field="-" importWidth="500" importable = "30"> -->
+          <!-- <text v="Nội dung" e="Body"></text> -->
+        <!-- </field> -->
+      </fields>
+    </form>
+	
+    <form gravity="TopRight" columns="120,120" >
+      <fields>
+			&VoucherRequiredFields01;
+      </fields>
+    </form>
+    <form tabPageIndex="1" gravity="MiddleLeft" height="200" columns="120,120,240" >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="smailct" allowBlank="false" label="" field="-" viewType="Grid">
+          <text v="Chi tiết" e="Detail"></text>
+        </field>
+      </fields>
+    </form>
+
+	<form tabPageIndex="2" gravity="MiddleLeft" height="0" columns="120,120" >
+	  <text v="Đính kèm" e="Attach Files"></text>
+	  <fields>
+		<field name="xfile" label="1" field="-" viewType="File" fieldType="EXParam">
+		  <text v="Chọn files" e="Attach Files"></text>
+		  <viewInfo fileFieldId0="id" fileGroup="SM1" fileExtension="*" maxFileSize="10240" maxFileCount="10"></viewInfo>
+		</field>
+	  </fields>
+	</form>
+    <form gravity="BottomLeft" columns="120,120" >
+      <fields>
+		<field name="email_body" rows="10" label="1" allowBlank="true" field="-" importWidth="500" importable = "30" hidden="true" >
+          <text v="Nội dung" e="Body"></text>
+        </field>
+		
+		<field name="email_body_con" rows="10" label="1" allowBlank="true" field="-" importWidth="500" fieldType="EX" >
+          <text v="Nội dung" e="Body"></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  <grids>
+    <grid id="smailct" table="smailct" fieldKey="id, line" order="line" allowFilter="true" readOnly="false" allowOrder="true" >
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+		<field name="r_mail" format="L" allowBlank="true" viewType="Lookup" width= "120" hidden="false" disabled="false" readOnly="false" importable = "35">
+          <text v="Email nhận" e="Email Recipient"></text>
+          <viewInfo lookupType="One" lookupId="dmrmail" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_mail" lookupInfo="dmrmail|r_mail|ten_mail"/>
+        </field>
+		<field name="ten_mail" allowBlank="true" width= "450" inactivate="false" readOnly="true" aliasName="b" join=" left join dmrmail b on a.r_mail = b.r_mail " >
+          <text v="Tên mail" e="Mail Name"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="paste">
+          <text v="$PasteToolbar" e="$PasteToolbar"></text>
+        </button>
+        <button id="moveup">
+          <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+        </button>
+        <button id="movedown">
+          <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="retrieve">
+          <text v="$RetrieveToolbar" e="$RetrieveToolbar"></text>
+          <items>
+            <button id="80">
+              <text v="-"  e="-"/>
+            </button>
+          </items>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+set nocount on
+select @@fields into #t from smailct a @@join
+where @@key order by line
+select * from #t order by line
+drop table #t
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$smail(p){
+  this.constructor(p);
+    document._dir = p;
+}
+dir$smail.prototype = new DirEvent();
+dir$smail.prototype.beforeInit = function(renderType){
+  this._dir.options._files = null;
+}
+
+dir$smail.prototype.afterInit = function(renderType){
+	const inputEmailBody = document.querySelector("textarea.email_body");
+	const editorTextarea = document.querySelector("textarea.email_body_con");
+	
+	<!-- setTimeout(function() {		 -->
+		<!-- var mota = document.querySelector('textarea.email_body_con') -->
+		<!-- editor_mota = CKEDITOR.replace(mota, { -->
+			<!-- customConfig: '/ckeditor/config.js', -->
+			<!-- extraAllowedContent: 'span', -->
+			<!-- maxLength: 256,  -->
+		<!-- });	 -->
+		<!-- editor_mota.setData(document.querySelector('input.mo_ta').value); -->
+		<!-- editor_mota.on('change', function () { -->
+			<!-- p.valForm('mo_ta', editor_mota.getData(), true); -->
+		<!-- }); -->
+	<!-- }, 500); -->
+
+	ClassicEditor.create(editorTextarea, {
+		toolbar: {
+			items: [
+				"heading", "|",
+				"bold", "italic", "link",
+				"bulletedList", "numberedList", "|",
+				"indent", "outdent", "|",
+				"imageUpload", "blockQuote", "mediaEmbed", "undo", "redo"
+			]
+		},
+		language: "en",
+		simpleUpload: {
+			uploadUrl: "/AppHandler/SimpleUpload.ashx"
+		}
+	})
+	.then(editor => {
+		window.editor = editor;
+		editor.setData(document.querySelector("textarea.email_body").value);
+		editor.model.document.on("change:data", () => {
+			document.querySelector("textarea.email_body").value = editor.getData();
+		});
+	})
+	.catch(error => {
+		console.error("CKEditor error:", error);
+	});
+
+	var p = this._dir, g = p.grid();
+  
+	//if (p.options.action == "NEW") p.valForm('email_body', 'Kính gửi: @ten_kh@', true);
+	
+	var exp = {	 
+		t_chon_yn: ['@t_chon_yn', '[chon_yn]'],
+	}
+	
+	p.applyExpression(exp, g, false);
+
+	g.FomulaApplied = {
+		"chon_yn":["t_chon_yn"]
+	}
+
+	dir$smailDisabledMasterField(p, g);
+	dir$smailHiddenColumnByType(p);
+	dir$smailHiddenColumnByTran(p);
+	dir$smailDisabledStatusByAction(p);
+}
+
+dir$smail.prototype.beforeButtonDialogClick = function (id) {
+	var p = this._dir, g = p.grid(0), dt = g.data;
+	switch (id) {
+		case 'ok':
+			var d = p.valForm('ngay_hl'),d2 = p.valForm('ngay_hld');
+			var k = $.date(d,"dd/mm/yy"),k2 = $.date(d2,"dd/mm/yy");
+			if (p.valForm('ngay_hld') <= p.valForm('ngay_hl')) { 
+				$.alert(p.msg('noDate')+' ' + k + ' < ' + k2);			
+				return false;
+			}
+		default:
+			break;
+	}
+	return true;
+}
+dir$smail.prototype.beforeButtonGridClick = function (id, gindex) {
+	var p = this._dir;
+	switch (id) {
+		case '10':
+			p.showFilter("smailKH", null, {_ngay_ct2: p.valForm('ngay_ct'),_unit_id: p.valForm('unit_id')});	  
+			return false;
+			break;
+		default:
+			break;
+	}
+	return true;
+}
+
+dir$smail.prototype.gridCellValueChange = function (o, g, r, c, v) {
+  var p = this._dir;
+  switch (c){
+	case 'ma_kh' :
+		p.grequest(g, 'ma_kh_request', '', ['ma_kh'], null, r);
+	break;
+    default:
+      break;
+  }
+}
+dir$smail.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+    case 'ma_gd':
+      dir$smailHiddenColumnByTran(p);
+      break;
+    case 'ma_ngv':
+      dir$smailHiddenColumnByType(p);
+      break;
+
+    default:
+      break;
+  }
+}
+dir$smail.prototype.gridDetailActionChange = function(gindex, action, r){
+  var p = this._dir;
+  if (action == 'AfterDeleteRow' || action == 'AfterAppendGrid') dir$smailDisabledMasterField(p, p.grid(gindex));
+  return true;
+}
+function dir$smailDisabledMasterField(p, g){
+
+}
+function dir$smailHiddenColumnByType(p){
+  var v = p.valForm('ma_ngv'), bc = p.options.struct.baseCurrency;
+}
+function dir$smailHiddenColumnByTran(p){
+  
+}
+
+function dir$smailDisabledStatusByAction(p){
+  var o = p.jObject('status');
+  if (p.options.action != 'VIEW') o.find("[value=4],[value=0],[value=5],[value=6],[value=7],[value=9]").remove();
+}
+
+
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+      <![CDATA[
+		.ck-editor__editable_inline {
+			min-height: 100px !important;
+			transition: none !important;
+			overflow-y: auto;
+		}
+	  
+		.control-label.t_so_luong, .input-field.t_so_luong,
+		{
+			font-weight:bold;
+		}
+		.control-label.ngay_hld
+		{	
+			color: #499b98;
+		}
+		
+		.input-field.status, .input-field.unit_id,.control-label.tt,.control-label.tt2,.control-label.tt3,.input-field.ma_gd
+		{
+			color: #ab6926;
+		}	
+		
+		.app_id span {
+		  color: #ab6926;
+		}
+		
+		.grid-input-field.app_id
+		{
+			color: #ab6926;	
+		}
+		
+		.dinh_kem {
+			width: 100%;
+		}
+		
+		.file-upload-section {
+            margin: 20px 0;
+        }
+
+        .custom-file-input {
+            display: none;
+        }
+
+        .custom-file-label {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        .file-info-container {
+            margin-top: 20px;
+            display: grid;
+			grid-template-columns: 90% 10%; /* Phần tử đầu chiếm 90%, button chiếm 10% */
+            gap: 10px; /* Khoảng cách giữa các phần tử */
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .file-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-details {
+            font-size: 14px;
+        }
+
+        .delete-file {
+            color: red;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        #btnUpload {
+            text-align: center;
+			padding: 10px;
+			background-color: #28a745;
+			color: white;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+        }
+
+        #btnUpload:hover {
+            background-color: #218838;
+        }
+
+        #lblMessageCus {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+      ]]>
+    </text>
+  </css>
+  <script>
+	<request code="ma_kh_request">
+		<text>
+		  <![CDATA[
+			SELECT TOP 1 ISNULL(a.ten_kh,'') as #ten_kh, ISNULL(a.e_mail,'') as #e_mail
+			FROM dmkh a where a.ma_kh = @ma_kh
+			
+			]]>
+		</text>
+	  </request>
+    &VoucherRequest;
+    &VoucherSaleRequest;
+
+    <query>
+      <text>
+        <![CDATA[
+if @action = 'EDIT' begin
+]]>&CheckUpdatingDeleting;<![CDATA[
+end
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+if @action in ('EDIT', 'VIEW') exec ISWIFTStoreGetListFiles 'xfile', @id, '@@voucherCode', '', @script output
+if @script is null set @script = ''
+
+if @action = 'NEW' begin
+  declare @ma_nk varchar(32), @ten_nk nvarchar(3000), @ngay_ct date, @so_ct varchar(32), @i_so_ct int, @unit_id int
+  select @ngay_ct = getdate(), @unit_id = @@unit
+]]>&VoucherNumberQuery;<![CDATA[
+  if @so_ct is null
+    select '' as [so_ct], 0 as [i_so_ct], @unit_id as [unit_id], '' as ma_nk, '' as ten_nk
+  else
+    select @so_ct as [so_ct], @i_so_ct as [i_so_ct], @unit_id as [unit_id], @ma_nk as ma_nk, @ten_nk as ten_nk
+end
+else select @script as script
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+
+    <declare>
+      <text>
+        <![CDATA[
+declare @warning nvarchar(256), @dOldVoucherDate date, @dVoucherDate date, @nVoucherType tinyint, @strIds varchar(256), @q nvarchar(4000)
+DECLARE @app_id_hd TABLE(app_id varchar(255))
+set @warning = ''
+         ]]>
+      </text>
+    </declare>
+
+    &VoucherJSLoading;
+
+    <beforesave>
+      <text>
+        &VoucherNumberBeforeSave;
+      </text>
+    </beforesave>
+
+    <deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct, @dVoucherDate = ngay_ct, @nVoucherType = ma_ngv from smail where id = @id
+        ]]>
+      </text>
+    </deleting>
+
+    <deleted>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+exec ISWIFTStoredDeleteDataWithKey 'smailct', @strIds, '', @dVoucherDate
+
+
+        ]]>
+      </text>
+    </deleted>
+
+    <updating>
+      <text>
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct from smail where id = @id
+        ]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId, i_so_ct = @i_so_ct, so_ct = @so_ct where [%whereFieldKey]
+update dmttin set status = 0 from dmttin where id0 = rtrim(@id) and xgroup = '@@voucherCode'
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+         ]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @ma_ct = '@@voucherCode'
+exec ISWIFTStoredGetIdentityNumber '@@voucherCode', '@@table', @id output
+         ]]>
+      </text>
+    </inserting>
+
+    <inserted>
+      <text>
+        <![CDATA[
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+
+]]>
+      </text>
+    </inserted>
+
+    <aftersave>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+if @action = 'NEW' set @dOldVoucherDate = @ngay_ct
+update @smailct set id = @id, ngay_ct = @ngay_ct, so_ct = @so_ct, status = @status, unit_id = @unit_id, s_mail = @s_mail, title = @title, email_body = @email_body, link = @link
+delete smailct where id = @id
+insert smailct select * from @smailct
+
+
+exec ISWIFTStoredIncreaseVoucherNo @ma_nk, @ngay_ct, '@@voucherCode', @i_so_ct, @so_ct, '@@table'
+select '' as message, @warning as warning, @id as [#id], @so_ct as [#so_ct], @ma_unit as [#ma_unit]
+]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+    <message val="physicalRetrieve">
+      <text v="Chỉ xử lý nghiệp vụ sổ sách lấy dữ liệu từ thực tế" e="" />
+    </message>
+  </messages>
+</dir>

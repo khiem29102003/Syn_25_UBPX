@@ -1,0 +1,177 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="sysrightunit" table="sysrightunit3" transaction="true" tryCatch="true" fieldKey="user_id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Phân quyền truy cập theo đơn vị" e="Access Right by Unit"></title>
+  <title0 v="Mới" e="New" />
+  <title1 v="Sửa" e="Edit" />
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="user_id" hidden="true" dataType="I" label="1" field="1" fieldType="PK" >
+          <text v="User id" e="User id"></text>
+        </field>
+        <field name="username" fieldType="EXParam" viewType="Lookup" allowBlank="false" label="1" field="1">
+          <text v="Tên/Nhóm" e="Name/Group"></text>
+          <viewInfo lookupType="One" lookupId="vsysuserinfo" lookupKey="status = 1 and admin = 0" lookupCheck="1=1" lookupRef="nickname" lookupInfo="vsysuserinfo|username|nickname" />
+        </field>
+        <field name="nickname" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="1" gravity="MiddleLeft" height="350" >
+      <text v="Trạng thái" e="Status"></text>
+      <fields>
+        <field name="sysrightunit2" allowBlank="false" label="" field="-" viewType="Grid">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  <grids>
+    <grid id="sysrightunit2" table="sysrightunit2" fieldKey="user_id, line" order="line" readOnly="false">
+      <fields>
+        <field name="user_id" dataType="I" foreignField="user_id" fieldType="PK" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+        <field name="unit_id" readOnly="true" hidden="true" inactivate="true" dataType="I" width="80" >
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_unit" width="100" viewType="Lookup" allowBlank="false" readOnly="false" aliasName="b" >
+          <text v="Đơn vị" e="Status"></text>
+          <viewInfo lookupType="One" lookupId="sysunit" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_unit" />
+        </field>
+        <field name="ten_unit" width="250" readOnly="true" inactivate="true" aliasName="b" fieldType="EX" >
+          <text v="Tên đơn vị" e="Unit Name"></text>
+        </field>
+        <field name="a_view" valueDefault="1" dataType="B" width="80" readOnly="true" inactivate="true" >
+          <text v="Xem" e="View"></text>
+        </field>
+        <field name="a_new" dataType="B" width="80" readOnly="false" >
+          <text v="Mới" e="New"></text>
+        </field>
+        <field name="a_edit" dataType="B" width="80" readOnly="false" >
+          <text v="sửa" e="Edit"></text>
+        </field>
+        <field name="a_del" dataType="B" width="80" readOnly="false" >
+          <text v="Xóa" e="Delete"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="moveup">
+          <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+        </button>
+        <button id="movedown">
+          <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[<enc>Ts8UHiXSGkQdavUSCrw2AtMjZkzqr/Bi9jfieg0UMgUtiKUIOboCRg++W0r50pioOOZpVFYxrv/Kf4JMoJhrukIaRIaupeK+CmU/JbzBVSoQZVYvShM+rLu0hTTHEHOgvTF2MuvKbbTTwh7jMrFrowNEVRvRZDdhIImjVjmRl9CU8+9EtGwtbF22drj2mxgB</enc>]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>vVZ4u1SeO4fiPxp6+ohb9ePPdM+N/riLYd+vc1iT2dowh+MekuZcr0QI79G99cowYvIpmF9WtizL6c6Peh70fxHDjT4/J66/yk+TANu/Y0KQaGJYzORwvAImE2sMijemHo1iqaaSj382MoqCstxChDYDA5lKLFQja7GNz/t7ES5IASTH+0QAanAilSFaDWSX1afD0a3vZRlNJLelzhMoRDkpbgmhDqpf0a7FOiscsPXlnHnc8M/egPvHpkn/4kCpnOBq30EznCut/oreyX7mQDXuMEOU4oqklH7JUCbZlk9NqXkL4ri2ULxYp5YtLB3BDkzIIN8gtld91BjnQKPi36NzfkZefJrHbMGna2iRbfsGA5DyB8XEt2X9A2vY+kkpOqeXvGAh/DJ1HsZhX62RNJEM04IlFOvN4QiazuTrxrDBgJnM+4vfX933mRTKHvpd</enc>]]>
+    </text>
+  </js>
+
+  <script>
+    <request code="Unit">
+      <text>
+        <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOJFVpvfhurGXtCxzLFQsj02hhkQBuY6h9DCYlTvhcWdxciSafTjSwhiTnRzuHm+uJPNkTpAsr2SxWbMW6067duW+MblfFMz4tg02iyZUVz+H</enc>]]>
+      </text>
+    </request>
+    <query>
+      <text>
+        <![CDATA[<enc>xEVHRMEZJK02WrBNdmBrzeyEJFpKVeMQkLiXAkw5tkpGHFK1rlRtROC0XkLA9iAMA6eZRFCVqAzE+5ifUiaB6HhXAjfKWdQP9za0OR7jSrYprL/QK2UGcaEwRq266gCcCdYXWfckxWI7kGY5Ix0ITzII7aWe2pG+7/BMgWZB61Cb6QHUEs5/u/RBsI+3JSb8h95VbM5OwKVzXuNODbVyfOui9i4ltbk9MKVHIEHe4h8=</enc>]]>
+      </text>
+    </query>
+
+    <beforesave>
+      <text>
+        <![CDATA[<enc>J7+pJ+05/6Hz9LSjJKnjBbIX/HEEgN/N6aoCtUrmaujhYFJ8WysSkM13//Jplr9iaOZne2GqvZSkYXchEn54sl6BX4GkdvbLfiCorM6nCbj1lTwGoKNiwl0WcyPNDULpCX02i3y4Mm+hA+1E1Sf1bvO5b2MJlMUGjWWUyjF61EQ3KzhWgr5Oy9ggDLvRSi2oPt0p8+u+Gy+xJAJvBucLL4lj8GXwWTZigVJZwIHf2AMhh3J/cwIFn6Y1Qr85Tc/i</enc>]]>
+      </text>
+    </beforesave>
+
+    <deleted>
+      <text>
+        <![CDATA[<enc>l2RBYdHOlenDqXbxvQR0AutxrU4AAGJ47EPTjaQNdN0rOMRujpm44czUdcpkWFEc6pcTXtEcdhK52kWPbyDLkfRYwa3Gnd/F//WFVDi/+TONl6WgZhCcbdvUVsClPDxx51R018JlE7MtklG0Y4zCUAPCS582h/1nMLlCCxK+Ld0=</enc>]]>
+      </text>
+    </deleted>
+
+    <updating>
+      <text>
+        <![CDATA[<enc>2k24vr5cYw2riNEwWu2ekyF8dAM0fPiZAs9SKNRL5/y55anEBqKB/2AKKtsSgKIBkec727iSoQppADg6jJiixJUCz7DThq9gmfDqoRW9krQs5nqrQcF2i8FEhbEcGDxbvpHs5c2oPE5jpa2QbEHfWPWxousHQXJP1QyiFnyYp07+4CtMz301v8NidoQlFZvC</enc>]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[<enc>sxD5Swu0R4mcxEHdwcy2yusGWN+onOqn874jXkPh/rjgH5pXjrSYV+plGMe0ezz2Zx52dY2pp/KsV5fBtPLj3UT5aIY7XJh3zBEKyzTSSnNzGPStteekiotj8hLXkzSRH7BGp64pvyYVey/C90cWn9ezW8mjp9nPrvBZIi/iMJZFmIKAjWsoNPqp3d+IVbA4</enc>]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[<enc>UIZsYpWvvL8NCnVer9F5GoYWz66ScR0lfisn86SRsUevHIcosfwhBqqMsNm/56nORRcWkdPut+Vi9Gu7qoDO2XB0BvwA1/tjIBCS39vOF9/f72aVyVQMP4Dwe4AfdD1pZyloEFZ0rQipjbKBFPzVrNtJnr6xCazBmEY1gFLkugF81JlNSvhV9S5zoZ0c59sd+G/7iEC7+QiGAsnD3ltzWBQG6A0e8BPOslSE/OdMWZETnL2Hnkd6VP+Wft+E7T+L</enc>]]>
+      </text>
+    </inserting>
+
+    <aftersave>
+      <text>
+        <![CDATA[<enc>noqN7L+liiU8TK8rWO1+W/plvW8zDWfb9S7gSvcm+HdzwQJwchuTYRVap9gwCN+sbp9jCApzllwvzrakIk1ivjapaFT078FtmPuUltJGererZxBMTDOSAYNm+zXZyTUJOxKagzjK4L6PNuD/1nRQ1dOiZZvAQrwAUpK6ZG8+dLThOJ9OVBerW7JN3liGuNJ+a7/7eCZGWIFZTjIE7sgEM6kQn12xHgNqAeH/CHDkFblIr6bn7Ibezz2DHxTH2sdlwyBESnb621bv7MPG1mW7qUmV2KGLZDArEkHPm4Q0sSYD/bWHjlxrG9/oudS8uD4cpu8Pe28ttXObmdRfG37kcg==</enc>]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Tên/nhóm đã tồn tại" e="Name/Group Already Exists"/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Tên/nhóm đã tồn tại" e="Name/Group Already Exists"/>
+    </message>
+    <message val="unitDuplicate">
+      <text v="Mã đơn vị đã bị trùng ở chi tiết" e="Duplicate Unit"/>
+    </message>
+  </messages>
+
+</dir>

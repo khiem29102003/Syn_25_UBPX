@@ -1,0 +1,283 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="sysregioninfo" table="sysregioninfo" fieldKey="rg_code" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục khu vực" e="List of customer"></title>
+  <title0 v="Thêm khu vực" e="New customer"></title0>
+  <title1 v="Sửa khu vực" e="Edit customer"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120"  >
+      <fields>
+        <field name="rg_code" format="U" label="1" field="1" allowBlank="false" fieldType="PK" >
+          <text v="Mã khu vực" e="Code"></text>
+        </field>
+        <field name="rgname" allowBlank="false" label="1" field="-">
+          <text v="Tên khu vực" e="Name"></text>
+        </field>
+        <field name="rgname2" label="1" field="-">
+          <text v="Tên 2" e="Name 2"></text>
+        </field>
+        <field name="parent_rg" viewType="Lookup" label="1" field="1">
+          <text v="Khu vực mẹ" e="Parent Region"></text>
+          <viewInfo lookupType="One" lookupId="sysregioninfo" lookupKey="status=1" lookupCheck="1=1" lookupRef="parent_rgname" lookupInfo="sysregioninfo|rg_code|rgname" />
+        </field>
+        <field name="parent_rgname" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="nh_rg1" viewType="Lookup" label="1" field="1">
+          <text v="Nhóm 1" e="Group 1"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'RG1' and status=1" lookupCheck="ma_loai_nh = 'RG1'" lookupRef="ten_nh_rg1" lookupInfo="dmnh|ma_nh|ten_nh" />
+        </field>
+        <field name="ten_nh_rg1" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="nh_rg2" viewType="Lookup" label="1" field="1">
+          <text v="Nhóm 2" e="Group 2"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'RG2' and status=1" lookupCheck="ma_loai_nh = 'RG2'" lookupRef="ten_nh_rg2" lookupInfo="dmnh|ma_nh|ten_nh" />
+        </field>
+        <field name="ten_nh_rg2" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="nh_rg3" viewType="Lookup" label="1" field="1">
+          <text v="Nhóm 3" e="Name"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'RG3' and status=1" lookupCheck="ma_loai_nh = 'RG3'" lookupRef="ten_nh_rg3" lookupInfo="dmnh|ma_nh|ten_nh" />
+        </field>
+        <field name="ten_nh_rg3" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="stt"  dataType="N" label="1" field="1">
+          <text v="Số thứ tự" e="Order"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$sysregioninfo(p){
+  this.constructor(p);
+}
+dir$sysregioninfo.prototype = new DirEvent();
+dir$sysregioninfo.prototype.afterInit = function(){
+  var p = this._dir;
+}
+]]>
+    </text>
+  </js>
+
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã khu vực đã tồn tại' else N'Region code is exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã khu vực đã tồn tại' else N'Region code is exists' end
+
+declare @$exists nvarchar(512), @$parentConflict nvarchar(512), @$changeConflict nvarchar(512), @$childConflict nvarchar(512), @$updateConflict nvarchar(512), @$recordHasBeenChanged nvarchar(512), @$deleteConflict nvarchar(512)
+select @$exists = case when '@@lan' = 'v' then N'Mã khu vực <span class="Highlight">%s</span> đã có hoặc lồng nhau trong danh mục khu vực.' else N'The Region <span class="Highlight">%s</span> is invalid or already exists.' end
+select @$parentConflict = case when '@@lan' = 'v' then N'Khu vực mẹ không hợp lệ.' else N'Invalid Parent Region.' end
+select @$changeConflict = case when '@@lan' = 'v' then N'Khu vực đã có khu vực con, không sửa khu vực mẹ được.' else N'Cannot save the parent Region. This item has already been used.' end
+select @$childConflict = case when '@@lan' = 'v' then N'Khu vực <span class="Highlight">%s</span> đã có khu vực con, không sửa khu vực được.' else N'Cannot save the Region <span class="Highlight">%s</span>. This item has already been used.' end
+select @$updateConflict = case when '@@lan' = 'v' then N'Mã khu vực <span class="Highlight">%s</span> đã phát sinh, không thể sửa được.' else N'Cannot edit the Region <span class="Highlight">%s</span>. It has already been used.' end
+select @$deleteConflict = case when '@@lan' = 'v' then N'Mã khu vực <span class="Highlight">%s</span> đã phát sinh, không thể xóa được.' else N'Cannot delete the Region <span class="Highlight">%s</span>. It has already been used.' end
+select @$recordHasBeenChanged = case when '@@lan' = 'v' then N'Mã khu vực <span class="Highlight">%s</span> đã được sửa hoặc xóa bởi người sử dụng khác.' else N'The Region <span class="Highlight">%s</span> has been modified or deleted by another user.' end
+
+declare @p varchar(16), @l varchar(512), @i int, @c bit, @t varchar(3)
+declare @rg_ref2 varchar(128), @rg_ref3 varchar(128)
+select @rg_ref2 = '', @rg_ref3 = ''
+]]>
+      </text>
+    </declare>
+
+    <deleting>
+      <text>
+        <![CDATA[
+declare @message nvarchar(255), @rg_ref varchar(128), @parent varchar(32)
+select @message = replace(@$deleteConflict, '%s', rtrim(@rg_code))
+select @rg_ref = rg_ref from @@table where rg_code = @rg_code
+if exists(select 1 from sysuserinfo where rg_code = @rg_code) or exists(select 1 from @@table where parent_rg = @rg_code) begin
+  select @message as message
+  return
+end
+/*
+select @parent = parent_rg from @@table where rg_code = @rg_code
+if @parent <> '' begin
+  if not exists(select 1 from @@table where parent_rg = @parent and rg_code <> @rg_code) update @@table set loai_kv = 1 where ma_kv = @parent
+end
+*/
+]]>
+      </text>
+    </deleting>
+
+    <updating>
+      <text>
+        <![CDATA[
+if not exists(select 1 from @@table where rg_code = @@old_rg_code) begin
+  select 'rg_code' as field, replace(@$recordHasBeenChanged, '%s', rtrim(@@old_rg_code)) as message
+  return
+end
+
+if @rg_code <> @@old_rg_code begin
+  if exists(select 1 from @@table where rg_code = @rg_code) begin
+    select 'rg_code' as field, replace(@$exists, '%s', rtrim(@rg_code)) as message
+    return
+  end
+
+  if exists(select 1 from sysuserinfo where rg_code = @@old_rg_code) begin
+    select 'rg_code' as field, replace(@$updateConflict, '%s', rtrim(@@old_rg_code)) as message
+    return
+  end
+end
+
+if exists(select 1 from @@table where parent_rg <> @parent_rg and rg_code = @@old_rg_code) begin
+  declare @oldParentDept varchar(32)
+  select @oldParentDept = parent_rg from @@table where rg_code = @@old_rg_code
+  if exists(select 1 from @@table where parent_rg = @@old_rg_code) begin
+    select 'parent_rg' as field, @$changeConflict as message
+    return      
+  end
+end
+
+declare @parent_rg2 varchar(32)
+select @rg_level = case when @parent_rg = '' then 1 else isnull((select rg_level from @@table where rg_code = @parent_rg), 0) + 1 end 
+select @parent_rg2 = @parent_rg
+
+if @parent_rg <> @parent_rg2 or @rg_code <> @@old_rg_code begin
+  select @rg_ref3 = @rg_ref;
+  if @parent_rg = '' begin
+    if not exists(select 1 from @@table where rg_ref <> '') select @rg_ref = '001'
+    else begin
+      select @rg_ref2 = rtrim(max(rg_ref) + 1) from @@table where len(rg_ref) = 3
+      select @rg_ref = replicate('0', 3 - len(@rg_ref2)) + @rg_ref2
+    end
+  end
+  else begin
+    select @l =  char(255) + @rg_code + char(255), @i = 0, @c = 0, @p = ''
+    if @rg_code <> @parent_rg begin
+      while @i <= 16 begin
+        if @i = 0 select @p = @parent_rg
+        select @p = rtrim(parent_rg) from @@table where rg_code = @p
+        if @p = '' begin
+          select @c = 1; break
+        end else begin
+          if charindex( char(255) + @p + char(255), @l) > 0 break
+          else select @l = @l +  char(255) + @p + char(255)
+        end
+        select @i = @i + 1
+      end
+    end
+
+    if @c = 0 begin
+      select 'parent_rg' as field, @$parentConflict as message
+      return
+    end
+
+    if @parent_rg = @parent_rg2 select @rg_ref2 = rg_ref from @@table where rg_code = @@old_rg_code
+    else begin 
+      select @rg_ref2 = rg_ref from @@table where rg_code = @parent_rg
+      select @rg_ref = rtrim(max(rg_ref)) from @@table where rg_ref like @rg_ref2 + '%' and len(rg_ref) = len(@rg_ref2) + 3
+      select @t = rtrim(right(@rg_ref, 3) + 1)
+      select @rg_ref = left(@rg_ref, len(@rg_ref) - 3) + replicate('0', 3 - len(@t)) + @t
+      select @rg_ref = isnull(@rg_ref, rtrim(@rg_ref2) + '001')
+    end
+  end
+
+  if ((@parent_rg = '' or @parent_rg2 = '') and @parent_rg <> @parent_rg2) select @c = 1 else select @c = 0
+end
+
+if @parent_rg <> @parent_rg2 begin
+  update @@table set rg_ref = @rg_ref where rg_ref like @rg_ref3 + '%'
+  update dmsdmkh set rg_ref = @rg_ref where rg_ref like @rg_ref3 + '%'
+end
+]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[
+if @rg_code <> @@old_rg_code
+  update @@table set parent_rg = @rg_code where parent_rg = @@old_rg_code
+update @@table set rg_level = @rg_level, datetime2 = getdate(), user_id2 = @@userId where rg_code = @rg_code
+]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[
+if exists(select 1 from @@table where rg_code = @rg_code) begin
+  select 'rg_code' as field, replace(@$exists, '%s', rtrim(@rg_code)) as message
+  return
+end
+
+select @rg_level = case when @parent_rg = '' then 1 else isnull((select rg_level from @@table where rg_code = @parent_rg), 0) + 1 end
+
+if @parent_rg <> '' begin
+  select @l =  char(255) + @rg_code + char(255), @i = 0, @c = 0, @p = ''
+  if @rg_code <> @parent_rg begin
+    while @i <= 16 begin
+      if @i = 0 select @p = @parent_rg
+      select @p = rtrim(parent_rg) from @@table where rg_code = @p
+      if @p = '' begin
+        select @c = 1; break
+      end else begin
+        if charindex( char(255) + @p + char(255), @l) > 0 break
+        else select @l = @l +  char(255) + @p + char(255)
+      end
+      select @i = @i + 1
+    end
+  end
+  if @c = 0 begin
+    select 'parent_rg' as field, @$parentConflict as message
+    return
+  end
+  select @rg_ref2 = rg_ref from @@table where rg_code = @parent_rg
+  select @rg_ref = rtrim(max(rg_ref)) from @@table where rg_ref like @rg_ref2 + '%' and len(rg_ref) = len(@rg_ref2) + 3
+  select @t = rtrim(right(@rg_ref, 3) + 1)
+  select @rg_ref = left(@rg_ref, len(@rg_ref) - 3) + replicate('0', 3 - len(@t)) + @t
+  select @rg_ref = isnull(@rg_ref, rtrim(@rg_ref2) + '001')
+end
+else begin 
+  if not exists(select 1 from @@table where rg_ref <> '')
+    select @rg_ref = '001'
+  else begin
+    select @rg_ref2 = rtrim(max(rg_ref) + 1) from @@table where len(rg_ref) = 3
+    select @rg_ref = replicate('0', 3 - len(@rg_ref2)) + @rg_ref2
+  end
+end
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId
+]]>
+      </text>
+    </inserting>
+    
+    <aftersave>
+      <text>
+        <![CDATA[
+exec ISWIFTStoredCalcRegionRef
+        ]]>
+      </text>
+    </aftersave>
+
+  </script>
+
+</dir>

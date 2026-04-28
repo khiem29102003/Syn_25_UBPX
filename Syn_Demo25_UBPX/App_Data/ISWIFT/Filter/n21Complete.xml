@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="n21Complete" table="" height="" fieldKey="id" voucherCode="PF1" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lọc phiếu đề xuất đã được duyệt" e="Filter training form (Approve)"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D">
+          <text v="Ngày c/từ (từ/đến)" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+        <field name="so_ct1"  label="1" field="1" operation="a.so_ct &gt;= N'%s'">
+          <text v="Số c/từ (từ/đến)" e="Voucher Number"></text>
+        </field>
+        <field name="so_ct2"  label="" nextRow="false" field="1" operation="a.so_ct &lt;= N'%s'">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_hmdx" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Chọn hạng mục" e="Department"></text>
+			<viewInfo lookupType="One" lookupId="dmhmdx" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_hmdx"  />
+		</field>
+		<field name="ten_hmdx" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 	
+		
+		<field name="ma_loaidx" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Loại đề xuất" e="Department"></text>
+			<viewInfo lookupType="One" lookupId="dmloaidx" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_loaidx"  />
+		</field>
+		<field name="ten_loaidx" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+		<field name="ma_nv" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Mã nhân viên" e="Department"></text>
+			<viewInfo lookupType="One" lookupId="dmnv" lookupKey="xstatus = 5" lookupCheck="1 = 1" lookupRef="ten_nv"  />
+		</field>
+		<field name="ten_nv" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field>
+		
+        <field name="tieu_de" label="1" field="-" operation="a.tieu_de like N'%%s%'">
+          <text v="Tiêu đề" e="Explain"></text>
+        </field>
+      </fields>
+    </form>
+
+    <form gravity="BottomLeft" columns="120,120,120,120"  >
+      <fields>
+        <field name="ma_unit" viewType="Lookup" inactivate="true" label="1" field="2" hidden="true"		>
+          <text v="Đơn vị" e="Unit"></text>
+          <viewInfo lookupType="Multi" lookupId="sysunit" lookupKey="status = 1 and unit_id in (select unit_id from dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @@admin, ''))" lookupCheck="1 = 1" lookupRef="ten_unit" />
+        </field>
+        <field name="ten_unit" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="3" valueDefault="1" operation="=" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="5">
+                <text v="Chưa hoàn thành (Xử lý Hoàn thành phiếu đề xuất)" e="Open (Approve)"/>
+              </option>
+			  <option val="7">
+                <text v="Đã hoàn thành (Xử lý bỏ hoàn thành phiếu đề xuất)" e="Approved (Undo)"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+	</fields>
+	</form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$n21Complete(p){
+  this.constructor(p);
+}
+filter$n21Complete.prototype = new DirEvent();
+filter$n21Complete.prototype.afterInit = function(){
+  var p = this._dir;
+}
+filter$n21Complete.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir;
+  if (opt._status == 5) sub = ['%s', p.msg('approve')]
+  else if (opt._status == 7) sub = ['%s', p.msg('undo')]
+  else sub = ['%s', p.msg('open')]
+  return [m2, opt, sub];
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+
+  <messages>
+    <message val="approve">
+      <text v="hoàn thành" e="Approve/Close"/>
+    </message>
+    <message val="undo">
+      <text v="bỏ hoàn thành" e="Open "/>
+    </message>
+    <message val="open">
+      <text v="bỏ đóng" e="Open"/>
+    </message>
+  </messages>
+</dir>

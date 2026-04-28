@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmch" table="dmch" fieldKey="ma_ch, ma_dc" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục cửa hàng" e="Store List"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+		<field name="ma_ch" allowBlank="false" viewType="Lookup" label="[120]" field="[120]"  hidden="false" nextRow="true" disabled="false" fieldType="PK">
+			<text v="Mã cửa hàng" e="Store code"></text>
+			<viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1=1" lookupRef="" lookupInfo="dmkh|ma_kh|ten_kh" />
+		</field>
+        <field name="ma_dc" viewType="Lookup" label="1" field="1">
+          <text v="Địa chỉ" e="Địa chỉ"></text>
+          <viewInfo lookupType="One" lookupId="dmdc" lookupKey="ma_kh in (![ma_ch]!, '') and status = 1" lookupCheck="ma_kh in (![ma_ch]!, '')" lookupRef="dia_chi" lookupInfo="dmdc|ma_dc|ten_dc"/>
+        </field>
+		<field name="ten_ch" label="1" field="2" allowBlank="false">
+          <text v="Tên cửa hàng" e="Store name"></text>
+        </field>
+		<field name="ten_ch2" label="1" field="2" allowBlank="true">
+          <text v="Tên khác" e="Alias"></text>
+        </field>
+		<field name="noi_dung" label="1" field="2" allowBlank="true">
+          <text v="Nội dung" e="Content"></text>
+        </field>
+		<field name="dia_chi" label="1" field="2" allowBlank="true">
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+		<field name="dien_thoai" label="1" field="2" allowBlank="true">
+          <text v="Điện thoại" e="Phone"></text>
+        </field>
+		<field name="hotline" label="1" field="2" allowBlank="true">
+          <text v="Hotline" e="Hotline"></text>
+        </field>
+		<field name="email" label="1" field="2" allowBlank="true">
+          <text v="Email" e="Email"></text>
+        </field>
+		<field name="gio_mo_cua" label="1" field="2" allowBlank="true">
+          <text v="Giờ mở cửa" e="Time open"></text>
+        </field>
+		<field name="gio_dong_cua" label="1" field="2" allowBlank="true">
+          <text v="Giờ đóng cửa" e="Time close"></text>
+        </field>
+		<field name="ngay_mo_cua" label="1" field="2" allowBlank="true">
+          <text v="Ngày mở cửa" e="Day open"></text>
+        </field>
+		<field name="ngay_dong_cua" label="1" field="2" allowBlank="true">
+          <text v="Ngày đóng cửa" e="Day close"></text>
+        </field>
+		<field name="map" label="1" field="2" allowBlank="true">
+          <text v="Bản đồ" e="Map"></text>
+        </field>
+		<field name="link" label="1" field="2" allowBlank="true">
+          <text v="Link bản đồ" e="Link"></text>
+        </field>
+		<field name="link_bv" label="1" field="2" allowBlank="true">
+          <text v="Link bài viết" e="Link News"></text>
+        </field>
+		<field name="link_ch" label="1" field="2" allowBlank="true">
+          <text v="Link cửa hàng" e="Link Store"></text>
+        </field>
+		<field name="thu_tu" label="1" field="2" allowBlank="true">
+          <text v="Thứ tự" e="Position"></text>
+        </field>
+		<field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+		<field name="ximage1" label="1" field="0" importable="65">
+          <text v="&lt;img class='image-single' id='img_ximage1' src='' onerror='src=`../Images/noImage.png`'/&gt; &lt;input type='button' value='Tải ảnh' onclick='browseServer(`ximage1`, `img_ximage1`);' value='Mở 1' style='text-align: center; display: block; margin: 0 auto;' /&gt;" e="Image 1"></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmch(p){
+    this.constructor(p);
+	document._dir = p;
+}
+dir$dmch.prototype = new DirEvent();
+dir$dmch.prototype.afterInit = function(){
+	var p = this._dir;
+	//if (p.options.action == 'NEW') p.request('LoadBHCode','',['ma_ch']);
+	for(var i = 1; i <= 9; i++) {
+		setImages('img_ximage' + i, 'ximage' + i, p);
+	}
+	dir$dmchLoadDataProduct(p);
+	dir$dmchDisabledMasterField(p);
+}
+dir$dmch.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  
+  switch (cF){
+	case 'ma_ch':
+		dir$dmchLoadDataProduct(p);
+		break;
+    default:
+      break;
+  }
+}
+function dir$dmchLoadDataProduct(p) {
+	if (p.options.action == 'NEW')
+	{
+		if(p.valForm('ma_ch') != '') p.request('LoadInfoProduct','',['ma_ch']);
+		else {
+			p.valForm('ten_ch','',true)
+			p.valForm('ma_ch','',true)
+		}
+	}
+}
+function dir$dmchDisabledMasterField(p){
+  if (p.options.action != 'NEW')
+    p.setDisabled(['ma_ch'], true);
+  else {
+    p.setDisabled('ma_ch', false);
+  }
+}
+function browseServer(value, src) {
+	var p = document._dir;
+	var finder = new CKFinder();
+	finder.selectActionFunction = function (url) {
+		p.valForm(value, url, true);
+		document.getElementById(src).src = url;
+	};
+	finder.popup();
+}
+function setImages(id, name, p) {
+	$('#' + id).attr("src", p.valForm(name));
+}
+         ]]>
+    </text>
+  </js>
+  <script>
+	<request code="LoadBHCode">
+		<text>		
+			<![CDATA[
+				exec [st_GetIncreaseCode] @@table ,'CH','ma_ch'
+			]]>
+		</text>
+	</request>
+	<request code="LoadInfoProduct">
+		<text>		
+			<![CDATA[
+				select ten_kh [!ten_ch], ten_kh2 [!ten_ch2], ma_kh [!ma_ch], dia_chi [!dia_chi], dien_thoai [!dien_thoai], e_mail [!email] from dmkh where ma_kh = @ma_ch
+			]]>
+		</text>
+	</request>
+  </script>
+
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã dịch vụ đã có hoặc lồng nhau trong danh mục dịch vụ." e="The Service is invalid or already exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã dịch vụ đã có hoặc lồng nhau trong danh mục dịch vụ." e="The Service is invalid or already exists."/>
+    </message>
+  </messages>
+
+</dir>

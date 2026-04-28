@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thống kê Quản lý</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .card {
+      @apply rounded-2xl shadow-md border border-gray-200 bg-white p-5 transition transform;
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(0,0,0,0.06); }
+    .stat-number { font-variant-numeric: tabular-nums; }
+	#SYS_Calendar { display: none; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+	<script src="jquery-2.2.4.min.js"></script>
+	<script src="j0.js"></script>
+	<script src="j1.js"></script>
+	<script src="jAjax.js"></script>
+  <header class="max-w-6xl mx-auto px-4 pt-8 pb-4">
+    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold">Bảng điều khiển thống kê</h1>
+        <p class="text-gray-600">Tổng hợp nhanh số liệu theo danh mục quản lý.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="btnRefresh" class="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 focus:outline-none">Làm mới</button>
+        <label class="flex items-center gap-2 text-sm bg-white border border-gray-200 rounded-xl px-3 py-2">
+          API base:
+          <input id="apiBase" class="outline-none px-2 py-1 rounded border border-gray-200" placeholder="vd: https://yourdomain.com" />
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 pb-12">
+    <!-- Section I -->
+    <section class="mb-8">
+      <h2 class="text-lg font-semibold mb-3">I. Quản lý công</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- 1. dmnv -->
+        <div class="card">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-500">1. Bao nhiêu nhân sự</div>
+              <div id="dmnv" class="text-3xl font-bold stat-number mt-1">—</div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m10 0a4 4 0 10-8 0M3 7a4 4 0 108 0 4 4 0 00-8 0zm10 0a4 4 0 118 0 4 4 0 01-8 0z" />
+            </svg>
+          </div>
+          <div class="mt-3 text-xs text-gray-500">Bảng: <code>dmnv</code></div>
+        </div>
+        <!-- 2. dmhogiadinh -->
+        <div class="card">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-500">2. Bao nhiêu hộ gia đình</div>
+              <div id="dmhogiadinh" class="text-3xl font-bold stat-number mt-1">—</div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10l9-7 9 7v8a2 2 0 01-2 2h-4a2 2 0 01-2-2v-4H9v4a2 2 0 01-2 2H3a2 2 0 01-2-2v-8z" />
+            </svg>
+          </div>
+          <div class="mt-3 text-xs text-gray-500">Bảng: <code>dmhogiadinh</code></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section II -->
+    <section class="mb-8">
+      <h2 class="text-lg font-semibold mb-3">II. Quản lý cư dân</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- 3. qldctcccd -->
+        <div class="card">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-500">3. Quản lý theo CCCD</div>
+              <div id="qldctcccd" class="text-3xl font-bold stat-number mt-1">—</div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c2.21 0 4-1.79 4-4S14.21 3 12 3 8 4.79 8 7s1.79 4 4 4zm0 2c-3.31 0-6 2.69-6 6v1h12v-1c0-3.31-2.69-6-6-6z" />
+            </svg>
+          </div>
+          <div class="mt-3 text-xs text-gray-500">Bảng: <code>qldctcccd</code></div>
+        </div>
+        <!-- 4. dmhokinhdoanh -->
+        <div class="card">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-500">4. Bao nhiêu hộ kinh doanh</div>
+              <div id="dmhokinhdoanh" class="text-3xl font-bold stat-number mt-1">—</div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M5 6h14M7 14h10m-9 4h8" />
+            </svg>
+          </div>
+          <div class="mt-3 text-xs text-gray-500">Bảng: <code>dmhokinhdoanh</code></div>
+        </div>
+        <!-- 5. dmdoanhnghiep -->
+        <div class="card">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-500">5. Bao nhiêu doanh nghiệp</div>
+              <div id="dmdoanhnghiep" class="text-3xl font-bold stat-number mt-1">—</div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21h18M5 21V7a2 2 0 012-2h2v2h2V5h2a2 2 0 012 2v14M9 21V9m4 12v-6m4 6v-4" />
+            </svg>
+          </div>
+          <div class="mt-3 text-xs text-gray-500">Bảng: <code>dmdoanhnghiep</code></div>
+        </div>
+        <!-- 6. dmnvhp -->
+        <div class="card">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-500">6. Bao nhiêu nhà văn hóa phường</div>
+              <div id="dmnvhp" class="text-3xl font-bold stat-number mt-1">—</div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-4.418 0-8 1.79-8 4v6h16v-6c0-2.21-3.582-4-8-4zM12 8V5m0 0l-3 3m3-3l3 3" />
+            </svg>
+          </div>
+          <div class="mt-3 text-xs text-gray-500">Bảng: <code>dmnvhp</code></div>
+        </div>
+        <!-- 7. dmtramyte -->
+        <div class="card">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-500">7. Bao nhiêu trạm y tế</div>
+              <div id="dmtramyte" class="text-3xl font-bold stat-number mt-1">—</div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v8m-4-4h8M5 3h14a2 2 0 012 2v16H3V5a2 2 0 012-2z" />
+            </svg>
+          </div>
+          <div class="mt-3 text-xs text-gray-500">Bảng: <code>dmtramyte</code></div>
+        </div>
+        <!-- 8. dmtruonghoc -->
+        <div class="card">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-500">8. Bao nhiêu trường học</div>
+              <div id="dmtruonghoc" class="text-3xl font-bold stat-number mt-1">—</div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422A12.083 12.083 0 0112 21.5 12.083 12.083 0 015.84 10.578L12 14z" />
+            </svg>
+          </div>
+          <div class="mt-3 text-xs text-gray-500">Bảng: <code>dmtruonghoc</code></div>
+        </div>
+        <!-- 9. dmcongdong -->
+        <div class="card">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-500">9. Bao nhiêu địa điểm công cộng</div>
+              <div id="dmcongdong" class="text-3xl font-bold stat-number mt-1">—</div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0h6" />
+            </svg>
+          </div>
+          <div class="mt-3 text-xs text-gray-500">Bảng: <code>dmcongdong</code></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-10">
+      <div class="text-xs text-gray-500">
+        Gợi ý API: <code>GET &lt;API_BASE&gt;/api/count?table=dmnv</code> → <code>{"count": 123}</code>.
+        Bạn có thể sửa code JS ở cuối file để khớp với API thật (ASP.NET Core, EF Core, v.v.).
+      </div>
+    </section>
+  </main>
+
+  <script>
+  // ====== HÀM CÓ SẴN TỪ BẠN (giữ nguyên) ======
+  const requestDataSet = function(script) {
+    return new Promise((resolve, reject) => {
+      var m = new Memvars();
+      var controller = "loaddulieutable";
+      var p = window.location.href.toString();
+      p = p.substring(0, p.indexOf("Main/")) + 'AppService/EService.asmx/' + "GetData";
+      var query = `${script}`;
+      m.val("query", 'C', query);
+      $.ajax({
+        type: "POST",
+        url: p,
+        header: '',
+        data: JSON.stringify({
+          controller: controller,
+          oMemvar: m.val()
+        }),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        timeout: 30000,
+        success: function(msg, s) {
+          if (msg.d.length > 0) {
+            const data = msg.d;
+            resolve(data);
+          } else {
+            resolve("");
+          }
+        },
+        error: function(e) {
+          console.log(e);
+          reject(e);
+        }
+      });
+    });
+  };
+
+  // ====== MAP KPI -> SQL COUNT ======
+  // Tip: nếu bảng có cột Status/TrangThai, bạn có thể thêm WHERE Status = 1
+  const QUERIES = {
+    dmnv:           "SELECT COUNT(*) AS cnt FROM dbo.dmnv",
+    dmhogiadinh:    "SELECT COUNT(*) AS cnt FROM dbo.dmhogiadinh",
+    qldctcccd:      "SELECT COUNT(*) AS cnt FROM dbo.qldctcccd",
+    dmhokinhdoanh:  "SELECT COUNT(*) AS cnt FROM dbo.dmhokinhdoanh",
+    dmdoanhnghiep:  "SELECT COUNT(*) AS cnt FROM dbo.dmdoanhnghiep",
+    dmnvhp:         "SELECT COUNT(*) AS cnt FROM dbo.dmnvhp",
+    dmtramyte:      "SELECT COUNT(*) AS cnt FROM dbo.dmtramyte",
+    dmtruonghoc:    "SELECT COUNT(*) AS cnt FROM dbo.dmtruonghoc",
+    dmcongdong:     "SELECT COUNT(*) AS cnt FROM dbo.dmcongdong"
+  };
+
+  const btnRefresh = document.getElementById('btnRefresh');
+
+  function setLoading() {
+    Object.keys(QUERIES).forEach(k => {
+      const el = document.getElementById(k);
+      if (el) el.textContent = '…';
+    });
+  }
+
+  async function refreshAllSql() {
+    setLoading();
+    await Promise.all(Object.entries(QUERIES).map(async ([elementId, sql]) => {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      try {
+        const rows = await requestDataSet(sql);
+        // Tùy backend trả về: thường là mảng object, lấy phần tử đầu tiên -> cnt
+        const cnt = rows && rows[0] && (rows[0].cnt ?? rows[0].CNT ?? rows[0].Count ?? rows[0].COUNT) || 0;
+        el.textContent = Number(cnt).toLocaleString('vi-VN');
+      } catch (e) {
+        el.textContent = '—';
+        el.title = 'Không thể tải dữ liệu';
+      }
+    }));
+  }
+
+  btnRefresh.addEventListener('click', refreshAllSql);
+  window.addEventListener('load', refreshAllSql);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,221 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridFinding.xml">
+]>
+
+<dir id="cskh0" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách hợp đồng xử lý" e="List of processing contracts"></title>
+  <subtitle v="Xem, sửa dữ liệu..." e="View, update data..."></subtitle>
+  <grids>
+    <grid table="cskh0" fieldKey="ma_so_thue" order="ma_so_thue desc" allowFilter="true" allowOrder="true" >
+      <fields>
+		 <field name="ma_so_thue" width="120" fieldType="PK" link="1">
+          <text v="Mã số thuế" e="Tax Code"></text>
+        </field>
+        <field name="ten_kh" width="250" fieldType="EX">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>      
+		<field name="ten_kh2" width="250" fieldType="EX">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+		<field name="dia_chi" width="250" fieldType="EX">
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+		<field name="kh_yn" dataType="B" align="Center" width="100" allowOrder="false" fieldType="EX">
+          <text v="Khách hàng" e="Customer"></text>
+        </field>
+        <field name="ma_nvbh" width="120" fieldType="EX">
+          <text v="Mã nhân viên" e="Employee Code"></text>
+        </field>
+        <field name="kh_yn" dataType="B" align="Center" width="100" allowOrder="false" fieldType="EX">
+          <text v="Khách hàng" e="Customer"></text>
+        </field>
+		<field name="ten_nh_kh1" width="200" fieldType="EX">
+          <text v="Tên nhóm 1" e="Group Name 1"></text>
+        </field>
+		<field name="ten_nh_kh2" width="200" fieldType="EX">
+          <text v="Tên nhóm 2" e="Group Name 1"></text>
+        </field>
+		<field name="ten_nh_kh3" width="200" fieldType="EX">
+          <text v="Tên nhóm 3" e="Group Name 3"></text>
+        </field>
+		<field name="ma_plkh" width="150" fieldType="EX" >
+          <text v="Mã p/loại KH gần nhất" e="Last Customer Classification Code"></text>
+        </field>
+		<field name="ten_plkh" width="200" fieldType="EX" >
+          <text v="Tên p/loại KH gần nhất" e="Last Customer Classification Name"></text>
+        </field>
+		<field name="ma_nvbh" width="200">
+          <text v="Mã nhân viên" e="Note"></text>
+        </field>
+		<field name="ghi_chu" width="200">
+          <text v="Ghi chú" e="Note"></text>
+        </field>
+		
+		<field name="status" width="120" align="center">
+          <text v="Trạng thái" e="Status"></text>
+        </field>
+      </fields>
+      
+      <buttons>
+	    <button id="edit">
+          <text v="$EditToolbar" e="$EditToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+		<button id="find">
+          <text v="$FindToolbar" e="$FindToolbar"></text>
+        </button>
+		<button id="split">
+          <text v="-" e="-"></text>
+        </button>
+	    <button id="export">
+	    	<text v="$ExportToolbar" e="$ExportToolbar"></text>
+	    </button>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+      
+	  <script>
+		<query>
+			<text>
+			<![CDATA[
+				declare @strKey nvarchar(3000), @ma_nv varchar(32), @admin int;
+				select top 1 @ma_nv = username from sysuserinfo where user_id = @@userId
+				
+				IF @@admin = 1
+				BEGIN
+					exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 
+					'left join (select a.ma_so_thue, a.ten_kh, ten_kh2, dia_chi, kh_yn, nh1.ten_nh ten_nh_kh1, nh2.ten_nh ten_nh_kh2,nh3.ten_nh ten_nh_kh3										
+								from dmkh0 a 
+								left join dmnh nh1 on a.nh_kh1 = nh1.ma_nh and nh1.ma_loai_nh = ''KH1'' 
+								left join dmnh nh2 on a.nh_kh2 = nh2.ma_nh and nh2.ma_loai_nh = ''KH2''
+								left join dmnh nh3 on a.nh_kh3 = nh3.ma_nh and nh3.ma_loai_nh = ''KH3'') b on a.ma_so_thue = b.ma_so_thue', 
+					'b.ten_kh, b.ten_kh2, b.dia_chi, b.kh_yn, b.ten_nh_kh1, b.ten_nh_kh2, b.ten_nh_kh3, cast('''' as nvarchar(255)) as ma_plkh, cast('''' as nvarchar(255)) as ten_plkh', '@@key', @strKey , @@filterKey, '', @pageIndex, 50, @@admin, @@userId,
+					'SELECT ma_so_thue, a.ma_plkh, b.ten_plkh, ROW_NUMBER() OVER (PARTITION BY ma_so_thue ORDER BY line DESC) AS RowNum into #lslncuocgoi FROM lslncuocgoi a left join dmploaikh b on a.ma_plkh = b.ma_plkh where exists(select 1 from #v where ma_so_thue = a.ma_so_thue);
+					UPDATE #v set ma_plkh = f.ma_plkh, ten_plkh = f.ten_plkh from #v a join #lslncuocgoi f on a.ma_so_thue = f.ma_so_thue
+					DROP TABLE #lslncuocgoi'
+				END
+				ELSE
+					set @strKey =' a.ma_nvbh = '''+@ma_nv+''' '
+					
+					exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 
+					'left join (select a.ma_so_thue, a.ten_kh, ten_kh2, dia_chi, kh_yn, nh1.ten_nh ten_nh_kh1, nh2.ten_nh ten_nh_kh2,nh3.ten_nh ten_nh_kh3										
+								from dmkh0 a 
+								left join dmnh nh1 on a.nh_kh1 = nh1.ma_nh and nh1.ma_loai_nh = ''KH1'' 
+								left join dmnh nh2 on a.nh_kh2 = nh2.ma_nh and nh2.ma_loai_nh = ''KH2''
+								left join dmnh nh3 on a.nh_kh3 = nh3.ma_nh and nh3.ma_loai_nh = ''KH3'') b on a.ma_so_thue = b.ma_so_thue', 
+					'b.ten_kh, b.ten_kh2, b.dia_chi, b.kh_yn, b.ten_nh_kh1, b.ten_nh_kh2, b.ten_nh_kh3, cast('''' as nvarchar(255)) as ma_plkh, cast('''' as nvarchar(255)) as ten_plkh', '@@key', @strKey , @@filterKey, '', @pageIndex, 50, @@admin, @@userId,
+					'SELECT ma_so_thue, a.ma_plkh, b.ten_plkh, ROW_NUMBER() OVER (PARTITION BY ma_so_thue ORDER BY line DESC) AS RowNum into #lslncuocgoi FROM lslncuocgoi a left join dmploaikh b on a.ma_plkh = b.ma_plkh where exists(select 1 from #v where ma_so_thue = a.ma_so_thue);
+					UPDATE #v set ma_plkh = f.ma_plkh, ten_plkh = f.ten_plkh from #v a join #lslncuocgoi f on a.ma_so_thue = f.ma_so_thue
+					DROP TABLE #lslncuocgoi'
+			]]>
+			</text>
+		</query>
+
+		<finding>
+			<text>
+			<![CDATA[
+				declare @strKey nvarchar(3000), @strDetailKey nvarchar(3000), @ma_nv varchar(32), @admin int; set @strDetailKey = '';
+				select top 1 @ma_nv = username from sysuserinfo where user_id = @@userId
+				
+				if @ngay_goi2 >= @ngay_goi1 set @strDetailKey = @strDetailKey + ' and x.ngay_goi between ''' + convert(char(8), @ngay_goi1, 112) + ''' and ''' + convert(char(8), @ngay_goi2, 112) + ''''
+				if @ma_td <> '' set @strDetailKey = @strDetailKey + ' and x.ma_td like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@ma_td) + '%'''
+				if @ma_plkh <> '' set @strDetailKey = @strDetailKey + ' and x.ma_plkh like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@ma_plkh) + '%'''
+				if @ngay_goi_lai2 >= @ngay_goi_lai1 set @strDetailKey = @strDetailKey + ' and x.ngay_goi_lai between ''' + convert(char(8), @ngay_goi_lai1, 112) + ''' and ''' + convert(char(8), @ngay_goi_lai2, 112) + ''''
+
+				if @strDetailKey <> '' set @strDetailKey = ' and exists(select 1 from lslncuocgoi x where a.ma_so_thue = x.ma_so_thue ' + @strDetailKey + ')'
+				set @strKey = @strFinding + @strDetailKey
+
+				if @nh_kh1 <> N'' set @strKey = @strKey+' and ma_so_thue in (select ma_so_thue from dmkh0 where nh_kh1 = N'''+@nh_kh1+''')' 
+				if @nh_kh2 <> N'' set @strKey = @strKey+' and ma_so_thue in (select ma_so_thue from dmkh0 where nh_kh2 = N'''+@nh_kh2+''')'
+				if @nh_kh3 <> N'' set @strKey = @strKey+' and ma_so_thue in (select ma_so_thue from dmkh0 where nh_kh3 = N'''+@nh_kh3+''')';
+				
+				if @ten_kh <> N'' set @strKey = @strKey+' and ma_so_thue in (select ma_so_thue from dmkh0 where ten_kh like N''%' + @ten_kh + '%'')' 
+				if @ten_kh2 <> N'' set @strKey = @strKey+' and ma_so_thue in (select ma_so_thue from dmkh0 where ten_kh2 like N''%' + @ten_kh2 + '%'')' 
+				
+				IF @@admin = 1
+				BEGIN
+					exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 
+					'left join (select a.ma_so_thue, a.ten_kh, ten_kh2, dia_chi, kh_yn, nh1.ten_nh ten_nh_kh1, nh2.ten_nh ten_nh_kh2,nh3.ten_nh ten_nh_kh3										
+								from dmkh0 a 
+								left join dmnh nh1 on a.nh_kh1 = nh1.ma_nh and nh1.ma_loai_nh = ''KH1'' 
+								left join dmnh nh2 on a.nh_kh2 = nh2.ma_nh and nh2.ma_loai_nh = ''KH2''
+								left join dmnh nh3 on a.nh_kh3 = nh3.ma_nh and nh3.ma_loai_nh = ''KH3'') b on a.ma_so_thue = b.ma_so_thue', 
+					'b.ten_kh, b.ten_kh2, b.dia_chi, b.kh_yn, b.ten_nh_kh1, b.ten_nh_kh2, b.ten_nh_kh3, cast('''' as nvarchar(255)) as ma_plkh, cast('''' as nvarchar(255)) as ten_plkh', '@@key', @strKey , @@filterKey, '', @pageIndex, 50, @@admin, @@userId,
+					'SELECT ma_so_thue, a.ma_plkh, b.ten_plkh, ROW_NUMBER() OVER (PARTITION BY ma_so_thue ORDER BY line DESC) AS RowNum into #lslncuocgoi FROM lslncuocgoi a left join dmploaikh b on a.ma_plkh = b.ma_plkh where exists(select 1 from #v where ma_so_thue = a.ma_so_thue);
+					UPDATE #v set ma_plkh = f.ma_plkh, ten_plkh = f.ten_plkh from #v a join #lslncuocgoi f on a.ma_so_thue = f.ma_so_thue
+					DROP TABLE #lslncuocgoi'
+				END
+				ELSE
+					set @strKey = @strKey+' and a.ma_nvbh = '''+@ma_nv+''' '
+					exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 
+					'left join (select a.ma_so_thue, a.ten_kh, ten_kh2, dia_chi, kh_yn, nh1.ten_nh ten_nh_kh1, nh2.ten_nh ten_nh_kh2,nh3.ten_nh ten_nh_kh3										
+								from dmkh0 a 
+								left join dmnh nh1 on a.nh_kh1 = nh1.ma_nh and nh1.ma_loai_nh = ''KH1'' 
+								left join dmnh nh2 on a.nh_kh2 = nh2.ma_nh and nh2.ma_loai_nh = ''KH2''
+								left join dmnh nh3 on a.nh_kh3 = nh3.ma_nh and nh3.ma_loai_nh = ''KH3'') b on a.ma_so_thue = b.ma_so_thue', 
+					'b.ten_kh, b.ten_kh2, b.dia_chi, b.kh_yn, b.ten_nh_kh1, b.ten_nh_kh2, b.ten_nh_kh3, cast('''' as nvarchar(255)) as ma_plkh, cast('''' as nvarchar(255)) as ten_plkh', '@@key', @strKey , @@filterKey, '', @pageIndex, 50, @@admin, @@userId,
+					'SELECT ma_so_thue, a.ma_plkh, b.ten_plkh, ROW_NUMBER() OVER (PARTITION BY ma_so_thue ORDER BY line DESC) AS RowNum into #lslncuocgoi FROM lslncuocgoi a left join dmploaikh b on a.ma_plkh = b.ma_plkh where exists(select 1 from #v where ma_so_thue = a.ma_so_thue);
+					UPDATE #v set ma_plkh = f.ma_plkh, ten_plkh = f.ten_plkh from #v a join #lslncuocgoi f on a.ma_so_thue = f.ma_so_thue
+					DROP TABLE #lslncuocgoi'
+			]]>
+			</text>
+		</finding>
+	  </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+	<![CDATA[
+		function grid$cskh0(f){
+			this.constructor(f);
+		}
+		grid$cskh0.prototype = new DirEvent();
+		grid$cskh0.prototype.afterInit = function(){
+
+		}
+	]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[
+		.tree-form{
+			width: 250px;
+		}
+		.ic-view-dept{
+		  background-position: 0px 0px;
+		}
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+
+</dir>

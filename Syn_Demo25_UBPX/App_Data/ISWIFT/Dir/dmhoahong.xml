@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmhoahong" table="dmhoahong" fieldKey="ma_hoahong" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục hoa hồng" e="List of commission"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_hoahong" format="U" label="1" field="1" allowBlank="false" fieldType="PK" >
+          <text v="Mã hoa hồng" e="Commission code"></text>
+        </field>
+        <field name="ten_hoahong" label="1" field="2" allowBlank="false" fieldType="PK" >
+          <text v="Tên hoa hồng" e="Commission name"></text>
+        </field>
+       <field name="ten_hoahong2" label="1" field="1">
+          <text v="Tên khác" e="Other name "></text>
+        </field>
+		<field name="tyle_hh" label="1" field="1" dataType="N">>
+          <text v="Tỷ lệ" e="Ratio "></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmhoahong(p){
+  this.constructor(p);
+}
+dir$dmhoahong.prototype = new DirEvent();
+dir$dmhoahong.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã hoa hồng đã tồn tại' else N'Code commission already exist' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã hoa hồng đã tồn tại' else N'Code commission already exist' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+
+</dir>

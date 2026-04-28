@@ -1,0 +1,214 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+  <!ENTITY VoucherRequiredFields01 SYSTEM "..\Include\XML\VoucherRequiredFields01.xml">
+  <!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid01.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+  <!ENTITY VoucherSaleRequest SYSTEM "..\Include\XML\VoucherSaleRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from g11 where id = @id and status in (6,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+    ">
+]>
+
+
+<dir id="g11" table="g11" fieldKey="id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+	<title v="Tạo lệnh điều xe" e="Department List"></title>
+	<title0 v="Thêm mới" e="New"></title0>
+	<title1 v="Sửa" e="Edit"></title1>
+	<forms>
+		<form gravity="TopLeft" columns="120,120,120,120,120,120" >
+			<fields>
+				<field name="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+					<text v="" e=""></text>
+				</field>
+				
+			</fields>
+		</form>
+
+		<form gravity="TopRight" columns="120,120" >
+			<fields>
+				&VoucherRequiredFields01;
+				<field name="ngay_hl" dataType="D" label="1" rows="1" field="1">
+					<text v="Ngày hiệu lực" e="Effective to"></text>
+				</field>
+				&VoucherRequiredFields02;
+			</fields>
+		</form>   
+		
+		<form tabPageIndex="1" gravity="MiddleLeft" height="320" columns="120,120,240" >
+			<text v="Thông tin khách hàng" e="Customer information"></text>
+			<fields>
+				<field name="ma_kh" allowBlank="false" viewType="Lookup" label="1" field="1">
+					<text v="Mã khách hàng" e="Customer Code"></text>
+					<viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_kh" lookupInfo="dmkh|ma_kh|ten_kh" />
+				</field>
+				<field name="ten_kh" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+					<text v="" e=""></text>
+				</field>
+				<field name="dien_thoai" label="1" field="[200]" importable="80">
+					<text v="Điện thoại" e="Phone"></text>
+				</field>
+				<field name="email" label="1" field="[200]" importable="90">
+					<text v="Email" e="Email"></text>
+				</field>	
+				<field name="dia_chi" label="1"  field="-" importable="90" >
+					<text v="Địa chỉ" e="Bill Address"></text>
+				</field>	
+			</fields>
+		</form>
+		<form tabPageIndex="2" gravity="MiddleLeft" height="320" columns="120,120,240" >
+			<text v="Thông tin xe" e="Car detail"></text>
+			<fields>
+				<field name="tt_gr" allowBlank="false" label="" field="-" viewType="Grid">
+					<text v="Thông tin xe" e="Car detail"></text>
+				</field>
+			</fields>
+		</form>
+		<form tabPageIndex="3" gravity="MiddleLeft" height="320" columns="120,120,240" >
+			<text v="Hình thức sửa chữa" e="Repair form"></text>
+			<fields>
+				<field name="dmhtsc" allowBlank="false" label="" field="-" viewType="Grid">
+					<text v="Hình thức sửa chữa" e="Repair form"></text>
+				</field>
+			</fields>
+		</form>
+		
+	</forms>
+	 <grids>
+		<grid id="tt_gr" table="tt_gr" fieldKey="id, line" order="line" readOnly="false">
+			<fields>
+				<field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+					<text v="" e=""></text>
+				</field>
+				<field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+					<text v="Dòng" e="Line"></text>
+				</field>
+				<field name="ma_xe" fieldType="PK" width="100" filterType="Code" >
+					<text v="Biển số" e="License plate"></text>
+				</field>
+				<field name="ten_xe" width="250">
+					<text v="Chủ Xe" e="Car owner"></text>
+				</field>
+				
+			</fields>
+			<buttons>
+				<button id="add">
+					<text v="$AddToolbar" e="$AddToobar"></text>
+				</button>
+				<button id="delete">
+					<text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+				</button>
+				<button id="copy">
+					<text v="$CopyToolbar" e="$CopyToolbar"></text>
+				</button>
+				<button id="paste">
+					<text v="$PasteToolbar" e="$PasteToolbar"></text>
+				</button>
+				<button id="moveup">
+					<text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+				</button>
+				<button id="movedown">
+					<text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+				</button>
+				<button id="split">
+					<text v="-" e="-"></text>
+				</button>
+				<button id="retrieve">
+					<text v="$RetrieveToolbar" e="$RetrieveToolbar"></text>
+					<items>
+						<button id="10">
+							<text v="?????"  e="Extract Data from Sales Orders"/>
+						</button>
+					</items>
+				</button>
+				<button id="split">
+					<text v="-" e="-"></text>
+				</button>
+				<button id="freeze">
+					<text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+				</button>
+			</buttons>
+		</grid>
+		
+		
+		<grid id="dmhtsc" table="t5ct2" fieldKey="id, line" order="line" readOnly="false">
+			<fields>
+				<field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+					<text v="" e=""></text>
+				</field>
+				<field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+					<text v="Dòng" e="Line"></text>
+				</field>
+				<field name="ma_htsc" label="[150]" field="1" allowBlank="false" fieldType="PK" >
+					<text v="Mã hình thức sửa chữa" e="Payment Code"></text>
+				</field>
+				<field name="ten_htsc" label="[150]" field="2" allowBlank="false" fieldType="PK" >
+					<text v="Tên hình thức sửa chữa" e="Payment Name"></text>
+				</field>
+			</fields>
+			<buttons>
+				<button id="add">
+					<text v="$AddToolbar" e="$AddToobar"></text>
+				</button>
+				<button id="delete">
+					<text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+				</button>
+				<button id="copy">
+					<text v="$CopyToolbar" e="$CopyToolbar"></text>
+				</button>
+				<button id="paste">
+					<text v="$PasteToolbar" e="$PasteToolbar"></text>
+				</button>
+				<button id="moveup">
+					<text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+				</button>
+				<button id="movedown">
+					<text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+				</button>
+				<button id="split">
+					<text v="-" e="-"></text>
+				</button>
+				<button id="retrieve">
+					<text v="$RetrieveToolbar" e="$RetrieveToolbar"></text>
+					<items>
+						<button id="10">
+						<text v="????"  e="Extract Data from Sales Orders"/>
+						</button>
+					</items>
+				</button>
+				<button id="split">
+					<text v="-" e="-"></text>
+				</button>
+				<button id="freeze">
+					<text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+				</button>
+			</buttons>
+		</grid>
+	</grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>y5QiKOEAq5UL59f+QdamWUB/W+o0XtwAh5Vcxka8xSYM0H68XuMiO55x9xzgv8HJR/XpeOZzEQOadhUzfPQYkmqUUonwJ5M0T7jde9SesIZY2OZdcXvcEN1OL40eh+j4TnfSiqNjkrHng/a8F1CDeK7cVzsd6J1hTwc7qrruQifP0b6HNn4CYfw8rV4zq89KstHfWHPVR/bcPpVjwLOxnLJ7F83W+NsiU/L0yTM0et4=</enc>]]>
+    </text>
+  </js>
+  
+</dir>

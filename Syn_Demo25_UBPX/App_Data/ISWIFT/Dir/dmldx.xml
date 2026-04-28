@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmldx" table="dmldx" fieldKey="ma_xe" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục xe" e="List of vehicle"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120" >
+      <fields>
+       <field name="ma_xe" fieldType="PK" label="1" field="1" filterType="Code" allowBlank="false">
+          <text v="Mã xe" e="Vehicle code"></text>
+        </field>
+        <field name="ten_xe" label="1" field="-" allowBlank="false">
+          <text v="Tên xe" e="Vehicle name"></text>
+        </field>		
+		<field name="ten_xe2" label="1" field="-" >
+          <text v="Tên khác" e="Other name"></text>
+        </field>
+		
+		<field name="mau_son" label="1" field="1">
+          <text v="Màu sơn" e="Color"></text>
+        </field>
+		<field name="tai_trong" label="1" field="1">
+          <text v="Tải trọng" e="Color"></text>
+        </field>
+		<field name="so_may" label="1" field="1">
+          <text v="Số máy" e="Color"></text>
+        </field>
+		<field name="so_khung" label="1" field="1">
+          <text v="Số khung" e="Color"></text>
+        </field>
+		<field name="so_loai" label="1" field="1">
+          <text v="Số loại" e="Color"></text>
+        </field>
+		<field name="dung_tich" label="1" field="1">
+          <text v="Dung tích" e="Color"></text>
+        </field>
+		<field name="ngay_dk" label="1" field="1" dataType="D">
+          <text v="Ngày đăng kí" e="Color"></text>
+        </field>
+		<field name="han_dk" label="1" field="1" dataType="D">
+          <text v="Hạn đăng kí" e="Color"></text>
+        </field>
+
+		<field name="nhan_hieu" label="1" field="1">
+          <text v="Nhãn hiệu" e="Color"></text>
+        </field>
+		<field name="ma_loai" label="1" field="1">
+          <text v="Mã loại" e="Color"></text>
+        </field>
+		
+		
+		<field name="unit_id" viewType="Combobox" dataType="I" clientDefault="true" inactivate="true" label="1" field="2" >
+		  <text v="Đơn vị" e="Unit"></text>
+		  <viewInfo>
+			<options cache="false" query="select unit_id, ten_unit%l from sysunit where unit_id in (select unit_id from dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @@admin, ''))">
+			</options>
+		  </viewInfo>
+		</field>
+		<field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmldx(p){
+  this.constructor(p);
+}
+dir$dmldx.prototype = new DirEvent();
+dir$dmldx.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmldx.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+  dir$dmldxDisabledMasterField(p, g);
+
+}
+
+function dir$dmldxDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_xe').trim() != '')
+  {
+    p.setDisabled(['ma_xe','unit_id'], true);
+  }
+  else
+  {
+    p.setDisabled(['ma_xe','unit_id'], false);
+  }
+}
+
+         ]]>
+    </text>
+  </js>
+
+  <css>
+		<text>
+		  <![CDATA[
+	.control-label.ma_xe, .control-label.ten_xe
+	{	
+		//font-weight:bold;	
+		color: #499b98;;
+	}
+		  ]]>
+		</text>
+  </css>
+
+ 
+
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã xe đã tồn tại' else N'Vehicle code already exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã xe đã tồn tại' else N'Vehicle code already exists' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+
+</dir>

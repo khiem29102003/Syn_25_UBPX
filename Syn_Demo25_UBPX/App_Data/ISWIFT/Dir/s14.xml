@@ -1,0 +1,440 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+  <!ENTITY VoucherRequiredFields01 SYSTEM "..\Include\XML\VoucherRequiredFields03.xml">
+  <!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid01.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+
+  <!ENTITY VoucherSaleRequest SYSTEM "..\Include\XML\VoucherSaleRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from s14 where id = @id and status in (6,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+    ">
+]>
+
+
+<dir id="s14" table="s14" fieldKey="id" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" voucherCode="YG4" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo giá khác" e="Other quotes"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120" >
+		<fields>
+			<field name="tt" nextRow="true" fieldType="EX" readOnly="true" inactivate="true" label="[140]" field="0">
+			  <text v="Thông tin khách hàng " e="Customer Information: "></text>
+			</field>
+			<field name="ma_gd" viewType="Combobox" valueDefault="" hidden="false" nextRow="false" label="" field="[180]" >
+			  <text v="" e=""></text>
+			  <viewInfo>
+				<options query="select ma_gd, ten_gd%l from dmgd where ma_ct = '@@voucherCode' and status = 1 order by stt">
+				</options>
+			  </viewInfo>
+			</field>
+			<field name="ma_so_thue" label="1" field="1"  importable="35" nextRow="true" allowBlank="true">
+			  <text v="Mã số thuế &lt;a onclick='getTax(this);'&gt;(Kiểm tra)&lt;/a&gt;" e="Tax Code &lt;a onclick='getTax(this);'&gt;(Test)&lt;/a&gt;"></text>
+			</field>
+
+			<field name="ma_kh" allowBlank="true" nextRow="false" viewType="Lookup" blank ="[80]" label="[100]" field="-"   hidden="false">
+			  <text v="Mã khách hàng" e="Customer Code"></text>
+			  <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1=1" />
+			</field>
+			<field name="ten_kh" allowBlank="true" label="1" field="-" importWidth="250" importable="10">
+			  <text v="Tên khách hàng" e="Customer Name"></text>
+			</field>
+			<field name="ten_kh2" label="1" field="-" importWidth="250"  importable="15">
+			  <text v="Tên quốc tế" e="International Name"></text>
+			</field>
+			<field name="nguoi_lh" label="1" field="[200]" importable="40" nextRow="true">
+			  <text v="Người liên hệ" e="Contact Person"></text>
+			</field>
+			<field name="email" label="[100]" field="-"  importable="80" nextRow="false"  allowBlank="true">
+			  <text v="Email" e="Email"></text>
+			</field>
+
+			<field name="dia_chi" label="1" field="[200]" importWidth="250" importable="30">
+			  <text v="Địa chỉ" e="Address"></text>
+			</field>	
+			<field name="dien_thoai" label="[100]" field="-" importable="80" allowBlank="false" nextRow="false">
+			  <text v="Điện thoại" e="Phone"></text>
+			</field>
+			
+			<field name="tieu_de" label="1"  field="-" allowBlank="false" >
+				<text v="Tiêu đề " e="Request title	"></text>
+			</field>
+			<field name="noi_dung" label="1" rows="2" field="-">
+				<text v="Ghi chú " e="Remarks"></text>
+			</field>
+			<field name="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+			  <text v="" e=""></text>
+			</field>
+		</fields>
+    </form>
+
+    <form gravity="TopRight" columns="120,120" >
+		<fields>
+			&VoucherRequiredFields01;
+			&VoucherRequiredFields02;
+			<field name="ngay_hl" label="1" field="1" valueDefault="new Date()" dataType="D" allowBlank="false" >
+				<text v="Ngày dự đi" e="Effective date"></text>
+			</field>
+			<field name="ngay_hld" label="1" field="1" dataType="D" allowBlank="false" >
+				<text v="Ngày dự đến" e="Expiry date"></text>
+			</field>
+		</fields>
+    </form>
+	
+	
+	<form gravity="BottomLeft" columns="120,120,120,120,120,120" >
+      <fields>
+		<field name="xfile" label="1" field="-" viewType="File" fieldType="EXParam">
+			<text v="" e=""></text>
+			<viewInfo fileFieldId0="id" fileGroup="YG4" fileExtension="*" maxFileCount="10"></viewInfo>
+		</field>
+	  </fields>
+    </form>
+  </forms>
+
+  
+
+  &DefaultButton;
+
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$s14(p){
+  this.constructor(p);
+}
+dir$s14.prototype = new DirEvent();
+dir$s14.prototype.afterInit = function(){
+  var p = this._dir;document._dir = p;
+   dir$s14HiddenColumnByTran(p);
+}
+
+
+
+dir$s14.prototype.beforeButtonDialogClick = function (id) {
+  var p = this._dir;
+  switch (id) {
+    case 'ok':
+		var d = p.valForm('ngay_hl'),d2 = p.valForm('ngay_hld');
+		var k = $.date(d,"dd/mm/yy"),k2 = $.date(d2,"dd/mm/yy");
+		if (p.valForm('ngay_hld') <= p.valForm('ngay_hl')) { 
+			<!-- $.question('jkhj '+'Nhap sai ngay ??' ); -->
+			<!-- $.showToast(p.msg('noDate')); -->
+			
+			$.alert(p.msg('noDate')+' ' + k + ' < ' + k2);			
+			return false;
+			Break;
+			}	  		  
+    default:
+      break;
+  }
+  return true;
+}
+dir$s14.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+]]>&VoucherExRateValid01;<![CDATA[
+    case 'ma_gd':
+      dir$s14HiddenColumnByTran(p);
+      break;
+    case 'ma_ngv':
+	
+      break;
+    case 'ty_gia':
+      p.calcExpressionAll(0, '!ty_gia');
+      break;
+    case 'ma_kh':
+      p.request('ma_kh_request', '', ['ma_kh', 'ngay_ct', 'ma_nt']);
+	  
+      break;
+    default:
+      break;
+  }
+}
+function dir$s14HiddenColumnByTran(p){
+  var gd = p.valForm('ma_gd');
+	if(gd == 'KC') {
+		p.setDisabled(['ma_so_thue','ten_kh','ten_kh2','dia_chi','nguoi_lh'], true);
+		p.setInvisible('ma_kh', false);
+		
+		if(p.options.action == "NEW") {
+			p.valForm('ma_kh', "" , true);
+			p.valForm('ten_kh', "" , true);
+			p.valForm('ten_kh2', "" , true);
+			p.valForm('ma_so_thue', "" , true);
+			p.valForm('dia_chi', "" , true);
+			p.valForm('nguoi_lh', "" , true);
+			p.valForm('dien_thoai', "" , true);
+		}
+		else {
+			p.setDisabled('ma_gd', true);
+		}
+	}
+	else {
+		p.setInvisible('ma_kh', true);
+		p.setDisabled(['ma_so_thue','ten_kh','ten_kh2','dia_chi','nguoi_lh'], false);
+		
+		if(p.options.action == "NEW") {
+			p.valForm('ma_kh', "" , true);
+			p.valForm('ten_kh', "" , true);
+			p.valForm('ten_kh2', "" , true);
+			p.valForm('ma_so_thue', "" , true);
+			p.valForm('dia_chi', "" , true);
+			p.valForm('nguoi_lh', "" , true);
+			p.valForm('dien_thoai', "" , true);
+			
+		}
+		else {
+			p.setDisabled('ma_gd', true);
+		}
+	}
+}
+
+function getTax(o) {
+  var p = document._dir;
+  var tax = p.valForm('ma_so_thue').trim();
+  var magd = p.valForm('ma_gd').trim();
+
+
+  if (magd == 'KC') {
+    $.showToast('Vui lòng chọn mã khách hàng.');
+    return;
+  }
+
+  if (tax.length != 10 && tax.length != 13) {
+    $.showToast('Thông tin mã số thuế không đúng.');
+    return;
+  }
+  
+  $.invoke('GetTax', { taxCode: tax }, this, 30000
+    , function (result) {
+      if (result) {
+        var obj = JSON.parse(result);
+        p.valForm('ten_kh', obj.Name, true);
+        p.valForm('dia_chi', obj.Address, true);
+		p.valForm('ten_kh2', obj.Other, true);
+		p.valForm('nguoi_lh', obj.Contact, true);
+		p.valForm('dien_thoai', obj.Telephone, true);
+		
+      }
+    }, function (event) {} );
+}
+         ]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[
+		.control-label.t_tien_nt2, .control-label.t_tien, .control-label.t_so_luong,
+		.input-field.t_tien_nt2, .input-field.t_tien, .input-field.t_so_luong, .input-field.t_tien2
+		{
+		  font-weight:bold;
+
+		}
+		.control-label.ma_noi_di,.control-label.ma_noi_den, .control-label.dien_thoai,.control-label.ten_kh, .control-label.ma_hang, .control-label.ngay_hld
+
+		{
+			font-weight:bold;	
+			color: #499b98;
+		}
+
+
+		.input-field.status, .input-field.unit_id
+		{
+
+			color: #ab6926;
+		}
+		
+		.ma_cong,.tl_ban span {
+		 //font-weight: 700;
+		  color: #ab6926;
+		}
+		.grid-input-field.ma_cong,.grid-input-field.tl_ban {
+		color: #ab6926;
+		}
+		.control-label.tt {
+			font-weight:700;
+			text-decoration: underline;
+		}
+}
+      ]]>
+    </text>
+  </css>
+
+     <script>
+    &VoucherRequest;
+    &VoucherSaleRequest;
+		<request code="ma_kh_request">
+			<text>
+			  <![CDATA[
+				select top 1 a.nguoi_lh as [!nguoi_lh],a.ma_so_thue as [!ma_so_thue], a.ten_kh as [!ten_kh],a.ten_kh2 as [!ten_kh2], a.dia_chi as [!dia_chi], a.dien_thoai as [!dien_thoai]
+				from dmkh a where a.ma_kh = @ma_kh
+				]]>
+			</text>
+		  </request>
+     <query>
+      <text>
+        <![CDATA[
+if @action = 'EDIT' begin
+]]>&CheckUpdatingDeleting;<![CDATA[
+end
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+if @action in ('EDIT', 'VIEW') exec ISWIFTStoreGetListFiles 'xfile', @id, '@@voucherCode', '', @script output
+if @script is null set @script = ''
+
+if @action = 'NEW' begin
+  declare @ma_nk varchar(32), @ten_nk nvarchar(3000), @ngay_ct date, @so_ct varchar(32), @i_so_ct int, @unit_id int
+  select @ngay_ct = getdate(), @unit_id = @@unit
+]]>&VoucherNumberQuery;<![CDATA[
+  if @so_ct is null
+    select '' as [so_ct], 0 as [i_so_ct], @unit_id as [unit_id], '' as ma_nk, '' as ten_nk
+  else
+    select @so_ct as [so_ct], @i_so_ct as [i_so_ct], @unit_id as [unit_id], @ma_nk as ma_nk, @ten_nk as ten_nk
+end
+else select @script as script
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+
+    <declare>
+      <text>
+        <![CDATA[
+declare @warning nvarchar(256), @dOldVoucherDate date, @dVoucherDate date, @nVoucherType tinyint, @strIds varchar(256), @q nvarchar(4000)
+set @warning = ''
+         ]]>
+      </text>
+    </declare>
+
+    &VoucherJSLoading;
+
+    <beforesave>
+      <text>
+        &VoucherNumberBeforeSave;
+      </text>
+    </beforesave>
+
+    <deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct, @dVoucherDate = ngay_ct, @nVoucherType = ma_ngv from s14 where id = @id
+        ]]>
+      </text>
+    </deleting>
+
+    <deleted>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+exec ISWIFTStoredDeleteDataWithKey 'v14', @strIds, '', @dVoucherDate
+        ]]>
+      </text>
+    </deleted>
+
+    <updating>
+      <text>
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct from s14 where id = @id
+        ]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId, i_so_ct = @i_so_ct, so_ct = @so_ct where [%whereFieldKey]
+update dmttin set status = 0 from dmttin where id0 = rtrim(@id) and xgroup = '@@voucherCode'
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+         ]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @ma_ct = '@@voucherCode'
+exec ISWIFTStoredGetIdentityNumber '@@voucherCode', '@@table', @id output
+         ]]>
+      </text>
+    </inserting>
+
+    <inserted>
+      <text>
+        <![CDATA[
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+]]>
+      </text>
+    </inserted>
+
+    <aftersave>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+if @action = 'NEW' set @dOldVoucherDate = @ngay_ct
+
+
+
+
+
+exec ISWIFTStoredIncreaseVoucherNo @ma_nk, @ngay_ct, '@@voucherCode', @i_so_ct, @so_ct, '@@table'
+select '' as message, @warning as warning, @id as [#id], @so_ct as [#so_ct], @ma_unit as [#ma_unit]
+
+if @ma_so_thue <> '' and exists (select 1 from dmkh where ma_so_thue = @ma_so_thue and ma_kh <> @ma_kh)        
+select '$taxtCodeExists' as toast
+]]>
+
+      </text>
+    </aftersave>
+  </script>
+
+    <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã chứng từ - Tên/nhóm đã tồn tại" e="Voucher Code - Name/Group Already Exists"/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã chứng từ - Tên/nhóm đã tồn tại" e="Voucher Code - Name/Group Already Exists"/>
+    </message>
+    <message val="commonInfo">
+      <text v="Thông tin chung" e="Header"/>
+    </message>
+    <message val="FCText">
+      <text v="nt" e="FC"/>
+    </message>
+    <message val="noDate">
+      <text v="Ngày hiệu lực đến không hợp lệ." e="Error Expiry Date."/>
+    </message>
+    <message val="noChoice">
+      <text v="Chưa chọn thông tin giới hạn" e="No Selected Items"/>
+    </message>
+	 <message val="taxtCodeExists">
+      <text v="Mã số thuế đã tồn tại trong danh mục, &lt;span class='Highlight'&gt;Lưu ý:&lt;/span&gt; hệ thống vẫn lưu dữ liệu vừa cập nhật." e="The tax code is already exists, &lt;span class='Highlight'&gt;Warning:&lt;/span&gt; Updated data has been saved."/>
+    </message>
+  </messages>
+  
+
+</dir>

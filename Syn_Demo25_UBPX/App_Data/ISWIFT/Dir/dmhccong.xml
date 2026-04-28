@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmhccong" table="dmhccong" fieldKey="ma_hccong" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục hành chính công" e="Public Administration Catalog"></title>
+  <title0 v="Thêm mới - hành chính công" e="New - Public Administration"></title0>
+  <title1 v="Sửa - hành chính công" e="Edit - Public Administration"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120" >
+      <fields>
+	    <field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_hccong" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="1">
+          <text v="Mã hành chính công" e="Public Administration Code"></text>
+        </field>
+        <field name="ten_hccong" label="1" field="-" allowBlank="false" fieldType="PK"  importable="2">
+          <text v="Tên hành chính công" e="Public Administration Name"></text>
+        </field>
+		 <field name="ten_hccong2" label="1" field="-" allowBlank="true" importable="3">
+          <text v="Tên tiếng anh" e="English Name"></text>
+        </field>
+		<field name="stt_bd" dataType="N" label="1" field="1" disabled="false" format="0" hidden="false">
+			<text v="Số bắt đầu" e="Gross Weight(KGS)"></text>
+		</field>
+		<field name="tt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="1" field="">
+          <text v="" e=""></text>
+        </field>
+		<field name="stt_td" dataType="N" label="1" field="1" disabled="false" format="0" hidden="false" nextRow="false">
+			<text v="Số tối đa trong ngày" e="Maximum per day)"></text>
+		</field>
+		<field name="tg_lamviec" label="1" field="1" allowBlank="true" disabled="false" nextRow="true" >
+			<text v="Thời gian làm việc" e="Working hours"></text>
+		</field>
+		<field name="tg_dukien" dataType="N" label="1" field="1" disabled="false" format="0" hidden="false" nextRow="true">
+          <text v="Thời gian dự kiến (s)" e="Estimated time (s)"></text>
+		</field>
+		<field name="tt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="1" field="">
+          <text v="" e=""></text>
+        </field>
+		<field name="tg_trihoan" dataType="N" label="1" field="1" disabled="false" format="0" hidden="false" nextRow="false">
+          <text v="Thời gian trì hoãn (s)" e="Delay time (s)"></text>
+		</field>
+		<field name="status" viewType="Combobox" inactivate="true" label="1" field="2" valueDefault="1" nextRow="true" importable="-1" >
+          <text v="Trạng thái" e="Status"></text>
+		  <viewInfo>
+			<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 ">
+			</options>
+		  </viewInfo>
+		</field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmhccong(p){
+  this.constructor(p);
+}
+dir$dmhccong.prototype = new DirEvent();
+function getTime(p, className) {
+	const inputEl = document.querySelector(`input.${className}`);
+	console.log(inputEl);
+    if (!inputEl) return;
+
+    let isValid = false;
+
+    inputEl.addEventListener("input", function (e) {
+        let raw = e.target.value.replace(/\D/g, "").slice(0, 4); // Giữ lại 4 chữ số đầu
+        let formatted = raw;
+		
+        if (raw.length >= 3) {
+            formatted = `${raw.slice(0, 2)}:${raw.slice(2, 4)}`;
+        }
+		
+        e.target.value = formatted;
+		
+		const [h, m] = formatted.split(":").map(Number);
+        isValid = Number.isInteger(h) && Number.isInteger(m) && h >= 0 && h <= 23 && m >= 0 && m <= 59;
+
+    });
+
+    inputEl.addEventListener("blur", async (e) => {
+        if (!isValid && e.target.value.trim() !== "") {
+            try {
+                const [hh, mm] = await Promise.all([
+                    getSystemTime("HH"),
+                    getSystemTime("mm")
+                ]);
+                e.target.value = `${hh}:${mm}`;
+            } catch (err) {
+                console.error("Lỗi lấy giờ hệ thống:", err);
+            }
+        } else {
+            console.log("✅ Giờ hợp lệ:", e.target.value);
+        }
+    });
+}
+dir$dmhccong.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+  getTime(p,'tg_lamviec');
+}
+dir$dmhccong.prototype.beforeButtonDialogClick = function (id) {
+  var p = this._dir;
+  switch (id) {
+    case 'ok':
+		var sttBd = p.valForm('stt_bd'), sttTd = p.valForm('stt_td'), tgDukien = p.valForm('tg_dukien'), tgTrihoan = p.valForm('tg_trihoan');
+		
+		if (isNaN(sttBd) || sttBd <= 0) {
+			$.showToast(p.msg('RequireLonHonKhong'));
+			p.jObject('stt_bd').focus(); 
+			return false;
+		}
+		if (isNaN(sttTd) || sttTd <= 0) {
+			$.showToast(p.msg('RequireLonHonKhong'));
+			p.jObject('stt_td').focus(); 
+			return false;
+		}
+		if (isNaN(tgDukien) || tgDukien <= 0) {
+			$.showToast(p.msg('RequireLonHonKhong'));
+			p.jObject('tg_dukien').focus(); 
+			return false;
+		}
+		if (isNaN(tgTrihoan) || tgTrihoan <= 0) {
+			$.showToast(p.msg('RequireLonHonKhong'));
+			p.jObject('tg_trihoan').focus(); 
+			return false;
+		}
+    default:
+      break;
+  }
+  return true;
+}
+         ]]>
+    </text>
+  </js>
+<css>
+	<text>
+	  <![CDATA[
+.control-label.ma_hccong, .control-label.ten_hccong
+{	
+	//font-weight:bold;	
+	color: #499b98;;
+}
+	  ]]>
+	</text>
+</css>
+
+<script>
+    <query>
+      <text>
+        <![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+select @script = '';
+if @action = 'EDIT'
+  if exists(select 1 from qlhccong where ma_hccong = @ma_hccong)
+    select @script = @script + 'p.setDisabled(''ma_hccong'', true); '
+
+if @action in ('EDIT', 'VIEW') select @script as script
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+	<updated>
+      <text>
+        <![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId where [%whereFieldKey]
+         ]]>
+      </text>
+    </updated>
+	<inserting>
+      <text>
+        <![CDATA[
+if exists(select 1 from @@table a where [%whereFieldKey]) begin
+  select '$codeExistsNewMsg' as message, '@@firstFieldKey' as field
+  return
+end
+
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @unit_id = @@unit
+]]>
+      </text>
+    </inserting>
+	<importing>
+		<text>
+		<![CDATA[
+			update #data set unit_id = @@unit
+			@@insert
+		]]>
+		</text>
+	</importing>
+</script>
+<messages>
+	<message val="codeExistsNewMsg">
+	  <text v="Mã hành chính công đã tồn tại." e="Location type code already exists."/>
+	</message>
+	<message val="codeExistsEditMsg">
+	  <text v="Mã hành chính công  đã tồn tại." e="Location type code already exists."/>
+	</message>
+	<messages>
+	 <message val="RequireLonHonKhong">
+      <text v="Yêu cầu nhập số lớn hơn không." e="Only perform this function in the newly added state."/>
+    </message>
+  </messages>
+</messages>
+</dir>

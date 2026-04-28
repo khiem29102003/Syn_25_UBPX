@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="hrettk" width="Large" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Thông tin khác &lt;b&gt;[%s]&lt;/b&gt;" e="Other Infomation &lt;b&gt;[%s]&lt;/b&gt;"></title>
+  <subtitle v="Thêm, sửa, xóa..." e="Add, Edit, Delete..."></subtitle>
+  <grids>
+    <grid table="hrettk" fieldKey="id, line" order="id, line" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="id" dataType="N" fieldType="PK" width="100" format="0" hidden="true">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="line" dataType="N" fieldType="PK" width="100" format="0" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+        <field name="ngay_ky" width="100" dataType="D">
+          <text v="Ngày ký" e=""></text>
+        </field>
+        <field name="loai" width="100">
+          <text v="Loại" e="Type"></text>
+        </field>
+        <field name="noi_dung" width="250">
+          <text v="Nội dung" e="Content"></text>
+        </field>
+        <field name="tien2" dataType="N" format="Amount" width="100">
+          <text v="Tiền" e="Amount"></text>
+        </field>
+        <field name="ghi_chu" width="250">
+          <text v="Ghi chú" e="Note"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = 'id = ' + rtrim(@id)
+exec iswiftStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '@@join', '', '@@key', @key2, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$hrettk(f){
+  this.constructor(f);
+}
+grid$hrettk.prototype = new DirEvent();
+grid$hrettk.prototype.afterInit = function(){
+  var p = this._dir;
+}
+]]>
+    </text>
+  </js>
+</dir>

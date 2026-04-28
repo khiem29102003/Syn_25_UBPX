@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="khxlApprove" dirViewType="Grid" selectMultiple="Table" voucherCode="KL0" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Duyệt danh sách khách hàng" e="Approve Customer List"></title>
+  <subtitle v="Xử lý &lt;b&gt;%s&lt;/b&gt; khách hàng" e="&lt;b&gt;%s&lt;/b&gt; Customer"></subtitle>
+
+  <grids>
+    <grid table="dmkh0" fieldKey="ma_so_thue" order="ma_so_thue desc" key="xstatus = 0" allowFilter="true" allowOrder="true">
+      <fields>
+		 <field name="ma_so_thue" width="120" fieldType="PK" link="1">
+          <text v="Mã số thuế" e="Tax Code"></text>
+        </field>
+        <field name="ten_kh" width="250">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>      
+		<field name="ten_kh2" width="250">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+		<field name="dia_chi" width="250">
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+		<field name="kh_yn" dataType="B" align="Center" width="100" allowOrder="false">
+          <text v="Khách hàng" e="Customer"></text>
+        </field>
+		<field name="nh_kh1" width="200" hidden="true">
+          <text v="Nhóm 1" e="Group 1"></text>
+        </field>
+		<field name="ten_nh_kh1" width="200" fieldType="EX">
+          <text v="Tên nhóm 1" e="Group Name 1"></text>
+        </field>
+		<field name="nh_kh2" width="200" hidden="true">
+          <text v="Nhóm 2" e="Group 2"></text>
+        </field>
+		<field name="ten_nh_kh2" width="200" fieldType="EX">
+          <text v="Tên nhóm 2" e="Group Name 2"></text>
+        </field>
+		<field name="nh_kh3" width="200" hidden="true">
+          <text v="Nhóm 3" e="Group 3"></text>
+        </field>
+		<field name="ten_nh_kh3" width="200" fieldType="EX">
+          <text v="Tên nhóm 3" e="Group Name 3"></text>
+        </field>
+		<field name="ma_plkh" width="150" fieldType="EX" >
+          <text v="Mã p/loại KH gần nhất" e="Last Customer Classification Code"></text>
+        </field>
+		<field name="ten_plkh" width="200" fieldType="EX" >
+          <text v="Tên p/loại KH gần nhất" e="Last Customer Classification Name"></text>
+        </field>
+		<field name="ma_nvbh" width="200">
+          <text v="Mã nhân viên" e="Note"></text>
+        </field>
+		<field name="ghi_chu" width="200">
+          <text v="Ghi chú" e="Note"></text>
+        </field>
+		
+		<field name="status" width="120" align="center">
+          <text v="Trạng thái" e="Status"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="approve">
+          <text v="Duyệt" e="Approve"></text>
+        </button>
+        <button id="cancel">
+          <text v="Hủy" e="Close"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="find">
+          <text v="$FindToolbar" e="$FindToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 
+'left join dmnh nh1 on a.nh_kh1 = nh1.ma_nh and nh1.ma_loai_nh = ''KH1'' 
+left join dmnh nh2 on a.nh_kh2 = nh2.ma_nh and nh2.ma_loai_nh = ''KH2''
+left join dmnh nh3 on a.nh_kh3 = nh3.ma_nh and nh3.ma_loai_nh = ''KH3''', 
+'nh1.ten_nh ten_nh_kh1, nh2.ten_nh ten_nh_kh2, nh3.ten_nh ten_nh_kh3, cast('''' as nvarchar(255)) as ma_plkh, cast('''' as nvarchar(255)) as ten_plkh', '@@key', '', @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+drop table #unitright
+			]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @strDetailKey nvarchar(3000); set @strDetailKey = ''
+
+if @ngay_goi2 >= @ngay_goi1 set @strDetailKey = @strDetailKey + ' and x.ngay_goi between ''' + convert(char(8), @ngay_goi1, 112) + ''' and ''' + convert(char(8), @ngay_goi2, 112) + ''''
+if @ma_td <> '' set @strDetailKey = @strDetailKey + ' and x.ma_td like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@ma_td) + '%'''
+if @ma_plkh <> '' set @strDetailKey = @strDetailKey + ' and x.ma_plkh like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@ma_plkh) + '%'''
+if @ngay_goi_lai2 >= @ngay_goi_lai1 set @strDetailKey = @strDetailKey + ' and x.ngay_goi_lai between ''' + convert(char(8), @ngay_goi_lai1, 112) + ''' and ''' + convert(char(8), @ngay_goi_lai2, 112) + ''''
+
+if @strDetailKey <> '' set @strDetailKey = ' and exists(select 1 from lslncuocgoi x where a.ma_so_thue = x.ma_so_thue ' + @strDetailKey + ')'
+set @strKey = @strFinding + @strDetailKey
+
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 
+'left join dmnh nh1 on a.nh_kh1 = nh1.ma_nh and nh1.ma_loai_nh = ''KH1'' 
+left join dmnh nh2 on a.nh_kh2 = nh2.ma_nh and nh2.ma_loai_nh = ''KH2''
+left join dmnh nh3 on a.nh_kh3 = nh3.ma_nh and nh3.ma_loai_nh = ''KH3''', 
+'nh1.ten_nh ten_nh_kh1, nh2.ten_nh ten_nh_kh2, nh3.ten_nh ten_nh_kh3, cast('''' as nvarchar(255)) as ma_plkh, cast('''' as nvarchar(255)) as ten_plkh', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId,
+'SELECT ma_so_thue, a.ma_plkh, b.ten_plkh, ROW_NUMBER() OVER (PARTITION BY ma_so_thue ORDER BY line DESC) AS RowNum into #lslncuocgoi FROM lslncuocgoi a left join dmploaikh b on a.ma_plkh = b.ma_plkh where exists(select 1 from #v where ma_so_thue = a.ma_so_thue);
+UPDATE #v set ma_plkh = f.ma_plkh, ten_plkh = f.ten_plkh from #v a join #lslncuocgoi f on a.ma_so_thue = f.ma_so_thue
+DROP TABLE #lslncuocgoi'
+     
+]]>
+          </text>
+        </finding>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$khxlApprove(f){
+  this.constructor(f);
+}
+grid$khxlApprove.prototype = new DirEvent();
+grid$khxlApprove.prototype.afterInit = function(renderType){
+  var p = this._dir;
+  if (p.options._status == 1) p.find(".toolbar-approve").attr('title', p.msg('approve'))
+  else if (p.options._status == 5) p.find(".toolbar-approve").attr('title', p.msg('undo'))
+  else p.find(".toolbar-approve").attr('title', p.msg('open'));
+  p.find(".toolbar-cancel").css("display", (p.options._status == 1)?"":"none")
+}
+grid$khxlApprove.prototype.beforeButtonGridClick = function (id, gindex) {
+
+  var msg, p = this._dir, g = p.grid(gindex), dt = g.data, fees = p.selectedItems(), xstatus = p.options._status;
+  switch (id) {
+
+    case 'approve':
+      msg = (xstatus ==1)? p.msg('msg1'): (xstatus == 9)? p.msg('msg3'):p.msg('msg2');
+      if (fees.count() > 0)
+        $.question(msg, $.msg.get("QuestionTitle"), p, function (q, v) {
+          q._close();
+          if (v){
+            p.request('Approve', '', [["tblKeys", "T", fees.sqlval()], ['xstatus', 'I', xstatus]], function(pp, d, run){
+              if (run) {
+                p._refresh();
+                p.clearSelectedItems();
+              }
+            });
+          }
+        });
+      return false;
+      break;
+    case 'cancel':
+      if (fees.count() > 0)
+        p.showFilter('messageInput', null, {title: p.msg('inputTitle'), label: p.msg('reason'), allowBlank: false, msgFunction: function (q, v, ctext) {
+          q._close();
+          if (v){
+            p.request('Close', '', [["tblKeys", "T", fees.sqlval()], ['xstatus', 'I', xstatus], ['ly_do_huy', 'C', ctext]], function(pp, d, run){
+              if (run) {
+                p._refresh();
+                p.clearSelectedItems();
+              }
+            });
+          }
+        }});
+      return false;
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+  <script>
+    <request code="Approve" transaction="true">
+      <text>
+        <![CDATA[
+declare @deststatus int, @uid int, @dduyet date, @DetailTable varchar(32), @MasterTable varchar(32), @key nvarchar(4000) = '',  @s NVARCHAR(4000)
+set @deststatus = case @xstatus when 1 then 5 when 5 then 1 else 5 end --else 9 - Huy thi tra ve duyet
+set @uid = case when @xstatus = 1 then @@userId else 0 end
+set @dduyet = case when @xstatus = 1 then getdate() else null end
+
+update dmkh0 set status = @deststatus, user_id_duyet = @uid, ngay_duyet = @dduyet where ma_so_thue in (select ma_so_thue from @tblKeys);
+
+SELECT @key = STRING_AGG(ma_so_thue, ',') FROM @tblKeys;
+
+exec dbo.InsertDMKH 'dmkh0', '', @key, @deststatus;
+
+select '' as message, '$Processed' as toast
+        ]]>
+      </text>
+    </request>
+
+    &VoucherJSLoading;
+  </script>
+
+  <messages>
+    <message val="msg1">
+      <text v="Bạn có chắc chắn sẽ &lt;b&gt;duyệt&lt;/b&gt; các khách hàng được chọn không?" e=""/>
+    </message>
+    <message val="msg2">
+      <text v="Bạn có chắc chắn sẽ &lt;b&gt;bỏ duyệt&lt;/b&gt; các khách hàng được chọn trở về trạng thái [Chờ duyệt] không?" e=""/>
+    </message>
+    <message val="msg3">
+      <text v="Bạn có chắc chắn sẽ &lt;b&gt;bỏ đóng&lt;/b&gt; các khách hàng được chọn trở về trạng thái [Đã duyệt] không?" e=""/>
+    </message>
+    <message val="close">
+      <text v="Hủy/đóng" e="Close"/>
+    </message>
+    <message val="approve">
+      <text v="Duyệt" e="Approve"/>
+    </message>
+    <message val="undo">
+      <text v="Bỏ duyệt" e="Undo"/>
+    </message>
+    <message val="open">
+      <text v="Bỏ đóng" e="Open &amp; Approve"/>
+    </message>
+      <message val="inputTitle">
+      <text v="Nhập lý do hủy phiếu" e=""/>
+    </message>
+    <message val="reason">
+      <text v="Lý do" e="Reason"/>
+    </message>
+  </messages>
+</dir>

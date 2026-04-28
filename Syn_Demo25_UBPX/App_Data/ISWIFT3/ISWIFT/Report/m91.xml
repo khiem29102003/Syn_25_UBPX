@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<report xmlns="urn:schemas-iswift:struct-report">
+  <query>
+    <text>
+      <![CDATA[
+select a.unit_id, a.so_ct, a.ma_kh, y.ten_kh as ten_kh, b.dia_chi_lh, isnull(c.ten_tt, '') as ten_tt, a.ma_tt, d.ten_nvbh, isnull(e.phone, '') as dien_thoai, f.ten_bp, a.dien_giai, cast(a.status as char(1)) as status
+	  , replace(str(day(a.ngay_ct),2),' ','0') day, replace(str(month(a.ngay_ct),2),' ','0') month, cast(year(a.ngay_ct) as char(4)) year, a.ngay_ct
+    , z.ten_kh as ten_nha_may, z.dia_chi_lh as dc_nha_may, rtrim(a.ma_kh3) + ' - ' + x.ten_kh as dd_giao_hang, rtrim(a.ma_kh4) + ' - ' + y.ten_kh as ben_ban_hang
+	  , a.ma_kh2, z.ong_ba as nguoi_lh, a.ma_kh4, d.ma_bp, isnull(e.phone, '') + case when isnull(e.phone, '') = '' then '' else ' / ' end + isnull(e.e_mail, '')  as dt_mail_lh
+    
+	from m91 a with(nolock)
+		left join dmkh b with(nolock) on a.ma_kh = b.ma_kh 
+		left join dmtt c on a.ma_tt = c.ma_tt
+		left join dmnvbh d on a.ma_nvbh = d.ma_nvbh
+		left join sysuserinfo e on a.ma_nvbh = e.username
+		left join dmbp f on d.ma_bp = f.ma_bp
+    left join dmkh z on a.ma_kh2 = z.ma_kh
+    left join dmkh x on a.ma_kh3 = x.ma_kh
+    left join dmkh y on a.ma_kh4 = y.ma_kh
+    
+	where a.id = @id
+
+select line as stt, a.ma_vt, b.ten_vt, a.ngay_dong_hang, a.ngay_kh_gh, a.so_luong, isnull(c.ten_dc, '') as ten_dc, isnull(d.so_po, '') as so_po, b.ma_so, b.nguyen_lieu, b.mau_sac,
+	rtrim(b.ma_mau) + '/' + RTRIM(cast(b.tl_mau as float)) as ma_mau_tl, rtrim(b.ma_pg) + '/' + rtrim(cast(b.tl_pg as float)) as ma_pg_tl, e.ten_qcdg
+	from d91 a with(nolock) left join dmvt b with(nolock) on a.ma_vt = b.ma_vt
+		left join dmdc c on a.ma_dc = c.ma_dc and c.ma_kh in (select ma_kh from m91 where id = @id)
+		left join m64 d on a.id_po = d.id
+		left join dmqcdg e on a.ma_qcdg = e.ma_qcdg
+	where a.id = @id
+
+select cast(null as image) as logo, rtrim(ma_kh2) + '_Logo.png' as file_name from m91 where id = @id
+]]>
+    </text>
+  </query>
+
+  <forms>
+    <form id="010" fileName="m91" fileType="pdf" image="pdf">
+      <text v="Đơn đặt hàng dự trữ" e="Đơn đặt hàng dự trữ"></text>
+      <fields>
+        <field name="title" type="C">
+          <text v="ĐƠN ĐẶT HÀNG DỰ TRỮ" e="ĐƠN ĐẶT HÀNG DỰ TRỮ"/>
+        </field>
+      </fields>
+    </form>
+    <form id="020" fileName="m91_02" fileType="pdf">
+      <text v="Đề nghị điều chuyển kho" e="Đề nghị điều chuyển kho"></text>
+      <fields>
+        <field name="title" type="C">
+          <text v="ĐỀ NGHỊ ĐIỀU CHUYỂN KHO" e="ĐỀ NGHỊ ĐIỀU CHUYỂN KHO"/>
+        </field>
+      </fields>
+    </form>
+
+  </forms>
+
+  <fields>
+    <field name="h_day" type="C">
+      <text v="Ngày" e="Date"/>
+    </field>
+    <field name="h_month" type="C">
+      <text v="tháng" e="Month"/>
+    </field>
+    <field name="h_year" type="C">
+      <text v="năm" e="Year"/>
+    </field>
+    <field name="h_so_ct" type="C">
+      <text v="Số:" e="No.:"/>
+    </field>
+    <field name="h_thanh_toan" type="C">
+      <text v="Điều kiện thanh toán:" e="Điều kiện thanh toán:"/>
+    </field>
+
+
+    <field name="h_tt_khach_hang" type="C">
+      <text v="Thông tin khách hàng:" e="Thông tin khách hàng:"/>
+    </field>
+
+    <field name="h_dd_giao_hang" type="C">
+      <text v="Địa điểm giao hàng" e="Địa điểm giao hàng"/>
+    </field>
+    <field name="h_ben_ban_hang" type="C">
+      <text v="Bên bán hàng" e="Bên bán hàng"/>
+    </field>
+
+    <field name="h_company" type="C">
+      <text v="Đơn vị" e="Company"/>
+    </field>
+    <field name="h_address" type="C">
+      <text v="Địa chỉ:" e="Address:"/>
+    </field>
+    <field name="h_kh" type="C">
+      <text v="Tên khách hàng:" e="Customer Name:"/>
+    </field>
+    <field name="h_noi_giao" type="C">
+      <text v="Nơi giao" e="Ship - to"/>
+    </field>
+
+    <field name="h_tel" type="C">
+      <text v="Tel/ Fax:" e="Tel/ Fax:"/>
+    </field>
+    <field name="h_ng_lien_he" type="C">
+      <text v="Người liên hệ:" e="Người liên hệ:"/>
+    </field>
+    <field name="h_bo_phan" type="C">
+      <text v="Bộ phận:" e="Bộ phận:"/>
+    </field>
+    <field name="h_chu_y" type="C">
+      <text v="Chú ý hoặc yêu cầu đặc biệt:" e="Chú ý hoặc yêu cầu đặc biệt:"/>
+    </field>
+    <field name="h_ghi_chu1" type="C">
+      <text v="Vui lòng thông báo ngay cho chúng tôi nếu ko thể giao hàng như yêu cầu." e="Vui lòng thông báo ngay cho chúng tôi nếu ko thể giao hàng như yêu cầu."/>
+    </field>
+    <field name="h_ghi_chu2" type="C">
+      <text v="Bản xác nhận này phải được ký và gửi lại cho chúng tôi qua fax hoặc email." e="Bản xác nhận này phải được ký và gửi lại cho chúng tôi qua fax hoặc email."/>
+    </field>
+
+    <field name="h_stt" type="C">
+      <text v="STT" e="No."/>
+    </field>
+    <field name="h_vt" type="C">
+      <text v="Tên sản phẩm" e="Item Name"/>
+    </field>
+    <field name="h_ngay_dong_hang" type="C">
+      <text v="Ngày đóng hàng" e="Ngày đóng hàng"/>
+    </field>
+    <field name="h_ngay_kh_gh" type="C">
+      <text v="Ngày giao hàng dự kiến" e="Ngày giao hàng dự kiến"/>
+    </field>
+
+    <field name="h_so_luong" type="C">
+      <text v="Số lượng đặt hàng" e="Quantity"/>
+    </field>
+
+    <field name="h_ten_dc" type="C">
+      <text v="Địa điểm giao hàng" e="Địa điểm giao hàng"/>
+    </field>
+    <field name="h_so_po" type="C">
+      <text v=" Số PO" e=" Số PO"/>
+    </field>
+
+    <field name="h_ma_so" type="C">
+      <text v="Mã số bản vẽ" e="Mã số bản vẽ"/>
+    </field>
+    <field name="h_nguyen_lieu" type="C">
+      <text v="Nguyên liệu" e="Nguyên liệu"/>
+    </field>
+    <field name="h_mau_sac" type="C">
+      <text v="Màu sắc" e="Màu sắc"/>
+    </field>
+    <field name="h_ma_mau_tl" type="C">
+      <text v="Mã màu/Tỷ lệ" e="Mã màu/Tỷ lệ"/>
+    </field>
+    <field name="h_ma_pg_tl" type="C">
+      <text v="Mã phụ gia/Tỷ lệ" e="Mã phụ gia/Tỷ lệ"/>
+    </field>
+    <field name="h_ten_qcdg" type="C">
+      <text v="Quy cách đóng gói" e="Quy cách đóng gói"/>
+    </field>
+
+    <field name="h_xac_nhan" type="C">
+      <text v="Xác nhận bởi đơn vị cung cấp" e="Xác nhận bởi đơn vị cung cấp"/>
+    </field>
+    <field name="h_phe_duyet" type="C">
+      <text v="Phê duyệt bởi BP KHĐP" e="Phê duyệt bởi BP KHĐP"/>
+    </field>
+    <field name="h_truong_bo_phan" type="C">
+      <text v="Trưởng bộ phận" e="Trưởng bộ phận"/>
+    </field>
+    <field name="h_nguoi_de_nghi" type="C">
+      <text v="Người đề nghị" e="Người đề nghị"/>
+    </field>
+
+    <field name="h_tt_chung" type="C">
+      <text v="THÔNG TIN CHUNG" e="THÔNG TIN CHUNG"/>
+    </field>
+    <field name="h_dv_cc" type="C">
+      <text v="Đơn vị cung cấp" e="Đơn vị cung cấp  :"/>
+    </field>
+    <field name="h_ng_lh" type="C">
+      <text v="Người liên hệ:" e="Người liên hệ:"/>
+    </field>
+    <field name="h_dv_bh" type="C">
+      <text v="Đơn vị bán hàng" e="Đơn vị bán hàng"/>
+    </field>
+    <field name="h_bp_bh" type="C">
+      <text v="Bộ phận bán hàng" e="Bộ phận bán hàng"/>
+    </field>
+    <field name="h_dt_email" type="C">
+      <text v="Điện thoại/Email:" e="Điện thoại/Email:"/>
+    </field>
+    
+  </fields>
+
+</report>

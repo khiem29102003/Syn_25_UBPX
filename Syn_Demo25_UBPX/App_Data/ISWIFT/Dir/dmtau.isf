@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmtau" table="dmtau" fieldKey="ma_tau" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục tàu" e="List of Vessel"></title>
+  <title0 v="Thêm mới" e="Create New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120" >
+      <fields>
+        <field name="ma_tau" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="1" >
+          <text v="Mã tàu" e="Vessel Code"></text>
+        </field>
+        <field name="ten_tau" label="1" field="-" allowBlank="false" importable="5" >
+          <text v="Tên tàu" e="Vessel Name"></text>
+        </field>
+		<field name="ten_tau2" label="1" field="-" importable="10" >
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+		<field name="ma_loai" viewType="Lookup" label="1" field="1" importable="15" >
+           <text v="Mã loại" e="Type Code"></text>
+           <viewInfo lookupType="One" lookupId="dmloaitau" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_loai" lookupInfo="dmloaitau|ma_loai|ten_loai" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_loai" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		<field name="ma_qg" viewType="Lookup" label="1" field="[120]" importable="20" >
+           <text v="Mã quốc gia" e="Country Code"></text>
+           <viewInfo lookupType="One" lookupId="dmquocgia" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_qg" lookupInfo="dmquocgia|ma_qg|ten_qg" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_qg" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		<field name="so_imo" format="U" label="1" field="1" importable="25" >
+          <text v="Số IMO" e="IMO Number"></text>
+        </field>
+		<field name="hieu_tau" label="1" field="1" importable="30">
+          <text v="Hiệu tàu" e="Ship Call Sign"></text>
+        </field>
+		<field name="so_dk" format="U" label="1" field="1" importable="35" >
+          <text v="Số đăng kí" e="Registration Number"></text>
+        </field>
+		
+		<field name="ma_kh" viewType="Lookup" label="1" field="[120]" importable="40" >
+           <text v="Mã hãng" e="Carrier Code"></text>
+           <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_kh" lookupInfo="dmkh|ma_kh|ten_kh" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_kh" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		
+		<field name="ma_hang" viewType="Lookup" label="1" field="[120]" disabled="true" >
+           <text v="Mã hãng cũ" e="Carrier Old Code"></text>
+           <viewInfo lookupType="One" lookupId="dmhangtau" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_hang" lookupInfo="dmhangtau|ma_hang|ten_hang" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_hang" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		
+		
+		<field name="ma_cang" viewType="Lookup" label="1" field="[120]" importable="45" >
+           <text v="Mã cảng" e="Port Code"></text>
+           <viewInfo lookupType="One" lookupId="dmcang" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_cang" lookupInfo="dmcang|ma_cang|ten_cang" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_cang" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		
+
+        <field name="status" viewType="Combobox" inactivate="true" valueDefault="1" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>1PFOGp66gVgaSTPirrPUVVXHCZhYQQOqRHPLw9CqJ8kkS7CKfmOSYBWBwycPHBqSHPbOUEV9Eh/69YFWdhgLD8S6TkZB+pmIjS1nkoQi9GQ4R73S0lZOf+iDDl7nMaToYnfpvdyLV7XMhg7P0whMzB2Fu24cjuQuB5PpecaI49oKxzCXOeNs0CFisTuhrizEbJxsdb830XNvbLayeQ3UZrEjgCM6IihFXwwbXTZzEuIWY7d7Aw2U5QJodsuuwvfo1GA3xx9sVN1Hg8GNCEZghuVIDX7xkn6M4CfQwwJOMWzCt1Gy1bBCb+zoHX2+mm79rZ0WmTqQ/f3urRx3g6W7gw==</enc>]]>
+    </text>
+  </js>
+  
+  <css>
+	<text>
+	  <![CDATA[<enc>/T0x+X5J8VnLtXSs8xERB1iizBHxQmUovXeEmWW/qu/3wn5QdttAghlvod8nZRlR8/lwkiX1h3mD1JPHmc0dYvMFFhfB2JR9J7PxRnO6kwRPfMaBoln0WOK40pqC1XaCxVSQ9hu3tZcXFXSWG9Uvpg==</enc>]]>
+	</text>
+  </css>
+  
+  <script>
+	<importing>
+      <text>
+        <![CDATA[<enc>PDeYaSq5D3THjzUfjXLnuOov+zRPCu/HsQ7cYLJ9+NUbtW4WBDcym9s/zoBHUkNI</enc>]]>
+      </text>
+    </importing>
+  </script>
+  
+  <messages>
+	<message val="codeExistsNewMsg">
+		<text v="Mã tàu đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The vessel code already exists in the catalog, please choose a different code."/>
+	</message>
+	<message val="codeExistsEditMsg">
+		<text v="Mã tàu đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The vessel code already exists in the catalog, please choose a different code."/>
+	</message>
+  </messages>
+</dir>

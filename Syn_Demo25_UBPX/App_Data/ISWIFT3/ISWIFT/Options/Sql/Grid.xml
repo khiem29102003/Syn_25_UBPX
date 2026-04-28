@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<script>
+  <query>
+    <text>
+      <![CDATA[
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', '', @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+    </text>
+  </query>
+
+  <beforePrint>
+    <text>
+      <![CDATA[
+if @@admin <> 1
+  if not exists(select 1 from sysmenu a where controller = '@@controller' and (type = '' or exists(select 1 from sysrightmenu b where b.user_id = @@userId and a.id = b.menu_id and b.a_print = 1))) begin
+  select '$NotAuthorize' as message
+  return
+end
+select '' as message
+         ]]>
+    </text>
+  </beforePrint>
+
+  <beforeExport>
+    <text>
+      <![CDATA[
+if @@admin <> 1
+  if not exists(select 1 from sysmenu a where controller = '@@controller' and (type = '' or exists(select 1 from sysrightmenu b where b.user_id = @@userId and a.id = b.menu_id and b.a_print = 1))) begin
+  select '$NotAuthorize' as message
+  return
+end
+select '' as message
+         ]]>
+    </text>
+  </beforeExport>
+  
+  <beforeEvent_Grid_query>
+    <text>
+      <![CDATA[
+if @@admin <> 1 and exists(select 1 from sysmenu a where controller = '@@controller')
+  if not exists(select 1 from sysmenu a where controller = '@@controller' and exists(select 1 from sysrightmenu b where b.user_id = @@userId and a.id = b.menu_id and a_view = 1)) begin
+    select '$NotAuthorize' as message
+    return
+  end
+         ]]>
+    </text>
+  </beforeEvent_Grid_query>
+  <beforeEvent_Grid_finding>
+    <text>
+      <![CDATA[
+if @@admin <> 1 and exists(select 1 from sysmenu a where controller = '@@controller')
+  if not exists(select 1 from sysmenu a where controller = '@@controller' and exists(select 1 from sysrightmenu b where b.user_id = @@userId and a.id = b.menu_id and a_view = 1)) begin
+    select '$NotAuthorize' as message
+    return
+  end
+         ]]>
+    </text>
+  </beforeEvent_Grid_finding>
+
+  <beforeVoucherEvent_Grid_query>
+    <text>
+      <![CDATA[
+if @@admin <> 1
+  if not exists(select 1 from sysmenu a where controller = '@@controller' and exists(select 1 from sysrightmenu b where b.user_id = @@userId and a.id = b.menu_id and a_view_all = 1)) begin
+    set @filterKey = case when isnull(@filterKey, '') = '' then '' else @filterKey + ' and ' end + 'a.user_id0 in (select user_id from sysuserinfo where user_ref like ''@@userRef%'')' --'a.user_id0 = @@userId'
+  end
+  if 1 < (select count(1) from sysunit) begin
+    select unit_id into #unitright from dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @@admin, '')
+    set @filterKey = case when isnull(@filterKey, '') = '' then '' else @filterKey + ' and ' end + 'a.unit_id in (select unit_id from #unitright)'
+  end
+  if exists(select 1 from sysrightstatus where ma_ct = '@@voucherCode' and user_id = @@userId and a_view = 1) begin
+    set @filterKey = case when isnull(@filterKey, '') = '' then '' else @filterKey + ' and ' end + 'exists (select 1 from sysrightstatus sr where a.status = sr.ma_ttct and sr.ma_ct = ''@@voucherCode'' and sr.user_id = @@userId and sr.a_view = 0)'
+  end
+         ]]>
+    </text>
+  </beforeVoucherEvent_Grid_query>
+  <beforeVoucherEvent_Grid_finding>
+    <text>
+      <![CDATA[
+if @@admin <> 1 
+  if not exists(select 1 from sysmenu a where controller = '@@controller' and exists(select 1 from sysrightmenu b where b.user_id = @@userId and a.id = b.menu_id and a_view_all = 1)) begin
+    set @filterKey = case when isnull(@filterKey, '') = '' then '' else @filterKey + ' and ' end + 'a.user_id0 in (select user_id from sysuserinfo where user_ref like ''@@userRef%'')'
+  end
+  if 1 < (select count(1) from sysunit) begin
+    select unit_id into #unitright from dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @@admin, @ma_unit)
+    set @filterKey = case when isnull(@filterKey, '') = '' then '' else @filterKey + ' and ' end + 'a.unit_id in (select unit_id from #unitright)'
+  end
+  if exists(select 1 from sysrightstatus where ma_ct = '@@voucherCode' and user_id = @@userId and a_view = 1) begin
+    set @filterKey = case when isnull(@filterKey, '') = '' then '' else @filterKey + ' and ' end + 'exists (select 1 from sysrightstatus sr where a.status = sr.ma_ttct and sr.ma_ct = ''@@voucherCode'' and sr.user_id = @@userId and sr.a_view = 0)'
+  end
+         ]]>
+    </text>
+  </beforeVoucherEvent_Grid_finding>
+
+</script>

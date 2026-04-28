@@ -1,0 +1,354 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+]>
+
+<dir id="t311TC0Select" table="" height="" fieldKey="id" voucherCode="TT1" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Chi tiết báo giá được chọn" e="Quotation Entry Detail"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+		<field name="ngay_ct1" label="1" field="1" readOnly="true" aliasName="@DFDFrom" disabled="true" allowBlank="false" dataType="D">
+          <text v="Ngày c/từ từ/đến" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" allowBlank="false" disabled="true" inactivate="true" dataType="D" nextRow="false">
+          <text v="Ngày đến" e="Voucher Date"></text>
+        </field>
+        <field name="ma_nt" hidden="true" label="1" field="1">
+          <text v="Mã ngoại tệ" e="Ex Code"></text>
+        </field>
+        <field name="unit_id" dataType="I" hidden="true" label="1" field="1">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+		
+		<field name="ma_chungtu" allowBlank="true" viewType="Lookup" label="1" field="1"  hidden="false" operation="like">
+          <text v="Mã chuyến" e="Shipment Code"></text>
+          <viewInfo lookupType="One" lookupId="dmchungtu" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_ct" lookupInfo="dmchungtu|ma_chungtu|ten_ct" />
+        </field>
+        <field name="ten_ct" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_nv" format="U" label="1" disabled="true"  field="1"  >
+          <text v="Mã nhân viên" e="Employee Code"></text>
+        </field>
+		<field name="ten_kh" allowBlank="true" label="1" disabled="true"  field="-" importWidth="250" importable="10">
+          <text v="Tên nhân viên" e="Employee Name"></text>
+        </field>
+		<field name="ma_kh" format="U" label="1" disabled="true"  field="1"  >
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+		<field name="ten_kh" allowBlank="true" label="1" disabled="true"  field="-" importWidth="250" importable="10">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+	
+        <field name="ma_noi_di" viewType="Lookup" label="1" disabled="true" field="1" operation="like">
+			<text v="Nơi đi" e="Origin "></text>
+			<viewInfo lookupType="One" lookupId="vdmcangdi" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_di" />
+		</field>
+		<field name="ten_noi_di" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field>
+		
+		<field name="ma_noi_den" viewType="Lookup" disabled="true" label="1" field="1" operation="like">
+			<text v="Nơi đến" e="Destination"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangden" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_den"  />
+		</field>
+		<field name="ten_noi_den" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field>  
+		
+		<field name="so_ct" label="1" field="2" disabled="true">
+          <text v="Số báo giá" e="Quot. Number"></text>
+        </field>
+		
+        <field name="xprocess" label="1" field="2" valueDefault="2" viewType="Combobox">
+          <text v="Xử lý" e="Process"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Thêm vào chi tiết" e="Append To Detail"></text>
+              </option>
+              <option val="2">
+                <text v="Xóa hết chi tiết và thêm mới" e="Delete All Detail And Append New"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+		<field name="id" dataType="N" hidden="true" fieldType="PK" label="1" field="1"  >
+			<text v="ID" e="Code"></text>
+		</field>
+      </fields>
+    </form>
+	
+    <form tabPageIndex="1" gravity="MiddleLeft" height="350" columns="120,120,240" >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="r21" label="" field="-" viewType="Grid">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+ <grids>
+    <grid id="r21" table="r21" fieldKey="id, line" order="id, line" allowFilter="true" readOnly="false" allowOrder="true">
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+
+        <field name="ma_chungtu" width="80" allowBlank="false" viewType="Lookup" readOnly="false" hidden="false" >
+          <text v="Mã chuyến" e="Fee"></text>
+          <viewInfo lookupType="One" lookupId="dmchungtu" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_ct" lookupInfo="dmchungtu|ma_chungtu|ten_ct" />
+        </field>
+        <field name="ten_ct" width="0" fieldType="EX" inactivate="true" readOnly="true" aliasName="b" join=" left join dmchungtu b on a.ma_chungtu = b.ma_ct ">
+          <text v="Tên phí" e="Fee Name"></text>
+        </field>
+		<field name="so_chuyen" dataType="N" width="100" readOnly="false" format="Amount"  aliasName="so_ct as "  >
+          <text v="Số chuyến" e="Cont No."></text>
+        </field>
+		<field name="ngay_gn" width="120" valueDefault="" copy="false" readOnly="false" allowBlank="true" dataType="D" aliasName="ngay_ct as ">
+		  <text v="Ngày giao nhận" e="Payment Date"></text>
+		</field>
+		 <field name="ma_kh" width="0" allowBlank="true" viewType="Lookup" readOnly="false" >
+          <text v="Khách hàng" e="Customer"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_kh" lookupInfo="dmkh|ma_kh|ten_kh" />
+        </field>
+        <field name="ten_kh" width="230" fieldType="EX" inactivate="true" readOnly="true" aliasName="c" join=" left join dmkh c on a.ma_kh = c.ma_kh ">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+		<field name="ma_nv" width="0" allowBlank="true" viewType="Lookup" readOnly="false" >
+          <text v="Nhân viên" e="Employee"></text>
+          <viewInfo lookupType="One" lookupId="dmnv" lookupKey="status=5" lookupCheck="1=1" lookupRef="ten_nv" lookupInfo="dmnv|ma_nv|ten_nv" />
+        </field>
+        <field name="ten_nv" width="230" fieldType="EX" inactivate="true" readOnly="true" aliasName="d" join=" left join dmnv d on a.ma_nv = d.ma_nv ">
+          <text v="Nhân viên" e="Employee Name"></text>
+        </field>
+		<field name="book_no" width="150" readOnly="false" >
+          <text v="Số booking" e="Book No."></text>
+        </field>
+		<field name="ma_hang" width="0" allowBlank="true" viewType="Lookup" readOnly="false" >
+          <text v="Hãng tàu" e="Carrier"></text>
+          <viewInfo lookupType="One" lookupId="vdmhangtau" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_hang" lookupInfo="vdmhangtau|ma_Hang|ten_hang" />
+        </field>
+        <field name="ten_hang" width="230" fieldType="EX" inactivate="true" readOnly="true" aliasName="e" join=" left join vdmhangtau e on a.ma_hang = e.ma_hang ">
+          <text v="Hãng tàu" e="Carrier Name"></text>
+        </field>
+        <field name="so_luong" dataType="N" format="Qty" width="100" readOnly="true" >
+          <text v="Số lượng" e="Quantity"></text>
+        </field>
+		<field name="ma_cong" width="0" allowBlank="false" viewType="Lookup" readOnly="false" >
+          <text v="Container" e="Container"></text>
+          <viewInfo lookupType="One" lookupId="dmcong" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_cong" lookupInfo="dmcong|ma_cong|ten_cong" />
+        </field>
+        <field name="ten_cong" width="100" fieldType="EX" inactivate="true" readOnly="true" aliasName="f" join=" left join dmcong f on a.ma_cong = f.ma_cong ">
+          <text v="Container" e="Container Name"></text>
+        </field>
+		<field name="cont_no" width="150" readOnly="false" >
+          <text v="Cont No." e="Cont No."></text>
+        </field>
+		<field name="ma_noi_di" width="0" viewType="Lookup" readOnly="false" >
+          <text v="Nơi nhận" e="Destination"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangdi" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_noi_di" lookupInfo="vdmcang_di|ma_noi_di|ten_noi_di" />
+        </field>
+		<field name="ten_noi_di" width="230" fieldType="EX" inactivate="true" readOnly="true" aliasName="h" join=" left join vdmcangdi h on a.ma_noi_di = h.ma_noi_di ">
+          <text v="Nơi nhận" e="Destination"></text>
+        </field>
+		<field name="ma_noi_dodong" width="0" viewType="Lookup" readOnly="false" >
+          <text v="Nơi giao" e="Destination"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangdodong" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_noi_dodong" lookupInfo="vdmcangdodong|ma_noi_dodong|ten_noi_dodong" />
+        </field>
+        <field name="ten_noi_dodong" width="230" fieldType="EX" inactivate="true" readOnly="true" aliasName="i" join=" left join vdmcangdodong i on a.ma_noi_dodong = i.ma_noi_dodong ">
+          <text v=" Tên nơi giao" e="Destination"></text>
+        </field>
+		<field name="ma_noi_den" width="0" viewType="Lookup" readOnly="false" >
+          <text v="Nơi đến " e="Destination"></text> 
+			<viewInfo lookupType="One" lookupId="vdmcangden" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_noi_den" lookupInfo="vdmcangden|ma_noi_den|ten_noi_den" />
+        </field>
+        <field name="ten_noi_den" width="230" fieldType="EX" inactivate="true" readOnly="true" aliasName="j" join=" left join vdmcangden j on a.ma_noi_den = j.ma_noi_den ">
+          <text v=" Tên nơi đến" e="Destination"></text>
+        </field>
+		<field name="so_tk" width="150" readOnly="false" >
+          <text v="Số tờ khai" e="Seal No."></text>
+        </field>
+		<field name="so_don" dataType="N" width="100"  readOnly="false" format="Amount"  >
+          <text v="Số đơn" e="Cont No."></text>
+        </field>
+		<field name="ngay_td" width="120" valueDefault="" copy="false" readOnly="false" allowBlank="false" dataType="D">
+		  <text v="Ngày tạo đơn" e="Order creation Date"></text>
+		</field>
+		<field name="ma_cong2" width="0" allowBlank="false" viewType="Lookup" readOnly="false" >
+          <text v="Container 2" e="Container 2"></text>
+          <viewInfo lookupType="One" lookupId="vdmcong" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_cong" lookupInfo="vdmcong|ma_cong2|ten_cong2" />
+        </field>
+        <field name="ten_cong2" width="100" fieldType="EX" inactivate="true" readOnly="true" aliasName="g" join=" left join vdmcong g on a.ma_cong2 = g.ma_cong2 ">
+          <text v="Container" e="Container Name"></text>
+        </field>
+		<field name="cont_no2" width="150" readOnly="false" >
+          <text v="Cont No 2." e="Seal No."></text>
+        </field>		
+		<field name="dien_giai" width="200" inactivate="false" readOnly="false">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+		<field name="id_ch" dataType="N" inactivate="true" hidden="true" format="0" width="80" copy="false">
+          <text v="ID chuyến hàng" e="ID BG"></text>
+        </field>
+        <field name="so_ct_ch" width="100" fieldType="EX" copy="false" readOnly="true" hidden="true" inactivate="true" link="t21|id_ch as id" aliasName="cast('' as nvarchar(3000)) as ">
+          <text v="Số chuyến hàng" e="Quot. No."></text>
+        </field>
+        <field name="line_ch" dataType="I" width="70" copy="false" hidden="true" inactivate="true">
+          <text v="Dòng chuyến hàng" e="Quot. Line"></text>
+        </field>
+		<field name="id_dh" dataType="N" inactivate="true" hidden="true" format="0" width="80" copy="false">
+          <text v="ID đơn hàng" e="ID BG"></text>
+        </field>
+        <field name="so_ct_dh" width="100" fieldType="EX" copy="false" readOnly="true" hidden="true" inactivate="true" link="t11|id_dh as id" aliasName="cast('' as nvarchar(3000)) as ">
+          <text v="Số đơn hàng" e="Quot. No."></text>
+        </field>
+        <field name="line_dh" dataType="I" width="70" copy="false" hidden="true" inactivate="true">
+          <text v="Dòng đơn hàng" e="Quot. Line"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+	select data as id into #id from dbo.ISWIFTFunction$Split(@so_ct, ',')
+	
+	select top 0 * into #t11 from t11
+	insert into #t11 select * from t11
+
+
+	select * into #t21 from t21 where id in (select id from #id)
+	delete #t21 where id_dh not in (select id from #t11)
+
+
+	select * into #r21 from r21 where id in (select id from #id)
+	delete #r21 where id not in (select id from #t21)
+
+	SELECT p.*,ROW_NUMBER() OVER(PARTITION BY p.id ORDER BY p.id DESC) AS stt into #r21_1 FROM #r21 p
+	select a.*, b.ten_cong into #r21_2 from #r21_1 a left join dmcong b on a.ma_cong=b.ma_cong
+	select id, sum(so_luong) so_luong into #r21_22 from #r21_2 group by id
+
+
+
+
+	select a.*,a.id as id_ch,a.so_ct as so_chuyen, a.ngay_ct as ngay_gn,ff1.ngay_ct as ngay_td,ff1.so_ct as so_don ,b1.ten_noi_di,b2.ten_noi_den,b3.ten_noi_dodong,e.ten_hang,c.ten_kh,d.ten_nv,f.cont_no, f2.cont_no cont_no2, f3.cont_no cont_no3,
+				f.ten_cong, f2.ten_cong ten_cong2, f3.ten_cong ten_cong3,
+				cast((cast (f.so_luong as int)) as varchar(10))  + 'X' + f.ma_cong  ms_cong, f.ma_cong,
+				cast((cast (f2.so_luong as int)) as varchar(10))  + 'X' + f2.ma_cong  ms_cong2,f2.ma_cong ma_cong2, 
+				cast((cast (f3.so_luong as int)) as varchar(10))  + 'X' + f3.ma_cong  ms_cong3, f3.ma_cong ma_cong3,
+				cast (ff.so_luong as int) so_luong from #t21 a
+	left join vdmcangdi b1 on a.ma_noi_di = b1.ma_noi_di
+	left join vdmcangden b2 on a.ma_noi_den = b2.ma_noi_den
+	left join vdmcangdodong b3 on a.ma_noi_dodong = b3.ma_noi_dodong
+	left join vdmhangtau e on a.ma_hang = e.ma_hang
+	left join dmkh c on a.ma_kh = c.ma_kh
+	left join dmnv d  on a.ma_nv = d.ma_nv
+	left join #r21_2 f on a.id = f.id and f.stt = 1
+	left join #r21_2 f2 on a.id = f2.id and f2.stt = 2
+	left join #r21_2 f3 on a.id = f3.id and f3.stt = 3
+	left join #r21_22 ff on a.id = ff.id
+	left join #t11 ff1 on a.id_dh = ff1.id
+
+	order by a.ngay_ct desc, a.id desc
+
+
+	--select * from #t11
+	--select * from #r21
+
+	drop table #t11, #r21, #t21, #r21_1, #r21_2, #r21_22, #id
+
+
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+   
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$t311TC0Select(p){
+  this.constructor(p);
+}
+filter$t311TC0Select.prototype = new DirEvent();
+filter$t311TC0Select.prototype.beforeInit = function(){
+  var p = this._dir;
+  
+}
+
+
+filter$t311TC0Select.prototype.afterInit = function(){
+  var p = this._dir;
+  p.valForm(['ngay_ct1','ngay_ct2','id', 'ma_noi_di', 'ten_noi_di', 'ma_noi_den', 'ten_noi_den','ma_kh','ten_kh', 'ma_nt', 'unit_id'], [p.options._ngay_ct1,p.options._ngay_ct2,p.options._so_ct,p.options._ma_noi_di, p.options._ten_noi_di,p.options._ma_noi_den, p.options._ten_noi_den,p.options._ma_kh, p.options._ten_kh,  p.options._ma_nt, p.options._unit_id]);
+	var ima_kh = master.val(0, 'ma_kh');
+	var iten_kh = master.val(0, 'ten_kh');
+	var ima_chungtu = master.val(0, 'ma_chungtu');
+	var iten_chungtu= master.val(0, 'ten_ct');
+	var ima_nv = master.val(0, 'ma_nv');
+	var iten_nv = master.val(0, 'ten_nv');
+	var ima_noi_di = master.val(0, 'ma_noi_di');
+	var iten_noi_di= master.val(0, 'ten_noi_di');
+	var ima_noi_den = master.val(0, 'ma_noi_den');
+	var iten_noi_den= master.val(0, 'ten_noi_den');
+	p.valForm(['ten_kh','ten_kh','ma_chungtu','ten_ct','ma_nv','ma_noi_di','ten_noi_di','ma_noi_den',''ma_noi_den''],[ima_kh,iten_kh,ima_chungtu,iten_chungtu,ima_nv,iten_nv,ima_noi_di,iten_noi_di,ima_noi_den,iten_noi_den]);
+
+}
+
+function dir$t311TC0SetMaster(p) {
+  //p.request('ma_kh_request', '', ['id']);
+}
+
+filter$t311TC0Select.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir, pa = p.options.parent, g = p.grid(0), dt = g.data, master = g.ds.get(1), rErr = "";
+  
+  var fun = function(){
+	dt.removeRow('[so_luong] == 0');
+    pa.appendGrid(0, dt, p.valForm('xprocess') == "2", 'so_luong', 'so_luong');
+	pa.calcExpressionAll(0, 'so_luong');
+    //pa.appendForm(master, 0);
+    p._close();
+  }
+  
+  if (rErr.length) {
+    $.question('$VoucherRetrieveLimit', null, p, function(q, v){
+      q._close();
+      if (v) fun();
+    });
+  } else fun();
+  
+    return false;
+}
+
+         ]]>
+    </text>
+  </js>
+  
+  <script>
+		<request code="ma_kh_request">
+			<text>
+			  <![CDATA[
+
+			]]>
+			</text>
+		</request>
+  </script>
+</dir>

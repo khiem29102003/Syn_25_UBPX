@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+]>
+
+<dir id="s311" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Chi phí cho vận chuyển" e="Shipping costs"></title>
+
+  <grids>
+    <grid table="s311" fieldKey="id" fieldName="so_ct" order="id" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="id" dataType="N" fieldType="PK" width="100" format="0" hidden="true">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="so_ct" width="100" fieldType="RF" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+		<field name="ma_phi" width="80" hidden="false">
+          <text v="Mã phí" e="Fee code"></text>
+        </field>
+		<field name="ten_phi" width="150" fieldType="EX">
+		  <text v="Tên phí " e="Frr Name"></text>
+		</field>
+		<field name="t_tt_nt" dataType="N" format="FCAmount" width="100">
+          <text v="Tổng cước" e="Pcs UOM"></text>
+        </field>
+		<field name="ma_hang" width="0"  >
+          <text v="Hãng tàu" e="Carrier"></text>
+        </field>
+		<field name="ten_hang" width="140" fieldType="EX" >
+          <text v="Hãng tàu" e="Carrier"></text>
+        </field>
+		
+        <field name="ma_kh" width="120" hidden="true" >
+          <text v="Mã đại lý" e="Agent Code"></text>
+        </field>
+        <field name="ten_kh" width="250" fieldType="EX" >
+          <text v="Tên đại lý" e="Agent Name"></text>
+        </field>
+		<field name="ten_noi_di" width="150" fieldType="EX">
+		  <text v="Nơi đi " e="Origin Name"></text>
+		</field>
+			
+		<field name="ten_noi_den" width="150" fieldType="EX" >
+		  <text v="Nơi đến " e="Destination Name"></text>
+		</field>	
+		<field name="ma_noi_di" width="100" hidden="false">
+          <text v="Nơi đi" e="Origin"></text>
+        </field>
+		
+		
+        <field name="ma_nt" width="80" >
+          <text v="Ngoại tệ" e="FC"></text>
+        </field>
+        
+      </fields>
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = @lookupKey + case when @val = '' then '' else ' and (@@fieldKey like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or @@fieldName like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+select @fieldOrder = 't_tt_nt'
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @fieldOrder, '', '', 'left join dmkh b on a.ma_kh = b.ma_kh left join dmphi c on a.ma_phi = c.ma_phi left join dmhangtau d on a.ma_hang = d.ma_hang left join vdmcangdi e on a.ma_noi_di = e.ma_noi_di ', 'b.ten_kh,c.ten_phi,d.ten_hang,e.ten_noi_di', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+</dir>

@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmcalv" table="dmcalv" fieldKey="ma_ca" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục ca làm việc" e="List of Work Shift"></title>
+  <title0 v="Thêm mới" e="Create New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_ca" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="5" >
+          <text v="Mã ca làm việc" e="Shift Code"></text>
+        </field>
+        <field name="ten_ca" label="1" field="-" allowBlank="false" importable="10" >
+          <text v="Tên ca làm việc" e="Shift Name"></text>
+        </field>        
+		<field name="ten_ca2" label="1" field="-" importable="15" >
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" valueDefault="1" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmcalv(p){
+  this.constructor(p);
+}
+dir$dmcalv.prototype = new DirEvent();
+dir$dmcalv.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmcalv.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+  dir$dmcalvDisabledMasterField(p, g);
+
+}
+
+function dir$dmcalvDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_ca').trim() != '')
+  {
+    p.setDisabled('ma_ca', true);
+  }
+  else
+  {
+    p.setDisabled('ma_ca', false);
+  }
+}
+
+         ]]>
+    </text>
+  </js>
+  
+  <css>
+	<text>
+	  <![CDATA[
+		.control-label.ma_ca, .control-label.ten_ca
+		{	
+			//font-weight:bold;	
+			color: #499b98;;
+		}
+	  ]]>
+	</text>
+  </css>
+  
+  <script>
+	<importing>
+      <text>
+        <![CDATA[
+		@@insert
+        ]]>
+      </text>
+    </importing>
+  </script>
+  
+  <messages>
+	<message val="codeExistsNewMsg">
+		<text v="Mã ca làm việc đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The work shift code already exists in the catalog, please choose a different code."/>
+	</message>
+	<message val="codeExistsEditMsg">
+		<text v="Mã ca làm việc đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The work shift code already exists in the catalog, please choose a different code."/>
+	</message>
+  </messages>
+</dir>

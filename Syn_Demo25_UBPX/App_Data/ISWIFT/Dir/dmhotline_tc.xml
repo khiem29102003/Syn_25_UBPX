@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmhotline_td" table="dmhotline" fieldKey="ma_hl" transaction="true" tryCatch="true" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách số điện thoại tiếp nhận tố cáo" e="List of Complaint Hotlines"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+  <forms>
+	<form gravity="TopLeft" columns="120,120,120,120" >
+		<fields>
+		    <field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_hl" label="1" field="1" allowBlank="true" fieldType="PK" disabled="true" importable="-1">
+				<text v="Mã hotline" e="Hotline code"></text>
+			</field>
+			<field name="hl_name" label="1" field="-" allowBlank="false" disabled="false" importable="5">
+			  <text v="Tên hiển thị" e="Display Name"></text>
+			</field>
+			<field name="hl_lienhe" label="1" field="-" allowBlank="true" disabled="false" importable="10">
+			  <text v="Người liên hệ" e="Contact Person"></text>
+			</field>
+			<field name="dien_thoai" nextRow="true" label="1" field="1" disabled="false" align="left" importable="15" >
+				<text v="Điện thoại" e="Phone Number"></text>
+			</field>
+			<field name="ma_loai" viewType="Combobox" label="1" field="1" inactivate="true" disabled="true" importable="-1">
+			  <text v="Loại điện thoại" e="Phone Type"></text>
+			  <viewInfo>
+				<options query="select ma_loai, ten_loai%l from dmloaiphone where status = 1 and ma_loai = 'TOCAO' order by ma_loai">
+				</options>
+			  </viewInfo>
+			</field>
+			<field name="ma_ttp" allowBlank="false" viewType="Lookup" label="1" field="1" hidden="false" disabled="false" importable="20">
+			  <text v="Tỉnh thành phố" e="Province/City"></text>
+			  <viewInfo lookupType="One" lookupId="dmttp" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_ttp" lookupInfo="dmttp|ma_ttp|ten_ttp" />
+			</field>
+			<field name="ten_ttp" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_phuongxa" allowBlank="false" viewType="Lookup" label="1" field="1" hidden="false" disabled="false" importable="25">
+			  <text v="Phường/xã" e="Ward/Commune"></text>
+			  <viewInfo lookupType="One" lookupId="dmphuongxa" lookupKey="ma_ttp = ![ma_ttp]! and status = 1" lookupCheck="1=1" lookupRef="ten_phuongxa" lookupInfo="dmphuongxa|ma_phuongxa|ten_phuongxa" />
+			</field>
+			<field name="ten_phuongxa" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ghi_chu" nextRow="true" label="1" field="2" disabled="false" importable="30">
+				<text v="Ghi chú" e="Note"></text>
+			</field>
+			<field name="status" viewType="Combobox" label="1" field="2" valueDefault="1">
+			  <text v="Trạng thái" e="Status"></text>
+			  <viewInfo>
+				<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 order by ma_tt">
+				</options>
+			  </viewInfo>
+			</field>
+      </fields>
+    </form>
+  </forms>
+
+&DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmhotline_td(p){
+  this.constructor(p);
+}
+dir$dmhotline_td.prototype = new DirEvent();
+dir$dmhotline_td.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmhotline_td.prototype.afterInit = function(renderType){
+  var p = this._dir;
+  
+dir$dmhotline_tdLoadData(p);
+dir$dmhotline_tdDisabledMasterField(p);
+
+}
+dir$dmhotline_td.prototype.formFieldValueChange = function(o, cF, v) {
+    var p = this._dir;
+	switch (cF){
+
+		default:
+		break;
+	}
+};
+function dir$dmhotline_tdDisabledMasterField(p){
+	p.setDisabled('ma_hl', true);
+}
+function dir$dmhotline_tdLoadData(p){
+var maLoai = p.valForm('ma_loai');
+
+	if(p.options.action ==  'NEW')
+	{
+		p.request('LoadCode', '', [['ma_loai', 'C', maLoai]]);
+
+	}
+}
+         ]]>
+    </text>
+  </js>
+<css>
+	<text>
+		  <![CDATA[
+		.modal-dialog-lg{min-width:720px!important;}
+		.control-label.tt {color: #499b98; text-decoration: underline}
+		.control-label.ma_hl, .control-label.dien_thoai {color: #499b98;}
+		  ]]>
+	</text>
+</css>
+  <script>
+	<request code="LoadCode">
+		<text>		
+			<![CDATA[
+DECLARE @newCode VARCHAR(20);
+DECLARE @ma_unit VARCHAR(32);
+
+SELECT @ma_unit = ma_unit FROM sysunit WHERE unit_id = @@unit
+DECLARE @maxNum  INT;
+
+SELECT @maxNum = MAX(CAST(RIGHT(ma_hl, 4) AS INT))
+FROM dmhotline
+WHERE ma_loai = @ma_loai;
+
+SET @maxNum = ISNULL(@maxNum, 0) + 1;
+
+SET @newCode = @ma_loai + RIGHT('000' + CAST(@maxNum AS VARCHAR(4)), 4);
+
+SELECT @newCode [!ma_hl]
+			]]>
+		</text>
+	</request>
+  <inserting>
+      <text>
+        <![CDATA[
+if exists(select 1 from @@table a where [%whereFieldKey]) begin
+  select '$codeExistsNewMsg' as message, '@@firstFieldKey' as field
+  return
+end
+
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @unit_id = @@unit, @status = @status
+]]>
+      </text>
+    </inserting>
+	<importing>
+      <text>
+        <![CDATA[
+update #data set unit_id = @@unit
+@@insert
+        ]]>
+      </text>
+    </importing>
+  </script>
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Số điện thoại đã tồn tại" e="Phone number is exists"/>
+    </message>
+    <message val="taxtCodeExists">
+      <text v="Số điện thoại đã tồn tại" e="Phone number is exists"/>
+    </message>
+  </messages>
+</dir>

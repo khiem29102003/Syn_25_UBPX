@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmtygiaxd" table="dmtygiaxd" fieldKey="ma_xd,ngay_hl" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Khai báo tỷ giá xăng dầu" e="Declare petrol rates"></title>
+  <title0 v="Thêm" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_xd" format="U" label="1" field="1" viewType="Lookup" clientDefault="true" allowBlank="false" fieldType="PK" >
+          <text v="Mã xăng dầu" e="Petroleum Code"></text>
+          <viewInfo lookupType="One" lookupId="dmxd" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_xd" lookupInfo="dmxd|ma_xd|ten_xd" />
+        </field>
+        <field name="ten_xd" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ngay_hl" label="1" field="1" valueDefault="new Date()" allowBlank="false" dataType="D" fieldType="PK">
+          <text v="Ngày hiệu lực" e="Date From"></text>
+        </field>
+        <field name="ty_gia" label="1" field="1" dataType="N" format="ExRate" >
+          <text v="Tỷ giá" e="Exchange Rate"></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmtygiaxd(p){
+  this.constructor(p);
+}
+dir$dmtygiaxd.prototype = new DirEvent();
+dir$dmtygiaxd.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  
+  
+  
+	<css>
+		<text>
+		  <![CDATA[
+	.control-label.ma_xd
+	{	
+		//font-weight:bold;	
+		color: #499b98;;
+	}
+		  ]]>
+		</text>
+	</css>
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã xăng dầu đã tồn tại' else N'Petroleum code is exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã xăng dầu đã tồn tại' else N'Petroleum code is exists' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+
+</dir>

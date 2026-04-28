@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="dmnganhnghe" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục ngành nghề" e="Occupation List"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="dmnganhnghe" fieldKey="ma_nganhnghe" order="ma_nganhnghe desc" allowFilter="true" allowOrder="true">
+      <fields >
+        <field name="ma_nganhnghe" fieldType="PK" width="120">
+          <text v="Mã ngành nghề" e="Occupation Code"></text>
+        </field>
+        <field name="ten_nganhnghe" width="250">
+          <text v="Tên ngành nghề" e="Occupation Name "></text>
+        </field>
+		<field name="ten_nganhnghe2" width="250">
+          <text v="Tên tiếng anh" e="English name "></text>
+        </field>
+		<field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_tt, ten_tt%l from dmttsd where status = 1">
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+
+      &DefaultButton;
+	<script>
+		<query>
+		  <text>
+		  <![CDATA[
+	exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '','@@key', '', @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+			]]>
+		  </text>
+		</query>
+		<finding>	
+			  <text>	
+				<![CDATA[	
+	declare @strKey nvarchar(3000)	
+	set @strKey = @strFinding			
+	exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId	
+			 ]]>	
+			  </text>	
+			</finding>	
+	  </script>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmnganhnghe(f){
+  this.constructor(f);
+}
+grid$dmnganhnghe.prototype = new DirEvent();
+grid$dmnganhnghe.prototype.afterInit = function(){
+  var p = this._dir;
+  
+}
+         ]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+		  position: relative !important;
+		  height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+      ]]>
+    </text>
+</css>
+</dir>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+   <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="qlcncstbls" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Quản lý cá nhân chính sách Thương binh - Liệt sĩ" e="War Invalids and Martyrs Policy Beneficiaries Management"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="pldancu" fieldKey="ma_dancu" order="ma_dancu desc" allowFilter="true" allowOrder="true" key ="ma_pldancu in (''TB'', ''LS'')">
+	  <fields>
+	  	<field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="100" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+		<field name="ma_dancu" width="120" fieldType="PK">
+			<text v="Mã cư dân" e="Resident Code"></text>
+		</field>
+		<field name="ten_dancu" width="200" fieldType="EX">
+			<text v="Tên cư dân" e="Resident Name"></text>
+		</field>
+		<field name="ngay_sinh" width="200" fieldType="EX">
+			<text v="Ngày sinh" e="Birthday"></text>
+		</field>
+		<field name="gioi_tinh"  width="150" viewType="Combobox" fieldType="EX">
+		  <text v="Giới tính" e="Sex"></text>
+		  <viewInfo>
+			<options query="select ma_gt, ten_gt%l from dmgioitinh where status = 1 ">
+			</options>
+		  </viewInfo>
+		</field>
+		<field name="so_cccd" width="120" fieldType="EX">
+		  <text v="Số CCCD" e="ID Number"></text>
+		</field>
+		<field name="ma_pldancu" width="120">
+		  <text v="Mã phân loại" e="Classification Code"></text>
+		</field>
+		<field name="ten_pldancu" width="200" fieldType="EX">
+		  <text v="Phân loại" e="Classification"></text>
+		</field>
+		<field name="so_giay_cn" width="200">
+		  <text v="Số giấy chứng nhận" e="Certificate No."></text>
+		</field>
+		<field name="cap_boi" width="200">
+		  <text v="Cơ quan cấp" e="Issuing Authority"></text>
+		</field>
+		<field name="muc_tro_cap" dataType="N" format="Amount" width="120">
+		  <text v="Mức trợ cấp" e="Allowance Amount"></text>
+		</field>
+		<field name="ngay_bd" dataType="D" width="120">
+		  <text v="Từ ngày" e="From Date"></text>
+		</field>
+		<field name="ngay_kt" dataType="D" width="120">
+		  <text v="Đến ngày" e="To Date"></text>
+		</field>
+		<field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_tt, ten_tt%l from dmttsd where status = 1">
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+		
+	  &DefaultButton;
+	  
+	  
+	<script>
+        <query>
+			<text>
+            <![CDATA[
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join qldctcccd c on a.ma_dancu = c.ma_dancu left join dmpldancu d on a.ma_pldancu = d.ma_pl', 'b.ma_unit, c.ten_dancu, c.ngay_sinh, c.gioi_tinh, c.so_cccd, d.ten_pl ten_pldancu', '@@key', '', @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+			]]>
+			</text>
+        </query>
+
+        <finding>
+			<text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = 'ngay_ct between ''' + convert(char(8), @ngay_bd, 112) + ''' and ''' + convert(char(8), @ngay_kt, 112) + ''' and ' + @strFinding
+  
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join qldctcccd c on a.ma_dancu = c.ma_dancu left join dmpldancu d on a.ma_pldancu = d.ma_pl', 'b.ma_unit, c.ten_dancu, c.ngay_sinh, c.gioi_tinh, c.so_cccd, d.ten_pl ten_pldancu', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+			</text>
+        </finding>
+      </script>
+    </grid>
+  </grids>
+  <js>
+    <text>
+      <![CDATA[
+function grid$qlcncstbls(f){
+  this.constructor(f);
+}
+grid$qlcncstbls.prototype = new DirEvent();
+grid$qlcncstbls.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[
+		.tree-form{
+			width: 250px;
+		}
+		.ic-view-dept{
+		  background-position: 0px 0px;
+		}
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+  <script>
+
+  </script>
+
+</dir>

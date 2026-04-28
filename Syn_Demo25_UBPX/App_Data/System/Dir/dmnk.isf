@@ -1,0 +1,261 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmnk" table="dmnk" fieldKey="ma_nk" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục quyển" e="List of customer"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,240,120"  >
+      <fields>
+        <field name="ma_nk" fieldType="PK" format="U" label="1" field="1" allowBlank="false" >
+          <text v="Mã quyển" e="Code"></text>
+        </field>
+        <field name="ten_nk" allowBlank="false" label="1" field="-">
+          <text v="Tên quyển" e="Name"></text>
+        </field>
+        <field name="ten_nk2" label="1" field="-">
+          <text v="Tên 2" e="Name 2"></text>
+        </field>
+
+      </fields>
+    </form>
+
+    <form tabPageIndex="1" gravity="MiddleLeft" columns="120,120,240,120" >
+      <text v="Thông tin chung" e="Header Data"></text>
+      <fields>
+        <field name="so_ct_mau" format="U" label="1" field="2" allowBlank="false" >
+          <text v="Số chứng từ mẫu" e="VC Template"></text>
+        </field>
+        <field name="number_text" hidden="true" format="U" label="1" field="2" >
+          <text v="Text số" e="Text số"></text>
+        </field>
+        <field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_unit" viewType="Lookup" fieldType="EXParam" readOnly="false" label="1" field="1" >
+          <text v="Đơn vị" e="Unit"></text>
+          <viewInfo lookupType="One" lookupId="sysunit" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_unit" lookupInfo="sysunit|ma_unit|ten_unit" />
+        </field>
+        <field name="ten_unit" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="kieu_trung_so" viewType="Combobox" valueDefault="5" label="1" field="2" >
+          <text v="Kiểm tra trùng số" e="Check Duplication"></text>
+          <viewInfo>
+            <options>
+              <option val="0">
+                <text v="0 - Không kiểm tra" e="0 - No"></text>
+              </option>
+              <option val="1">
+                <text v="1 - Theo ngày" e="1 - Daily"/>
+              </option>
+              <option val="2">
+                <text v="2 - Theo tháng" e="2 - Monthly"/>
+              </option>
+              <option val="3">
+                <text v="3 - Theo quý" e="3 - Quarterly"/>
+              </option>
+              <option val="4">
+                <text v="4 - Theo năm" e="4 - Annually"/>
+              </option>
+              <option val="5">
+                <text v="5 - Tất" e="5 - All"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="i_so_ct_ht" disabled="true" dataType="N" format="-1" label="1" field="1" >
+          <text v="Số hiện tại" e="Current Number"></text>
+        </field>
+        <field name="ngay_hl1" label="1" field="1" dataType="D">
+          <text v="Hiệu lực từ/đến" e="Date From"></text>
+        </field>
+        <field name="ngay_hl2" label="" field="[120]" dataType="D" nextRow="false">
+          <text v="Ngày chứng từ từ/đến" e="Voucher Date"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+    <form tabPageIndex="2" gravity="MiddleLeft" height="0" >
+      <text v="Chứng từ &amp; Người sử dụng" e="Voucher &amp; User"></text>
+      <fields>
+        <field name="dmnk3" allowBlank="false" label="" field="-" viewType="Grid">
+          <text v="Chứng từ &amp; Người sử dụng" e="Voucher &amp; User"></text>
+        </field>
+      </fields>
+    </form>
+    <form tabPageIndex="3" gravity="MiddleLeft" height="0" >
+      <text v="Số hiện tại" e="Current Number"></text>
+      <fields>
+        <field name="dmnk2" allowBlank="true" label="" field="-" viewType="Grid">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  <grids>
+    <grid id="dmnk3" table="dmnk3" fieldKey="user_id, ma_nk" order="line" readOnly="false">
+      <fields>
+        <field name="ma_nk" foreignField="ma_nk" fieldType="PK" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+        <field name="ma_ct" width="100" viewType="Lookup" fieldType="PK" allowBlank="false" readOnly="false" >
+          <text v="Mã chứng từ" e="Currency Code"></text>
+          <viewInfo lookupType="One" lookupId="dmct" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_ct" lookupInfo="dmct|ma_ct|ten_ct" />
+        </field>
+        <field name="ten_ct" width="250" fieldType="EX" readOnly="true" inactivate="true" aliasName="c">
+          <text v="Tên chứng từ" e="Currency Name"></text>
+        </field>
+        <field name="user_id" readOnly="true" hidden="true" fieldType="PK" inactivate="true" dataType="I" width="80" >
+          <text v="" e=""></text>
+        </field>
+        <field name="username" width="100" viewType="Lookup" readOnly="false" aliasName="b" >
+          <text v="Người sử dụng" e="Username"></text>
+          <viewInfo lookupType="One" lookupId="vsysuserinfo" lookupKey="is_user = 1 and status = 1 and admin = 0" lookupCheck="1=1" lookupRef="nickname" lookupInfo="vsysuserinfo|username|nickname" />
+        </field>
+        <field name="nickname" width="250" readOnly="true" inactivate="true" aliasName="b" fieldType="EX" >
+          <text v="Tên người sử dụng" e="Nick Name"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="moveup">
+          <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+        </button>
+        <button id="movedown">
+          <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[<enc>m7bAgJxmjXDt3908QbsmrZrlRxsUv97uyh7QUejCA87meowukSIE/3PzWFZ7fYeJX6a4UcUq8SPClvRFi8WQPa4kJp3htEg5nwwC58aIHIZMckEPU14SiCzjbPaYSv3sEq5aae0sMV3DmDnJWiK6hkJlDS2+TBNyXlb8DuyHt53MrKpk29hOo4WVVVQFFYkhfYsPiy/092gZ5brlvNEL8A==</enc>]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+    <grid id="dmnk2" table="dmnk2" fieldKey="user_id, line" order="ngay_nk" readOnly="true">
+      <fields>
+        <field name="ma_nk" foreignField="ma_nk" fieldType="PK" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="ngay_nk" dataType="D" fieldType="PK" width="100" >
+          <text v="Ngày" e="Date"></text>
+        </field>
+        <field name="i_so_ct_ht" dataType="N" width="100" format="0" readOnly="false" >
+          <text v="Số hiện tại" e="Curr. No"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOP4LHiKIfJmjycCU2995k7Ae/8AVUgcxLvCVZvdJsh1JgXN3s+Y3a57G3WXvaS2RIEgW7po0OwxuivPpzFB2QCR1WK8kSXrnTs+M4t/CaJ24</enc>]]>
+          </text>
+        </query>
+      </script>
+    </grid>
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>0X16UBn4lIpuEbLvQWk9CwodnXzA1/+vpOxxA9Ehf435BoJI4E6dSt+tku7szB3qam2KkuVXkieV4SQ/UZqp6AP1g4IYDBNb6r9577EZMOIXssvIm6zd9GeqEUncZmzRQTcvgDdXtKnk+F3tw5B/vWcWbf/1UfADAIokBeC4qzWE3Qfsh5BwH9OQDHboMADbDXxgFpt1l4jhPHTlT9OTZbK5w9yhs7U4XoVNsyHZJYl+UjchcuQHAjjjMC7z80V3J0Cwsxk6Hi0AOic1NqdLfBKEb4gtqUaijd0KA9R36xBCa0oYIWMFCrs68JvMH+4+3HAligjPD+wbra2L7MXXAjEaTXZcPGhbFbaUD/aRVjqTZW/jx1FJMXWNKoiKpAArKJiLqdWnqLjA7qgJJlLR2F2MUsSo7NT/fu01Zx6u4dWeqdKB2o5Aai/92aNZLfDFtvF3xJpXxPiI2m6t1CrGeMlVpvJtBMiC+ejqorEk2EnileG+TOgu+LH5Y4bIgANE9H6WXIbniaR+6YSDwo6DhVcrpRKMQg35QeAB7E8ddDzp7a4nSAg7g0BpuAo+uBaeSbY/uebNXgtkJCNgxAPmXzs+QjVkiJLK3iu+LzLSr0vOSKw3BeuqXM8WTUOlcufGeiLvpasXAX6In6CsU96+7HA2ptk7NsuLcDszbX9oX6A=</enc>]]>
+    </text>
+  </js>
+
+  <script>
+    <request code="User">
+      <text>
+        <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOB/HoPvL2rVpoimeA38JnGlOlp09fWX+z7HfMisQC5jE7sHWvJaWi5gezwyu8ckQDwuCVp81ZZiB28w/GGG/6OS2YCHI+Y5tckDIvHWoA6+fyeAC+DBWHbFIGkMECWSMBA==</enc>]]>
+      </text>
+    </request>
+
+    <query>
+      <text>
+        <![CDATA[<enc>rfywcmObC04SarYGwFsTsZcfowhmmxN5vBfIff87TiT9i4LIHiztKMqNR/Vf2aUIujA/RQKECC8ijGRqSbAbFrEx+t/yMqSfLRiaOs7+0UOdH58FHlBw75eYhwsi8769a9Q8VEsp6zKC53ORhhyDolmasi22xnhJJ4el8ynVCEXGTsULsl7c4XzZBHu/4CxdEAHCbDIKVWCKrlmVyq02M2dWkr3GZS96AptyYXvXsX0HPG9g+vKala4hxjX0vh2zOzqrVkSXdCpGlJRBZR7lIrmfL4d40rss6VyAPCZbkbyB5/kd832joehLB+hggjLnDkHbwzlbte1yn48z0FByTfNoWDyjNKbdO7kijGi6/SwRjDIKsOb9qPxrxXQHkO911w9BOC5WJbZXCQM6+Q2ZSox0CV12VrUFmDpTiONn3MykU7EQLpHaam3WmQpNkt+MU0LAHv+JxH/vBfiyAZarO852PXY8RX1dOAriRK0Vf1c=</enc>]]>
+      </text>
+    </query>
+
+    <declare>
+      <text>
+        <![CDATA[<enc>hxQPm/hYhpvPifcenBxj7nfT+X4T8oXvYmZx4Kpwn3fRRVZY+foYIow2vt1OHdzq0lG6PkDpvnlKR1ei3AR28UkawCxswedTww8YMZ/ax/1/BVJZ6K0wvLOosliedaWZE5prUEKGl/sJu2Ow+w+wzpSBYKlKeZWAZUZ84mM8N4rTvGa0m9Uv/Al62RdLgvrnxuN8bUD7jKZSn4qTQr0lxzzg+eT03D8bFGtCvGygP1PeFQutzwTMeOfagADKdPHG</enc>]]>
+      </text>
+    </declare>
+
+    <beforesave>
+      <text>
+        <![CDATA[<enc>cU+NryCpTlvBPYLBW1QnpKaeTC7w6KfPKYgLAFoa8ZisDuAXwj7eTkWr30UHm/UMtj4lHdzAz2kQN1GP3j9FMcZpsriGFqqlQBk9tMqM2HLbAkCMOj8y8AZ+jXuqIT33a63vWRIHYlNwb/XxtkMfhOH6qd3FmYKU5ElpD19VfVef21tGalXiNEPSjxzYQanl0kFnr+t44TYTB6QUqFF7h/OuQWCB9xz1wzgwvZiz8SN4IzdHqfXLXD4yYAvt4cGGSzaYcYdJr5YgCyQmYiQhzhCrp+UJkSA3eHVKXO228/c=</enc>]]>
+      </text>
+    </beforesave>
+    
+    <deleted>
+      <text>
+        <![CDATA[<enc>l2RBYdHOlenDqXbxvQR0Ah7ZN6zkjHo2tWzUKXvFs+lfXiWQHw54ui8iIJQd60DFiWwE6PoMbG/kMD93fQB1ZA==</enc>]]>
+      </text>
+    </deleted>
+    <aftersave>
+      <text>
+        <![CDATA[<enc>sxD5Swu0R4mcxEHdwcy2ytAaimhrw/AiZugTUE/wa6bCI9FNu8A/T53z2IOy58h9PmVpaiC4LcsFVRGYS/aADcvMiqFN8ion9IqyYYlbp7tH32YIruXfbZyObAjK1cb9+dOA0ipVlo1CouFi8+YwKD/kDaHbTW/aAVOXjnQFcHY=</enc>]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã quyển đã có trong danh mục." e="The Book Is Already Exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã quyển đã có trong danh mục." e="The Book Is Already Exists."/>
+    </message>
+    <message val="duplicateUserVoucher">
+      <text v="Chứng từ và người sử dụng đã bị trùng." e="Voucher And User Is Already Exists."/>
+    </message>
+  </messages>
+</dir>

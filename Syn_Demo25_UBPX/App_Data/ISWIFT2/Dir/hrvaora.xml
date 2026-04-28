@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="hrvaora$000000" table="hrvaora$000000" fieldKey="id, thoi_gian" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lấy số liệu chấm công" e="Timekeeping Data Import"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="id" label="1" fieldType="PK" field="1" dataType="I" importable="-1">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="ngay" label="1" field="1" dataType="D" importable="-1">
+          <text v="Ngày" e="Date"></text>
+        </field>
+        <field name="so_the" fieldType="PK" label="1" field="1" importable="10" importWidth="150">
+          <text v="Số thẻ" e="Card Number"></text>
+        </field>
+        <field name="thoi_gian" fieldType="PK" label="1" field="1" dataType="DT" importable="20" importWidth="150">
+          <text v="Thời gian" e="Thời gian"></text>
+        </field>
+        <field name="vao_ra" viewType="Combobox" label="1" field="1" importable="30" importWidth="50">
+          <text v="Loại" e="Type"></text>
+          <viewInfo>
+            <options>
+              <option val="">
+                <text v="Chưa xác định" e="Chưa xác định"></text>
+              </option>
+              <option val="1">
+                <text v="1 - Vào" e="1 - In"></text>
+              </option>
+              <option val="2">
+                <text v="2 - Ra" e="2 - Out"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$hrvaora$000000(p){
+  this.constructor(p);
+}
+dir$hrvaora$000000.prototype = new DirEvent();
+dir$hrvaora$000000.prototype.afterInit = function(){
+  var p = this._dir, pa = p.options.parent;
+}
+
+dir$hrvaora$000000.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+    default:
+      break;
+  }
+}
+         ]]>
+    </text>
+  </js>
+  <script>
+    <importing>
+      <text>
+        <![CDATA[
+declare @r int, @m int, @y int, @rangeFrom smalldatetime, @rangeTo smalldatetime, @t varchar(32), @c varchar(32), @type int, @q nvarchar(max), @q2 nvarchar(max)
+
+select @type = 0 --Mac dinh khong ghi de, chưa xử lý options đè/không đè
+
+select @t = 'hrvaora$%partition', @c = 0, @r = 0, @m = 0, @y = 0
+/*--Rao lai, chua co dmstt
+select @rangeFrom = ngay_gh1, @rangeTo = ngay_gh2 from dmstt
+if @rangeFrom > @ngay_ct1 or @rangeTo < @ngay_ct2 begin
+  select '$dbLockDate' as message
+  return
+end
+select @rangeTo = @ngay_ct2 + 1
+select @r = min(xid+1) from #data where thoi_gian < @ngay_ct1 or thoi_gian > @rangeTo
+if @r is not null begin
+  select '$ErrorTimeCell' as message, 'C' + rtrim(@r) as cell
+  return
+end*/
+set @q = ''
+create table #kCheck(excel_cols varchar(1024), row_index int)
+select @q = char(13) + '
+  if not exists(select 1 from #kCheck)
+    insert into #kCheck select ''A, B'', min(xid) from #data a where exists (select 1 from hrvaora$' + convert(varchar(6), thoi_gian, 112) + ' z where a.so_the = z.so_the and a.thoi_gian = z.thoi_gian) having min(xid) is not null
+'
+  from #data
+  group by convert(varchar(6), thoi_gian, 112)
+exec(@q)
+if exists (select 1 from #kCheck) begin
+  select 'ImportExists' as msg_id, row_index as [row], excel_cols as [column] from #kCheck
+  return
+end
+
+declare @user int, @admin bit, @join nvarchar(1023), @unit bit, @s nvarchar(4000), @d1 varchar(32), @d2 varchar(32)
+select @admin = @@admin, @user = @@userId, @join = '', @unit = 0
+select @d1 = '''' + convert(varchar(8), @ngay_ct1, 112) + '''', @d2 = '''' + convert(varchar(8), @ngay_ct2, 112) + ''''
+
+-- Identity
+select top 0 so_the, id, cast(null as smalldatetime) as ngay_tu, cast(null as smalldatetime) as ngay_den, cast(null as smalldatetime) as ngay_hh, identity(int, 1, 1) as stt into #o1 from hrvaora$000000
+select top 0 so_the, ngay_tu as ngay_hl into #o2 from #o1
+select top 0 cast('' as char(64)) as so_the, id, ngay_tu as ngay_hl, ngay_hh into #o3 from #o1
+
+select @s = 'insert into #o2 select a.so_the, max(a.ngay_tu) from hrttchamcong a' + @join + ' where (a.ngay_tu <= ' + @d1 + ') group by a.so_the'
+select @s = @s + ' insert into #o3 select a.so_the, a.id, a.ngay_tu, a.ngay_den from hrttchamcong a' + @join + ' where (a.ngay_tu > ' + @d1 + ' and a.ngay_tu <= ' + @d2 + ')'
+exec sp_executesql @s
+
+select a.so_the, a.ngay_tu, max(a.id) as id into #o4 from hrttchamcong a join #o2 b on a.so_the = b.so_the and a.ngay_tu = b.ngay_hl group by a.so_the, a.ngay_tu
+select a.so_the, a.id, a.ngay_tu as ngay_hl, a.ngay_den as ngay_hh into #o5 from hrttchamcong a join #o4 b on a.so_the = b.so_the and a.ngay_tu = b.ngay_tu and a.id = b.id
+
+insert into #o1 (so_the, id, ngay_tu, ngay_hh) select so_the, id, ngay_hl, ngay_hh
+  from (
+    select so_the, id, ngay_hl, ngay_hh from #o5 where id in (select id from #o3)
+    union all select so_the, id, ngay_hl, ngay_hh from #o3
+  ) a order by so_the, ngay_hl
+
+update #o1 set ngay_den = b.ngay_hl from #o1 a join (select so_the, ngay_tu as ngay_hl, stt - 1 as stt from #o1) b on a.so_the = b.so_the and a.stt = b.stt
+
+create index id on #o1 (so_the)
+create index id on #o5 (so_the)
+
+-- Update
+select so_the, convert(smalldatetime, convert(varchar(8), thoi_gian, 112), 112) as ngay, thoi_gian, vao_ra, cast(0 as int) as id into #k from #data
+update #k set id = b.id from #k a join #o5 b on a.so_the = b.so_the where (b.ngay_hh is null or a.ngay <= b.ngay_hh)
+update #k set id = b.id from #k a join #o1 b on a.so_the = b.so_the and a.ngay >= b.ngay_tu and (b.ngay_den is null or a.ngay < b.ngay_den) and (b.ngay_hh is null or a.ngay <= b.ngay_hh) where a.id = 0
+delete #k where id = 0
+
+-- Insert
+select distinct month(ngay) as m, year(ngay) as y into #h from #k
+select @r = min(y * 12 + m) from #h
+while @r is not null begin
+  select @m = m, @y = y from #h where y * 12 + m = @r
+  select @c = replace(@t, '%partition', rtrim(@y) + replace(str(@m, 2), ' ', '0'))
+
+  select @q = 'delete %t1 from %t1 a where exists(select 1 from %t2 b where b.id = a.id and b.ngay = a.ngay)'
+  select @q = case when @type = 0 then replace(replace(@q, '%t1', '#k'), '%t2', @c) else replace(replace(@q, '%t1', @c), '%t2', '#k') end
+
+  select @q2 = replace('@@insert', '#data', '#k')
+  select @q2 = replace(replace(replace(@q2, '''', ''''''), '"', ''''), 'hrvaora$000000', @c)
+  select @q = @q + char(13) + @q2
+  select @q = @q + ' where month(ngay) = ' + rtrim(@m) + ' and year(ngay) = ' + rtrim(@y)
+  exec sp_executesql @q
+
+  select @r = min(y * 12 + m) from #h where y * 12 + m > @r
+end
+        ]]>
+      </text>
+    </importing>
+  </script>
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Thông tin tồn kho đầu kỳ đã được khai báo trong danh mục." e="This item already exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Thông tin tồn kho đầu kỳ đã được khai báo trong danh mục." e="This item already exists."/>
+    </message>
+    <message val="dbLockDate">
+      <text v="Đã khóa số liệu, kiểm tra lại ngày khóa sổ." e="Data is locked, you must modify system locked date."/>
+    </message>
+  </messages>
+
+</dir>

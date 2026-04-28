@@ -1,0 +1,282 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="n21Approve" dirViewType="Grid" selectMultiple="Table" voucherCode="PF1" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Duyệt phiếu đề xuất" e="Approve proposals"></title>
+  <subtitle v="Xử lý &lt;b&gt;%s&lt;/b&gt; phiếu đề xuat" e="&lt;b&gt;%s&lt;/b&gt; proposal form"></subtitle>
+
+  <grids>
+    <grid table="n21" fieldKey="id" order="id desc" key="xstatus in (0)" allowFilter="true" allowOrder="true">
+      <fields>
+	  <field name="ma_ct" width="0">
+          <text v="Mã c/từ" e="Voucher Code"></text>
+        </field>
+        <field name="so_ct" width="80" link="V" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct" width="120" dataType="D">
+          <text v="Ngày hiệu lực" e="Voucher Date"></text>
+        </field>
+		<field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+		<field name="ma_dv" width="250" hidden="true">
+          <text v="Mã đơn vị" e="Unit code"></text>
+        </field>
+		<field name="ten_dv" width="150" fieldType="EX">
+		  <text v="Tên đơn vị" e="Unit name"></text>
+		</field>
+		<field name="ma_pb" width="250" hidden="true">
+          <text v="Mã phòng ban" e="Department code"></text>
+        </field>
+		<field name="ten_pb" width="150" fieldType="EX">
+		  <text v="Tên phòng ban" e="Department name"></text>
+		</field>
+		<field name="ma_bp" width="250" hidden="true">
+          <text v="Mã bộ phận" e="Parts code"></text>
+        </field>
+		<field name="ten_bp" width="150" fieldType="EX">
+		  <text v="Tên bộ phận" e="Parts name"></text>
+		</field>
+		<field name="ma_nv" width="250" hidden="true">
+          <text v="Mã nhân viên" e="Employee ID"></text>
+        </field>
+		<field name="ten_nv" width="150" fieldType="EX">
+		  <text v="Tên nhân viên " e="Employee name"></text>
+		</field>
+		<field name="ma_hmdx" width="150" hidden="true">
+          <text v="Hạng mục đề xuất" e="Recommended items"></text>
+        </field>
+		<field name="ten_hmdx" width="150" fieldType="EX">
+		  <text v="Hạng mục đề xuất" e="Recommended items"></text>
+		</field>
+		<field name="ma_loaidx" width="150" hidden="true">
+          <text v="Loại đề xuất" e="Proposal type"></text>
+        </field>
+		<field name="ten_loaidx" width="150" fieldType="EX">
+		  <text v="Loại đề xuất" e="Proposal type"></text>
+		</field>
+		<field name="tieu_de" width="200" >
+		  <text v="Tiêu đề" e="Title"></text>
+		</field>
+		<field name="noi_dung" width="200" >
+		  <text v="Nội dung" e="Content"></text>
+		</field>
+		<field name="ly_do" width="200" >
+		  <text v="Lý do" e="Reason"></text>
+		</field>
+		<field name="gop_y" width="200" >
+		  <text v="Góp ý" e="Feedback"></text>
+		</field>
+		<field name="unit_id" hidden="true" dataType="I" width="0" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="0" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="id" fieldType="PK" hidden="true" width="120">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="approve">
+          <text v="Duyệt" e="Approve"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="find">
+          <text v="$FindToolbar" e="$FindToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmnv c on a.ma_nv= c.ma_nv left join dmdonvi d on a.ma_dv = d.ma_dv left join dmpb e on a.ma_pb = e.ma_pb left join dmbp f on a.ma_bp = f.ma_bp and a.ma_pb = f.ma_pb left join dmhmdx g on a.ma_hmdx = g.ma_hmdx left join dmloaidx h on a.ma_loaidx = h.ma_loaidx','b.ma_unit, c.ten_nv, d.ten_dv, e.ten_pb, f.ten_bp, g.ten_hmdx, h.ten_loaidx', '@@key', '', @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+drop table #unitright
+			]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @strDetailKey nvarchar(3000), @userlogin varchar(32); set @strDetailKey = ''
+select @userlogin = username from vdmnv where user_id_0 = @@userId
+
+set @strKey = 'ngay_ct between ''' + convert(char(8), @ngay_ct1, 112) + ''' and ''' + convert(char(8), @ngay_ct2, 112) + ''' and ' + @strFinding
+
+IF @@admin = 0 	set @strKey = @strKey + ' and CHARINDEX('''+@userlogin+''', a.nguoi_duyet) > 0'
+
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmnv c on a.ma_nv= c.ma_nv left join dmdonvi d on a.ma_dv = d.ma_dv left join dmpb e on a.ma_pb = e.ma_pb left join dmbp f on a.ma_bp = f.ma_bp and a.ma_pb = f.ma_pb left join dmhmdx g on a.ma_hmdx = g.ma_hmdx left join dmloaidx h on a.ma_loaidx = h.ma_loaidx','b.ma_unit, c.ten_nv, d.ten_dv, e.ten_pb, f.ten_bp, g.ten_hmdx, h.ten_loaidx', '@@key',@strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </finding>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$n21Approve(f){
+  this.constructor(f);
+}
+grid$n21Approve.prototype = new DirEvent();
+grid$n21Approve.prototype.afterInit = function(renderType){
+  var p = this._dir;
+  if (p.options._status == 2) p.find(".toolbar-approve").attr('title', p.msg('approve'))
+  else if (p.options._status == 5) p.find(".toolbar-approve").attr('title', p.msg('undo'))
+  else p.find(".toolbar-approve").attr('title', p.msg('open'));
+  p.find(".toolbar-cancel").css("display", (p.options._status == 2)?"":"none")
+}
+grid$n21Approve.prototype.beforeButtonGridClick = function (id, gindex) {
+
+  var msg, p = this._dir, g = p.grid(gindex), dt = g.data, fees = p.selectedItems(), xstatus = p.options._status;
+  switch (id) {
+
+    case 'approve':
+      msg = (xstatus == 2)? p.msg('msg1'): (xstatus == 9)? p.msg('msg3'):p.msg('msg2');
+      if (fees.count() > 0)
+        $.question(msg, $.msg.get("QuestionTitle"), p, function (q, v) {
+          q._close();
+          if (v){
+            p.request('Approve', '', [["tblKeys", "T", fees.sqlval()], ['xstatus', 'I', xstatus]], function(pp, d, run){
+              if (run) {
+                p._refresh();
+                p.clearSelectedItems();
+              }
+            });
+          }
+        });
+      return false;
+      break;
+    case 'cancel':
+      if (fees.count() > 0)
+        p.showFilter('messageInput', null, {title: p.msg('inputTitle'), label: p.msg('reason'), allowBlank: false, msgFunction: function (q, v, ctext) {
+          q._close();
+          if (v){
+            p.request('Close', '', [["tblKeys", "T", fees.sqlval()], ['xstatus', 'I', xstatus], ['ly_do_huy', 'C', ctext]], function(pp, d, run){
+              if (run) {
+                p._refresh();
+                p.clearSelectedItems();
+              }
+            });
+          }
+        }});
+      return false;
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+  <script>
+    <request code="Approve" transaction="true">
+      <text>
+        <![CDATA[
+declare @deststatus int, @uid int, @dduyet date
+set @deststatus = case @xstatus when 2 then 5 when 5 then 2 else 5 end --else 9 - Huy thi tra ve duyet
+set @uid = case when @xstatus = 2 then @@userId else 0 end
+set @dduyet = case when @xstatus = 2 then getdate() else null end
+
+update n21 set status = @deststatus, user_id_duyet = @uid, ngay_duyet = @dduyet where id in (select id from @tblKeys)
+
+select '' as message, '$Processed' as toast
+        ]]>
+      </text>
+    </request>
+    <request code="Close" transaction="true">
+      <text>
+        <![CDATA[
+declare @deststatus int, @uid int, @dduyet date
+set @deststatus = case when @xstatus = 2 then 9 else 5 end
+
+update n21 set status = @deststatus, ly_do_huy = @ly_do_huy where id in (select id from @tblKeys)
+select '' as message, '$Processed' as toast
+        ]]>
+      </text>
+    </request>
+
+    &VoucherJSLoading;
+  </script>
+
+  <messages>
+    <message val="msg1">
+      <text v="Bạn có chắc chắn sẽ &lt;b&gt;duyệt&lt;/b&gt; các phiếu được chọn không?" e=""/>
+    </message>
+    <message val="msg2">
+      <text v="Bạn có chắc chắn sẽ &lt;b&gt;bỏ duyệt&lt;/b&gt; các phiếu được chọn trở về trạng thái [Chờ duyệt] không?" e=""/>
+    </message>
+    <message val="msg3">
+      <text v="Bạn có chắc chắn sẽ &lt;b&gt;bỏ đóng&lt;/b&gt; các phiếu được chọn trở về trạng thái [Đã duyệt] không?" e=""/>
+    </message>
+    <message val="close">
+      <text v="Hủy/đóng" e="Close"/>
+    </message>
+    <message val="approve">
+      <text v="Duyệt" e="Approve"/>
+    </message>
+    <message val="undo">
+      <text v="Bỏ duyệt" e="Undo"/>
+    </message>
+    <message val="open">
+      <text v="Bỏ đóng" e="Open &amp; Approve"/>
+    </message>
+      <message val="inputTitle">
+      <text v="Nhập lý do hủy phiếu" e=""/>
+    </message>
+    <message val="reason">
+      <text v="Lý do" e="Reason"/>
+    </message>
+  </messages>
+</dir>

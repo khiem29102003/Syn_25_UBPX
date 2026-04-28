@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmbbct" table="dmbbct" fieldKey="ma_bbct" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục biên bản chứng từ" e="List of minutes vocher"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_bbct" format="U" label="1" field="1" allowBlank="false" fieldType="PK" >
+          <text v="Mã biên bản " e="Minutes code"></text>
+        </field>
+        <field name="ten_bbct" label="1" field="2" allowBlank="false">
+          <text v="Tên biên bản" e="Minutes name"></text>
+        </field>
+        <field name="ten_bbct2" label="1" field="2" allowBlank="true">
+          <text v="Tên khác" e="Other name"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmbbct(p){
+  this.constructor(p);
+}
+dir$dmbbct.prototype = new DirEvent();
+dir$dmbbct.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmbbct.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+  dir$dmbbctDisabledMasterField(p, g);
+
+}
+
+function dir$dmbbctDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_bbct').trim() != '')
+  {
+    p.setDisabled('ma_bbct', true);
+  }
+  else
+  {
+    p.setDisabled('ma_bbct', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã biên bản đã tồn tại' else N'The license plate code of the document already exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã biên bản đã tồn tại' else N'The license plate code of the document already exists' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+
+</dir>

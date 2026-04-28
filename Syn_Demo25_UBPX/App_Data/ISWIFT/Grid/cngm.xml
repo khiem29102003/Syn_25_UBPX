@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridFinding.xml">
+]>
+
+<dir id="cngm" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Cập nhật giá mua" e="Sales Price List"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="cngm" fieldKey="ma_vt, ma_nt, dvt, ngay_hl, ma_kh, nh_kh1, nh_kh2, nh_kh3" order="ma_vt, ngay_hl desc, ma_nt" allowFilter="true" allowOrder="true" key="" >
+      <fields>
+        <field name="ma_vt" fieldType="PK" width="80">
+          <text v="Mã hàng hóa" e="Goods Code"></text>
+        </field>
+        <field name="ten_vt" fieldType="EX" width="250" aliasName="b">
+          <text v="Tên hàng hóa" e="Goods Name"></text>
+        </field>
+        <field name="dvt" fieldType="PK" width="120">
+          <text v="Đơn vị tính" e="UOM"></text>
+        </field>
+        <field name="ngay_hl" fieldType="PK" width="100" dataType="D">
+          <text v="Ngày hiệu lực" e="Effective Date"></text>
+        </field>
+        <field name="ma_kh" width="100" fieldType="PK">
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="250" fieldType="EX" aliasName="c">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+
+        <field name="gia_nt2" width="120" dataType="N" format="Price">
+          <text v="Giá mua" e="Sales Price"></text>
+        </field>
+        <field name="ma_nt" fieldType="PK" width="100">
+          <text v="Ngoại tệ" e="Customer Code"></text>
+        </field>
+        <field name="nh_kh1" width="100" fieldType="PK">
+          <text v="Nhóm khách hàng 1" e="Customer Group 1"></text>
+        </field>
+        <field name="nh_kh2" width="100" fieldType="PK">
+          <text v="Nhóm khách hàng 2" e="Customer Group 2"></text>
+        </field>
+        <field name="nh_kh3" width="100" fieldType="PK">
+          <text v="Nhóm khách hàng 3" e="Customer Group 3"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+exec iswiftStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmvt b on a.ma_vt = b.ma_vt left join dmkh c on a.ma_kh = c.ma_kh', 'b.ten_vt, c.ten_kh', '@@key', '', @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$cngm(f){
+  this.constructor(f);
+}
+grid$cngm.prototype = new DirEvent();
+grid$cngm.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+   <css>
+    <text>
+		<![CDATA[
+		//.toolbar-close > div {
+		//	background-position: -336px -400px !important;
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

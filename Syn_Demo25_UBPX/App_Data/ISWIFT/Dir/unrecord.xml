@@ -1,0 +1,1199 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="unrecord" table="lscuocgoi" fieldKey="referenceId" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lịch sử cuộc gọi" e="List of Status"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+	<form gravity="TopLeft" columns="120,120,120,120,120,120,120,120" >
+      <fields>
+		<field name="ma_so_thue" format="U" label="1" field="-" allowBlank="false" fieldType="PK" hidden="true" >
+          <text v="Mã Số Thuế" e="Mã Số Thuế"></text>
+        </field>
+		<field name="referenceId" label="1" field="-" allowBlank="false" fieldType="PK" hidden="true">
+			<text v="Reference ID" e="Reference ID"></text>
+		</field>
+		<!--
+		<field name="recording_path" label="-" field="0" allowBlank="true" fieldType="EX" disabled="true">
+			<text v="&lt;div class='container_recording_file' &gt; &lt;audio id='audioRecord' controls&gt;&lt;source id='recordSource' src='' type='audio/mpeg'&gt;Your browser does not support the audio element.&lt;/audio&gt;&lt;p id='progressed'&gt;0% - 0s&lt;/p&gt;&lt;p id='flag'&gt;Flag: Not Set&lt;/p &gt;&lt;/div &gt;" e="Tax Code"></text>
+		</field>
+		-->
+		<field name="recording_path" label="-" field="0" allowBlank="true" fieldType="EX" disabled="true">
+			<text v="&lt;div class='container_recording_file'&gt;&lt;div class='simple-audio-player' id='simp' data-config='{`shide_top`:false,`shide_btm`:false,`auto_load`:false}'&gt;&lt;div class='simp-playlist simp-display simp-hide'&gt;&lt;ul id='list-record'&gt;&lt;/ul&gt;&lt;/div&gt;&lt;div class='simp-footer'&gt;Made with VFIN by &lt;a href='' target='_blank' title='Sekedus'&gt;VTECH&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div &gt;" e="Tax Code"></text>
+		</field>
+		<field name="recordingfile" label="1" field="-" allowBlank="false" hidden="true">
+          <text v="Recording File" e="Recording File"></text>
+        </field>
+		<field name="uniqueid" label="1" field="-" allowBlank="false" hidden="true">
+          <text v="Unique ID" e="Unique ID"></text>
+        </field>
+		<field name="dst" label="1" field="-" allowBlank="false" hidden="true">
+          <text v="Dst" e="Dst"></text>
+        </field>
+		<field name="src" label="1" field="-" allowBlank="false" hidden="true">
+          <text v="Src" e="Src"></text>
+        </field>
+		<field name="status" label="1" field="-" allowBlank="false" hidden="true">
+          <text v="Status" e="Status"></text>
+        </field>
+		<!-- <field name="calldate" dataType="D" label="1" field="-" allowBlank="false" hidden="true"> -->
+          <!-- <text v="Call Date" e="Call Date"></text> -->
+        <!-- </field> -->
+		<field name="calldate1" label="1" field="1" allowBlank="true" disabled="true" hidden="false" fieldType="EX">
+          <text v="Ngày gọi" e="Call Date"></text>
+        </field>
+		<field name="khoang_cach" nextRow="true" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="1" field="1">
+			<text v="" e=""></text>
+		</field>
+		<!-- <field name="ntext" allowBlank="false" viewType="Lookup" label="1" field="1"  hidden="false" disabled="false" readOnly="false"> -->
+          <!-- <text v="Mã record" e="Customer Code"></text> -->
+          <!-- <viewInfo lookupType="One" lookupId="dmttlscg" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_tt" lookupInfo="dmttlscg|ma_tt|ten_tt" /> -->
+        <!-- </field> -->
+        <!-- <field name="ten_tt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="1" aliasName="cast('' as nvarchar(4000)) as "> -->
+          <!-- <text v="" e=""></text> -->
+        <!-- </field> -->
+		<!-- <field name="listened" label="[80]" field="[80]" allowBlank="true" nextRow="false" disabled="true"> -->
+			<!-- <text v="Đã nghe (s)" e="Tax Code"></text> -->
+		<!-- </field> -->
+		<!-- <field name="progressed" label="[80]" field="[80]" allowBlank="true" nextRow="false" disabled="true"> -->
+			<!-- <text v="Đã nghe (%)" e="Tax Code"></text> -->
+		<!-- </field> -->
+		<field name="dien_giai" label="1" field="-" allowBlank="false">
+          <text v="Diễn giải" e="Note"></text>
+        </field>
+		<field name="nghe_current" label="-" field="0" allowBlank="true" fieldType="EX">
+			<text v="&lt;div id='current_time' &gt;&lt;/div&gt; &lt;div class='load_current' &gt; &lt;div id='myLink' style='margin-right: 15px;' class='btn-sm btn-success' src='' &gt;&lt;h5&gt;Nghe tiếp tục&lt;/h5&gt;&lt;/div&gt;&lt;div class='load_current_close btn-sm btn-info' onclick='document.querySelector(`.container_current_time`).style.display=`none`;' &gt;&lt;h5&gt;Nghe từ đầu&lt;/h5&gt;&lt;/div&gt;&lt;/div &gt;" e="Tax Code"></text>
+		</field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$unrecord(p){
+  this.constructor(p);
+}
+dir$unrecord.prototype = new DirEvent();
+dir$unrecord.prototype.beforeInit = function(renderType){
+  this._dir.options._files = null;
+}
+/*
+setTimeout(function() {
+	document.querySelector("label.recordingfile").style.width = "100%";
+	document.getElementById('recordSource').setAttribute('src' , '/' + path);
+	
+	
+	const audioElement = document.getElementById('audioRecord');
+	const progressedElement = document.getElementById('progressed');
+	const flagElement = document.getElementById('flag');
+
+	// Tạo AudioContext sau sự kiện tương tác
+	const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+	// Xử lý sự kiện timeupdate để theo dõi tiến độ phát của audio
+	audioElement.addEventListener('timeupdate', () => {
+		// Lấy thời điểm hiện tại và thời lượng của audio
+		const currentTime = audioElement.currentTime;
+		const duration = audioElement.duration;
+
+		// Tính toán phần trăm đã nghe được
+		const percentPlayed = (currentTime / duration) * 100;
+
+		// Hiển thị phần trăm đã nghe được
+		progressedElement.textContent = `${percentPlayed.toFixed(2)}% - ${currentTime.toFixed(2)}s`;
+
+		// Kiểm tra và gắn cờ khi phần trăm vượt qua 50%
+		if (percentPlayed > 50) {
+			flagElement.textContent = 'Flag: Set';
+		}
+	});
+
+	// Bắt đầu audio sau khi người dùng nhấn play
+	audioElement.addEventListener('play', () => {
+		if (audioContext.state === 'suspended') {
+			audioContext.resume();
+		}
+	});
+
+	// Bắt đầu xử lý audio khi người dùng nhấn play
+	audioElement.addEventListener('playing', () => {
+		// Thực hiện xử lý audio của bạn ở đây
+		// ...
+
+		// Gọi hàm để xử lý dữ liệu âm thanh và TensorFlow.js
+		handleAudioProcessing();
+	});
+
+	// Hàm xử lý dữ liệu âm thanh và TensorFlow.js
+	async function handleAudioProcessing() {
+		// ...
+	}
+}, 300);
+*/
+
+dir$unrecord.prototype.afterInit = function(renderType){
+	var p = this._dir, g = p.grid();
+	p.request('LoadCallDate', '', ['referenceId']);
+	var path = p.valForm('recordingfile');
+	var appid = p.valForm('ma_so_thue');
+	var uniqueid = p.valForm('uniqueid');
+	var flag = p.valForm('status');
+	var dst = p.valForm('dst');
+	var src = p.valForm('src');	
+	var ntext = p.valForm('ntext');	
+	var dien_giai = p.valForm('dien_giai');	
+	var referenceid = p.valForm('referenceId');	
+	
+	setTimeout(function() {	
+		var calldate1 = p.valForm('calldate1');
+		var listened = p.valForm('listened');
+		var link = document.getElementById("myLink");	
+			
+			
+		//d = $.getDate(calldate1,);
+		d = $.date(calldate1, 'dd/mm/yy');
+		console.log(d);
+		p.valForm('calldate1', d, true);
+		var row = ""; 
+
+		if (path !== null && path !== undefined && path !== '') {
+			var parts = path.split('/');
+			var fileName = parts[parts.length - 1];
+			if (flag == null || flag == undefined || flag == "") {
+				flag = 1;
+			}
+			var fullPath = xuLyChuoi(path);
+			row = row + 
+					'<li>' +
+						'<span class="simp-source" data-src="/' + fullPath + '" data-listen="' + flag + '" data-unique="' + uniqueid + '">' +
+						fileName +
+						'</span>' + 
+						'<span class="simp-size" id="simp-listen-' + uniqueid + '">' + 
+						(flag == 1 ? ' ✖' : ' ✔') +
+						'</span>' +
+						'<span class="simp-desc">' + 
+						' | ' + src + ' - ' + dst + 
+						'</span>' + 
+						'<span class="simp-date">' + 
+						formatDate(calldate1) +
+						'</span>' +
+					'</li>';
+		
+			document.getElementById('list-record').innerHTML = row;
+
+			// Hàm nhận thông điệp từ parent window
+			window.addEventListener('message', function (event) {
+				// Kiểm tra nếu là thông điệp dừng âm thanh
+				if (event.data === 'stopAudio') {
+					stopAudio();
+				}
+			});	
+
+			if (listened != null && listened != undefined && listened != '') {
+				document.getElementById("current_time").innerHTML = "Đã nghe được " + listened + "s";
+				var parentDiv = link.closest('.form-group');
+				if (parentDiv) {
+					parentDiv.style.display = "flex";
+					document.querySelector('label.nghe_current').style.display = "inline-block";
+					parentDiv.classList.add("container_current_time");
+				}
+				link.addEventListener("click", function() {
+					loadCurrentTimeAudio();
+				});
+			} else {
+				var parentDiv = link.closest('.form-group');
+				if (parentDiv) {
+					parentDiv.style.display = "none";
+					document.querySelector('label.nghe_current').style.display = "none";
+					parentDiv.classList.add("container_current_time");
+				}
+			}
+			
+			function loadCurrentTimeAudio() {
+				document.querySelector('.container_current_time').style.display='none';
+				if (listened != null && listened != undefined && listened != '') {
+					loadAndPlayAudio(listened);
+				}
+			}
+			
+			//var btnCancel0 = document.querySelectorAll('[btnid="cancel"]')[0];
+			//var btnCancel1 = document.querySelectorAll('[btnid="cancel"]')[1];
+			//btnCancel0.setAttribute("hidden", true);
+			//btnCancel1.style.display = "none";
+			var btnOk = document.querySelector('[btnid="ok"]');
+			btnOk.addEventListener("click", function() {
+				var listenVal = simp_listened.value;
+				var listenPercent = simp_percent.value;
+				saveProgress(listenVal, listenPercent);
+			});
+			
+			function xuLyChuoi(chuoi) {
+				// Kiểm tra xem chuỗi có bắt đầu bằng dấu "/" không
+				if (chuoi.startsWith("/")) {
+					// Nếu có, bỏ đi dấu "/"
+					chuoi = chuoi.substring(1);
+				}
+				
+				// Trả về chuỗi sau khi xử lý
+				return chuoi;
+			}
+			
+			function saveProgress(listenVal, listenPercent) {
+				if (ntext != '' && dien_giai != '') {			
+					var m = new Memvars();
+					var controller = "loaddulieutable";
+					var p = window.location.href.toString();
+					p = p.substring(0, p.indexOf("Main/")) + 'AppService/EService.asmx/' + "GetData"; //GetValue
+
+					m.val("query", 'C', "update lscuocgoi set listened = '" + listenVal + "', progressed = '" + listenPercent + "' where ma_so_thue = '"  + appid + "' and referenceId = '" + referenceid + "'");
+
+					var row = ""; 
+
+					$.ajax({
+						type: "POST",
+						url: p,
+						header: '',
+						data: JSON.stringify({ controller: controller, oMemvar: m.val() }),
+						contentType: "application/json; charset=utf-8",
+						dataType: "json",
+						timeout: 30000,
+						success: function (msg, s) {
+							// Xử lý phản hồi thành công nếu cần
+							console.log('Cập nhật');
+						},
+						error: function (error) {
+							// Xử lý lỗi nếu cần
+							console.error('Lỗi ', error);
+						}
+					});		
+				}
+			}
+
+			function stopAudio() {
+				// Dừng phát âm thanh
+				var audioPlayer = document.getElementById('audio');
+				audioPlayer.pause();
+				audioPlayer.currentTime = 0;
+			}
+
+
+			// Hàm để cập nhật trạng thái "đã nghe" cho một file âm thanh
+			function updateListenedStatus(audioPath, audioListen, audioUnique) {
+				var listenedStatus = {};
+				listenedStatus[audioPath] = 1;
+				
+				// Lấy mảng các khóa của đối tượng
+				var keysArray = Object.keys(listenedStatus);
+				// Lấy phần trước dấu ":" từ phần tử đầu tiên của mảng
+				var desiredPath = keysArray[0].substring(1);
+				var recordFlag = listenedStatus[audioPath];
+			}
+
+			// Hàm để xử lý sự kiện kết thúc của âm thanh
+			function handleAudioEnded() {
+				// Lấy thông tin về âm thanh đang phát
+				const currentAudio = document.querySelector('.simp-active .simp-source');
+				const audioPath = currentAudio.dataset.src;
+				const audioListen = currentAudio.dataset.listen;
+				const audioUnique = currentAudio.dataset.unique;
+
+				// Gọi hàm cập nhật trạng thái "đã nghe"
+				updateListenedStatus(audioPath, audioListen, audioUnique);
+
+			}				
+
+			// Multiple events to a listener
+			function addEventListener_multi(element, eventNames, handler) {
+				var events = eventNames.split(' ');
+				events.forEach(e => element.addEventListener(e, handler, false));
+			}
+
+			// Random numbers in a specific range
+			function getRandom(min, max) {
+				min = Math.ceil(min);
+				max = Math.floor(max);
+				return Math.floor(Math.random() * (max - min + 1)) + min;
+			}
+
+			// Position element inside element
+			function getRelativePos(elm) {
+				var pPos = elm.parentNode.getBoundingClientRect(); // parent pos
+				var cPos = elm.getBoundingClientRect(); // target pos
+				var pos = {};
+
+				pos.top = cPos.top - pPos.top + elm.parentNode.scrollTop,
+					pos.right = cPos.right - pPos.right,
+					pos.bottom = cPos.bottom - pPos.bottom,
+					pos.left = cPos.left - pPos.left;
+
+				return pos;
+			}
+
+			function padTo2Digits(num) {
+				return num.toString().padStart(2, '0');
+			}
+
+			function formatDate(date) {
+				// Rút trích giá trị số từ chuỗi bằng biểu thức chính quy
+				var timestamp = parseInt(date.match(/\d+/)[0]);
+
+				// Tạo đối tượng Date và thiết lập thời gian từ timestamp
+				var dateObject = new Date(timestamp);
+
+				return (
+					[
+						dateObject.getFullYear(),
+						padTo2Digits(dateObject.getMonth() + 1),
+						padTo2Digits(dateObject.getDate()),
+					].join('-') +
+					' ' +
+					[
+						padTo2Digits(dateObject.getHours()),
+						padTo2Digits(dateObject.getMinutes()),
+						padTo2Digits(dateObject.getSeconds()),
+					].join(':') + 
+					'.' +
+					dateObject.getMilliseconds()  // Thêm mili giây vào chuỗi kết quả
+				);
+			}
+
+			function formatTime(val) {
+				var h = 0, m = 0, s;
+				val = parseInt(val, 10);
+				if (val > 60 * 60) {
+					h = parseInt(val / (60 * 60), 10);
+					val -= h * 60 * 60;
+				}
+				if (val > 60) {
+					m = parseInt(val / 60, 10);
+					val -= m * 60;
+				}
+				s = val;
+				val = (h > 0) ? h + ':' : '';
+				val += (m > 0) ? ((m < 10 && h > 0) ? '0' : '') + m + ':' : '0:';
+				val += ((s < 10) ? '0' : '') + s;
+				return val;
+			}
+			
+			// Hàm để load và phát audio từ vị trí cụ thể
+			function loadAndPlayAudio(position) {
+				simp_audio.onloadeddata = function() {
+					// Set currentTime để đặt vị trí
+					simp_audio.currentTime = position;
+					// Sau đó, phát audio
+					simp_audio.play();
+				};
+				
+				// Nếu audio đã được load trước đó, chỉ cần đặt vị trí và phát
+				if (simp_audio.readyState >= 2) {
+					simp_audio.currentTime = position;
+					simp_audio.play();
+				}
+			}
+
+			function simp_initTime() {
+				simp_controls.querySelector('.start-time').innerHTML = formatTime(simp_audio.currentTime); //calculate current value time
+				if (!simp_isStream) {
+					simp_controls.querySelector('.end-time').innerHTML = formatTime(simp_audio.duration); //calculate total value time
+					simp_progressed.value = simp_audio.currentTime / simp_audio.duration * 100; //progressed bar
+					$(".progressed").attr("value", (simp_audio.currentTime / simp_audio.duration * 100).toFixed(2));
+					//simp_percent.innerHTML = (simp_audio.currentTime / simp_audio.duration * 100).toFixed(2);
+					$(".listened").attr("value", simp_audio.currentTime.toFixed(2));
+					//simp_listened.innerHTML = simp_audio.currentTime.toFixed(2);
+				}
+
+				// ended of the audio
+				if (simp_audio.currentTime == simp_audio.duration) {
+					simp_controls.querySelector('.simp-plause').classList.remove('fa-pause');
+					simp_controls.querySelector('.simp-plause').classList.add('fa-play');
+					simp_audio.removeEventListener('timeupdate', simp_initTime);
+
+					if (simp_isNext) { //auto load next audio
+						var elem;
+						simp_a_index++;
+						if (simp_a_index == simp_a_url.length) { //repeat all audio
+							simp_a_index = 0;
+							elem = simp_a_url[0];
+						} else {
+							elem = simp_a_url[simp_a_index];
+						}
+						simp_changeAudio(elem);
+						simp_setAlbum(simp_a_index);
+					} else {
+						simp_isPlaying = false;
+					}
+				}
+			}
+
+			function simp_initAudio() {
+				// if readyState more than 2, audio file has loaded
+				simp_isLoaded = simp_audio.readyState == 4 ? true : false;
+				simp_isStream = simp_audio.duration == 'Infinity' ? true : false;
+				simp_controls.querySelector('.simp-plause').disabled = false;
+				simp_progressed.disabled = simp_isStream ? true : false;
+				if (!simp_isStream) {
+					simp_progressed.parentNode.classList.remove('simp-load', 'simp-loading');
+					simp_controls.querySelector('.end-time').innerHTML = formatTime(simp_audio.duration);
+				}
+				simp_audio.addEventListener('timeupdate', simp_initTime); //tracking load progressed
+				if (simp_isLoaded && simp_isPlaying) {			
+					simp_audio.play();
+					
+					/*					
+					var countEvent = 1;
+					if (countEvent == 1) {
+						// Thêm sự kiện 'ended' cho đối tượng Audio
+						const audioPlayer = document.getElementById('audio');
+
+						audioPlayer.addEventListener('timeupdate', function() {
+							// Lấy thời lượng của audio
+							const duration = audioPlayer.duration;
+
+							// Lấy thời gian hiện tại của audio
+							const currentTime = audioPlayer.currentTime;
+
+							// Tính phần trăm đã nghe
+							const percentListened = (currentTime / duration) * 100;
+
+							// Kiểm tra nếu đã nghe được ít nhất 50%
+							if (percentListened >= 50) {
+								// Thực hiện hành động khi đã nghe được ít nhất 50%
+								handleAtLeast50PercentListened();
+							
+								// Sau khi thực hiện, bạn có thể ngừng theo dõi sự kiện timeupdate
+								audioPlayer.removeEventListener('timeupdate', arguments.callee);
+							}
+						});
+
+						function handleAtLeast50PercentListened() {
+							// Hành động cần thực hiện khi đã nghe được ít nhất 50% thời lượng
+							console.log('Đã nghe được ít nhất 50% thời lượng');
+							handleAudioEnded();
+						}
+						
+						countEvent = countEvent + 1;
+					}
+					*/
+				}
+
+				// progressed bar click event
+				addEventListener_multi(simp_progressed, 'touchstart mousedown', function (e) {
+					if (simp_isStream) {
+						e.stopPropagation();
+						return false;
+					}
+					if (simp_audio.readyState == 4) {
+						simp_audio.removeEventListener('timeupdate', simp_initTime);
+						simp_audio.pause();
+					}
+				});
+
+				addEventListener_multi(simp_progressed, 'touchend mouseup', function (e) {
+					if (simp_isStream) {
+						e.stopPropagation();
+						return false;
+					}
+					if (simp_audio.readyState == 4) {
+						simp_audio.currentTime = simp_progressed.value * simp_audio.duration / 100;
+						simp_audio.addEventListener('timeupdate', simp_initTime);
+						if (simp_isPlaying) simp_audio.play();
+					}
+				});
+			}
+
+			function simp_loadAudio(elem) {
+				simp_progressed.parentNode.classList.add('simp-loading');
+				simp_controls.querySelector('.simp-plause').disabled = true;
+				simp_audio.querySelector('source').src = elem.dataset.src;
+				simp_audio.load();
+
+				simp_audio.volume = parseFloat(simp_v_num / 100); //based on valume input value
+				simp_audio.addEventListener('canplaythrough', simp_initAudio); //play audio without stop for buffering
+
+				// if audio fails to load, only IE/Edge 9.0 or above
+				simp_audio.addEventListener('error', function () {
+					alert('Please reload the page.');
+				});
+			}
+
+			function simp_setAlbum(index) {
+				simp_cover.innerHTML = simp_a_url[index].dataset.cover ? '<div style="background:url(' + simp_a_url[index].dataset.cover + ') no-repeat;background-size:cover;width:80px;height:80px;"></div>' : '<i class="fa fa-music fa-5x"></i>';
+				simp_title.innerHTML = simp_source[index].querySelector('.simp-source').innerHTML + simp_source[index].querySelector('.simp-size').innerHTML;
+				simp_artist.innerHTML = simp_source[index].querySelector('.simp-desc') ? (simp_source[index].querySelector('.simp-date') ? simp_source[index].querySelector('.simp-date').innerHTML : '') + simp_source[index].querySelector('.simp-desc').innerHTML : '';
+			}
+
+			function simp_changeAudio(elem) {
+				simp_isLoaded = false;
+				simp_controls.querySelector('.simp-prev').disabled = simp_a_index == 0 ? true : false;
+				simp_controls.querySelector('.simp-plause').disabled = simp_auto_load ? true : false;
+				simp_controls.querySelector('.simp-next').disabled = simp_a_index == simp_a_url.length - 1 ? true : false;
+				simp_progressed.parentNode.classList.add('simp-load');
+				simp_progressed.disabled = true;
+				simp_progressed.value = 0;
+				simp_controls.querySelector('.start-time').innerHTML = '00:00';
+				simp_controls.querySelector('.end-time').innerHTML = '00:00';
+				elem = simp_isRandom && simp_isNext ? simp_a_url[getRandom(0, simp_a_url.length - 1)] : elem;
+
+				// playlist, audio is running
+				for (var i = 0; i < simp_a_url.length; i++) {
+					simp_a_url[i].parentNode.classList.remove('simp-active');
+					if (simp_a_url[i] == elem) {
+						simp_a_index = i;
+						simp_a_url[i].parentNode.classList.add('simp-active');
+					}
+				}
+
+				// scrolling to element inside element
+				var simp_active = getRelativePos(simp_source[simp_a_index]);
+				simp_source[simp_a_index].parentNode.scrollTop = simp_active.top;
+
+				if (simp_auto_load || simp_isPlaying) simp_loadAudio(elem);
+			}
+
+			function simp_startScript() {
+				ap_simp = document.querySelector('#simp');
+				simp_audio = ap_simp.querySelector('#audio');
+				simp_album = ap_simp.querySelector('.simp-album');
+				simp_cover = simp_album.querySelector('.simp-cover');
+				simp_title = simp_album.querySelector('.simp-title');
+				simp_artist = simp_album.querySelector('.simp-artist');
+				simp_controls = ap_simp.querySelector('.simp-controls');
+				simp_progressed = simp_controls.querySelector('.simp-progressed');
+				simp_percent = document.querySelector('input.progressed');
+				simp_listened = document.querySelector('input.listened');
+				simp_volume = simp_controls.querySelector('.simp-volume');
+				simp_v_slider = simp_volume.querySelector('.simp-v-slider');
+				simp_v_num = simp_v_slider.value; //default volume
+				simp_others = simp_controls.querySelector('.simp-others');
+				simp_auto_load = simp_config.auto_load; //auto load audio file
+
+				if (simp_config.shide_top) simp_album.parentNode.classList.toggle('simp-hide');
+				if (simp_config.shide_btm) {
+					simp_playlist.classList.add('simp-display');
+					simp_playlist.classList.toggle('simp-hide');
+				}
+
+				if (simp_a_url.length <= 1) {
+					simp_controls.querySelector('.simp-prev').style.display = 'none';
+					simp_controls.querySelector('.simp-next').style.display = 'none';
+					simp_others.querySelector('.simp-plext').style.display = 'none';
+					simp_others.querySelector('.simp-random').style.display = 'none';
+				}
+
+				// Playlist listeners
+				simp_source.forEach(function (item, index) {
+					if (item.classList.contains('simp-active')) simp_a_index = index; //playlist contains '.simp-active'
+					item.addEventListener('click', function () {
+						simp_audio.removeEventListener('timeupdate', simp_initTime);
+						simp_a_index = index;
+						simp_changeAudio(this.querySelector('.simp-source'));
+						simp_setAlbum(simp_a_index);
+					});
+				});
+
+				// FIRST AUDIO LOAD =======
+				simp_changeAudio(simp_a_url[simp_a_index]);
+				simp_setAlbum(simp_a_index);
+				// FIRST AUDIO LOAD =======
+
+				// Controls listeners
+				simp_controls.querySelector('.simp-plauseward').addEventListener('click', function (e) {
+					var eles = e.target.classList;
+					if (eles.contains('simp-plause')) {
+						if (simp_audio.paused) {
+							if (!simp_isLoaded) simp_loadAudio(simp_a_url[simp_a_index]);
+							simp_audio.play();
+							simp_isPlaying = true;
+							eles.remove('fa-play');
+							eles.add('fa-pause');
+						} else {
+							simp_audio.pause();
+							simp_isPlaying = false;
+							eles.remove('fa-pause');
+							eles.add('fa-play');
+						}
+					} else {
+						if (eles.contains('simp-prev') && simp_a_index != 0) {
+							simp_a_index = simp_a_index - 1;
+							e.target.disabled = simp_a_index == 0 ? true : false;
+						} else if (eles.contains('simp-next') && simp_a_index != simp_a_url.length - 1) {
+							simp_a_index = simp_a_index + 1;
+							e.target.disabled = simp_a_index == simp_a_url.length - 1 ? true : false;
+						}
+						simp_audio.removeEventListener('timeupdate', simp_initTime);
+						simp_changeAudio(simp_a_url[simp_a_index]);
+						simp_setAlbum(simp_a_index);
+					}
+				});
+
+				// Audio volume
+				simp_volume.addEventListener('click', function (e) {
+					var eles = e.target.classList;
+					if (eles.contains('simp-mute')) {
+						if (eles.contains('fa-volume-up')) {
+							eles.remove('fa-volume-up');
+							eles.add('fa-volume-off');
+							simp_v_slider.value = 0;
+						} else {
+							eles.remove('fa-volume-off');
+							eles.add('fa-volume-up');
+							simp_v_slider.value = simp_v_num;
+						}
+					} else {
+						simp_v_num = simp_v_slider.value;
+						if (simp_v_num != 0) {
+							simp_controls.querySelector('.simp-mute').classList.remove('fa-volume-off');
+							simp_controls.querySelector('.simp-mute').classList.add('fa-volume-up');
+						}
+					}
+					simp_audio.volume = parseFloat(simp_v_slider.value / 100);
+				});
+
+				// Others
+				simp_others.addEventListener('click', function (e) {
+					var eles = e.target.classList;
+					if (eles.contains('simp-plext')) {
+						simp_isNext = simp_isNext && !simp_isRandom ? false : true;
+						if (!simp_isRandom) simp_isRanext = simp_isRanext ? false : true;
+						eles.contains('simp-active') && !simp_isRandom ? eles.remove('simp-active') : eles.add('simp-active');
+					} else if (eles.contains('simp-random')) {
+						simp_isRandom = simp_isRandom ? false : true;
+						if (simp_isNext && !simp_isRanext) {
+							simp_isNext = false;
+							simp_others.querySelector('.simp-plext').classList.remove('simp-active');
+						} else {
+							simp_isNext = true;
+							simp_others.querySelector('.simp-plext').classList.add('simp-active');
+						}
+						eles.contains('simp-active') ? eles.remove('simp-active') : eles.add('simp-active');
+					} else if (eles.contains('simp-shide-top')) {
+						simp_album.parentNode.classList.toggle('simp-hide');
+					} else if (eles.contains('simp-shide-bottom')) {
+						simp_playlist.classList.add('simp-display');
+						simp_playlist.classList.toggle('simp-hide');
+					}
+				});
+			}
+
+			// Start simple player
+			if (document.querySelector('#simp')) {
+				var simp_auto_load, simp_audio, simp_album, simp_cover, simp_title, simp_artist, simp_controls, simp_progressed, simp_volume, simp_v_slider, simp_v_num, simp_others, simp_percent, simp_listened;
+				var ap_simp = document.querySelector('#simp');
+				var simp_playlist = ap_simp.querySelector('.simp-playlist');
+				var simp_source = simp_playlist.querySelectorAll('li');
+				var simp_a_url = simp_playlist.querySelectorAll('[data-src]');
+				var simp_a_index = 0;
+				var simp_isPlaying = false;
+				var simp_isNext = false; //auto play
+				var simp_isRandom = false; //play random
+				var simp_isRanext = false; //check if before random starts, simp_isNext value is true
+				var simp_isStream = false; //radio streaming
+				var simp_isLoaded = false; //audio file has loaded
+				//JSON.parse(ap_simp.dataset.config);
+				var simp_config = ap_simp.dataset.config ? ap_simp.dataset.config : {
+					shide_top: false, //show/hide album
+					shide_btm: false, //show/hide playlist
+					auto_load: false //auto load audio file
+				};
+
+				var simp_elem = '';
+				simp_elem += '<audio id="audio" preload><source src="" type="audio/mpeg"></audio>';
+				simp_elem += '<div class="simp-display simp-hide"><div class="simp-album w-full flex-wrap"><div class="simp-cover"><i class="fa fa-music fa-5x"></i></div><div class="simp-info"><div class="simp-title">Title</div><div class="simp-artist">Artist</div></div></div></div>';
+				simp_elem += '<div class="simp-controls flex-wrap flex-align">';
+				simp_elem += '<div class="simp-plauseward flex flex-align"><button type="button" class="simp-prev fa fa-backward" disabled></button><button type="button" class="simp-plause fa fa-play" disabled></button><button type="button" class="simp-next fa fa-forward" disabled></button></div>';
+				simp_elem += '<div class="simp-tracker simp-load"><input class="simp-progressed" type="range" min="0" max="100" value="0" disabled/><div class="simp-buffer"></div></div>';
+				simp_elem += '<div class="simp-time flex flex-align"><span class="start-time">00:00</span><span class="simp-slash">&#160;/&#160;</span><span class="end-time">00:00</span></div>';
+				simp_elem += '<div class="simp-volume flex flex-align"><button type="button" class="simp-mute fa fa-volume-up"></button><input class="simp-v-slider" type="range" min="0" max="100" value="100"/></div>';
+				simp_elem += '<div class="simp-others flex flex-align"><button type="button" class="simp-plext fa fa-play-circle" title="Auto Play"></button><button type="button" class="simp-random fa fa-random" title="Random"></button><div class="simp-shide"><button type="button" class="simp-shide-top fa fa-caret-up" title="Show/Hide Album"></button><button type="button" class="simp-shide-bottom fa fa-caret-down" title="Show/Hide Playlist"></button></div></div>';
+				simp_elem += '</div>'; //simp-controls
+
+				var simp_player = document.createElement('div');
+				simp_player.classList.add('simp-player');
+				simp_player.innerHTML = simp_elem;
+				ap_simp.insertBefore(simp_player, simp_playlist);
+				simp_startScript();
+			}
+		} else {
+			var row = ""; 
+			row = row + 
+					'<li style="text-align: center;">' +
+						'<span class="simp-source" style>' +
+						'Không có dữ liệu ghi âm cuộc gọi' +
+						'</span>' +
+					'</li>';
+			document.getElementById('list-record').innerHTML = row;
+			
+			var parentDiv = link.closest('.form-group');
+			if (parentDiv) {
+				parentDiv.classList.add("container_current_time");
+				parentDiv.style.display = "none";
+			}
+		}
+	}, 500);
+
+
+	dir$unrecordDisabledMasterField(p, g);
+}
+
+function dir$unrecordDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_so_thue').trim() != '')
+  {
+	p.setDisabled('ma_so_thue', true);
+  }
+  else
+  {
+	p.setDisabled('ma_so_thue', false);
+  }
+}
+         ]]>
+    </text>
+
+  </js>
+  <css>
+		<text>
+		  <![CDATA[
+				.control-label.ma_so_thue, .control-label.ngay_goi
+				{	
+					//font-weight:bold;	
+					color: #499b98;;
+				}
+				
+				*,
+				*:before,
+				*:after {
+					outline: 0;
+					-webkit-box-sizing: border-box;
+					box-sizing: border-box;
+				}
+
+				.container_recording_file input,
+				.container_recording_file button {
+					outline: none;
+				}
+
+				.container_recording_file a,
+				.container_recording_file a:hover,
+				.container_recording_file a:visited {
+					color: #ddd;
+					text-decoration: none;
+				}
+
+				.container_recording_file .flex {
+					display: -webkit-flex;
+					display: flex;
+				}
+
+				.container_recording_file .flex-wrap {
+					display: -webkit-flex;
+					display: flex;
+					-webkit-flex-wrap: wrap;
+					flex-wrap: wrap;
+				}
+
+				.container_recording_file .flex-align {
+					-webkit-align-items: center;
+					align-items: center;
+				}
+
+				.container_recording_file .w-full {
+					width: 100%;
+				}
+
+				/* HTML5 Audio Player with Playlist, source: https://codepen.io/sekedus/pen/ExxjZEz */
+				#simp button,
+				#simp input,
+				#simp img {
+					border: 0;
+				}
+
+				#simp {
+					//height: calc(100vh - 17px);
+					//max-width: 600px;
+					font-size: 14px;
+					font-family: "Segoe UI", Tahoma, sans-serif;
+					text-align: initial;
+					line-height: initial;
+					background: #17212b;
+					color: #ddd;
+					margin: 0 auto;
+					border-radius: 6px;
+					overflow: hidden;
+				}
+				
+				.recording_path {
+					width: 100%;
+				}
+				
+				#simp .simp-playlist {
+					height: calc(100% - 200px);
+				}
+
+				#simp .simp-album {
+					padding: 20px 25px 5px;
+				}
+
+				#simp .simp-album .simp-cover {
+					margin-right: 20px;
+				}
+
+				#simp .simp-album .simp-cover img {
+					max-width: 80px;
+					width: 100%;
+					margin: 0;
+					padding: 0;
+					display: block;
+				}
+
+				#simp .simp-album .simp-title {
+					font-size: 120%;
+					font-weight: bold;
+				}
+
+				#simp .simp-album .simp-artist {
+					font-size: 90%;
+					color: #6c7883;
+				}
+
+				#simp .simp-controls {
+					padding: 15px;
+				}
+
+				#simp .simp-controls button {
+					font-size: 130%;
+					width: 32px;
+					height: 32px;
+					background: none;
+					color: #ddd;
+					padding: 7px;
+					cursor: pointer;
+					border: 0;
+					border-radius: 3px;
+				}
+
+				#simp .simp-controls button[disabled] {
+					color: #636469;
+					cursor: initial;
+				}
+
+				#simp .simp-controls button:not([disabled]):hover {
+					background: #4082bc;
+					color: #fff;
+				}
+
+				#simp .simp-controls .simp-prev,
+				#simp .simp-controls .simp-next {
+					font-size: 100%;
+				}
+
+				#simp .simp-controls .simp-tracker,
+				#simp .simp-controls .simp-volume {
+					flex: 1;
+					margin-left: 10px;
+					position: relative;
+				}
+
+				#simp .simp-controls .simp-buffer {
+					position: absolute;
+					top: 50%;
+					right: 0;
+					left: 0;
+					height: 5px;
+					margin-top: -2.5px;
+					border-radius: 100px;
+				}
+
+				#simp .simp-controls .simp-loading .simp-buffer {
+					-webkit-animation: audio-progressed 1s linear infinite;
+					animation: audio-progressed 1s linear infinite;
+					background-image: linear-gradient(-45deg, #000 25%, transparent 25%, transparent 50%, #000 50%, #000 75%, transparent 75%, transparent);
+					background-repeat: repeat-x;
+					background-size: 25px 25px;
+					color: transparent;
+				}
+
+				#simp .simp-controls .simp-time,
+				#simp .simp-controls .simp-others {
+					margin-left: 10px;
+				}
+
+				#simp .simp-controls .simp-volume {
+					max-width: 110px;
+				}
+
+				#simp .simp-controls .simp-volume .simp-mute {
+					margin-right: 5px;
+				}
+
+				#simp .simp-controls .simp-others .simp-active {
+					background: #242f3d;
+				}
+
+				#simp .simp-controls .simp-others .simp-shide button {
+					font-size: 100%;
+					padding: 0;
+					width: 24px;
+					height: 14px;
+					display: block;
+				}
+
+				#simp .simp-controls input[type=range] {
+					-webkit-appearance: none;
+					background: transparent;
+					height: 19px;
+					margin: 0;
+					width: 100%;
+					display: block;
+					position: relative;
+					z-index: 2;
+				}
+
+				#simp .simp-controls input[type=range]::-webkit-slider-runnable-track {
+					background: rgba(183, 197, 205, .66);
+					height: 5px;
+					border-radius: 2.5px;
+					transition: box-shadow .3s ease;
+					position: relative;
+				}
+
+				#simp .simp-controls input[type=range]::-moz-range-track {
+					background: rgba(183, 197, 205, .66);
+					height: 5px;
+					border-radius: 2.5px;
+					transition: box-shadow .3s ease;
+					position: relative;
+				}
+
+				#simp .simp-controls .simp-load .simp-progressed::-webkit-slider-runnable-track {
+					background: #2f3841;
+				}
+
+				#simp .simp-controls .simp-load .simp-progressed::-moz-range-track {
+					background: #2f3841;
+				}
+
+				#simp .simp-controls .simp-loading .simp-progressed::-webkit-slider-runnable-track {
+					background: rgba(255, 255, 255, .25);
+				}
+
+				#simp .simp-controls .simp-loading .simp-progressed::-moz-range-track {
+					background: rgba(255, 255, 255, .25);
+				}
+
+				#simp .simp-controls input[type=range]::-webkit-slider-thumb {
+					-webkit-appearance: none;
+					background: #fff;
+					height: 13px;
+					width: 13px;
+					margin-top: -4px;
+					cursor: pointer;
+					border-radius: 50%;
+					box-shadow: 0 1px 1px rgba(0, 0, 0, .15), 0 0 0 1px rgba(47, 52, 61, .2);
+				}
+
+				#simp .simp-controls input[type=range]::-moz-range-thumb {
+					-webkit-appearance: none;
+					background: #fff;
+					height: 13px;
+					width: 13px;
+					cursor: pointer;
+					border-radius: 50%;
+					box-shadow: 0 1px 1px rgba(0, 0, 0, .15), 0 0 0 1px rgba(47, 52, 61, .2);
+				}
+
+				#simp .simp-footer {
+					padding: 10px 10px 12px;
+					font-size: 90%;
+					text-align: center;
+					opacity: .7;
+					display: none;
+				}
+
+				#simp .simp-display {
+					overflow: hidden;
+					max-height: 650px;
+					transition: max-height .5s ease-in-out;
+				}
+
+				#simp .simp-hide {
+					max-height: 0;
+				}
+
+				/* playlist */
+				#simp ul {
+					margin: 5px 0 0;
+					padding: 0;
+					list-style: none;
+					max-height: calc(100% - 5px);
+				}
+
+				#simp ul li {
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					display: block;
+					margin: 0;
+					padding: 8px 20px;
+					cursor: pointer;
+				}
+
+				#simp ul li:last-child {
+					padding-bottom: 13px;
+				}
+
+				#simp ul li:nth-child(odd) {
+					background: #0e1621;
+				}
+
+				#simp ul li:hover {
+					background: #242f3d;
+				}
+
+				#simp ul li.simp-active {
+					background: #4082bc;
+					color: #fff;
+				}
+				
+				#simp ul li .simp-desc {
+					float: right;
+					font-size: 90%;
+					opacity: .5;
+					margin-left: 5px;
+				}
+				
+				#simp ul li .simp-date {
+					float: right;
+					font-size: 90%;
+					opacity: .5;
+					margin-left: 5px;
+				}
+
+				#simp ul li .simp-size {
+					font-size: 90%;
+					opacity: .5;
+					margin-left: 5px;
+				}
+
+				/* playlist scrollbar */
+				#simp ul {
+					overflow-y: auto;
+					overflow-x: hidden;
+					scrollbar-color: #73797f #2f3841;
+				}
+
+				#simp ul::-webkit-scrollbar-track {
+					background-color: #2f3841;
+				}
+
+				#simp ul::-webkit-scrollbar {
+					width: 6px;
+					background-color: #2f3841;
+				}
+
+				#simp ul::-webkit-scrollbar-thumb {
+					background-color: #73797f;
+				}
+
+				/* progressed animation */
+				@-webkit-keyframes audio-progressed {
+					to {
+						background-position: 25px 0;
+					}
+				}
+
+				@keyframes audio-progressed {
+					to {
+						background-position: 25px 0;
+					}
+				}
+
+				/* mobile */
+				@media screen and (max-width:480px) {
+
+					#simp .simp-controls .simp-volume,
+					#simp .simp-controls .simp-others {
+						display: none;
+					}
+
+					#simp .simp-controls .simp-time {
+						margin-right: 10px;
+					}
+				}
+
+				@media screen and (max-width:370px) {
+
+					#simp .simp-time .simp-slash,
+					#simp .simp-time .end-time {
+						display: none;
+					}
+				}
+				
+				.container_current_time {
+					position: absolute;
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
+					align-items: center;
+					top: 0;
+					left: 0;
+					right: 0;
+					bottom: 0;
+					text-align: center;
+					z-index: 2;
+					background: rgba(0,0,0,0.3);
+				}
+				.load_current {
+					position: relative;
+					border-radius: 5px;
+					padding: 50px;
+					background: white;
+					display: flex;
+					justify-content: space-between;
+				}
+				.load_current_close:hover {
+					cursor: pointer;
+					color: #9a9a9a;
+				}
+				.nghe_current {
+					display: none;
+				}
+				#current_time {
+					position: absolute;
+					z-index: 1;
+					left: 50%;
+					top: 25%;
+					transform: translate(-50%, -50%);
+					font-weight: 700;
+				}
+		  ]]>
+		</text>
+  </css>
+  <script>
+
+<request code="LoadCallDate">
+	<text>		
+	  <![CDATA[
+		
+		select calldate as [!calldate1] from lscuocgoi where referenceId = @referenceId
+	]]>
+	</text>
+</request>
+  
+  </script>
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã lịch sử cuộc gọi đã tồn tại" e="The record already exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã lịch sử cuộc gọi đã tồn tại" e="The record already exists."/>
+    </message>
+  </messages>
+</dir>

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="dmngaycong" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <text v="ngày công" e="Personal information: "></text>
+  <grids>
+    <grid table="dmngaycong" fieldKey="ma_ngaycong" fieldName="ten_ngaycong" order="ma_ngaycong" allowFilter="true" allowOrder="true">
+      <fields>
+		<field name="ma_ngaycong" width="80">
+          <text v="Mã ngày công" e="Workday Code"></text>
+        </field>
+        <field name="ten_ngaycong" width="300">
+		  <text v="Tên ngày công" e="Workday Name"></text>
+        </field>
+		<field name="ten_ngaycong2" width="300">
+         <text v="Tên English" e="English Name"></text>
+        </field>
+		<field name="tu_so" dataType="N" width="100">
+		  <text v="Ký hiệu từ" e="Word symbol"></text>
+		</field>
+      </fields>
+	<script>
+	<query>
+	  <text>
+		<![CDATA[
+DECLARE @key2 nvarchar(3000)
+SELECT @key2 = (CASE WHEN @lookupKey = '' THEN '1=1' ELSE @lookupKey END) + CASE WHEN @val = '' THEN ''ELSE ' AND (@@fieldKey LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%''' + ' OR @@fieldName LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' END;
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+	 ]]>
+	  </text>
+	</query>
+	</script>
+    </grid>
+  </grids>
+</dir>

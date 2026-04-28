@@ -1,0 +1,310 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+	<!ENTITY VoucherRequiredFields03 SYSTEM "..\Include\XML\VoucherRequiredFields03.xml">
+	<!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid01.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+
+  <!ENTITY VoucherSaleRequest SYSTEM "..\Include\XML\VoucherSaleRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from n15 where id = @id and status in (6,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+    ">
+]>
+
+
+
+<dir id="n15" table="n15" fieldKey="id" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" voucherCode="RB1" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Đăng ký ngày công" e="Timekeeping"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120" >
+      <fields>
+		<field name="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+		  <text v="" e=""></text>
+		</field>
+		
+		<field name="ma_nv" allowBlank="false" viewType="Lookup" label="1" field="1"  hidden="false" tabIndex="1">
+          <text v="Mã nhân viên" e="Employee Staff"></text>
+          <viewInfo lookupType="One" lookupId="dmnv" lookupKey="xstatus = 5" lookupCheck="1=1" lookupRef="ten_nv" lookupInfo="dmnv|ma_nv|ten_nv" />
+        </field>
+        <field name="ten_nv" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		
+		<field name="ngay_hl"  label="1" field="1" dataType="D" valueDefault="new Date()" allowBlank="false" nextRow="false" >
+			<text v="Ngày từ/ đến:" e="Effective date"></text>
+		</field>	
+		<field name="ngay_hld" label="" field="1" dataType="D" allowBlank="false" nextRow="false" >
+			<text v="" e=""></text>
+		</field>
+		
+		<field name="ma_loainghi" allowBlank="false" viewType="Lookup" label="1" field="1"  hidden="false" tabIndex="1">
+          <text v="Mã loại nghỉ" e="Employee Staff"></text>
+          <viewInfo lookupType="One" lookupId="dmloainghi" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_loainghi" lookupInfo="dmloainghi|ma_loainghi|ten_loainghi" />
+        </field>
+        <field name="ten_loainghi" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+
+		
+		<field name="ma_ca" allowBlank="false" viewType="Lookup" label="1" field="1"  hidden="false" tabIndex="1">
+          <text v="Mã ca" e="Employee Staff"></text>
+          <viewInfo lookupType="One" lookupId="dmcalv" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_ca" lookupInfo="dmcalv|ma_ca|ten_ca" />
+        </field>
+        <field name="ten_ca" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		
+		<field name="so_gio" dataType="N" format="FCAmount" allowBlank="false" label="1" field="1" readOnly="false" >
+          <text v="Số giờ" e="Quantity"></text>
+        </field>
+		
+		<field name="dien_giai" label="1" field="-">
+		  <text v="Ghi chú" e="Note"></text>
+		</field>
+      </fields>
+    </form>
+	
+	<form gravity="TopRight" columns="120,120" >
+		<fields>
+        &VoucherRequiredFields03;
+		&VoucherRequiredFields02;
+		</fields>
+    </form>
+	
+	
+</forms>
+
+  &DefaultButton;
+  <js>
+    <text>
+      <![CDATA[
+function dir$n15(p){
+  this.constructor(p);
+}
+dir$n15.prototype = new DirEvent();
+dir$n15.prototype.beforeInit = function(){
+  var p = this._dir;
+  if (p.options.action == 'EDIT') {
+	p.field('so_ct').disabled = true;
+  }
+}
+dir$n15.prototype.afterInit = function(renderType){
+   var p = this._dir
+   
+   dir$n15DisabledStatusByAction(p);
+}
+dir$n15.prototype.beforeButtonDialogClick = function (id) {
+  var p = this._dir
+  switch (id) {
+    case 'ok':
+		var d = p.valForm('ngay_hl'),d2 = p.valForm('ngay_hld');
+		var k = $.date(d,"dd/mm/yy"),k2 = $.date(d2,"dd/mm/yy");
+		if (p.valForm('ngay_hld') < p.valForm('ngay_hl')) { 
+			<!-- $.question('jkhj '+'Nhap sai ngay ??' ); -->
+			<!-- $.showToast(p.msg('noDate')); -->
+			
+			$.alert(p.msg('noDate')+' ' + k + ' < ' + k2);			
+			return false;
+			Break;
+			}	  		  
+    default:
+      break;
+  }
+  return true;
+}
+dir$n15.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+]]>&VoucherExRateValid01;<![CDATA[
+
+    default:
+      break;
+  }
+}
+function dir$n15HiddenColumnByCombobox(p){
+}
+
+function dir$n15DisabledStatusByAction(p){
+  var o = p.jObject('status');
+  if (p.options.action != 'VIEW') o.find("[value=5]").remove();
+}
+         ]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[
+
+		.control-label.ma_nv,.control-label.ma_loainghi, .control-label.ma_ca,  .control-label.so_gio, .control-label.ngay_hl
+		{	
+			color: #499b98;
+		}
+		.input-field.status, .input-field.unit_id
+		{
+			color: #ab6926;
+		}	
+      ]]>
+    </text>
+  </css>
+
+<script>
+    &VoucherRequest;
+    &VoucherSaleRequest;
+
+	<query>
+      <text>
+        <![CDATA[
+if @action = 'EDIT' begin
+]]>&CheckUpdatingDeleting;<![CDATA[
+end
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+if @action in ('EDIT', 'VIEW') exec ISWIFTStoreGetListFiles 'xfile', @id, '@@voucherCode', '', @script output
+if @script is null set @script = ''
+
+if @action = 'NEW' begin
+  declare @ma_nk varchar(32), @ten_nk nvarchar(3000), @ngay_ct date, @so_ct varchar(32), @i_so_ct int, @unit_id int
+  select @ngay_ct = getdate(), @unit_id = @@unit
+  
+  
+]]>&VoucherNumberQuery;<![CDATA[
+  if @so_ct is null
+    select '' as [so_ct], 0 as [i_so_ct], @unit_id as [unit_id], '' as ma_nk, '' as ten_nk
+  else
+    select @so_ct as [so_ct], @i_so_ct as [i_so_ct], @unit_id as [unit_id], @ma_nk as ma_nk, @ten_nk as ten_nk
+end
+else select @script as script
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+	
+	<declare>
+      <text>
+        <![CDATA[
+declare @warning nvarchar(256), @dOldVoucherDate date, @dVoucherDate date, @nVoucherType tinyint, @strIds varchar(256), @q nvarchar(4000)
+set @warning = ''
+         ]]>
+      </text>
+    </declare>
+	
+	&VoucherJSLoading;
+
+    <beforesave>
+      <text>
+        &VoucherNumberBeforeSave;
+		<![CDATA[
+		]]>
+      </text>
+    </beforesave>
+	<deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct, @dVoucherDate = ngay_ct, @nVoucherType = ma_ngv from n15 where id = @id
+        ]]>
+      </text>
+    </deleting>
+
+	 <deleted>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+-- Áp dụng cho dữ liệu lớn
+---exec ISWIFTStoredDeleteDataWithKey 'h15', @strIds, '', @dVoucherDate
+        ]]>
+      </text>
+    </deleted>
+	<updating>
+      <text>
+
+      <![CDATA[
+select @dOldVoucherDate = ngay_ct from n15 where id = @id
+        ]]>
+      </text>
+    </updating>
+	<updated>
+      <text>
+        <![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId, i_so_ct = @i_so_ct, so_ct = @so_ct where [%whereFieldKey]
+update dmttin set status = 0 from dmttin where id0 = rtrim(@id) and xgroup = '@@voucherCode'
+         ]]>
+      </text>
+    </updated>
+	<inserting>
+      <text>
+        <![CDATA[
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @ma_ct = '@@voucherCode'
+exec ISWIFTStoredGetIdentityNumber '@@voucherCode', '@@table', @id output
+         ]]>
+      </text>
+    </inserting>
+	
+	<inserted>
+      <text>
+    <![CDATA[
+	]]>
+      </text>
+    </inserted>
+    <aftersave>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+if @action = 'NEW' set @dOldVoucherDate = @ngay_ct
+---update @h15 set id = @id, unit_id = @unit_id, ma_ct = @ma_ct, ngay_ct = @ngay_ct, status = @status, so_ct = @so_ct
+---delete h15 where id = @id
+---insert h15 select * from @h15 where chon_yn=1
+
+--exec ISWIFTStoredPostingVoucher 'n15', 'h15', @dOldVoucherDate, @ngay_ct, @id, '@@voucherCode', '', ''
+
+exec ISWIFTStoredIncreaseVoucherNo @ma_nk, @ngay_ct, '@@voucherCode', @i_so_ct, @so_ct, '@@table'
+select '' as message, @warning as warning, @id as [#id], @so_ct as [#so_ct], @ma_unit as [#ma_unit]
+]]>
+      </text>
+    </aftersave>
+  </script>
+ <messages>
+  <message val="EmptyContainer">
+      <text v="Vui lòng nhập Container" e="Please Enter Congtainer" />
+    </message>
+    <message val="physicalRetrieve">
+      <text v="Chỉ xử lý nghiệp vụ sổ sách lấy dữ liệu từ thực tế" e="" />
+    </message>
+	 <message val="noDate">
+      <text v="Ngày hiệu lực đến không hợp lệ." e="Error Expiry Date."/>
+    </message>
+	<message val="notApproveRightEdit">
+      <text v="Không có quyền sửa/xóa đơn hàng đã duyệt ngoài mức được phân quyền" e="" />
+    </message>
+	<message val="notApproveRight">
+      <text v="Không có quyền duyệt đơn hàng" e="" />
+    </message>
+	 <message val="OnLyNew">
+      <text v="Chỉ thực hiện chức này ở trạng thái thêm mới." e="Only perform this function in the newly added state."/>
+    </message>
+  </messages>
+
+</dir>

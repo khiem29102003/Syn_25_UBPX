@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmtygia" table="dmtygia" fieldKey="ma_nt,ngay_hl" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Tỷ giá ngoại tệ" e="Exchange Rate List"></title>
+  <title0 v="Thêm" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_nt" format="U" label="1" field="1" viewType="Lookup" clientDefault="true" allowBlank="false" fieldType="PK" >
+          <text v="Mã ngoại tệ" e="Currency Code"></text>
+          <viewInfo lookupType="One" lookupId="dmnt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_nt" lookupInfo="dmnt|ma_nt|ten_nt" />
+        </field>
+        <field name="ten_nt" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ngay_hl" label="1" field="1" valueDefault="new Date()" allowBlank="false" dataType="D" fieldType="PK">
+          <text v="Ngày hiệu lực" e="Date From"></text>
+        </field>
+        <field name="ty_gia" label="1" field="1" dataType="N" format="ExRate" >
+          <text v="Tỷ giá" e="Exchange Rate"></text>
+        </field>
+		<field name="used" dataType="B" clientDefault="true" label="1" field="[60]" inactivate="true" importable="25">
+		   <text v="Sử dụng" e="Use"></text>
+		  </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmtg(p){
+  this.constructor(p);
+}
+dir$dmtg.prototype = new DirEvent();
+dir$dmtg.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã ngoại tệ đã tồn tại' else N'Exchange Rate code is exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã ngoại tệ tồn tại' else N'Exchange Rate code is exists' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+
+</dir>

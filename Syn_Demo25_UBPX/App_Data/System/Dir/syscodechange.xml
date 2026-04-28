@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from @@table where id = @id and status in (7)) begin
+    select '$notEditStatus' as message
+    return
+  end
+    ">
+]>
+
+<dir id="syscodechange" table="syscodechange" fieldKey="id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Đổi/gộp mã" e="Change/Merge Code"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,240,120"  >
+      <fields>
+        <field name="id" hidden="true" dataType="I" fieldType="PK">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="code_type" disabled="true" allowBlank="false" viewType="Combobox" label="1" field="2">
+          <text v="Loại mã" e=""></text>
+          <viewInfo>
+            <options query="select code, name%l from syslistchangecode where status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="old_value" format="U" label="1" field="1" allowBlank="false" >
+          <text v="Mã cũ" e="Old Code"></text>
+        </field>
+        <field name="old_label" nextRow="false" cellCss="color: red;" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="new_value" format="U" label="1" field="1" allowBlank="false" >
+          <text v="Mã mới" e="New Code"></text>
+        </field>
+        <field name="new_label" nextRow="false" cellCss="color: red;" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="ghi_chu" label="1" field="2" >
+          <text v="Ghi chú" e="Note"></text>
+        </field>
+        <field name="xtype" dataType="I" viewType="Combobox" disabled="true" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="0">
+                <text v="Đổi mã" e="Change Code"></text>
+              </option>
+              <option val="1">
+                <text v="Gộp mã" e="Merge Code"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="status" dataType="I" disabled="true" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="5">
+                <text v="Chờ thực hiện" e="Pedding"></text>
+              </option>
+              <option val="7">
+                <text v="Hoàn thành" e="Hoàn thành"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+&DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$syscodechange(p){
+  this.constructor(p);
+}
+dir$syscodechange.prototype = new DirEvent();
+dir$syscodechange.prototype.beforeInit = function(){
+  var p = this._dir, g = p.options.parent;
+  p.field('code_type').valueDefault = g.options._code_type;
+}
+dir$syscodechange.prototype.afterInit = function(){
+  var p = this._dir, g = p.options.parent;
+  
+}
+dir$syscodechange.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+    case 'old_value':
+      if (v != "") {
+        p.request('checkOldCode', '', ['code_type', 'old_value'], function(pp, d){
+          d = new DataRow(d);
+          p.valForm('old_label', p.msg(d.val('old_label')));
+        })
+      }else {
+        p.valForm('old_label', '');
+      }
+      break;
+    case 'new_value':
+      if (v != "") {
+        p.request('checkNewCode', '', ['code_type', 'new_value'], function(pp, d){
+          d = new DataRow(d);
+          p.valForm('new_label', p.msg(d.val('new_label')));
+        })
+      }else {
+        p.valForm('new_label', '');
+      }
+      break;
+    default:
+      break;
+  }
+}
+dir$syscodechange.prototype.beforeButtonDialogClick = function (id) {
+  var p = this._dir;
+  switch (id){
+    case 'ok':
+      if (p.valForm('old_label') != '') {p.jObject('old_value').focus(); return false;}
+      if (p.valForm('old_value').trim() == p.valForm('new_value').trim()) {p.jObject('new_value').focus(); return false;}
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <request code="checkOldCode">
+      <text>
+        <![CDATA[
+declare @q nvarchar(3000)
+select @q = 'if not exists(select 1 from ' + ctable + ' where ' + cfield + ' = ''' + dbo.ISWIFTFunctionReplaceSQLValue(@old_value) + ''') 
+  select ''notExistsOldCode'' as [old_label]
+  else select '''' as [#old_label]
+' from syslistchangecode where code = @code_type
+exec (@q)
+        ]]>
+      </text>
+    </request>
+
+    <request code="checkNewCode">
+      <text>
+        <![CDATA[
+declare @q nvarchar(3000)
+select @q = 'if exists(select 1 from ' + ctable + ' where ' + cfield + ' = ''' + dbo.ISWIFTFunctionReplaceSQLValue(@new_value) + ''') 
+  select 1 as [!xtype], ''existsNewCode'' as new_label
+  else select 0 as [!xtype], '''' as [#new_label]
+' from syslistchangecode where code = @code_type
+exec (@q)
+        ]]>
+      </text>
+    </request>
+    
+    <query>
+      <text>
+        <![CDATA[
+if @action = 'EDIT' begin
+]]>&CheckUpdatingDeleting;<![CDATA[
+end
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+if @action = 'EDIT' and '@@firstFieldKey' = '@@fieldKey'
+  if exists(select 1 from syscodeexists with(nolock, index(code1)) where code1 = @@@firstFieldKey and field = '@@firstFieldKey')
+    select 'p.setDisabled(''@@firstFieldKey'', true); ' as script
+
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+    
+    <deleting>
+      <text>
+        &CheckUpdatingDeleting;
+      </text>
+    </deleting>
+    
+    <updating>
+      <text>
+        <![CDATA[
+         ]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId where [%whereFieldKey]
+         ]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[
+select @id = isnull(max(id), 0) + 1 from syscodechange
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId
+         ]]>
+      </text>
+    </inserting>
+
+    <aftersave>
+      <text>
+        <![CDATA[
+select '' as message, @id as [#id]
+        ]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+    <message val="notExistsOldCode">
+      <text v="Mã đã nhập không tồn tại" e=""/>
+    </message>
+    <message val="existsNewCode">
+      <text v="Mã mới đã tồn tại. Sẽ gộp mã cũ theo mã đã tồn tại" e=""/>
+    </message>
+  </messages>
+</dir>

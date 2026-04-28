@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="bcttdh" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo cáo tình trạng đơn hàng" e="Sales Order Status Report"></title>
+  <subtitle v="Từ ngày {ngay_ct1} đến ngày {ngay_ct2}, Trạng thái: {ten_ttct}..." e="From {ngay_ct1} To {ngay_ct2}, Status: {ten_ttct}..."></subtitle>
+  <grids>
+    <grid>
+      <fields>
+        <field name="ma_unit" width="80">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D" align="Center">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+        <field name="so_ct" width="100" link="V" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ma_kh" width="100">
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="350">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+        <field name="ten_ttct" width="120">
+          <text v="Trạng thái" e="Status"></text>
+        </field>
+        <field name="ma_vt" width="100">
+          <text v="Mã hàng hóa" e="Goods Code"></text>
+        </field>
+        <field name="ten_vt" width="350">
+          <text v="Tên hàng hóa" e="Goods Name"></text>
+        </field>
+        <field name="gia_nt2" dataType="N" format="FCPrice" width="100">
+          <text v="Đơn giá nt" e="FC Price"></text>
+        </field>
+        <field name="tien_nt2" dataType="N" format="FCAmount" width="100">
+          <text v="Thành tiền nt" e="FC Amount"></text>
+        </field>
+        <field name="ma_nt" width="60">
+          <text v="Mã nt" e="FC Code"></text>
+        </field>
+        <field name="ty_gia" dataType="N" format="ExRate" width="100">
+          <text v="Tỷ giá" e="Exchange Rate"></text>
+        </field>
+        <field name="gia2" dataType="N" format="Price" width="100">
+          <text v="Đơn giá nt" e="FC Price"></text>
+        </field>
+        <field name="tien2" dataType="N" format="Amount" width="100">
+          <text v="Thành tiền" e="Amount"></text>
+        </field>
+        <field name="so_luong" dataType="N" format="Qty" width="100">
+          <text v="Sl đặt hàng" e="Qty. Ordered"></text>
+        </field>
+        <field name="sl_xuat" dataType="N" format="Qty" width="100">
+          <text v="Sl đã xuất" e="Qty. Received"></text>
+        </field>
+        <field name="sl_hd" dataType="N" format="Qty" width="100">
+          <text v="Sl hóa đơn" e="Qty. Invoiced"></text>
+        </field>
+        <field name="sl_tl" dataType="N" format="Qty" width="100">
+          <text v="Sl trả lại" e="Qty. Returned"></text>
+        </field>
+        <field name="sl_cl" dataType="N" format="Qty" width="100">
+          <text v="Sl còn lại" e="Qty. Remaining"></text>
+        </field>
+        <field name="id" dataType="I" hidden="true" width="100" >
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="ma_ct" width="100" hidden="true">
+          <text v="Mã chứng từ" e="VC Code"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$bcttdh(f){
+  this.constructor(f);
+}
+grid$bcttdh.prototype = new DirEvent();
+grid$bcttdh.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+grid$bcttdh.prototype.beforeInit = function(){
+  var p = this._dir;
+}
+grid$bcttdh.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(), dt = g.data;
+
+  if (p.options._mau_bc == 1) p.setColumnHidden(0, ['gia_nt2', 'tien_nt2', 'ma_nt', 'ty_gia', 'gia2', 'tien2'], true);
+  if (p.options._mau_bc == 2) p.setColumnHidden(0, ['gia_nt2', 'tien_nt2', 'ma_nt', 'ty_gia'], true);
+}
+]]>
+    </text>
+  </js>
+   <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

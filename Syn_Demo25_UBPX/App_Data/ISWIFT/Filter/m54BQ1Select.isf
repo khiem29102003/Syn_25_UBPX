@@ -1,0 +1,190 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+]>
+
+<dir id="m54BQ1Select" table="" height="" fieldKey="id" voucherCode="BQ1" dirViewType="Dialog" readOnly="true" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Chi tiết báo giá được chọn" e="Selected Quotes Details"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" readOnly="true" aliasName="@DFDFrom" disabled="true" allowBlank="false" dataType="D">
+          <text v="Ngày c/từ từ/đến" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" allowBlank="false" disabled="true" inactivate="true" dataType="D" nextRow="false">
+          <text v="Ngày đến" e="Voucher Date"></text>
+        </field>
+        <field name="ma_nt" hidden="true" label="1" field="1">
+          <text v="Mã ngoại tệ" e="Ex Code"></text>
+        </field>
+        <field name="unit_id" dataType="I" hidden="true" label="1" field="1">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+		<field name="ma_kh" format="U" label="1" disabled="true"  field="1" operation="like" >
+          <text v="Mã khách hàng" e="Code"></text>
+        </field>
+		<field name="ten_kh" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+		
+		 <field name="ma_hang" viewType="Lookup" label="1" disabled="true" field="1" operation="like">
+			<text v="Hãng tàu/ Đại lý" e="Carrier/ Agent Code"></text>
+		</field>
+		<field name="ten_hang" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+		
+        <field name="ma_noi_di" viewType="Lookup" label="1" disabled="true" field="1" operation="like">
+			<text v="Nơi đi" e="Origin "></text>
+			<viewInfo lookupType="One" lookupId="vdmcangdi" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_di" />
+		</field>
+		<field name="ten_noi_di" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+		<field name="ma_noi_den" viewType="Lookup" disabled="true" label="1" field="1" operation="like">
+			<text v="Nơi đến" e="Destination"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangden" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_den"  />
+		</field>
+		<field name="ten_noi_den" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field>  
+		
+		<field name="ds_cong" allowBlank="false" disabled="true" label="1" field="-" hidden="false">
+			  <text v="Container" e="Container List"></text>
+		</field>
+		 <field name="xprocess" label="1" field="2" valueDefault="2" viewType="Combobox">
+          <text v="Xử lý" e="Process"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Thêm vào chi tiết" e="Append To Detail"></text>
+              </option>
+              <option val="2">
+                <text v="Xóa hết chi tiết và thêm mới" e="Delete All Detail And Append New"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+		<field name="id" dataType="N" hidden="true" fieldType="PK" label="1" field="1"  >
+			  <text v="ID" e="Code"></text>
+		</field>
+      </fields>
+    </form>
+    <form tabPageIndex="1" gravity="MiddleLeft" height="350" columns="120,120,240" >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="v41" label="" field="-" viewType="Grid">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+ <grids>
+    <grid id="v41" table="v41" fieldKey="id, line" order="id, line" allowFilter="true" readOnly="true" allowOrder="true">
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+        <field name="ma_vt" width="100" allowBlank="false" viewType="Lookup" readOnly="false" aliasName="a.ma_phi as " >
+          <text v="Mã phí" e="Item"></text>
+          <viewInfo lookupType="One" lookupId="dmvt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_vt" lookupInfo="dmvt|ma_vt|ten_vt" />
+        </field>
+        <field name="ten_vt" width="250" fieldType="EX" inactivate="true" readOnly="true" join=" left join dmphi b on a.ma_phi = b.ma_phi " aliasName="b.ten_phi as ">
+          <text v="Tên phí" e="Item Name"></text>
+        </field>
+		 <field name="ma_cong" width="100" allowBlank="false" viewType="Lookup" readOnly="false" >
+          <text v="Container" e="Container"></text>
+          <viewInfo lookupType="One" lookupId="dmcong" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_cong" lookupInfo="dmcong|ma_cong|ten_cong" />
+        </field>
+        <field name="ten_cong" width="0" fieldType="EX" inactivate="true" readOnly="true" aliasName="c" join=" left join dmcong c on a.ma_cong = c.ma_cong ">
+          <text v="Container" e="Container Name"></text>
+        </field>
+         <field name="ma_dk_phi" viewType="Combobox" width="130" readOnly="false">
+			<text v="Loại phí" e="Fee type"></text>
+			<viewInfo>
+				<options query="select ma_bgn, ten_bgn%l from dmbgn where ma_ct = 'LPH' and status = 1 order by stt">
+				</options>
+			</viewInfo>
+		</field>
+		<field name="dvt" width="80" allowBlank="true" viewType="Lookup" readOnly="false" aliasName="a.ma_dvt as " >
+          <text v="Đơn vị" e="Unit"></text>
+          <viewInfo lookupType="One" lookupId="dmdvt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_dvt" lookupInfo="dmdvt|dvt|ten_dvt" />
+        </field>		
+        <field name="so_luong" dataType="N" format="Amount" width="100" readOnly="false" >
+          <text v="Số lượng" e="Quantity"></text>
+        </field>
+        <field name="gia_nt2" dataType="N" hidden="false" format="FCPrice" width="100" readOnly="false">
+          <text v="Giá bán " e=" Cost Price"></text>
+        </field>
+		 <field name="tien_nt2" dataType="N" hidden="false" format="FCAmount" width="100" valueDefault="0" readOnly="false" disabled="true" >
+          <text v="Tiền bán" e="Cost Amount"></text>
+        </field>
+		 <field name="ma_nt" width="70" allowBlank="false" viewType="Lookup" readOnly="false" >
+          <text v="Mã NT" e="Currency"></text>
+          <viewInfo lookupType="One" lookupId="dmnt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_nt" lookupInfo="dmnt|ma_nt|ten_nt" />
+        </field>
+		 <field name="ten_nt" width="0" fieldType="EX" inactivate="true" readOnly="true" aliasName="d" join=" left join dmnt d on a.ma_nt = d.ma_nt ">
+          <text v="Tên phí" e="Fee Name"></text>
+        </field>
+		 <field name="ty_gia" dataType="N" format="Price" width="100" valueDefault="1" hidden="false" readOnly="false" >
+          <text v="Tỷ giá" e="Curr.Rate"></text>
+        </field>
+		<field name="gia2" dataType="N" format="Price" width="100" hidden="true"  valueDefault="0" inactivate="true" readOnly="true">
+          <text v="Giá chuẩn" e="Std.Price"></text>
+        </field>
+		<field name="tien2" dataType="N" format="Amount" width="100" readOnly="false">
+          <text v="Doanh thu" e="Total Cost"></text>
+        </field>
+		<field name="dien_giai" width="200" inactivate="true" readOnly="false">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+        <field name="line_bg" dataType="I" fieldType="PK" hidden="false" aliasName="a.line as ">
+          <text v="Dòng BG" e="Quot. Line"></text>
+        </field>
+		<field name="id_bg" dataType="I" fieldType="PK" hidden="false" aliasName="a.id as ">
+          <text v="Id BG" e="Quot. Id"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[<enc>JxlOTkqg+Bsfkoc58MBYK6JNZ7VNAjjL+P9X86Y2wG3ypWkWsSijXTMK15oWzKQSyh2EJdJKSyQz3inSxg/Vi9cx35q4ArwI8mgJLKsFVlNd9giZbnweySkSPZ3rEP4K2r7rIlNA4aPUUfbTF/Z3Yi3Uz0OSVjQlKHyyl4agSjTK3lo3859N70Y+dl+qBuht/uH4Nk+KjaHZ/94uHvbsfK/u0iYO9JDI70GQHdsxgPXJdt2IOf/k1oFgDnlLZpFuP1VwCnFgwqzr0HI2pJ3MzTZmU0MANk+dJkuGh4T4UxJUWueNWSHvoRJyL5CUMJKebWDTdWWvjhOoZTyaAOilH7sWbioGFQTUWLzkDcGor/MgE1qsMPBcm9mTL8hqo0af</enc>]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+   
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>l6YXouPCl+9YFRqCaCLgmCjdL+iy/fCct5vFW6Wx4LLnhUpTbeiZu7pw4CNXhEFl1lWaY0B85nSY9kFKcrH2v4trX39rDPXzUJSeSSwPUzG7URTWla7XfnDiXdy2F/Ap4+D89Zs2XNP3A/8TuwBdDRTuWG0tXhMQ+j+LHGEC1WUJA/Gcrj6xSgX4EDWGYqwe7oCCAPTJ7/qxm4T6zv+SCeFEgggYp7xesNBckpG6CmfSBehuQoxR6P5bWxfOhsN0b0dsxGoigmdRRWS8SvPUpG72qYPMYVZBoteW51BdysSKGwKlgGE/cr8jRYQOm2RqkNVh9GmUz+34+yMouWEYhy/M6zIYi6e1BxtrOgdi3MBB0lSohyrz/zIQ+OHjjJPc+8by35OymBrB3dhMxybUIwyXgV++Zsc3mr1ghs5nPLu394jYD5jzO/16NpfyBx24XD2tSeMkBCz85wAdCN70vbe7fDT3VUi+LPIvetedaZI4TeiQx/veImR6FoODzMCe6KHts4ht5dLlougPS7H57n+5wzs2jTs5z0eeoV3NJqYl5shqLB/Zc/xRo7t7ESnznzqjKS7vp4g/mhKsUPHvxcNAv/jl3BppB+wVAK8nIZby3Nb8yeRuncKqkaf9aSq0UaOac+tSL2kHRFTem/qCTYf7JpWe85iLp952r4zrB3ep7FluVV4H1hoCldQGq2gg6Wvr0HxIEtbrV0aB3Fq0BYKxrHhiYssVjPDidPUIGXDh7dBxXjQaHflqnM+qfFRIzcwnUqYyPqRzDhubR+meJp76TrrMYgcvl3QxtNREtUw=</enc>]]>
+    </text>
+  </js>
+  
+  <script>
+		<request code="ma_kh_request">
+			<text>
+			  <![CDATA[<enc>T5oMu+avyFkX9E0hJDLze4AJA4XDO9S0Mald88gl0ORejW98JDon6wZwAPd6s6dra2REoOj6/CHDVh4ZUb++Oqw8+t6NtuCS1RXKjlAdu3ggR0LCKD9JdqrG5r3LXG/xz76SUjJRuSzhXpIlACXHmNQZ/k8coqJwUse0t1ir0sxT3YBfH1Q7TpWoZkGQdGTkYxFV+3B3DvzijrciH7r+AWZ0gA8HIhyV4v03ka7jVw4F4O0ycY8JX9Cf9cVnNIGbsu1QcEtRsQA0MKbCam4EImpC5TpA1A8JFq0Wlwf8/WhcMPCgBaZqkPxeCnYXWkpB</enc>]]>
+			</text>
+		  </request>
+    
+  </script>
+  
+</dir>

@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="sysrightanalysissale2" table="" fieldKey="user_id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Phân quyền" e="Permission"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120">
+      <fields>
+        <field name="user_id" allowBlank="false" dataType="I" hidden="true" label="" field="1">
+          <text v="" e=""></text>
+        </field>
+        <field name="username" disabled="true" >
+          <text v="Tên" e="Name"></text>
+          <viewInfo lookupType="One" lookupId="dmkho" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_kho" />
+        </field>
+        <field name="nickname" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+    <form tabPageIndex="1" gravity="MiddleLeft" height="400" columns="120,120,120" >
+      <text v="Thôn tin phân tích" e=""></text>
+      <fields>
+        <field name="field_permission" fieldType="EX" hidden="true" label="1" field="1">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$sysrightanalysissale2(p){
+  this.constructor(p);
+}
+filter$sysrightanalysissale2.prototype = new DirEvent();
+
+filter$sysrightanalysissale2.prototype.afterInit = function(){
+  var p = this._dir, pa = p.options.parent, g = pa.grid(), r = g._currRow, dt = g.data;
+  
+  p.valForm(['user_id', 'username', 'nickname'], [dt.val(r, "user_id"), dt.val(r, "username"), dt.val(r, "nickname")]);
+  p.request('getRightanalysissale2', 'GetDataSet', ['user_id'], filter$sysrightanalysissale2$LoadFieldGrid);
+}
+
+filter$sysrightanalysissale2.prototype.beforeButtonDialogClick = function(id){
+  var p = this._dir;
+  if (id == 'filterOk') {
+    var tfield = p.find("#sysrightanalysissale2_1").treeview("instance");
+    p.request('updateRight', '', ['user_id', ['field', 'C', tfield.getCheckedItem()]], function(p, d, run){
+      if (run) p._close();
+    });
+    return false;
+  }
+  return true;
+}
+
+function filter$sysrightanalysissale2$LoadFieldGrid(p, dright) {
+  //if (p.options.wait) return;
+  var time = $.userinfo.val('CommandTimeout'), controller = '@' + p.valForm('ma_ct');
+  p.wait(true, controller);
+  dright = new DataSet(dright).get(0);
+  var param = { cController: 'analysisSalesData', cFolder: "Grid" };
+  $.invoke('GetDirStruct', param, p, time, function (d) {
+    var k, i, il, xch, f, fs, fi, dt = new DataTable(), xrights = {};
+    dt.addColumn(['C', 'C', 'C', 'I'], ['xlevel', 'xheader', 'xcode', 'xcheck']);
+    k = dright.count();
+    while(k--) xrights[dright.val(k, 0)] = 1
+    if (d) {
+      f = d.grids.grid;
+      for (k = 0; k < f.length; k++) {
+        fs = f[k].fields.field;
+        for (i = 0; i < fs.length; i++) {
+          fi = fs[i];
+          if (!fi.hidden && fi.text.lan != ''){
+            if (fi.note2 == '#') il = 1
+            else il = 2
+            dt.addRow([il, fi.text.lan, fi.name, xrights[fi.name]||0 ]);
+          }
+        }
+      }
+       p.find("#sysrightanalysissale2_1").treeview({ tblData: dt, expandAll: true, onCreated: function(tv) {
+          tv.refreshItemCheck();
+        }
+      });
+    }
+    
+    p.wait(false, controller);
+  }, null, function () {
+      p.wait(false, controller);
+  })
+}
+]]>
+    </text>
+  </js>
+  <css>
+    <text>
+      <![CDATA[
+.tree-resize{
+  display: none;
+}
+
+#sysrightanalysissale2_1 {
+  overflow: hidden;
+}
+#sysrightanalysissale2_1 > div:first-child {
+  display: none;
+}
+      ]]>
+    </text>
+  </css>
+  <script>
+    <request code="getRightanalysissale2">
+      <text>
+        <![CDATA[
+select field from sysrightanalysissale2 where user_id = @user_id
+         ]]>
+      </text>
+    </request>
+
+    <request code="updateRight" transaction="true">
+      <text>
+        <![CDATA[
+delete sysrightanalysissale2 where user_id = @user_id
+if @field <> ''
+  insert into sysrightanalysissale2 
+	  select @user_id, data from dbo.ISWIFTFunction$Split(@field, ',') 
+
+exec ISWIFTStoredUpdateRightAnalysisSale @user_id, @@userId, @@admin
+select '' as message
+        ]]>
+      </text>
+    </request>
+
+  </script>
+
+</dir>

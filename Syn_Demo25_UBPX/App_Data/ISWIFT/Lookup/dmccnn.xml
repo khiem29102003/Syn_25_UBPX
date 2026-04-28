@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="dmccnn" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục chứng chỉ ngoại ngữ" e="List of Language Certifications"></title>
+  <grids>
+    <grid table="dmccnn" fieldKey="ma_cc" fieldName="ten_cc" order="ma_cc" allowFilter="true" allowOrder="true" key="" >
+      <fields join="">
+        <field name="ma_cc" fieldType="PK" width="120" filterType="Code" >
+          <text v="Mã chứng chỉ" e="Certification Code"></text>
+        </field>
+        <field name="ten_cc" width="250">
+          <text v="Tên chứng chỉ" e="Certification Name"></text>
+        </field>        
+		<field name="ten_cc2" width="250">
+          <text v="Tên khác" e="Other name"></text>
+        </field>		
+		<field name="ma_nn" width="0">
+          <text v="" e=""></text>
+        </field>		
+        <field name="ten_nn" width="250" fieldType="EX" >
+          <text v="Tên ngoại ngữ" e="Foreign Language Name"></text>
+        </field> 
+      </fields>
+	  <script>
+		<query>
+		  <text>
+			<![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = @lookupKey + case when @val = '' then '' else ' and (@@fieldKey like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or @@fieldName like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmngoaingu b on a.ma_nn = b.ma_nn', 'b.ten_nn', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+			 ]]>
+		  </text>
+		</query>
+	  </script>
+    </grid>
+  </grids>
+</dir>

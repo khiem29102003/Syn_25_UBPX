@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY ReportFilterItemGroup SYSTEM "..\Include\XML\ReportFilterItemGroup.xml">
+  <!ENTITY ReportFilterStockType SYSTEM "..\Include\XML\ReportFilterStockType.xml">
+  <!ENTITY ReportFilterUnit SYSTEM "..\Include\XML\ReportFilterUnit.xml">
+  <!ENTITY ReportFiltering SYSTEM "..\Include\XML\ReportFiltering.xml">
+  <!ENTITY ReportDataAnalysisStruct SYSTEM "..\Include\XML\ReportDataAnalysisStruct.xml">
+]>
+
+<dir id="bcthekho" width="Medium" table="" height="" fieldKey="id" dirViewType="Dialog" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Thẻ kho/Sổ chi tiết vật tư" e="Stock Card" />
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ma_kho" viewType="Lookup" operation="like" label="1" field="1" allowBlank="false">
+          <text v="Mã kho" e="Site"></text>
+          <viewInfo lookupType="One" lookupId="dmkho" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_kho" />
+        </field>
+        <field name="ten_kho" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_vt" viewType="Lookup" operation="like" label="1" field="1" allowBlank="false">
+          <text v="Mã vật tư" e="Item"></text>
+          <viewInfo lookupType="One" lookupId="dmvt" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_vt" />
+        </field>
+        <field name="ten_vt" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" dataType="D">
+          <text v="Ngày từ/đến" e="Date From/To"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+        <field name="mau_bc" dataType="I" viewType="Combobox" valueDefault="2" label="1" field="[360]" >
+          <text v="Mẫu báo cáo" e="Report Form"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Thẻ kho" e="Stock Card"></text>
+              </option>
+              <option val="2">
+                <text v="Sổ chi tiết vật tư" e="Inventory Item Ledger"/>
+              </option>
+              <option val="3">
+                <text v="Sổ chi tiết vật tư tiền ngoại tệ" e="Sổ chi tiết vật tư tiền ngoại tệ"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        &ReportFilterUnit;
+        &ReportFilterStockType;
+
+      </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$bcthekho(p){
+  this.constructor(p);
+}
+filter$bcthekho.prototype = new DirEvent();
+filter$bcthekho.prototype.afterInit = function(){
+  var p = this._dir, ev = this;
+}
+filter$bcthekho.prototype.beforeAcceptFilter = function (m2, opt, sub) { //Xu ly truoc khi bấm nhận cho form Filter. m2: memvars đc tạo từ form, opt: Options tạo từ fields trên form dùng để truyền lên form gọi tiếp theo
+  opt.beforeCreate = 'grid$bcthekhoBeforeCreate'
+  if (opt._data_analysis_struct == '' && opt._group_by == '') {
+    m2.val("filterSort", "", { sort: "2", filter: {}, group: ['ma_kho'], sum: ['ton_cuoi', 'du_cuoi', 'du_cuoi_nt'], count: [], max: [], min: [], avg: [] }, "FILTER");
+    opt.defaultFilterSort = {group: ['ma_kho']};
+  }
+  return [m2, opt, sub];
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+exec ss_bcthekho @ngay_ct1, @ngay_ct2, @ma_kho, @ma_vt, @strJoin, @strFinding, @loai_du_lieu, @ma_unit, '@@lan', @@userId, @@admin
+        ]]>
+      </text>
+    </processing>
+  </script>
+</dir>

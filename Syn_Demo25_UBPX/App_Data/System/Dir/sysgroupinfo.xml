@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="sysgroupinfo" table="sysgroupinfo" fieldKey="group_id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Khai báo nhóm người sử dụng" e="Group Maintenance"></title>
+  <title0 v="Thêm thông tin nhóm người sử dụng" e="New Group's Information"></title0>
+  <title1 v="Sửa thông tin nhóm người sử dụng" e="Edit Group's Information"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,240"  >
+      <fields>
+        <field name="group_id" label="" field="1" dataType="I" hidden="true" fieldType="PK">
+          <text v="" e=""></text>
+        </field>
+        <field name="groupname" format="U" allowBlank="false" label="1" field="1">
+          <text v="Nhóm" e="Group"></text>
+        </field>
+        <field name="dien_giai" allowBlank="false" label="1" field="2">
+          <text v="Tên nhóm" e="Description"></text>
+        </field>
+        <field name="ds_username" allowBlank="false" viewType="Lookup" label="1" field="-">
+          <text v="Ds người sử dụng" e="User List"></text>
+          <viewInfo lookupType="Multi" lookupId="sysuserinfo" lookupKey="admin = 0 and status=1" lookupCheck="admin = 0 and status=1" lookupRef="" lookupInfo="sysuserinfo|username|nickname" />
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$sysgroupinfo(p){
+  this.constructor(p);
+}
+dir$sysgroupinfo.prototype = new DirEvent();
+dir$sysgroupinfo.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$sysgroupinfo.prototype.beforeButtonDialogClick = function(id){
+  var p = this._dir;
+  return true;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <query>
+      <text>
+        <![CDATA[
+if @action = 'NEW' and @@admin = 0 begin
+  select N'$AdminAccess' as message
+  return
+end
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+drop table #@@table
+]]>
+      </text>
+    </query>
+
+    <loading>
+      <text>
+        <![CDATA[
+select 'p.options._os = ''@@os|@@userId|@@userName|@@lan'';' as script --as message la dừng show form
+         ]]>
+      </text>
+    </loading>
+
+    <updating>
+      <text>
+        <![CDATA[
+declare @gname varchar(64)
+select @gname = groupname from @@table where group_id = @group_id
+if @groupname <> @gname begin
+  if exists(select 1 from @@table where groupname = @groupname and group_id <> @group_id) or exists(select 1 from sysuserinfo where username = @groupname) begin
+    select '$codeExistsNewMsg' as message, 'groupname' as field
+    return
+  end
+end
+]]>
+      </text>
+    </updating>
+
+    <inserting>
+      <text>
+        <![CDATA[
+if exists(select 1 from @@table a where groupname = @groupname) or exists(select 1 from sysuserinfo where username = @groupname) begin
+  select '$codeExistsNewMsg' as message, 'groupname' as field
+  return
+end
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId
+
+--select @group_id = max(group_id) + 1 from @@table
+select @group_id = max(id) + 1 from (select max(user_id) as id from sysuserinfo union all select max(group_id) as id from sysgroupinfo) a
+if @group_id is null select @group_id = 1
+]]>
+      </text>
+    </inserting>
+
+    <inserted>
+      <text>
+        <![CDATA[
+select '' as message, @group_id as [#group_id]
+]]>
+      </text>
+    </inserted>
+
+  </script>
+  
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Nhóm đã tồn tại trong danh mục nhóm hoặc người sử dụng." e="Group is exists" />
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Nhóm đã tồn tại trong danh mục nhóm hoặc người sử dụng." e="Group is exists" />
+    </message>
+  </messages>
+
+</dir>

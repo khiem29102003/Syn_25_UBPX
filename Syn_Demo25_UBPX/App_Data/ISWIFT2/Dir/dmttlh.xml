@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmttlh" table="dmttlh" fieldKey="ma_tt" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục lô hàng" e="Department List"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_tt" format="U" label="1" field="1" allowBlank="false" fieldType="PK" >
+          <text v="Mã trạng thái lô hàng" e="Department Code"></text>
+        </field>
+        <field name="ten_tt" label="1" field="-" allowBlank="false" fieldType="PK" >
+          <text v="Tên trạng thái" e="Description"></text>
+        </field>
+
+     
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmttlh(p){
+  this.constructor(p);
+}
+dir$dmttlh.prototype = new DirEvent();
+dir$dmttlh.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã Lô hàngđã tồn tại' else N'Department code is exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã Lô hàngđã tồn tại' else N'Department code is exists' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+
+</dir>

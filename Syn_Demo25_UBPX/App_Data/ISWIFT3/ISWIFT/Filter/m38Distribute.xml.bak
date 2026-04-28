@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY ReportFilterUnitGroup SYSTEM "..\Include\XML\ReportFilterUnitGroup.xml">
+]>
+
+<dir id="m38Distribute" table="" height="" fieldKey="ma_nh" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Điều kiện lọc" e="Filter"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" dataType="D">
+          <text v="Ngày từ/đến" e="Date From/To"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_nt" viewType="Lookup" label="1" field="1" operation="=">
+          <text v="Mã ngoại tệ" e="EX"></text>
+          <viewInfo lookupType="One" lookupId="dmnt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_nt" lookupInfo="dmnt|ma_nt|ten_nt" lookupExactValue="1" />
+        </field>
+        <field name="ten_nt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_unit" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Mã nhà cung cấp" e="Unit"></text>
+          <viewInfo lookupType="One" lookupId="sysunit" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_unit" lookupInfo="sysunit|ma_unit|ten_unit" />
+        </field>
+        <field name="ten_unit" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        &ReportFilterUnitGroup;
+        <field name="pb_yn" viewType="Combobox" inactivate="true" valueDefault="0" label="1" operation="=" field="3">
+          <text v="Loại quỹ chi" e=""></text>
+          <viewInfo>
+            <options>
+              <option val="">
+                <text v="Tất cả" e="All"/>
+              </option>
+              <option val="0">
+                <text v="Chưa phân bổ hết" e=""/>
+              </option>
+              <option val="1">
+                <text v="Đã phân bổ hết" e=""/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="xu_ly" viewType="Combobox" inactivate="true" valueDefault="1" label="1" field="3">
+          <text v="Xử lý" e="Process"></text>
+          <viewInfo>
+            <options>
+              <option val="0">
+                <text v="Người dùng tự phân bổ" e=""/>
+              </option>
+              <option val="1">
+                <text v="Phân bổ tự động theo ngày hóa đơn, số hóa đơn" e=""/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$m38Distribute(p){
+  this.constructor(p);
+}
+filter$m38Distribute.prototype = new DirEvent();
+filter$m38Distribute.prototype.afterInit = function(){
+  var p = this._dir;
+}
+filter$m38Distribute.prototype.beforeAcceptFilter = function(m2, opt, sub){
+  return true;
+}
+         ]]>
+    </text>
+  </js>
+
+</dir>

@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from wfdmkhct where ma_ntask = @ma_ntask) begin
+    select '$DaPhatSinhDuLieu' as message
+    return
+  end
+    ">
+]>
+
+<dir id="dmntask" table="dmntask" fieldKey="ma_ntask" dirViewType="Dialog" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục nhóm công việc" e="Task Group Category"></title>
+  <title0 v="Thêm mới" e="Create New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_ntask" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="5" >
+          <text v="Mã nhóm công việc" e="Task Group Code"></text>
+        </field>
+        <field name="ten_ntask" label="1" field="-" allowBlank="false" importable="10" >
+          <text v="Tên nhóm công việc" e="Task Group Name"></text>
+        </field>
+        <field name="ten_ntask2" label="1" field="-" importable="15" >
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+		<field name="ds_nv" viewType="Lookup" label="1" field="-" allowBlank="false" setype="1" nextRow="true">
+          <text v="Người được phân công" e="Assigned Person"></text>
+          <viewInfo lookupType="Multi" lookupId="dmnv" lookupKey="xstatus = 5 and status = 1" lookupCheck="1=1" lookupRef="" lookupInfo="dmnv|ma_nv|ten_nv" />
+        </field>
+		<field name="wf" dataType="B"  blank="1" clientDefault="true" label="[100]" field="[40]" inactivate="true">
+          <text v="Workflow" e="Workflow"></text>
+        </field>
+
+        <field name="status" viewType="Combobox" inactivate="true" valueDefault="1" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+	<form tabPageIndex="1" gravity="MiddleLeft" height="300" columns="120,120,240" >
+      <text v="Chi tiết công việc" e="Detail"></text>
+      <fields>
+        <field name="dmntaskdetail" allowBlank="false" label="" field="-" viewType="Grid">
+          <text v="Chi tiết" e="Detail"></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+    <grids>
+    <grid id="dmntaskdetail" table="dmntaskdetail" fieldKey="ma_ntask, line" order="line" readOnly="false">
+      <fields>
+        <field name="ma_ntask" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true" importable="-1">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true" importable="-1">
+          <text v="Dòng" e="Line"></text>
+        </field>
+		<field name="ma_task" width="120" allowBlank="false" viewType="Lookup" readOnly="false" importable="1" >
+          <text v="Mã công việc" e="Task Code"></text>
+          <viewInfo lookupType="One" lookupId="dmtask" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_task" lookupInfo="dmtask|ma_task|ten_task" />
+        </field>
+        <field name="ten_task" width="200" fieldType="EX" inactivate="true" readOnly="true" aliasName="b" join=" left join dmtask b on a.ma_task = b.ma_task ">
+          <text v="Tên công việc" e="Task Name"></text>
+        </field>
+		<field name="stt" dataType="N" format="Amount" allowBlank="true" width="100" readOnly="false" >
+          <text v="STT" e="STT"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="paste">
+          <text v="$PasteToolbar" e="$PasteToolbar"></text>
+        </button>
+        <button id="moveup">
+          <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+        </button>
+        <button id="movedown">
+          <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+				set nocount on
+				select @@fields into #t from @@table a @@join 
+				where a.ma_ntask = @ma_ntask order by line
+				
+				IF @action = 'NEW' SELECT * FROM #t WHERE 1=0 ORDER BY line
+				IF @action != 'NEW' SELECT * FROM #t ORDER BY line
+				drop table #t
+			]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+	</grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmntask(p){
+  this.constructor(p);
+}
+dir$dmntask.prototype = new DirEvent();
+dir$dmntask.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmntask.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+p.reloadGrid(0, null);
+dir$dmntaskDisabledMasterField(p, g);
+
+}
+
+function dir$dmntaskDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_ntask').trim() != '')
+  {
+    p.setDisabled('ma_ntask', true);
+  }
+  else
+  {
+    p.setDisabled('ma_ntask', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+  
+  <css>
+	<text>
+	  <![CDATA[
+		.control-label.ma_ntask, .control-label.ten_ntask
+		{	
+			//font-weight:bold;	
+			color: #499b98;;
+		}
+	  ]]>
+	</text>
+  </css>
+  
+  <script>
+      <declare>
+      <text>
+        <![CDATA[
+declare @warning nvarchar(256), @dOldVoucherDate date, @dVoucherDate date, @nVoucherType tinyint, @strNtask varchar(256), @q nvarchar(4000)
+set @warning = ''
+         ]]>
+      </text>
+    </declare>
+	<beforesave>
+      <text>
+        <![CDATA[
+if exists(select 1 from @dmntaskdetail group by ma_task having count(1) > 1) begin
+  select '$DuplicateInv' as message
+  return
+end
+        ]]>
+      </text>
+    </beforesave>
+
+    <deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[
+select @dOldVoucherDate = datetime0, @dVoucherDate = datetime0 from dmntask where ma_ntask = @ma_ntask
+        ]]>
+      </text>
+    </deleting>
+
+    <deleted>
+      <text>
+        <![CDATA[
+exec ISWIFTStoredDeleteDataWithKey 'dmntaskdetail', @ma_ntask, '', @dVoucherDate
+        ]]>
+      </text>
+    </deleted>
+	<aftersave>
+      <text>
+        <![CDATA[
+
+UPDATE @dmntaskdetail SET ma_ntask = @ma_ntask, status = @status, user_id0 = @user_id0, user_id2 = @user_id2, datetime0 = @datetime0, datetime2 = @datetime2;
+
+IF EXISTS (SELECT 1 FROM @dmntaskdetail WHERE stt = 0)
+BEGIN
+    -- Nếu có, thì cập nhật tất cả stt = line (kể cả các dòng stt khác 0)
+    UPDATE @dmntaskdetail 
+    SET stt = line
+END
+DELETE dmntaskdetail WHERE ma_ntask = @ma_ntask;
+INSERT dmntaskdetail SELECT * FROM @dmntaskdetail;
+
+select '' as message, @warning as warning, @ma_ntask as [#ma_ntask]
+]]>
+      </text>
+    </aftersave>
+	<!-- <importing> -->
+      <!-- <text> -->
+        <!-- <![CDATA[ -->
+		<!-- @@insert -->
+        <!-- ]]> -->
+      <!-- </text> -->
+    <!-- </importing> -->
+  </script>
+  
+  <messages>
+	<message val="codeExistsNewMsg">
+		<text v="Mã nhóm công việc đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The task group code already exists in the list. Please choose a different code."/>
+	</message>
+	<message val="codeExistsEditMsg">
+		<text v="Mã nhóm công việc đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The task group code already exists in the list. Please choose a different code."/>
+	</message>
+	<message val="DuplicateInv">
+      <text v="Mã công việc không được trùng" e="Duplicate task codes are not allowed."/>
+    </message>
+	<message val="DaPhatSinhDuLieu">
+      <text v="Đã phát sinh dữ liệu cấu hình workflow cho mã nhóm này không được xóa." e="This group code has associated workflow configuration data and cannot be deleted."/>
+    </message>
+  </messages>
+
+</dir>

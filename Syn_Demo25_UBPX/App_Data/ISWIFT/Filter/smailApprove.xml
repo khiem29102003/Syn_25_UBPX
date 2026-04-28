@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="smailApprove" table="" height="" fieldKey="id" voucherCode="CT0" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Điều kiện lọc (Duyệt)" e="Filter Condition (Approve)"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D">
+          <text v="Ngày c/từ (từ/đến)" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+
+		<field name="s_mail" viewType="Lookup" label="1" field="2" operation="like">
+          <text v="Email gửi" e="Email Sent"></text>
+          <viewInfo lookupType="One" lookupId="dmsmail" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_mail" lookupInfo="dmsmail|s_mail|ten_mail" />
+        </field>
+        <field name="ten_mail" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="title" label="1" field="-" operation="a.title like N'%%s%'">
+          <text v="Title" e="Title"></text>
+        </field>
+        <field name="email_body" label="1" field="-" operation="a.email_body like N'%%s%'">
+          <text v="Nội dung" e="Content"></text>
+        </field>
+      </fields>
+    </form>
+    
+    <form gravity="MiddleLeft" tabPageIndex="1" columns="120,120,120"  >
+      <text v="Chi tiết" e="Detail"/>
+      <fields>
+        <field name="r_mail" viewType="Lookup" label="1" field="2">
+          <text v="Email nhận" e="Email Recipient"></text>
+          <viewInfo lookupType="One" lookupId="dmrmail" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_rmail" />
+        </field>
+        <field name="ten_rmail" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>    		
+      </fields>
+    </form>
+	
+    <form gravity="BottomLeft" columns="120,120,120,120"  >
+      <fields>
+        <field name="ma_unit" viewType="Lookup" inactivate="true" label="1" field="3" >
+          <text v="Đơn vị" e="Unit"></text>
+          <viewInfo lookupType="Multi" lookupId="sysunit" lookupKey="status = 1 and unit_id in (select unit_id from dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @@admin, ''))" lookupCheck="1 = 1" lookupRef="ten_unit" />
+        </field>
+        <field name="ten_unit" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="3" valueDefault="0" operation="=" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Chờ duyệt (Xử lý Duyệt/Hủy hoàn ứng )" e="Open (Approve)"/>
+              </option>
+              <option val="5">
+                <text v="Đã duyệt (Xử lý bỏ duyệt)" e="Approved (Undo)"/>
+              </option>
+              <!-- <option val="9"> -->
+                <!-- <text v="Đóng (Xử lý bỏ đóng, duyệt hoàn ứng )" e="Close (Open &amp; Approve)"/> -->
+              <!-- </option> -->
+            </options>
+          </viewInfo>
+        </field>
+        <!-- <field name="user_id0" viewType="Combobox" inactivate="true" label="1" field="3" operation="a.user_id0 in (select user_id from sysuserinfo where user_ref like '@@userRef%')" > -->
+          <!-- <text v="Lọc theo người sd" e="Filter By User"></text> -->
+          <!-- <viewInfo> -->
+            <!-- <options> -->
+              <!-- <option val=""> -->
+                <!-- <text v="Tất cả" e="All"></text> -->
+              <!-- </option> -->
+              <!-- <option val="1"> -->
+                <!-- <text v="Lọc theo nhân viên đang quản lý" e=""></text> -->
+              <!-- </option> -->
+            <!-- </options> -->
+          <!-- </viewInfo> -->
+        <!-- </field> -->
+      </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$smailApprove(p){
+  this.constructor(p);
+}
+filter$smailApprove.prototype = new DirEvent();
+filter$smailApprove.prototype.afterInit = function(){
+  var p = this._dir;
+}
+filter$smailApprove.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir;
+  if (opt._status == 1) sub = ['%s', p.msg('approve')]
+  else if (opt._status == 5) sub = ['%s', p.msg('undo')]
+  else sub = ['%s', p.msg('open')]
+  return [m2, opt, sub];
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+
+  <messages>
+    <message val="approve">
+      <text v="duyệt/hủy" e="Approve/Close"/>
+    </message>
+    <message val="undo">
+      <text v="bỏ duyệt" e="Open "/>
+    </message>
+    <message val="open">
+      <text v="bỏ đóng" e="Open"/>
+    </message>
+  </messages>
+</dir>

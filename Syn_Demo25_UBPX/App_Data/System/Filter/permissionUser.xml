@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="permission" height="400" table="" fieldKey="user_id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Phân quyền người sử dụng" e="User Menu Right Maintenance"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="0"  >
+      <fields>
+        <field name="user_id" allowBlank="false" hidden="true" label="" field="1">
+          <text v="" e=""></text>
+        </field>
+        <field name="permission" label="" field="1" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="treeview" label="" field="1">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$permission(p){
+  this.constructor(p);
+}
+filter$permission.prototype = new DirEvent();
+
+filter$permission.prototype.afterInit = function(){
+  var p = this._dir, e = p.element, g = p.options.parent;
+  var f = e.find('.treeview').parent().parent();
+  p.wait(true);
+  p.valForm('user_id', g.valGrid(g.curr("r"), "user_id"));
+  
+  f.html('<div id="treeviewPanel" style="width: 715px; height: 380px;"></div>');
+  
+  var xmlhttp;
+  
+  if (window.XMLHttpRequest) xmlhttp = new XMLHttpRequest();
+  else {
+    try {xmlhttp = new ActiveXObject('Msxml2.XMLHTTP');}
+      catch (ex) {xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');}
+  }
+  
+  xmlhttp.onreadystatechange = function() {
+    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+      p.tree = new TreeView('treeviewPanel', '100%', '100%', 0);
+      p.tree.set_path('../Images/Tree/');
+      p.tree.enableCheckBoxes(true);
+      p.tree.loadXMLString(xmlhttp.responseText);
+      p.wait(false);
+    }
+  }
+  var param = 'Permission[@#]' + p.valForm('user_id') + '[@#]' + $.lan + '[@#]1[@#]allow[@#]' + new Date().getTime();
+  xmlhttp.open('GET', '../AppHandler/FileHandler.ashx?param=' + $.encodeb64UTF8(param), true);
+  xmlhttp.send(null);
+}
+
+filter$permission.prototype.beforeButtonDialogClick = function(id){
+  var p = this._dir;
+  if (id == 'filterOk') {
+    var m = new Memvars(), dt = new DataTable(), a = p.tree.getAllCheckedBranches().split(','), k = a.length;
+    dt.addColumn('C', 'data');
+    while(k--) dt.addRow([a[k]])
+    m.add([['permission', 'T', dt.sqlval()], ['user_id', 'N', p.valForm('user_id')]]);
+    p.request('permission', 'GetRow', m, function(){p._close();});
+    return false;
+  }
+  return true;
+}
+]]>
+    </text>
+  </js>
+
+  <script>
+    <request code="permission">
+      <text>
+        <![CDATA[
+select * into #t from @permission
+exec dbo.ISWIFTStoredSetMenuRight '', @user_id, 1
+select '' as message
+         ]]>
+      </text>
+    </request>
+    <loading>
+      <text>
+        <![CDATA[
+select 'p.options._user_id = ' + rtrim(@@userId) as script, '' as message
+         ]]>
+      </text>
+    </loading>
+  </script>
+
+</dir>

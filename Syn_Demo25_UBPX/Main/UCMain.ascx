@@ -1,0 +1,1 @@
+﻿<%@ Control Language="vb" AutoEventWireup="false" CodeBehind="UCMain.ascx.vb" Inherits="ISWIFT.Web.UCMain" %>

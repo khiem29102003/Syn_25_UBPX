@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridFinding.xml">
+]>
+
+<dir id="khxl" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách chăm sóc khách hàng" e="Customer Care List"></title>
+  <subtitle v="Xem, sửa dữ liệu..." e="View, update data..."></subtitle>
+  <grids>
+    <grid table="dmkh0" fieldKey="ma_so_thue" order="ma_so_thue desc" allowFilter="true" allowOrder="true" >
+      <fields>
+	  	<field name="ngay_td" width="100" dataType="D" align="center">
+          <text v="Ngày tác động" e="Effective Date"></text>
+        </field>
+		<field name="ma_so_thue" width="120" fieldType="PK" link="1">
+          <text v="Mã số thuế" e="Tax Code"></text>
+        </field>
+        <field name="ten_kh" width="250">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>      
+		<field name="ten_kh2" width="250">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+		<field name="dia_chi" width="250">
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+		<field name="chuc_vu" width="250">
+          <text v="Chức vụ" e="Position"></text>
+        </field>
+		<field name="muc_luong" width="120" dataType="N">
+          <text v="Mức lương" e="Salary"></text>
+        </field>
+		<field name="hs_luong" width="100" dataType="N">
+          <text v="Hệ số lương" e="Salary Coefficient"></text>
+        </field>
+		<field name="kh_yn" dataType="B" align="Center" width="100" allowOrder="false">
+          <text v="Khách hàng" e="Customer"></text>
+        </field>
+		<field name="nh_kh1" width="200" hidden="true">
+          <text v="Nhóm 1" e="Group 1"></text>
+        </field>
+		<field name="ten_nh_kh1" width="200" fieldType="EX">
+          <text v="Tên nhóm 1" e="Group Name 1"></text>
+        </field>
+		<field name="nh_kh2" width="200" hidden="true">
+          <text v="Nhóm 2" e="Group 2"></text>
+        </field>
+		<field name="ten_nh_kh2" width="200" fieldType="EX">
+          <text v="Tên nhóm 2" e="Group Name 2"></text>
+        </field>
+		<field name="nh_kh3" width="200" hidden="true">
+          <text v="Nhóm 3" e="Group 3"></text>
+        </field>
+		<field name="ten_nh_kh3" width="200" fieldType="EX">
+          <text v="Tên nhóm 3" e="Group Name 3"></text>
+        </field>
+		<field name="ma_plkh" width="150" fieldType="EX" >
+          <text v="Mã p/loại KH gần nhất" e="Last Customer Classification Code"></text>
+        </field>
+		<field name="ten_plkh" width="200" fieldType="EX" >
+          <text v="Tên p/loại KH gần nhất" e="Last Customer Classification Name"></text>
+        </field>
+		<field name="ma_nvbh" width="200">
+          <text v="Mã nhân viên" e="Note"></text>
+        </field>
+		<field name="ghi_chu" width="200">
+          <text v="Ghi chú" e="Note"></text>
+        </field>
+		
+		<field name="status" width="120" align="center">
+          <text v="Trạng thái" e="Status"></text>
+        </field>
+      </fields>
+      
+      <buttons>
+	    <button id="edit">
+          <text v="$EditToolbar" e="$EditToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+		<!-- <button id="find"> -->
+          <!-- <text v="$FindToolbar" e="$FindToolbar"></text> -->
+        <!-- </button> -->
+		<!-- <button id="split"> -->
+          <!-- <text v="-" e="-"></text> -->
+        <!-- </button> -->
+	    <button id="export">
+	    	<text v="$ExportToolbar" e="$ExportToolbar"></text>
+	    </button>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+      
+	  <script>
+		<query>
+			<text>
+			<![CDATA[
+				declare @strKey nvarchar(3000), @ma_nv varchar(32), @admin int;
+				select top 1 @ma_nv = username from sysuserinfo where user_id = @@userId
+				SELECT a.ma_so_thue, a.ma_plkh, ROW_NUMBER() OVER (PARTITION BY a.ma_so_thue ORDER BY a.line DESC) AS RowNum INTO #lslncuocgoi1 FROM lslncuocgoi a WHERE EXISTS (SELECT 1 FROM dmkh0 WHERE ma_so_thue = a.ma_so_thue);
+				set @strKey = ' ma_so_thue IN (SELECT ma_so_thue FROM #lslncuocgoi1 WHERE RowNum = 1 and ma_plkh = ''CBC'') '
+
+				IF @@admin = 1
+				BEGIN
+					exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 
+					'left join dmnh nh1 on a.nh_kh1 = nh1.ma_nh and nh1.ma_loai_nh = ''KH1'' 
+					left join dmnh nh2 on a.nh_kh2 = nh2.ma_nh and nh2.ma_loai_nh = ''KH2''
+					left join dmnh nh3 on a.nh_kh3 = nh3.ma_nh and nh3.ma_loai_nh = ''KH3''', 
+					'nh1.ten_nh ten_nh_kh1, nh2.ten_nh ten_nh_kh2, nh3.ten_nh ten_nh_kh3, cast('''' as nvarchar(255)) as ma_plkh, cast('''' as nvarchar(255)) as ten_plkh', '@@key', @strKey , @@filterKey, '', @pageIndex, 50, @@admin, @@userId,
+					'SELECT ma_so_thue, a.ma_plkh, b.ten_plkh, ROW_NUMBER() OVER (PARTITION BY ma_so_thue ORDER BY line DESC) AS RowNum into #lslncuocgoi FROM lslncuocgoi a left join dmploaikh b on a.ma_plkh = b.ma_plkh where exists(select 1 from #v where ma_so_thue = a.ma_so_thue);
+					UPDATE #v set ma_plkh = f.ma_plkh, ten_plkh = f.ten_plkh from #v a join #lslncuocgoi f on a.ma_so_thue = f.ma_so_thue
+					DROP TABLE #lslncuocgoi'
+				END
+				ELSE
+				BEGIN
+					set @strKey = @strKey + ' and a.ma_nvbh = '''+@ma_nv+''' '
+					
+					exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 
+					'left join dmnh nh1 on a.nh_kh1 = nh1.ma_nh and nh1.ma_loai_nh = ''KH1'' 
+					left join dmnh nh2 on a.nh_kh2 = nh2.ma_nh and nh2.ma_loai_nh = ''KH2''
+					left join dmnh nh3 on a.nh_kh3 = nh3.ma_nh and nh3.ma_loai_nh = ''KH3''', 
+					'nh1.ten_nh ten_nh_kh1, nh2.ten_nh ten_nh_kh2, nh3.ten_nh ten_nh_kh3, cast('''' as nvarchar(255)) as ma_plkh, cast('''' as nvarchar(255)) as ten_plkh', '@@key', @strKey , @@filterKey, '', @pageIndex, 50, @@admin, @@userId,
+					'SELECT ma_so_thue, a.ma_plkh, b.ten_plkh, ROW_NUMBER() OVER (PARTITION BY ma_so_thue ORDER BY line DESC) AS RowNum into #lslncuocgoi FROM lslncuocgoi a left join dmploaikh b on a.ma_plkh = b.ma_plkh where exists(select 1 from #v where ma_so_thue = a.ma_so_thue);
+					UPDATE #v set ma_plkh = f.ma_plkh, ten_plkh = f.ten_plkh from #v a join #lslncuocgoi f on a.ma_so_thue = f.ma_so_thue
+					DROP TABLE #lslncuocgoi'
+				END
+				
+				DROP TABLE #lslncuocgoi1
+			]]>
+			</text>
+		</query>
+
+		<finding>
+			<text>
+			<![CDATA[
+				declare @strKey nvarchar(3000), @strDetailKey nvarchar(3000), @ma_nv varchar(32), @admin int; set @strDetailKey = '';
+				select top 1 @ma_nv = username from sysuserinfo where user_id = @@userId
+				SELECT a.ma_so_thue, a.ma_plkh, ROW_NUMBER() OVER (PARTITION BY a.ma_so_thue ORDER BY a.line DESC) AS RowNum INTO #lslncuocgoi1 FROM lslncuocgoi a WHERE EXISTS (SELECT 1 FROM dmkh0 WHERE ma_so_thue = a.ma_so_thue);
+
+				if @ngay_goi2 >= @ngay_goi1 set @strDetailKey = @strDetailKey + ' and x.ngay_goi between ''' + convert(char(8), @ngay_goi1, 112) + ''' and ''' + convert(char(8), @ngay_goi2, 112) + ''''
+				if @ma_td <> '' set @strDetailKey = @strDetailKey + ' and x.ma_td like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@ma_td) + '%'''
+				if @ma_plkh <> '' set @strDetailKey = @strDetailKey + ' and x.ma_plkh like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@ma_plkh) + '%'''
+				if @ngay_goi_lai2 >= @ngay_goi_lai1 set @strDetailKey = @strDetailKey + ' and x.ngay_goi_lai between ''' + convert(char(8), @ngay_goi_lai1, 112) + ''' and ''' + convert(char(8), @ngay_goi_lai2, 112) + ''''
+
+				if @strDetailKey <> '' set @strDetailKey = ' and exists(select 1 from lslncuocgoi x where a.ma_so_thue = x.ma_so_thue ' + @strDetailKey + ')'
+				set @strKey = @strFinding + @strDetailKey + ' and ma_so_thue IN (SELECT ma_so_thue FROM #lslncuocgoi1 WHERE RowNum = 1 and ma_plkh = ''CBC'')'
+
+				IF @@admin = 1
+				BEGIN
+					exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 
+					'left join dmnh nh1 on a.nh_kh1 = nh1.ma_nh and nh1.ma_loai_nh = ''KH1'' 
+					left join dmnh nh2 on a.nh_kh2 = nh2.ma_nh and nh2.ma_loai_nh = ''KH2''
+					left join dmnh nh3 on a.nh_kh3 = nh3.ma_nh and nh3.ma_loai_nh = ''KH3''', 
+					'nh1.ten_nh ten_nh_kh1, nh2.ten_nh ten_nh_kh2, nh3.ten_nh ten_nh_kh3, cast('''' as nvarchar(255)) as ma_plkh, cast('''' as nvarchar(255)) as ten_plkh', '@@key', @strKey , @@filterKey, '', @pageIndex, 50, @@admin, @@userId,
+					'SELECT ma_so_thue, a.ma_plkh, b.ten_plkh, ROW_NUMBER() OVER (PARTITION BY ma_so_thue ORDER BY line DESC) AS RowNum into #lslncuocgoi FROM lslncuocgoi a left join dmploaikh b on a.ma_plkh = b.ma_plkh where exists(select 1 from #v where ma_so_thue = a.ma_so_thue);
+					UPDATE #v set ma_plkh = f.ma_plkh, ten_plkh = f.ten_plkh from #v a join #lslncuocgoi f on a.ma_so_thue = f.ma_so_thue
+					DROP TABLE #lslncuocgoi'
+				END
+				ELSE
+				BEGIN
+					exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 
+					'left join dmnh nh1 on a.nh_kh1 = nh1.ma_nh and nh1.ma_loai_nh = ''KH1'' 
+					left join dmnh nh2 on a.nh_kh2 = nh2.ma_nh and nh2.ma_loai_nh = ''KH2''
+					left join dmnh nh3 on a.nh_kh3 = nh3.ma_nh and nh3.ma_loai_nh = ''KH3''', 
+					'nh1.ten_nh ten_nh_kh1, nh2.ten_nh ten_nh_kh2, nh3.ten_nh ten_nh_kh3, cast('''' as nvarchar(255)) as ma_plkh, cast('''' as nvarchar(255)) as ten_plkh', '@@key', @strKey , @@filterKey, '', @pageIndex, 50, @@admin, @@userId,
+					'SELECT ma_so_thue, a.ma_plkh, b.ten_plkh, ROW_NUMBER() OVER (PARTITION BY ma_so_thue ORDER BY line DESC) AS RowNum into #lslncuocgoi FROM lslncuocgoi a left join dmploaikh b on a.ma_plkh = b.ma_plkh where exists(select 1 from #v where ma_so_thue = a.ma_so_thue);
+					UPDATE #v set ma_plkh = f.ma_plkh, ten_plkh = f.ten_plkh from #v a join #lslncuocgoi f on a.ma_so_thue = f.ma_so_thue
+					DROP TABLE #lslncuocgoi'
+				END
+				
+				DROP TABLE #lslncuocgoi1
+
+			]]>
+			</text>
+		</finding>
+	  </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+	<![CDATA[
+		function grid$khxl(f){
+			this.constructor(f);
+		}
+		grid$khxl.prototype = new DirEvent();
+		grid$khxl.prototype.isModalOpen = function() {
+			return $("#subcontent").find(".modal").length > 0;
+		};
+
+	grid$khxl.prototype.beforeButtonGridClick = function(id, gindex, r) {
+		// Kiểm tra nếu có modal đang mở
+		if (this.isModalOpen()) {
+			console.log("A modal is currently open. Action cannot be performed.");
+			return false; // Ngừng thực hiện hành động nếu có modal mở
+		}
+
+		// Tiến hành kiểm tra bình thường nếu không có modal mở
+		return true;
+	};
+		grid$khxl.prototype.afterInit = function(){
+
+		}
+	]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[
+		.tree-form{
+			width: 250px;
+		}
+		.ic-view-dept{
+		  background-position: 0px 0px;
+		}
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+
+</dir>

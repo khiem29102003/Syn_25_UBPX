@@ -1,0 +1,214 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+]>
+
+<dir id="m82Close" dirViewType="Grid" selectMultiple="Table" voucherCode="PU1" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Đóng tạm ứng" e="Đóng tạm ứng"></title>
+  <subtitle v="Xử lý &lt;b&gt;%s&lt;/b&gt; tạm ứng" e="&lt;b&gt;%s&lt;/b&gt; Advance Order"></subtitle>
+
+  <grids>
+    <grid table="m82" fieldKey="id" order="id desc" allowFilter="true" allowOrder="true">
+      
+      <fields>
+		<field name="ma_ct" width="80">
+          <text v="Mã c/từ" e="Voucher Code"></text>
+        </field>
+        <field name="so_ct" width="80" link="V" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+        <field name="ma_job_ct1" width="100" fieldType="EX" >
+          <text v="Số c/t đh" e="Order Document Number"></text>
+        </field>
+		<field name="ma_job_ct2" width="100" fieldType="EX" >
+          <text v="Số job dh" e="Order Job Number"></text>
+        </field>
+		<field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="ma_kh" width="120" >
+          <text v="Mã nhân viên" e="Employee Code"></text>
+        </field>
+        <field name="ten_kh" width="250" fieldType="EX" >
+          <text v="Tên nhân viên" e="Employee Name"></text>
+        </field>
+		<field name="dien_thoai" width="120" fieldType="EX" >
+          <text v="Điện thoại" e="Tel"></text>
+        </field>
+        <field name="ma_nt" width="80" >
+          <text v="Ngoại tệ" e="FC"></text>
+        </field>
+		 <field name="t_tt" dataType="N" format="CostAmount" width="100">
+          <text v="Tổng cộng" e="Total"></text>
+        </field>
+
+        <field name="unit_id" hidden="true" dataType="I" width="80" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="80" fieldType="EX" >
+          <text v="Đơn vị" e="Customer Name"></text>
+        </field>
+        <field name="id" dataType="N" fieldType="PK" format="0" >
+          <text v="ID" e="ID"></text>
+        </field>
+		<field name="id_dh" dataType="N" fieldType="PK" format="0" >
+          <text v="ID" e="ID"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="close">
+          <text v="Đóng/Bỏ đóng" e="Close/Cancel Close"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="find">
+          <text v="$FindToolbar" e="$FindToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000); set @strKey = 'ngay_ct between ''' + convert(char(8), @ngay_ct1, 112) + ''' and ''' + convert(char(8), @ngay_ct2, 112) + ''' and ' + @strFinding
+if @status = -1
+  set @strKey = @strKey + ' and status not in (0, 9)'
+else
+  set @strKey = @strKey + ' and status = 9'
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmkh c on a.ma_kh = c.ma_kh left join s61 s61 on a.id_dh = s61.id', 'b.ma_unit, c.ten_kh,c.dien_thoai, s61.so_job, (s61.ma_ct+s61.so_ct) ma_job_ct1, (s61.ma_job+s61.so_job) ma_job_ct2', '@@key',@strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </finding>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$m82Close(f){
+  this.constructor(f);
+}
+grid$m82Close.prototype = new DirEvent();
+grid$m82Close.prototype.afterInit = function(renderType){
+  var p = this._dir;
+  if (p.options._status == -1) p.find(".toolbar-close").attr('title', p.msg('close'))
+  else p.find(".toolbar-close").attr('title', p.msg('unclose'))
+}
+grid$m82Close.prototype.beforeButtonGridClick = function (id, gindex) {
+  var p = this._dir, g = p.grid(gindex), dt = g.data;
+  switch (id) {
+    case 'close':
+      var fees = p.selectedItems(), xstatus = p.options._status, msg = (xstatus == -1)? p.msg('msg1'): p.msg('msg2');
+      if (fees.count() > 0)
+        $.question(msg, $.msg.get("QuestionTitle"), p, function (q, v) {
+          q._close();
+          if (v){
+            p.request('CloseDH', '', [["tblKeys", "T", fees.sqlval()], ['xstatus', 'I', xstatus]], function(pp, d, run){
+              if (run) {
+                p._refresh();
+                p.clearSelectedItems();
+              }
+            });
+          }
+        });
+      return false;
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+         ]]>
+    </text>
+  </js>
+
+  <css>
+    <text>
+      <![CDATA[
+.toolbar-close > div {
+  background-position: -336px -400px !important;
+}
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+  
+  <script>
+    <request code="CloseDH">
+      <text>
+        <![CDATA[
+if @xstatus = -1 begin
+  update m82 set xstatus = status where status <> 9 and id in (select id from @tblKeys)
+  update m82 set status = 9, user_id2 = @@userId, datetime2 = getdate() where status <> 9 and id in (select id from @tblKeys)
+  update d82 set status = 9 where status <> 9 and id in (select id from @tblKeys)
+end else begin
+  select id, xstatus into #k1 from m82 where xstatus not in (0, 9) and id in (select id from @tblKeys)
+  if exists (select 1 from #k1) begin
+    update m82 set status = b.xstatus, xstatus = 0, user_id2 = @@userId, datetime2 = getdate() from m82 a join #k1 b on a.id = b.id
+    update d82 set status = b.xstatus from m82 a join #k1 b on a.id = b.id
+  end
+end
+
+select '' as message
+        ]]>
+      </text>
+    </request>
+  </script>
+
+  <messages>
+    <message val="msg1">
+      <text v="Bạn có chắc chắn sẽ &lt;b&gt;đóng&lt;/b&gt; các tạm ứng được chọn không?" e="Bạn có chắc chắn sẽ &lt;b&gt;đóng&lt;/b&gt; các tạm ứng được chọn không?"/>
+    </message>
+    <message val="msg2">
+      <text v="Bạn có chắc chắn sẽ &lt;b&gt;bỏ đóng&lt;/b&gt; các tạm ứng được chọn không?" e="Bạn có chắc chắn sẽ &lt;b&gt;bỏ đóng&lt;/b&gt; các tạm ứng được chọn không?"/>
+    </message>
+    <message val="close">
+      <text v="Đóng tạm ứng" e="Đóng tạm ứng"/>
+    </message>
+    <message val="unclose">
+      <text v="Bỏ đóng tạm ứng" e="Bỏ đóng tạm ứng"/>
+    </message>
+  </messages>
+</dir>

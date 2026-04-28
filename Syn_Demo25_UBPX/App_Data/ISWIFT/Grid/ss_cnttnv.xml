@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="ss_cnttnv" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Công nợ nhân viên" e="Employee Debt"></title>
+  <subtitle v="Từ ngày {ngay_ct1} đến ngày {ngay_ct2}..." e="From {ngay_ct1} To {ngay_ct2}..."></subtitle>
+  <grids>
+    <grid>
+	<fields>
+		<field name="ngay_ct_job" width="150" dataType="D" align="center" hidden="true">
+          <text v="Ngày c\từ" e="Customer Code"></text>
+        </field>		
+		<field name="id" width="100" hidden = "true" >
+          <text v="Id hệ thống" e="Customer Code"></text>
+        </field>
+		<field name="ma_ct" width="0" >
+          <text v="Mã c/từ" e="Voucher Code"></text>
+        </field>
+		<field name="so_ct" width="0" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+		<!-- <field name="ma_job_s61" width="100" hidden = "false" > -->
+          <!-- <text v="Mã ĐH" e="Job Code"></text> -->
+        <!-- </field> -->
+		<field name="ma_job" width="100" align="center" >
+          <text v="Mã" e="Job Code"></text>
+        </field>
+		<field name="so_job" width="100" align="center" link="V" >
+          <text v="Số" e="Job Code"></text>
+        </field>
+		<field name="ma_kh" width="150" hidden="false">
+          <text v="Mã người thanh toán" e="Employee Code"></text>
+        </field>
+		<field name="ten_kh" width="300">
+          <text v="Tên người thanh toán" e="Employee Name"></text>
+        </field>
+		<field name="ma_kh_job" width="150" hidden="false">
+          <text v="Mã khách hàng" e="Employee Code"></text>
+        </field>
+		<field name="ten_kh_job" width="300">
+          <text v="Tên khách hàng" e="Employee Name"></text>
+        </field>
+		<field name="hbl_no" width="150">
+          <text v="Số HBL" e="HBL No"></text>
+        </field>
+		<field name="mbl_no" width="150">
+          <text v="Số MBL" e="MBL No"></text>
+        </field>
+		<field name="so_tk" width="150">
+          <text v="Số tờ khai" e="Declaration Number"></text>
+        </field>
+		<field name="dien_giai_job" width="250">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+		<field name="so_hd" width="250">
+          <text v="Số hóa đơn" e="Explain"></text>
+        </field>
+		<!-- <field name="ma_nv" width="120" hidden="true"> -->
+          <!-- <text v="Mã khách hàng" e="Customer Code"></text> -->
+        <!-- </field> -->
+		<!-- <field name="ten_nv" width="300" hidden="true"> -->
+          <!-- <text v="Tên nhân viên" e="Customer Name"></text> -->
+        <!-- </field> -->
+		<field name="t_tty" width="120" dataType="N">
+          <text v="Tiền mua" e="Cost"></text>
+        </field>
+		<field name="t_ttx" width="120" dataType="N">
+          <text v="Tiền chi hộ" e="Pay on behalf"></text>
+        </field>
+		<field name="tien_tong" width="120" dataType="N">
+          <text v="Tổng tiền" e="Total money"></text>
+        </field>
+		<field name="tt" width="120" dataType="N">
+          <text v="Tiền đã thanh toán" e=" "></text>
+        </field>
+		<field name="tien_cl" width="120" dataType="N">
+          <text v="Tiền còn lại" e=" "></text>
+        </field>
+		<field name="tat_toan" width="80" align="Center">
+          <text v="Tất toán" e="Paid in full"></text>
+        </field>	
+
+		<field name="ten_noi_di" width="250">
+          <text v="Nơi đi" e="Point of Departure"></text>
+        </field>
+		<field name="ten_noi_den" width="250">
+          <text v="Nơi đến" e="Destination"></text>
+        </field>
+      </fields>
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$ss_cnttnv(f){
+  this.constructor(f);
+}
+grid$ss_cnttnv.prototype = new DirEvent();
+grid$ss_cnttnv.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+grid$ss_cnttnv.prototype.beforeInit = function(){
+  var p = this._dir;
+}
+grid$ss_cnttnv.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(), dt = g.data;
+}
+]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+exec ss_bccnncc @ngay_ct1, @ngay_ct2, @ma_job, @ma_kh, @ma_xe, @ps, @tt
+		]]>
+      </text>
+	
+    </processing>
+  </script>
+</dir>

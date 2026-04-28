@@ -1,0 +1,450 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+  <!ENTITY VoucherRequiredFields01 SYSTEM "..\Include\XML\VoucherRequiredFields03.xml">
+  <!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields04.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid01.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+
+  <!ENTITY VoucherSaleRequest SYSTEM "..\Include\XML\VoucherSaleRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from phixe where id = @id and status in (6,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+    ">
+]>
+
+
+<dir id="phixe" table="phixe" fieldKey="id" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" voucherCode="BQ1" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo giá" e="Quotation Entry"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+         <field name="ma_kh" allowBlank="true" viewType="Lookup" label="1" field="1"  hidden="true">
+          <text v="Mã khách hàng" e="Customer Code"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_kh" lookupInfo="dmkh|ma_kh|ten_kh" />
+        </field>
+        <field name="ten_kh" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		
+				<field name="ma_xe" label="1" field="1" viewType="Lookup" allowBlank="false" >
+					<text v="Mã xe" e="Vehicle"></text>
+					<viewInfo lookupType="One" lookupId="dmxe" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_xe" lookupInfo="dmxe|ma_xe|ten_xe" />
+				</field>
+				<field name="ten_xe" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+					<text v="" e=""></text>
+				</field> 
+			
+				
+			<field name="dien_giai" label="1" rows="1" field="-">
+			  <text v="Diễn giải" e="Memo"></text>
+			</field>
+			<field name="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+			  <text v="" e=""></text>
+			</field>
+      </fields>
+    </form>
+
+    <form gravity="TopRight" columns="120,120" >
+      <fields>
+        &VoucherRequiredFields01;
+        &VoucherRequiredFields02;
+      </fields>
+    </form>
+
+   
+    <form tabPageIndex="1" gravity="MiddleLeft" height="320" columns="120,120,240" >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="phixect" allowBlank="false" label="" field="-" viewType="Grid">
+          <text v="Chi tiết" e="Detail"></text>
+        </field>
+      </fields>
+    </form>
+	
+
+    <form gravity="BottomLeft" columns="120,120,120,120,120" >
+      <fields>
+        <field name="t_so_luong" label="1" field="1" dataType="N" disabled="true" format="Qty" >
+          <text v="Tổng số lượng" e="Total Quatity"></text>
+        </field>
+        <field name="t_tien_nt2" nextRow="false" label="1" field="1" dataType="N" disabled="true" format="FCAmount" >
+          <text v="Tổng tiền" e="Total Amount"></text>
+        </field>
+        <field name="t_tien2" nextRow="false" label="" field="1" hidden="true" disabled="true" dataType="N" format="Amount" >
+          <text v="" e="Total Amount"></text>
+        </field>
+        <field name="t_thue_nt" blank="2" label="1" field="1" dataType="N" hidden="true" disabled="true" format="FCAmount" >
+          <text v="Tổng thuế" e="Total Tax"></text>
+        </field>
+        <field name="t_thue" label="" field="1" nextRow="false" disabled="true" hidden="true" dataType="N" format="Amount" >
+          <text v="" e="Total Tax"></text>
+        </field>
+        <field name="t_tt_nt" nextRow="false" label="1" field="1" dataType="N"  hidden="true" disabled="true" format="FCAmount" >
+          <text v="Tổng thanh toán" e="Total Amount"></text>
+        </field>
+        <field name="t_tt" label="" field="1" nextRow="false" disabled="true" hidden="true" dataType="N" format="Amount" >
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+ <grids>
+		<grid id="phixect" table="phixect" fieldKey="id, line" order="line" readOnly="false">
+			<fields>
+				<field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+				  <text v="" e=""></text>
+				</field>
+				<field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+				  <text v="Dòng" e="Line"></text>
+				</field>
+				<field name="ma_phi" width="120"  viewType="Lookup" readOnly="false" allowBlank="false" >
+					<text v="Mã phí" e="Vehicle"></text>
+					<viewInfo lookupType="One" lookupId="dmphi" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_phi" lookupInfo="dmphi|ma_phi|ten_phi" />
+				</field>
+				<field name="ten_phi" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" width="250"  aliasName="cast('' as nvarchar(4000)) as ">
+					<text v="Tên phí" e=""></text>
+				</field>
+				<field name="so_luong" width="120" readOnly="false" dataType="N" allowBlank="false"  >
+					<text v="Số lượng" e="Explain"></text>
+				</field>
+				<field name="gia" width="120" readOnly="false" dataType="N" allowBlank="false">
+					<text v="Giá" e="Explain"></text>
+				</field>
+				<field name="tien" width="120" dataType="N" disabled="true" >
+					<text v="Tiền" e="Explain"></text>
+				</field>
+				<field name="tyle" width="120" readOnly="false" dataType="N" allowBlank="false" >
+					<text v="Tỷ giá" e="Explain"></text>
+				</field>
+				<field name="tien_tong" width="120" dataType="N">
+					<text v="Tổng cộng" e="Explain"></text>
+				</field>
+				<field name="dien_giai" width="200" readOnly="false" >
+					<text v="Diễn giải" e="Explain"></text>
+				</field> 
+			</fields>
+			<buttons>
+				<button id="add">
+					<text v="$AddToolbar" e="$AddToobar"></text>
+				</button>
+				<button id="delete">
+					<text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+				</button>
+				<button id="copy">
+					<text v="$CopyToolbar" e="$CopyToolbar"></text>
+				</button>
+				<button id="paste">
+					<text v="$PasteToolbar" e="$PasteToolbar"></text>
+				</button>
+				<button id="moveup">
+					<text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+				</button>
+				<button id="movedown">
+					<text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+				</button>
+				<button id="split">
+					<text v="-" e="-"></text>
+				</button>
+				<button id="freeze">
+					<text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+				</button>
+			</buttons>
+			 <script>
+        <query>
+          <text>
+            <![CDATA[
+set nocount on
+select @@fields into #t from phixect a @@join where @@key order by line
+select * from #t order by line
+drop table #t
+         ]]>
+          </text>
+        </query>
+      </script>
+			
+		</grid>
+	</grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$phixe(p){
+  this.constructor(p);
+}
+dir$phixe.prototype = new DirEvent();
+dir$phixe.prototype.beforeInit = function(renderType){
+  this._dir.options._files = null;
+}
+
+				dir$phixe.prototype.afterInit = function(){
+					var p = this._dir, g = p.grid(), phixect = p.grid(1);
+					var exp = {
+						tien: ['*tien', '[so_luong] * [gia]'],
+						tien_tong: ['*tien_tong','[tien] / [tyle]'],
+
+						
+						t_so_luong: ['@t_so_luong','[so_luong]'],
+						
+						t_tien: ['@t_tien','[tien] / [tyle]'],
+						}
+						p.applyExpression(exp, g, false);
+  
+  var expForm = {
+    t_tt_nt: ['#t_tt_nt', '[t_tien_nt2] + [t_thue_nt]'],
+    t_tt: ['#t_tt', '[t_tien2] + [t_thue] + [t_phi]']
+  }
+  p.applyExpressionForm(expForm, true);
+  
+				g.FomulaApplied = {
+					"so_luong":["t_so_luong","tien","tong_tien","t_tien"],
+					"gia":["tien","tien_tong","t_tien"],
+					"tyle":["tien_tong","t_tien"],
+					
+			      } //Gan lai valid của từng cột sẽ tính các công thức nào theo thứ tự.
+				}
+						
+  
+  p.options.FCColumns = {FC: ['t_tien_nt2', 't_thue_nt', 't_tt_nt', 't_tc_tien_nt2'], BC: ['t_tien2', 't_thue', 't_tt', 't_tc_tien2']};
+  g.FCColumns = {FC: ['gia_nt2', 'tien_nt2'], BC: ['gia2', 'tien2']};
+  
+  var oldTG = '', oTG = p.jObject('ma_nt'); //Neu ty gia thay doi
+  oTG.focus(function(){ oldTG = oTG.fval(); }).blur(function(){ if (oldTG != oTG.fval()) onExRateChanged(oTG, p);});
+  p.applyFCColumns();
+  p.applyFCColumns(g);
+  p.setFCHidden(oTG.fval());
+  p.calcExpressionAll(0, 't_ex_total');
+  
+  p.setColumnAuth(0, ['ma_lo', 'ma_vi_tri'], true); // Ko sd ma_lo, ma_vi_tri
+  dir$phixeDisabledMasterField(p, g);
+  dir$phixeHiddenColumnByType(p);
+  dir$phixeHiddenColumnByTran(p);
+  dir$phixeHiddenColumnByDay(p);
+  dir$phixeDisabledStatusByAction(p);
+  p.find(".control-label.t_so_luong, .control-label.t_tien_nt2, .control-label.t_thue_nt, .control-label.t_tt_nt, .input-field.t_so_luong, .input-field.t_tien_nt2, .input-field.t_tien2, .input-field.t_thue_nt, .input-field.t_thue, .input-field.t_tt_nt, .input-field.t_tt").css("font-weight", "bold");
+
+
+
+dir$phixe.prototype.beforeButtonGridClick = function (id, gindex) {
+  var p = this._dir;
+  switch (id) {
+    default:
+      break;
+  }
+  return true;
+}
+
+dir$phixe.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+]]>&VoucherExRateValid01;<![CDATA[
+    case 'ma_gd':
+      dir$phixeHiddenColumnByTran(p);
+      break;
+    case 'ma_ngv':
+      dir$phixeHiddenColumnByType(p);
+      break;
+    case 'ty_gia':
+      p.calcExpressionAll(0, '!ty_gia');
+      break;
+    case 'ma_kh':
+      p.request('Customer', '', ['ma_kh', 'ngay_ct', 'ma_nt']);
+      break;
+	case 'ma_dk_ngay':
+      dir$phixeHiddenColumnByDay(p);
+      break;
+    default:
+      break;
+  }
+}
+]]>&VoucherExRateValid02;<![CDATA[
+dir$phixe.prototype.gridDetailActionChange = function(gindex, action, r){
+  var p = this._dir;
+  if (action == 'AfterDeleteRow' || action == 'AfterAppendGrid') dir$phixeDisabledMasterField(p, p.grid(gindex));
+  return true;
+}
+function dir$phixeDisabledMasterField(p, g){
+  var dt = g.data, rows = dt.findRow("[ma_phi].trim() != ''"), dis = rows.length > 0;
+  p.setDisabled('unit_id', dis);
+  p.setInactive('unit_id', true);
+  if (p.options._sale_lock_master == 1) p.setDisabled(['ma_kh', 'ngay_ct', 'ma_nt'], dis);
+}
+function dir$phixeHiddenColumnByType(p){
+  var v = p.valForm('ma_ngv'), nt = p.valForm('ma_nt'), bc = p.options.struct.baseCurrency;
+}
+function dir$phixeHiddenColumnByTran(p){
+  
+}
+
+function dir$phixeHiddenColumnByDay(p){
+	var v = p.valForm('ma_dk_ngay');
+	if (v == 1) p.request('ma_dk_ngay', '', ['t2_yn','t3_yn','t4_yn','t5_yn','t6_yn','t7_yn','t8_yn']);
+	p.setDisabled(['t2_yn','t3_yn','t4_yn','t5_yn','t6_yn','t7_yn','t8_yn'], v == 1);
+	}
+
+function dir$phixeDisabledStatusByAction(p){
+  var o = p.jObject('status');
+  if (p.options.action != 'VIEW') o.find("[value=6],[value=7],[value=9]").remove();
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    &VoucherRequest;
+    &VoucherSaleRequest;
+		
+    <query>
+      <text>
+        <![CDATA[
+if @action = 'EDIT' begin
+]]>&CheckUpdatingDeleting;<![CDATA[
+end
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+if @action in ('EDIT', 'VIEW') exec ISWIFTStoreGetListFiles 'xfile', @id, '@@voucherCode', '', @script output
+if @script is null set @script = ''
+
+if @action = 'NEW' begin
+  declare @ma_nk varchar(32), @ten_nk nvarchar(3000), @ngay_ct date, @so_ct varchar(32), @i_so_ct int, @unit_id int
+  select @ngay_ct = getdate(), @unit_id = @@unit
+  
+  
+]]>&VoucherNumberQuery;<![CDATA[
+  if @so_ct is null
+    select '' as [so_ct], 0 as [i_so_ct], @unit_id as [unit_id], '' as ma_nk, '' as ten_nk
+  else
+    select @so_ct as [so_ct], @i_so_ct as [i_so_ct], @unit_id as [unit_id], @ma_nk as ma_nk, @ten_nk as ten_nk
+end
+else select @script as script
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+
+    <declare>
+      <text>
+        <![CDATA[
+declare @warning nvarchar(256), @dOldVoucherDate date, @dVoucherDate date, @nVoucherType tinyint, @strIds varchar(256), @q nvarchar(4000)
+set @warning = ''
+         ]]>
+      </text>
+    </declare>
+
+    &VoucherJSLoading;
+
+    <beforesave>
+      <text>
+        &VoucherNumberBeforeSave;
+      </text>
+    </beforesave>
+
+    <deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct, @dVoucherDate = ngay_ct, @nVoucherType = ma_ngv from phixe where id = @id
+        ]]>
+      </text>
+    </deleting>
+
+    <deleted>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+-- Áp dụng cho dữ liệu lớn
+--exec ISWIFTStoredDeleteDataWithKey 'phixect', @strIds, '', @dVoucherDate
+
+        ]]>
+      </text>
+    </deleted>
+
+    <updating>
+      <text>
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct from phixe where id = @id
+        ]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId, i_so_ct = @i_so_ct, so_ct = @so_ct where [%whereFieldKey]
+update dmttin set status = 0 from dmttin where id0 = rtrim(@id) and xgroup = '@@voucherCode'
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+         ]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @ma_ct = '@@voucherCode'
+exec ISWIFTStoredGetIdentityNumber '@@voucherCode', '@@table', @id output
+         ]]>
+      </text>
+    </inserting>
+
+    <inserted>
+      <text>
+        <![CDATA[
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+]]>
+      </text>
+    </inserted>
+
+    <aftersave>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+if @action = 'NEW' set @dOldVoucherDate = @ngay_ct
+update @phixect set id = @id, ma_kh = @ma_kh, ngay_ct = @ngay_ct, so_ct = @so_ct, status = @status
+delete phixect where id = @id
+insert phixect select * from @phixect
+
+
+--exec ISWIFTStoredPostingVoucher 'phixe', 'phixect', @dOldVoucherDate, @ngay_ct, @id, '@@voucherCode', '', ''
+
+
+exec ISWIFTStoredIncreaseVoucherNo @ma_nk, @ngay_ct, '@@voucherCode', @i_so_ct, @so_ct, '@@table'
+select '' as message, @warning as warning, @id as [#id], @so_ct as [#so_ct], @ma_unit as [#ma_unit]
+]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+    <message val="physicalRetrieve">
+      <text v="Chỉ xử lý nghiệp vụ sổ sách lấy dữ liệu từ thực tế" e="" />
+    </message>
+	 <message val="noDate">
+      <text v="Ngày hiệu lực đến không hợp lệ." e="Error Expiry Date."/>
+    </message>
+  </messages>
+</dir>

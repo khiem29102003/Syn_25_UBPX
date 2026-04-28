@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="hrbsvaora" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Cập nhật nhanh giờ vào ra" e="" />
+  <subtitle v="Từ ngày {ngay_tu} đến {ngay_den}..." e="From {ngay_tu} To {ngay_den}..."></subtitle>
+  <grids>
+    <grid readOnly="false">
+      <fields>
+				<field name="id" dataType="N" fieldType="PK" format="0" hidden="true">
+					<text v="" e=""></text>
+				</field>
+				<field name="ngay" fieldType="PK" width ="100" valueDefault="new Date()" copy="false" inactivate="true" allowBlank="false" dataType="D">
+					<text v="Ngày" e="Date"></text>
+				</field>
+				<field name="ma_nv" fieldType="EX" width="120" inactivate="true" aliasName="c">
+					<text v="Mã nhân viên" e="Employee ID"></text>
+				</field>
+				<field name="ho_ten_nv" fieldType="EX" width="150" inactivate="true">
+					<text v="Tên nhân viên" e="Employee Name"></text>
+				</field>
+				<field name="gio_vao1" viewType="Time" align="Center" width="80" readOnly="false">
+					<text v="Giờ vào (1)" e="Time In (1)"></text>
+				</field>
+				<field name="gio_ra1" viewType="Time" align="Center" width="80" readOnly="false">
+					<text v="Giờ ra (1)" e="Time Out (1)"></text>
+				</field>
+				<field name="gio_vao2" viewType="Time" align="Center" width="80" readOnly="false">
+					<text v="Giờ vào (2)" e="Time In (2)"></text>
+				</field>
+				<field name="gio_ra2" viewType="Time" align="Center" width="80" readOnly="false">
+					<text v="Giờ ra (2)" e="Time Out (2)"></text>
+				</field>
+				<field name="gio_vao3" viewType="Time" align="Center" width="80" readOnly="false">
+					<text v="Giờ vào (3)" e="Time In (3)"></text>
+				</field>
+				<field name="gio_ra3" viewType="Time" align="Center" width="80" readOnly="false">
+					<text v="Giờ ra (3)" e="Time Out (3)"></text>
+				</field>
+				<field name="gio_vao4" viewType="Time" align="Center" width="80" readOnly="false">
+					<text v="Giờ vào (4)" e="Time In (4)"></text>
+				</field>
+				<field name="gio_ra4" viewType="Time" align="Center" width="80" readOnly="false">
+					<text v="Giờ ra (4)" e="Time Out (4)"></text>
+				</field>
+
+				<field name="ma_cong" format="U" width="80" viewType="Lookup" readOnly="false" >
+					<text v="Không làm" e=""></text>
+					<viewInfo lookupType="One" lookupId="hrdmcong" lookupRef="ten_cong" lookupKey="loai_cong = 3 and status=1" lookupExactValue="1"/>
+				</field>
+				<field name="ten_cong" hidden="true" width="250" fieldType="EX" inactivate="true" readOnly="true" aliasName="c2.ten_cong as " join=" left join hrdmcong c2 on a.ma_cong_tcl = c2.ma_cong ">
+					<text v="Tên công" e=""></text>
+				</field>
+				<field name="so_gio" width="80" readOnly="false" dataType="N" format="2">
+					<text v="Số giờ" e=""></text>
+				</field>
+				<field name="ly_do" width="100"  readOnly="false">
+					<text v="Lý do" e=""></text>
+				</field>
+      </fields>
+
+      <buttons>
+        <button id="save">
+          <text v="$SaveToolbar" e="$SaveToolbar"></text>
+        </button>
+        <button id="find">
+          <text v="$FindToolbar" e="$FindToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="export">
+          <text v="$ExportToolbar" e="$ExportToolbar"></text>
+        </button>
+      </buttons>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$hrbsvaora(f){
+  this.constructor(f);
+}
+grid$hrbsvaora.prototype = new DirEvent();
+grid$hrbsvaora.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+grid$hrbsvaora.prototype.beforeInit = function(renderType){
+  var p = this._dir, g = p.grid(), dt = new DataTable(g.data.Tables[0]);
+  dt.setPrimaryKey(['id', 'ngay']);
+  if (p.options.reload == "") {
+    var k = p.options.dtUpdate.count();
+    while(k--) dt.update(p.options.dtUpdate, k, true); //Chuyen qua lai giua cac trang thi update lai gia tri theo key
+  }
+}
+grid$hrbsvaora.prototype.afterInit = function(renderType){
+  var p = this._dir, g = p.grid(), dt = g.data;
+  if (p.options.reload != "") {
+    p.options.dtUpdate = dt.clone(null, null); //Neu reload lai store thi tao lai bang thay doi
+    p.options.dtUpdate.setPrimaryKey(['id', 'ngay']);
+  }
+  p.find(".grid-input-field[value!='00:00']").css("font-weight", "700");
+
+}
+grid$hrbsvaora.prototype.gridCellValueChange = function (o, g, r, c, v) {
+  var p = this._dir, g = p.grid(), dt = g.data;
+  switch (c){
+    case 'gio_vao1':
+    case 'gio_ra1':
+    case 'gio_vao2':
+    case 'gio_ra2':
+    case 'gio_vao3':
+    case 'gio_ra3':
+    case 'gio_vao4':
+    case 'gio_ra4':
+      p.options.dtUpdate.update(dt, r, false, [c]);
+      o.css("font-weight", (v != '00:00')? "700":"");
+      break;
+		case 'ma_cong':
+			p.options.dtUpdate.update(dt, r, false, [c]);
+		console.log(dt)
+			o.css("font-weight", (v != '')? "700":"");
+			break
+		case 'so_gio':
+			p.options.dtUpdate.update(dt, r, false, [c]);
+			o.css("font-weight", (v != 0)? "700":"");
+			break
+		case 'ly_do':
+			p.options.dtUpdate.update(dt, r, false, [c]);
+			break
+    default:
+      break;
+  }
+
+}
+grid$hrbsvaora.prototype.beforeButtonGridClick = function (id, gindex) {
+  var p = this._dir;
+  switch (id) {
+    case 'save':
+      if (p.options.dtUpdate.count() == 0) {
+        $.showToast(p.msg('noChange'));
+        return false;
+      }
+      var m = new Memvars();
+      m.val('bsvaora', 'T', p.options.dtUpdate.sqlval(null, null, ['ma_nv', 'ho_ten_nv', 'ma_bp', 'ma_vtr']), 'hrbsvaora'); //Khai bao field EX de ko request len server cho nhe
+      p.request('Save', '', m, function(p, d, run) {
+        if (run) p._refresh(true);
+      });
+      return false;
+    default:
+      break;
+  }
+  return true;
+}
+]]>
+    </text>
+  </js>
+   <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+
+  <script>
+    <request code="Save" transaction="true">
+      <text>
+        <![CDATA[
+update @bsvaora set datetime0 = getdate(), datetime2 = getdate(), user_id0 = @@userId, user_id2 = @@userId
+update @bsvaora set datetime0 = b.datetime0, user_id0 = b.user_id0 from @bsvaora a join hrbsvaora b on a.id = b.id and a.ngay = b.ngay
+delete hrbsvaora from hrbsvaora a where exists(select 1 from @bsvaora b where a.id = b.id and a.ngay = b.ngay)
+insert into hrbsvaora select * from @bsvaora
+
+select '$Processed' as message
+        ]]>
+      </text>
+    </request>
+
+  </script>
+
+  <messages>
+    <message val="noChange">
+      <text v="Không có dữ liệu thay đổi" e="No Data Changed" />
+    </message>
+  </messages>
+</dir>

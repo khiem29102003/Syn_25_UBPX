@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="vdmcangdi" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục nơi đi" e="List of Origin"></title>
+  <grids>
+    <grid table="vdmcangdi" fieldKey="ma_noi_di" fieldName="ten_noi_di" order="ma_noi_di" allowFilter="true" allowOrder="true" >
+      <fields>
+        <field name="ma_noi_di" fieldType="PK" width="100" filterType="Code" >
+          <text v="Mã nơi đi" e="Origin Code"></text>
+        </field>
+        <field name="ten_noi_di" width="300" hidden="true">
+          <text v="Tên nơi đi" e="Origin Name"></text>
+        </field>
+		<field name="ten_noi_di2" width="300">
+          <text v="Tên nơi đi" e="Origin Name"></text>
+        </field>
+		<field name="ma_qg" width="100" >
+          <text v="Mã quốc gia" e="Country Code"></text>
+        </field>
+        <field name="ten_qg" width="200" fieldType="EX" >
+          <text v="Tên quốc gia" e="Country Name"></text>
+        </field>
+      </fields>
+	  <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = @lookupKey + case when @val = '' then '' else ' and (@@fieldKey like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or @@fieldName like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmquocgia c on a.ma_qg = c.ma_qg', 'c.ten_qg', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+    </grid>
+  </grids>
+</dir>

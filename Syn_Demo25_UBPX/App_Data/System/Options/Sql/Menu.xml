@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<script>
+  <getMenu>
+    <text>
+      <![CDATA[
+select rtrim(id) as id, rtrim(id0) as id0, case when '@@lan' = 'v' then text else text2 end as text, sysid, controller, xtype, vouchercode, img_code, img_pos, img_file, [disabled], mobile_yn, 0 as haschild, cast(0 as int) as level , link
+  into #t
+  from sysmenu where os like '%' + @os + '%'
+    and (@@admin = 1 or id in (select menu_id from sysrightmenu where a_view = 1 and user_id = @@userId))
+    and status = 1
+update #t set haschild = 1 from #t a where exists(select 1 from #t b where a.id = b.id0)
+
+if @@admin <> 1
+  insert into #t(id, id0, text, haschild, sysid, controller,xtype,vouchercode,img_code,img_pos,img_file, disabled,mobile_yn, level)
+	select id, id0, text, 0, 0, '', '', '', 0, '', '', 0, 1, 0 from sysmenu where rtrim(text) = '-' and vouchercode in (select id from #t)
+
+select * from #t order by id
+drop table #t
+
+select unit_id, ma_unit, case when '@@lan' = 'v' then ten_unit else ten_unit2 end as ten_unit from sysunit where unit_id = @@unit
+         ]]>
+    </text>
+  </getMenu>
+
+  <bookmark>
+    <text>
+      <![CDATA[
+select a.user_id, a.menu_id, case when @lan = 'v' then b.text else b.text2 end as text from bookmark a join sysmenu b on a.menu_id = b.id and a.user_id = @@userId
+]]>
+    </text>
+  </bookmark>
+
+  <bookmarkInsert>
+    <text>
+      <![CDATA[
+insert into bookmark(user_id, menu_id) select @@userId, @menuid where not exists(select 1 from bookmark where user_id = @@userId and menu_id = @menuid)
+select 1 as value
+]]>
+    </text>
+  </bookmarkInsert>
+
+  <bookmarkDelete>
+    <text>
+      <![CDATA[
+delete bookmark where user_id = @@userId and menu_id = @menuid
+select 1 as value
+]]>
+    </text>
+  </bookmarkDelete>
+</script>

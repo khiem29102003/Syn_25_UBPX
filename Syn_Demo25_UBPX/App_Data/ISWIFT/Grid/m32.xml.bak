@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="m32" dirViewType="Grid" dirObjectType="Voucher" voucherCode="CN1" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Phiếu chi hoạt động" e="Payment Slip for Activitye"></title>
+  <subtitle v="Thêm, sửa, xóa..." e="New, Edit, Delete..."></subtitle>
+
+  <grids>
+    <grid table="m32" fieldKey="id" order="id desc" allowFilter="true" allowOrder="true">
+      <fields>
+	  
+        <field name="so_ct" width="100" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+		
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+        <field name="ma_ngv" viewType="Combobox" width="100" >
+          <text v="Loại hóa đơn" e="Inv. Type"></text>
+          <viewInfo>
+            <options query="select ma_ngv, ten_ngv%l from dmngv where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="ma_kh" width="120" >
+          <text v="Mã nhà cung cấp" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="250" fieldType="EX" >
+          <text v="Tên nhà cung cấp" e="Customer Name"></text>
+        </field>
+		<field name="dien_thoai" width="120" fieldType="EX" >
+          <text v="Điện thoại" e="Tel"></text>
+        </field>
+        <field name="ma_nt" width="80" >
+          <text v="Ngoại tệ" e="FC"></text>
+        </field>
+        <field name="t_tt_nt" dataType="N" format="FCAmount" width="100">
+          <text v="Tổng tiền" e="Pcs UOM"></text>
+        </field>
+		 <field name="t_phi" dataType="N" format="CostAmount" width="100">
+          <text v="Tổng phí" e="Pcs UOM"></text>
+        </field>
+		 <field name="t_tt" dataType="N" format="CostAmount" width="100">
+          <text v="Tổng cộng" e="Total"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="unit_id" hidden="true" dataType="I" width="80" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="80" fieldType="EX" >
+          <text v="Đơn vị" e="Customer Name"></text>
+        </field>
+        <field name="id" dataType="N" fieldType="PK" format="0" >
+          <text v="ID" e="ID"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmkh c on a.ma_kh = c.ma_kh', 'b.ma_unit, c.ten_kh,c.dien_thoai', '@@key', '', @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @strDetailKey nvarchar(3000); set @strDetailKey = ''
+if @ma_vt <> '' set @strDetailKey = @strDetailKey + ' and x.ma_vt like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@ma_vt) + '%'''
+if @ma_kho <> '' set @strDetailKey = @strDetailKey + ' and x.ma_kho like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@ma_kho) + '%'''
+if @ma_lo <> '' set @strDetailKey = @strDetailKey + ' and x.ma_lo like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@ma_lo) + '%'''
+if @ma_vi_tri <> '' set @strDetailKey = @strDetailKey + ' and x.ma_vi_tri like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@ma_vi_tri) + '%'''
+if @strDetailKey <> '' set @strDetailKey = ' and exists(select 1 from d32 x where a.id = x.id ' + @strDetailKey + ')'
+
+set @strKey = 'ngay_ct between ''' + convert(char(8), @ngay_ct1, 112) + ''' and ''' + convert(char(8), @ngay_ct2, 112) + ''' and ' + @strFinding + ' and ' + dbo.ISWIFTFunctionGetUnitIDRightKeys(@@admin, @@userId, @ma_unit, 'a.unit_id') + @strDetailKey
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmkh c on a.ma_kh = c.ma_kh', 'b.ma_unit, c.ten_kh,c.dien_thoai', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </finding>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$m32(f){
+  this.constructor(f);
+}
+grid$m32.prototype = new DirEvent();
+grid$m32.prototype.afterInit = function(renderType){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+
+  <messages>
+    <message val="DaThanhToan">
+      <text v="Đã có chứng từ thanh toán cho hóa đơn này, không được sửa/xóa." e=""/>
+    </message>
+    <message val="DaTraLai">
+      <text v="Đã có chứng từ trả lại cho hóa đơn này, không được sửa/xóa." e=""/>
+    </message>
+  </messages>
+</dir>

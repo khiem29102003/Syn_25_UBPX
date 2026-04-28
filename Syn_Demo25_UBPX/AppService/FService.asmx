@@ -1,0 +1,1 @@
+﻿<%@ WebService Language="VB" CodeBehind="AService.asmx.vb" Class="ISWIFT.Sys.FService" %>

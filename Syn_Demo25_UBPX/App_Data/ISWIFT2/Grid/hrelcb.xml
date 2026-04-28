@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="hrelcb" width="Large" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lương cơ bản &lt;b&gt;[%s]&lt;/b&gt;" e="&lt;b&gt;[%s]&lt;/b&gt;"></title>
+  <subtitle v="Thêm, sửa, xóa..." e="Add, Edit, Delete..."></subtitle>
+  <grids>
+    <grid table="hrelcb" fieldKey="id, line" order="id, line" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="id" dataType="N" fieldType="PK" width="100" format="0" hidden="true">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="line" dataType="N" fieldType="PK" width="100" format="0" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+        <field name="ngay_hl" width="100" dataType="D">
+          <text v="Ngày hiệu lực" e=""></text>
+        </field>
+        <field name="ngay_qd" width="100" dataType="D">
+          <text v="Ngày quyết định" e=""></text>
+        </field>
+        <field name="he_so" dataType="N" fieldType="PK" width="100" format="2">
+          <text v="Hệ số" e=""></text>
+        </field>
+        <field name="muc_luong" dataType="N" fieldType="PK" width="100" format="0">
+          <text v="Lương" e=""></text>
+        </field>
+        <field name="ghi_chu" width="300">
+          <text v="Ghi chú" e="Note"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = 'id = ' + rtrim(@id)
+exec iswiftStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '@@join', '', '@@key', @key2, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$hrelcb(f){
+  this.constructor(f);
+}
+grid$hrelcb.prototype = new DirEvent();
+grid$hrelcb.prototype.afterInit = function(){
+  var p = this._dir;
+}
+]]>
+    </text>
+  </js>
+</dir>

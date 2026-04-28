@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="qlcuochop" table="qlcuochop" fieldKey="ma_cuochop" transaction="true" tryCatch="true" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách cuộc họp" e="List of Meetings"></title>
+  <title0 v="Mới - cuộc họp" e="New - meeting"></title0>
+  <title1 v="Sửa - cuộc họp" e="Edit - meeting"></title1>
+
+  <forms>
+	<form gravity="TopLeft" columns="120,120,120,120,120,120">
+		<fields>
+			<field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_cuochop" label="1" field="-" allowBlank="false" fieldType="PK" disabled="true" importable="-1">
+				<text v="Mã cuộc họp" e="Meeting code"></text>
+			</field>
+			<field name="ten_cuochop" label="1" field="-" allowBlank="false" disabled="false" importable="10">
+			  <text v="Tên cuộc họp" e="Meeting Name"></text>
+			</field>
+			<field name="ten_cuochop2" label="1" field="-" allowBlank="true" disabled="false"  importable="15">
+			  <text v="Tên tiếng anh" e="English name"></text>
+			</field>
+			<field name="noi_dung" label="1" field="-" allowBlank="false" disabled="false" rows="3"  importable="15">
+			  <text v="Nội dung cuộc họp" e="Meeting Content"></text>
+			</field>
+			<field name="ma_lcuochop" allowBlank="false" viewType="Lookup" label="1" field="1" hidden="false" importable="20">
+			  <text v="Mã loại cuộc họp" e="Meeting Type Code"></text>
+			  <viewInfo lookupType="One" lookupId="dmlcuochop" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_lcuochop" lookupInfo="dmlcuochop|ma_lcuochop|ten_lcuochop" />
+			</field>
+			<field name="ten_lcuochop" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ngay_hop" nextRow="true" dataType="D" valueDefault="new Date()" label="1" field="1" importable="5" >
+				<text v="Ngày họp" e="Meeting Date"></text>
+			</field>
+			<field name="gio_bd" label="1" field="[100]" allowBlank="true" disabled="false" nextRow="false" >
+				<text v="Giờ bắt đầu" e="Time Start"></text>
+			</field>
+			<field name="gio_kt" label="1" field="[100]" allowBlank="true" disabled="false" nextRow="false">
+				<text v="Giờ kết thúc" e="Time End"></text>
+			</field>
+			<field name="dia_chi" label="1" field="1" allowBlank="false" disabled="false" importable="15">
+			  <text v="Địa điểm" e="Location"></text>
+			</field>
+			<field name="ds_chutri" viewType="Lookup" label="1" field="-" allowBlank="false" setype="1" nextRow="true">
+			  <text v="Chủ trì" e="Chairperson "></text>
+			  <viewInfo lookupType="Multi" lookupId="dmnv" lookupKey="xstatus = 5 and status = 1" lookupCheck="1=1" lookupRef="" lookupInfo="dmnv|ma_nv|ten_nv" />
+			</field>
+			<field name="ds_nguoithamgia" viewType="Lookup" label="1" field="-" allowBlank="false" setype="1" nextRow="true">
+			  <text v="Thành phần tham gia" e="Participants"></text>
+			  <viewInfo lookupType="Multi" lookupId="dmnv" lookupKey="xstatus = 5 and status = 1" lookupCheck="1=1" lookupRef="" lookupInfo="dmnv|ma_nv|ten_nv" />
+			</field>
+			<field name="status" viewType="Combobox" inactivate="false" label="1" field="2" valueDefault="1" nextRow="true" importable="-1" >
+			  <text v="Trạng thái" e="Status"></text>
+			  <viewInfo>
+				<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 ">
+				</options>
+			  </viewInfo>
+			</field>
+      </fields>
+    </form>
+	<form tabPageIndex="1" gravity="MiddleLeft" height="300" columns="120,120,360" >
+      <text v="Đính kèm" e="Attach Files"></text>
+      <fields>
+        <field name="xfile" label="1" field="2" viewType="File" fieldType="EXParam">
+          <text v="Chọn files" e="Attach Files"></text>
+          <viewInfo fileFieldId0="ma_cuochop" fileGroup="qlcuochop" fileExtension="*" maxFileSize="10240" maxFileCount="10"></viewInfo>
+        </field>
+      </fields>
+    </form>
+</forms>
+
+&DefaultButton;
+
+<js>
+<text>
+  <![CDATA[
+function dir$qlcuochop(p){
+  this.constructor(p);
+}
+dir$qlcuochop.prototype = new DirEvent();
+function getSystemTime(format) {
+    return new Promise(function(resolve, reject) {
+        $.ajax({
+            type: "POST",
+            url: "/Main/Defaults.aspx/GetSystemTime",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify({ format: format }),
+            success: function(response) {
+                var systemTime = response.d;
+                resolve(systemTime);
+            },
+            error: function(error) {
+                reject(error);
+            }
+        });
+    });
+}
+function getTime(p, className) {
+	const inputEl = document.querySelector(`input.${className}`);
+	console.log(inputEl);
+    if (!inputEl) return;
+
+    let isValid = false;
+
+    inputEl.addEventListener("input", function (e) {
+        let raw = e.target.value.replace(/\D/g, "").slice(0, 4); // Giữ lại 4 chữ số đầu
+        let formatted = raw;
+		
+        if (raw.length >= 3) {
+            formatted = `${raw.slice(0, 2)}:${raw.slice(2, 4)}`;
+        }
+		
+        e.target.value = formatted;
+		
+		const [h, m] = formatted.split(":").map(Number);
+        isValid = Number.isInteger(h) && Number.isInteger(m) && h >= 0 && h <= 23 && m >= 0 && m <= 59;
+
+    });
+
+    inputEl.addEventListener("blur", async (e) => {
+        if (!isValid && e.target.value.trim() !== "") {
+            try {
+                const [hh, mm] = await Promise.all([
+                    getSystemTime("HH"),
+                    getSystemTime("mm")
+                ]);
+                e.target.value = `${hh}:${mm}`;
+            } catch (err) {
+                console.error("Lỗi lấy giờ hệ thống:", err);
+            }
+        } else {
+            console.log("✅ Giờ hợp lệ:", e.target.value);
+        }
+    });
+}
+dir$qlcuochop.prototype.beforeInit = function(renderType){
+  this._dir.options._files = null;
+  document._dir = this._dir;
+}
+dir$qlcuochop.prototype.afterInit = function(renderType){
+    var p = this._dir,g = p.options.parent;
+	
+	getTime(p, 'gio_bd');
+	getTime(p, 'gio_kt');
+	
+	dir$qlcuochopLoadMaCuocHop(p);
+	dir$qlcuochopDisabledMasterField(p, g);
+}
+
+function dir$qlcuochopLoadMaCuocHop(p){
+	var maCuochop = p.valForm('ma_cuochop');
+
+	if(p.options.action == 'NEW') {	
+		p.request('LoadMaCuocHop', '', ['ngay_hop']);
+	}
+}
+
+dir$qlcuochop.prototype.formFieldValueChange = function(o, cF, v) {
+    var p = this._dir;
+	switch (cF){
+		case 'ngay_hop':
+			dir$qlcuochopLoadMaCuocHop(p);
+		break;
+
+		default:
+		  break;
+	}
+};
+
+function dir$qlcuochopDisabledMasterField(p){
+	var maCuochop = p.valForm('ma_cuochop');
+	if (maCuochop !== '') {
+		p.setDisabled('ngay_hop', true);
+	}
+	else {
+		p.setDisabled('ngay_hop', false);
+	}
+}
+         ]]>
+    </text>
+  </js>
+	<css>
+		<text>
+			  <![CDATA[
+.modal-dialog-lg{min-width:960px!important;}
+.control-label.tt {color: #499b98; text-decoration: underline}
+.control-label.ma_cuochop, .control-label.ma_lcuochop, .control-label.ten_cuochop,.control-label.noi_dung, .control-label.ds_chutri, .control-label.ds_nguoithamgia {color: #499b98;}
+			  ]]>
+		</text>
+	</css>
+	<script>
+		<request code="LoadMaCuocHop">
+		<text>		
+			<![CDATA[
+EXEC [dbo].[st_CreateMeetingCode] @ngay_hop;
+			]]>				
+		</text>
+		</request>
+  		<query>
+		  <text>
+			<![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+drop table #@@table
+			 ]]>
+		  </text>
+		</query>
+		<updated>
+		  <text>
+			<![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId where [%whereFieldKey]
+			 ]]>
+		  </text>
+		</updated>
+		<inserting>
+		  <text>
+			<![CDATA[
+if exists(select 1 from @@table a where [%whereFieldKey]) begin
+  select '$codeExistsNewMsg' as message, '@@firstFieldKey' as field
+  return
+end
+
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @unit_id = @@unit
+			]]>
+		  </text>
+		</inserting>
+		<importing>
+			<text>
+			<![CDATA[
+update #data set unit_id = @@unit
+@@insert
+			]]>
+			</text>
+		</importing>
+	</script>
+  <messages>
+
+	 <message val="RequireMaPl">
+      <text v="Vui lòng chọn văn bản lưu hành để tạo mã văn bản" e="Please select a circulation document to generate a document code."/>
+    </message>
+	<message val="RequireMaNVB">
+      <text v="Vui lòng chọn nhóm văn bản để tạo mã văn bản" e="Please select a document group to generate a document code."/>
+    </message>
+	<message val="codeExistsNewMsg">
+	  <text v="Mã văn bản đã tồn tại trong danh mục." e="The document code already exists in the list."/>
+	</message>
+  </messages>
+</dir>

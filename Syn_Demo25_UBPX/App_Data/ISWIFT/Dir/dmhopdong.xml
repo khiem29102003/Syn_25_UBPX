@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmhopdong" table="dmhopdong" fieldKey="ma_hd" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục hợp đồng" e="List of Contract"></title>
+  <title0 v="Thêm mới" e="Create New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_hd" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="5" >
+          <text v="Mã hợp đồng" e="Contract Code"></text>
+        </field>
+        <field name="ten_hd" label="1" field="-" allowBlank="false" importable="10" >
+          <text v="Tên hợp đồng" e="Contract Name"></text>
+        </field>
+        <field name="ten_hd2" label="1" field="-" importable="15" >
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+	    <field name="so_ngay" label="1" field="1" dataType="N" importable="20" >
+          <text v="Số ngày" e="Date Number"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" valueDefault="1" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmhopdong(p){
+  this.constructor(p);
+}
+dir$dmhopdong.prototype = new DirEvent();
+dir$dmhopdong.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmhopdong.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+dir$dmhopdongDisabledMasterField(p, g);
+
+}
+
+function dir$dmhopdongDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_hd').trim() != '')
+  {
+    p.setDisabled('ma_hd', true);
+  }
+  else
+  {
+    p.setDisabled('ma_hd', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+  
+  <css>
+	<text>
+	  <![CDATA[
+		.control-label.ma_hd, .control-label.ten_hd
+		{	
+			//font-weight:bold;	
+			color: #499b98;;
+		}
+	  ]]>
+	</text>
+  </css>
+  
+  <script>
+	<importing>
+      <text>
+        <![CDATA[
+		@@insert
+        ]]>
+      </text>
+    </importing>
+  </script>
+  
+  <messages>
+	<message val="codeExistsNewMsg">
+		<text v="Mã hợp đồng đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The contract code already exists in the catalog, please choose a different code"/>
+	</message>
+	<message val="codeExistsEditMsg">
+		<text v="Mã hợp đồng đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The contract code already exists in the catalog, please choose a different code"/>
+	</message>
+  </messages>
+
+</dir>

@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="qldctcccd" table="qldctcccd" fieldKey="ma_dancu" transaction="true" tryCatch="true" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+   <title v="Quản lý dân cư theo căn cước công dân" e="Population Management by Citizen ID"></title>
+  <title0 v="Thêm mới - Quản lý dân cư theo căn cước công dân" e="New - Population Management by Citizen ID"></title0>
+  <title1 v="Sửa - Quản lý dân cư theo căn cước công dân" e="Edit - cirulatedPopulation Management by Citizen ID"></title1>
+
+  <forms>
+	<form gravity="TopLeft" columns="120,120,120,120,120" >
+		<fields>
+			<field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_dancu" format="U" label="1" field="2" allowBlank="false" disabled="true" fieldType="PK" importable="5">
+				<text v="Mã cư dân" e="Resident Code"></text>
+			</field>
+			<field name="ten_dancu" allowBlank="false" label="1" field="-" importWidth="250" importable="10">
+				<text v="Tên cư dân" e="Resident Name"></text>
+			</field>
+			<field name="ten_dancu2" label="1" field="-" importWidth="250" importable="15">
+			  <text v="Tên khác" e="Other name"></text>
+			</field>	
+      </fields>
+    </form>
+	
+	<form tabPageIndex="1" gravity="MiddleLeft" height="400" columns="120,120,120,120,120" >
+		<text v="Thông tin chi tiết" e="Infor Detail"></text>
+		<fields>
+			<field name="thuongtru_yn" dataType="B" clientDefault="true" label="[80]" field="[20]" valueDefault="0" inactivate="true">
+			  <text v="Thường trú" e="Permanent"></text>
+			</field>
+			<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[40]"> 
+			  <text v="" e=""></text> 
+			</field> 
+			<field name="tamtru_yn" dataType="B" clientDefault="true" label="[80]" field="[20]" valueDefault="0" inactivate="true" nextRow="false">
+			  <text v="Tạm trú" e="Temporary"></text>
+			</field>
+			<field name="ma_ttp" viewType="Lookup" label="1" field="1" allowBlank="false" importable="15">
+			  <text v="Mã tỉnh/thành phố" e="Province/City Code"></text>
+			  <viewInfo lookupType="One" lookupId="dmttp" lookupKey="status=1" lookupRef="ten_ttp" lookupCheck="1=1" lookupInfo="dmttp|ma_ttp|ten_ttp" importCheck="@@DF and z.status=1"/>
+			</field>
+			<field name="ten_ttp" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="" field="[240]" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_phuongxa" viewType="Lookup" label="1" field="1" allowBlank="true" importable="20">
+			  <text v="Mã phường xã" e="Commune Code"></text>
+			  <viewInfo lookupType="One" lookupId="dmphuongxa" lookupKey="status=1 and ma_ttp = ![ma_ttp]!" lookupRef="ten_phuongxa" lookupCheck="1=1" lookupInfo="dmphuongxa|ma_phuongxa|ten_phuongxa" importCheck="@@DF and z.status=1"/>
+			</field>
+			<field name="ten_phuongxa" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="" field="[240]" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_khupho" format="U" viewType="Lookup" label="1" field="1" clientDefault="true" allowBlank="true" importable="95">
+			  <text v="Mã khu phố" e="Neighborhood Code"></text>
+			  <viewInfo lookupType="One" lookupId="dmkhupho" lookupKey="(ma_phuongxa = '' or ma_phuongxa = ![ma_phuongxa]!) and status=1 " lookupCheck="1=1" lookupRef="ten_khupho" lookupInfo="dmkhupho|ma_khupho|ten_khupho" importCheck="@@DF and z.status=1"/>
+			</field>
+			<field name="ten_khupho" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="dia_chi" label="1" field="-" importWidth="250" importable="20" allowBlank="false" rows="2">
+			 <text v="Địa chỉ thường trú" e="Permanent Address"></text>
+			</field>
+			<field name="ngay_sinh" label="1" field="1" allowBlank="false" dataType="D" importable="70">
+			  <text v="Ngày sinh" e="Birthday"></text>
+			</field>
+			 <field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1">
+			  <text v="" e=""></text>
+			</field>
+			<field name="gioi_tinh" allowBlank="false" viewType="Combobox" inactivate="false" label="1" field="1" valueDefault="1" nextRow="false" importable="-1">
+			  <text v="Giới tính" e="Sex"></text>
+			  <viewInfo>
+				<options query="select ma_gt, ten_gt%l from dmgioitinh where status = 1 ">
+				</options>
+			  </viewInfo>
+			</field>
+			<field name="so_cccd" allowBlank="false" label="[120]" field="[120]" importable="70">
+			  <text v="Số CCCD/Mã định danh" e="ID Number"></text>
+			</field>
+			 <field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ngay_cap" allowBlank="false" label="1" field="1" dataType="D" nextRow="false" >
+			  <text v="Ngày cấp" e="Date of issue"></text>
+			</field>
+			<field name="dien_thoai" label="1" field="1" allowBlank="false" importable="70">
+			  <text v="Điện thoại" e="Phone"></text>
+			</field>
+			<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1">
+			  <text v="" e=""></text>
+			</field>
+			<field name="dan_toc" allowBlank="false" viewType="Combobox" inactivate="false" label="1" field="1" valueDefault="1" nextRow="false" importable="-1">
+			  <text v="Dân tộc" e="Ethnicity"></text>
+			  <viewInfo>
+				<options query="select ma_dt, ten_dt%l from dmdantoc where status = 1 ">
+				</options>
+			  </viewInfo>
+			</field>
+			<field name="ma_hogiadinh" viewType="Lookup" label="1" field="1" allowBlank="false" importable="15">
+			  <text v="Mã hộ gia đình" e="Type of Residence "></text>
+			  <viewInfo lookupType="One" lookupId="dmhogiadinh" lookupKey="status=1" lookupRef="ma_hogiadinh" lookupCheck="1=1" importCheck="@@DF and z.status=1"/>
+			</field>
+			
+			<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1"> 
+			  <text v="" e=""></text> 
+			</field> 
+			<field name="ma_qhgd" label="1" field="1" viewType="Combobox" inactivate="true" readOnly="false" allowBlank="false" nextRow="false"> 
+				<text v="Quan hệ gia đình" e="Type of Residence "></text> 
+				<viewInfo> 
+					<options query="select ma_qh, ten_qh%l from dmqhgd where status = 1 "> 
+					</options> 
+				</viewInfo> 
+			</field> 
+			<field name="status" viewType="Combobox" inactivate="false" label="1" field="2" valueDefault="1" nextRow="true" importable="-1" >
+			  <text v="Trạng thái" e="Status"></text>
+			  <viewInfo>
+				<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 ">
+				</options>
+			  </viewInfo>
+			</field>
+		</fields>
+	</form>
+</forms>
+
+&DefaultButton;
+
+<js>
+    <text>
+  <![CDATA[
+function dir$qldctcccd(p){
+  this.constructor(p);
+}
+dir$qldctcccd.prototype = new DirEvent();
+dir$qldctcccd.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$qldctcccd.prototype.afterInit = function(renderType){
+  var p = this._dir;
+
+	dir$qldctcccdDisabledMasterField(p);
+}
+
+function dir$qldctcccdDisabledMasterField(p){
+
+}
+
+dir$qldctcccd.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+	var element = p.valForm('thuongtru_yn');
+	var element2 = p.valForm('tamtru_yn');
+  
+  switch (cF){
+	case 'so_cccd':
+		if(p.options.action == "NEW")
+		{
+			dir$qldctcccdCreateCode(p);
+		}
+		break;
+	case 'ngay_cap':
+		if(p.options.action == "NEW")
+		{
+			dir$qldctcccdCreateCode(p);
+		}
+		break;
+	case 'thuongtru_yn':
+
+		// Xử lý khi điều kiện thỏa mãn
+		if (element === 1) {
+			p.valForm('tamtru_yn', 0, '')
+		} else {
+			p.valForm('thuongtru_yn', 1, '')
+		}
+      break;
+	  case 'tamtru_yn':
+		if (element2 === 1) {
+			p.valForm('thuongtru_yn', 0, '')
+		} else {
+			p.valForm('tamtru_yn', 1, '')
+		}
+		break;
+	default:
+      break;
+	}
+}
+
+function dir$qldctcccdCreateCode(p) {
+	var ngayCap = p.valForm('ngay_cap'), soCCCD = p.valForm('so_cccd');
+	
+	const date = new Date(ngayCap);
+	const yyyy = date.getFullYear();
+	const mm = String(date.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
+	const dd = String(date.getDate()).padStart(2, '0');
+	const formattedDate = `${yyyy}${mm}${dd}`;
+	return p.valForm('ma_dancu', `MDC${formattedDate}${soCCCD}`, true);
+	
+}
+         ]]>
+    </text>
+  </js>
+	<css>
+		<text>
+			  <![CDATA[
+.modal-dialog-lg{min-width:720px!important;}
+.control-label.tt {color: #499b98; text-decoration: underline}
+.control-label.ma_dancu, .control-label.so_cccd , .control-label.ngay_cap{color: #499b98;}
+			  ]]>
+		</text>
+	</css>
+	<script>
+		<query>
+		  <text>
+			<![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+drop table #@@table
+			 ]]>
+		  </text>
+		</query>
+		<updated>
+		  <text>
+			<![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId where [%whereFieldKey]
+			 ]]>
+		  </text>
+		</updated>
+		<inserting>
+		  <text>
+			<![CDATA[
+if exists(select 1 from @@table a where [%whereFieldKey]) begin
+  select '$codeExistsNewMsg' as message, '@@firstFieldKey' as field
+  return
+end
+
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @unit_id = @@unit
+			]]>
+		  </text>
+		</inserting>
+		<importing>
+			<text>
+			<![CDATA[
+update #data set unit_id = @@unit
+@@insert
+			]]>
+			</text>
+		</importing>
+	</script>
+	<messages>
+		<message val="codeExistsNewMsg">
+		  <text v="Mã văn bản lưu hành đã tồn tại trong danh mục." e="The circulation document code already exists in the list."/>
+		</message>
+	</messages>
+</dir>

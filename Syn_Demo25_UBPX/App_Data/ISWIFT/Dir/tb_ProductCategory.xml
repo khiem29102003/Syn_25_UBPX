@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="tb_ProductCategory" table="tb_ProductCategory" fieldKey="Id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Loại danh mục" e="Category Type List"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120" >
+      <fields>
+       <field name="Id" disabled="true"  fieldType="PK" width="100" filterType="Code">
+          <text v="Mã loại sản phẩm" e="License plate"></text>
+        </field>
+        <field name="Title" width="250">
+          <text v="Tên loại sản phẩm" e="Car owner"></text>
+        </field>	
+        <field name="Alias" width="250">
+          <text v="Alias" e="Alias"></text>
+        </field>
+     <field name="CategoryTypeId" viewType="Lookup" label="1" field="1" >
+          <text v="Mã loại danh mục" e="Category Code"></text>
+             <viewInfo lookupType="One" lookupId="tb_CategoryType" lookupKey="IsActive=1" lookupCheck="1=1" lookupRef="CategoryName" lookupInfo="tb_CategoryType|Id|Title"/>
+        </field>
+		<field name="CategoryName" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>		
+		  <field name="Icon" width="250">
+          <text v="Icon" e="Alias"></text>
+        </field>
+        <field name="Description" label="1" field="1">
+          <text v="Mô tả" e="Description"></text>
+        </field>
+		 
+		<field name="IsActive" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+		<field name="SeoTitle"  width="120">
+          <text v="SEO Title" e="SEO Title"></text>
+        </field>
+		<field name="SeoDescription"  width="120">
+          <text v="Seo Description" e="Seo Description"></text>
+        </field>
+        <field name="SeoKeywords" width="250">
+          <text v="Seo Keywords" e="Seo Keywords"></text>
+        </field>
+      </fields>
+    </form>
+	<!-- <form gravity="TopRight" columns="120,120" > -->
+      <!-- <fields> -->
+	    <!-- <field name="ngay_dk" label="1" field="1" dataType="D"> -->
+          <!-- <text v="Ngày đăng kí" e="Registration date"></text> -->
+        <!-- </field> -->
+		<!-- <field name="ngay_dk_ld" label="1" field="1" dataType="D" > -->
+          <!-- <text v="Ngày đăng kí lần đầu" e="First registration date"></text> -->
+        <!-- </field> -->
+		<!-- <field name="han_dk" label="1" field="1" dataType="D"> -->
+          <!-- <text v="Hạn đăng kí" e="Registration deadline"></text> -->
+        <!-- </field> -->
+		<!-- <field name="tai_trong" label="1" field="1" dataType="N"> -->
+          <!-- <text v="Tải trọng" e="Weight"></text> -->
+        <!-- </field> -->
+		<!-- <field name="dung_tich" label="1" field="1" dataType="N"> -->
+          <!-- <text v="Dung tích" e="Capacity"></text> -->
+        <!-- </field> -->
+	  <!-- </fields> -->
+    <!-- </form> -->
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$tb_ProductCategory(p){
+  this.constructor(p);
+}
+dir$tb_ProductCategory.prototype = new DirEvent();
+dir$tb_ProductCategory.prototype.afterInit = function(){
+  var p = this._dir;
+  dir$tb_ProductCategoryLoadDataQuote(p);
+}
+function dir$tb_ProductCategoryLoadDataQuote(p){
+	if (p.options.action == "NEW" ) {
+	
+		p.request('get_id', '', '')
+
+	}
+}
+         ]]>
+    </text>
+
+  </js>
+
+  <script>
+  <request code="get_id">
+			<text> <![CDATA[ exec st_get_id_number 'tb_ProductCategory','LSP' ]]> </text>
+	</request>
+
+    <declare>
+      <text>
+        <!-- <![CDATA[ -->
+<!-- declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256) -->
+<!-- select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã xe đã tồn tại' else N'Vehicle code already exists' end -->
+<!-- select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã xe đã tồn tại' else N'Vehicle code already exists' end -->
+         <!-- ]]> -->
+      </text>
+    </declare>
+  </script>
+
+</dir>

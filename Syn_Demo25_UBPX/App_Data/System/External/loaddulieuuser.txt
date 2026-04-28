@@ -1,0 +1,10 @@
+declare @strKey nvarchar(3000); set @strKey = 'user_id in (' + @listUser + ')'
+declare @pageIndex numeric(1,0), @fieldOrder varchar(256), @filterKey nvarchar(3000)
+select @pageIndex = 1, @fieldOrder = N'user_id', @filterKey=N''
+
+if 1 <> 1
+  if not exists(select 1 from sysmenu a where controller = 'listcurrentusers' and exists(select 1 from sysrightmenu b where b.user_id = 252 and a.id = b.menu_id and a_view = 1)) begin
+    select '$NotAuthorize' as message
+    return
+  end
+exec ISWIFTStoreTableLoading 'sysuserinfo', 'user_id', 'a.user_id,a.username,a.nickname,a.image_id', @fieldOrder, '', '', 'left join chcallct b on a.username = b.ma_nv left join dmnv c on a.username = c.ma_nv left join dmdonvi d on c.ma_dv = d.ma_dv left join dmpb e on c.ma_pb = e.ma_pb left join dmbp f on c.ma_bp = f.ma_bp and c.ma_pb = f.ma_pb', 'b.line_sip sdtline,c.hotro_yn,c.ma_bp,c.ma_dv,c.ma_pb, d.ten_dv, e.ten_pb, f.ten_bp', '(1 = 1 or user_id = 252)', @strKey, @filterKey, '', @pageIndex, 50, 1, 252

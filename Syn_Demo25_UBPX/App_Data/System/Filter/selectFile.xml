@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+
+<dir id="selectFile" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Chọn tập tin lấy dữ liệu" e="Select file to import"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120" >
+      <fields>
+        <field name="import_file" label="1" field="3" viewType="File" >
+          <text v="Tệp đính kèm" e="Tệp đính kèm"></text>
+          <viewInfo fileFieldId0="rg_code" fileGroup="TLBH" fileExtension="xlsx" maxFileSize="10240" maxFileCount="1"></viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$selectFile(p){
+  this.constructor(p);
+}
+filter$selectFile.prototype = new DirEvent();
+filter$selectFile.prototype.afterInit = function(){
+  var p = this._dir;
+}
+filter$selectFile.prototype.beforeButtonDialogClick = function (id) {
+  var p = this._dir, pa = p.options.parent
+  if (id == 'filterOk') {
+    var sfID = p.jFile('import_file').fval();
+    if(sfID == "")
+      $.alert($.msg.get("ImportSelected"), null, pa);
+    else{
+      var time = $.userinfo.val('ProcessTimeout'), pa = p.options.parent, m = pa.getMemvars(pa);
+      p.wait(true);
+      $.invoke('ImportFile', { cController: pa.options.controller, cFileId: p.jFile('import_file').fval(), oMemvars: m.val() }, this, time, function (d) {
+        var dr = new DataRow(d)
+        if(dr != null){
+          var idMsg = dr.val("msg_id");
+          var textMsg = dr.val("message");
+          var sMsg = "";
+          if(idMsg != "") sMsg = $.msg.get(idMsg);
+ 
+          if(textMsg != "") sMsg = textMsg;
+          if(sMsg != ""){
+            if(sMsg.substr(0, 1) == "$") sMsg = pa.msg(sMsg.substr(1))
+              
+            sMsg = sMsg.replace("%cell", dr.val("cell"))
+            sMsg = sMsg.replace("%row", dr.val("row"))
+            sMsg = sMsg.replace("%column", dr.val("column"))
+            $.alert(sMsg, null, p);
+            p.wait(false);
+          }
+          else{
+            p._close();
+            pa._refresh();
+            $.alert($.msg.get("Processed"), null, pa);
+          }
+        }
+      })
+    }
+    //$.postNewTab(url, { controller: pa.options.controller, fileId: p.jFile('import_file').fval(), memvar: JSON.stringify(m.val()) });
+    return false;
+  }
+  return true;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+   
+  </script>
+
+</dir>

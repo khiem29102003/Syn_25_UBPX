@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+   <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="qldctcccd_1" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Quản lý dân cư" e="Population Management by Citizen ID"></title>
+  <subtitle v="Mã hộ gia đình: &lt;b&gt;%s1&lt;/b&gt;" e="HouseHold Code: &lt;i&gt;{ma_hogiadinh}&lt;/i&gt;"></subtitle>
+  <grids>
+    <grid table="qldctcccd" fieldKey="ma_dancu" order="ma_dancu desc" allowFilter="true" allowOrder="true" >
+	  <fields>
+	  	<field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="100" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="ma_dancu" width="150" hidden = "false" fieldType="PK">
+          <text v="Mã cư dân" e="Resident Code"></text>
+        </field>
+        <field name="ten_dancu" width="200">
+		  <text v="Tên cư dân" e="Resident Name"></text>
+        </field>
+		<field name="ngay_sinh" dataType="D" width="120">
+		  <text v="Ngày sinh" e="Birthday"></text>
+		</field>
+		<field name="gioi_tinh" width="80" viewType="Combobox" align="left">
+		  <text v="Giới tính" e="Sex"></text>
+		  <viewInfo>
+			<options query="select ma_gt, ten_gt%l from dmgioitinh where status = 1 ">
+			</options>
+		  </viewInfo>
+		</field>
+		<field name="so_cccd" width="120">
+		  <text v="Số CCCD/Mã định danh" e="ID Number"></text>
+		</field>
+		<field name="dia_chi" width="120">
+		  <text v="Địa chỉ" e="Address"></text>
+		</field>
+		<field name="ma_khupho" width="120">
+		  <text v="Mã khu phố" e="Neighborhood code"></text>
+		</field>
+		<field name="ten_khupho" width="200" fieldType="EX">
+		  <text v="khu phố" e="Neighborhood"></text>
+		</field>		
+		<field name="ma_phuongxa" width="120">
+		  <text v="Mã phường/xã" e="Ward/Commune Code"></text>
+		</field>
+		<field name="ten_phuongxa" width="200" fieldType="EX">
+		  <text v="Phường/xã" e="Ward/Commune"></text>
+		</field>
+		<field name="ma_ttp" width="120">
+		  <text v="Mã tỉnh thành" e="Province/City Code"></text>
+		</field>
+		<field name="ten_ttp" width="200" fieldType="EX">
+		  <text v="Tỉnh thành" e="Province/City"></text>
+		</field>
+		<field name="dien_thoai" width="120">
+		  <text v="Điện thoại" e="Telephone"></text>
+		</field>
+		<field name="ma_hogiadinh" width="120">
+		  <text v="Mã hộ gia đình" e="Household"></text>
+		</field>
+		<field name="dan_toc" width="80" viewType="Combobox" align="left">
+		  <text v="Dân tộc" e="Ethnic group"></text>
+		  <viewInfo>
+			<options query="select ma_dt, ten_dt%l from dmdantoc where status = 1 ">
+			</options>
+		  </viewInfo>
+		</field>
+		<field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_tt, ten_tt%l from dmttsd where status = 1">
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+		
+	  &DefaultButton;
+	  
+	  
+	<script>
+        <query>
+			<text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+IF @data = 0 BEGIN set @ma_hogiadinh = '' END
+set @strKey = 'ma_hogiadinh = ''' + dbo.ISWIFTFunctionReplaceSQLParam(@ma_hogiadinh) + ''''
+
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmkhupho c on a.ma_khupho = c.ma_khupho left join dmphuongxa d on a.ma_phuongxa = d.ma_phuongxa left join dmttp e on a.ma_ttp = e.ma_ttp', 'b.ma_unit, c.ten_khupho, d.ten_phuongxa, e.ten_ttp', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+			]]>
+			</text>
+        </query>
+
+        <finding>
+			<text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = @strFinding
+set @strKey = @strKey + 'and ma_hogiadinh = ''' + dbo.ISWIFTFunctionReplaceSQLParam(@ma_hogiadinh) + ''''
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmkhupho c on a.ma_khupho = c.ma_khupho left join dmphuongxa d on a.ma_phuongxa = d.ma_phuongxa left join dmttp e on a.ma_ttp = e.ma_ttp', 'b.ma_unit, c.ten_khupho, d.ten_phuongxa, e.ten_ttp', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+			</text>
+        </finding>
+      </script>
+    </grid>
+  </grids>
+  <js>
+    <text>
+      <![CDATA[
+function grid$qldctcccd_1(f){
+  this.constructor(f);
+}
+grid$qldctcccd_1.prototype = new DirEvent();
+grid$qldctcccd_1.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(), dt = g.data, pa = p.options.dirAbove, ga = pa.grid(), ra = ga._currRow||0;
+  	this.FormSentData(p);
+    this.refreshSub();
+}
+grid$qldctcccd_1.prototype.refreshSub = function () {
+  var p = this._dir, g = p.grid(), dt = g.data, pa = p.options.dirAbove, ga = pa.grid(), ra = ga._currRow||0;
+  const btnThem = document.getElementById("TOOLBAR_qldctcccd_1_0_add");
+
+  if (ga.data.count() == 0) {
+  	if (btnThem) {
+		btnThem.style.pointerEvents = "none";  // Vô hiệu hóa click
+		btnThem.style.opacity = "0.5";         // Làm mờ nút để biết là bị khóa
+		btnThem.title = "Nút này đã bị khóa";
+	}
+	
+	p.setSubtitle(['%s1', '_'])
+	
+	return;
+  }
+
+  	p.setSubtitle(['%s1', pa.valGrid(ra, 'ma_hogiadinh', 0)]);
+}
+grid$qldctcccd_1.prototype.FormSentData = function (p) {
+	maHogiadinh = p.options.memvars.val('ma_hogiadinh');
+	maTTP = p.options.memvars.val('ma_ttp');
+	maPhuongXa = p.options.memvars.val('ma_phuongxa');
+	maKhuPho = p.options.memvars.val('ma_khupho');
+	diaChi = p.options.memvars.val('dia_chi');
+  
+	p.options._ma_hogiadinh =  maHogiadinh;
+	p.options._ma_ttp =  maTTP;
+	p.options._ma_phuongxa =  maPhuongXa;
+	p.options._ma_khupho =  maKhuPho;
+	p.options._dia_chi =  diaChi;
+
+}
+         ]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[
+		.tree-form{
+			width: 250px;
+		}
+		.ic-view-dept{
+		  background-position: 0px 0px;
+		}
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 50%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+  <script>
+
+  </script>
+
+</dir>

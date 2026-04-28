@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="s43" dirViewType="Grid" dirObjectType="Voucher" voucherCode="BQ3" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo giá vận tải hàng không" e="Air Freight Quote"></title>
+  <subtitle v="Thêm, sửa, xóa..." e="New, Edit, Delete..."></subtitle>
+
+  <grids>
+    <grid table="s43" fieldKey="id" order="id desc" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="100" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="so_ct" width="80" hidden="true"  >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+		<field name="ma_job" width="100" hidden = "false" link="V" >
+          <text v="Mã job" e="Job Code"></text>
+        </field>
+		<field name="so_job" width="100" link="V" >
+          <text v="Số job" e="Job Number"></text>
+        </field>
+
+        <field name="ma_kh" width="150" hidden = "false">
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="250" fieldType="EX" >
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>     
+		<field name="ma_noi_di" width="0" hidden="false">
+          <text v="Nơi đi" e="Origin"></text>
+        </field>
+		<field name="ten_noi_di" width="250" fieldType="EX">
+		  <text v="Nơi đi " e="Origin"></text>
+		</field>
+		<field name="ma_noi_den" width="0" hidden="false" >
+          <text v="Nơi đến" e="Destination"></text>
+        </field>	
+		<field name="ten_noi_den" width="250" fieldType="EX" >
+		  <text v="Nơi đến " e="Destination"></text>
+		</field>		
+		<field name="ma_hang" width="150" >
+          <text v="Mã Hãng tàu/Đại lý" e=" Carrier/Agent Code"></text>
+        </field>
+		<field name="ten_hang" width="250" fieldType="EX" >
+          <text v="Tên Hãng tàu/Đại lý" e="Carrier/Agent Name"></text>
+        </field>
+		<field name="ngay_hl" width="120" dataType="D">
+          <text v="Ngày hiệu lực" e="Effective Date"></text>
+        </field>
+		<field name="ngay_hld" width="120" dataType="D">
+          <text v="Hiệu lực đến" e="Expiry Date"></text>
+        </field>
+		<field name="ma_nt" width="0" >
+          <text v="Ngoại tệ" e="Currency"></text>
+        </field>
+		<field name="t_tong_trong" width="120" >
+          <text v="Tổng trọng lượng" e="Total Gross Weight"></text>
+        </field>
+		<field name="t_tong_khoi" width="120" >
+          <text v="Tổng volume" e="Total Volume"></text>
+        </field>
+		<field name="dien_giai" width="250">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+		<field name="ma_ngv" viewType="Combobox" inactivate="true" width="120">
+          <text v="Loại báo giá" e="Inv. Type"></text>
+          <viewInfo>
+            <options query="select ma_ngv, ten_ngv%l from dmngv where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+		<field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="id" dataType="N" fieldType="PK" format="0" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+			
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmkh c on a.ma_kh = c.ma_kh left join vdmcangdi d on a.ma_noi_di = d.ma_noi_di left join vdmcangden f on a.ma_noi_den = f.ma_noi_den left join vdmhangtau k on a.ma_hang = k.ma_hang', 'b.ma_unit, c.ten_kh, d.ten_noi_di, f.ten_noi_den,k.ten_hang', '@@key', '', @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @strDetailKey nvarchar(3000); set @strDetailKey = ''
+if @ma_phi <> '' set @strDetailKey = @strDetailKey + ' and x.ma_phi like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@ma_phi) + '%'''
+if @strDetailKey <> '' set @strDetailKey = ' and exists(select 1 from v43 x where a.id = x.id ' + @strDetailKey + ')'
+
+set @strKey = 'ngay_ct between ''' + convert(char(8), @ngay_ct1, 112) + ''' and ''' + convert(char(8), @ngay_ct2, 112) + ''' and ' + @strFinding + ' and ' + dbo.ISWIFTFunctionGetUnitIDRightKeys(@@admin, @@userId, @ma_unit, 'a.unit_id') + @strDetailKey
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmkh c on a.ma_kh = c.ma_kh left join vdmcangdi d on a.ma_noi_di = d.ma_noi_di left join vdmcangden f on a.ma_noi_den = f.ma_noi_den left join vdmhangtau k on a.ma_hang = k.ma_hang', 'b.ma_unit, c.ten_kh, d.ten_noi_di, f.ten_noi_den,k.ten_hang', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+drop table #unitright
+         ]]>
+          </text>
+        </finding>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+	  
+	  
+
+function grid$s43(f){
+  this.constructor(f);
+}
+grid$s43.prototype = new DirEvent();
+grid$s43.prototype.afterInit = function(renderType){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 43px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+</dir>

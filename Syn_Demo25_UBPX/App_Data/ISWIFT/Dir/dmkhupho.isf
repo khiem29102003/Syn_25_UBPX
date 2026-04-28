@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmkhupho" table="dmkhupho" fieldKey="ma_khupho, ma_phuongxa" transaction="true" tryCatch="true" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục khu phố" e="Neighborhood List"></title>
+  <title0 v="Thêm mới - hu phố" e="New - Neighborhood List"></title0>
+  <title1 v="Sửa - hu phố" e="Edit - Neighborhood List"></title1>
+
+  <forms>
+	<form gravity="TopLeft" columns="120,120,120,120,120" >
+		<fields>
+			<field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_ttp" viewType="Lookup" label="1" field="1" allowBlank="true" importable="20">
+			  <text v="Mã tỉnh/thành phố" e="Province/City Code"></text>
+			  <viewInfo lookupType="One" lookupId="dmttp" lookupKey="status=1" lookupRef="ten_ttp" lookupCheck="1=1" lookupInfo="dmttp|ma_ttp|ten_ttp" importCheck="@@DF and z.status=1"/>
+			</field>
+			<field name="ten_ttp" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="" field="[240]" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_phuongxa" viewType="Lookup" label="1" field="1" allowBlank="true" fieldType="PK" importable="25" >
+			  <text v="Mã phường xã" e="Commune Code"></text>
+			  <viewInfo lookupType="One" lookupId="dmphuongxa" lookupKey="status=1 and ma_ttp = ![ma_ttp]!" lookupRef="ten_phuongxa" lookupCheck="1=1" lookupInfo="dmphuongxa|ma_phuongxa|ten_phuongxa" importCheck="@@DF and z.status=1"/>
+			</field>
+			<field name="ten_phuongxa" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="" field="[240]" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_khupho" label="[120]" field="[120]" allowBlank="false" format="U" disabled="true" fieldType="PK" importable="5" >
+				<text v="Mã khu phố" e="Neighborhood Code"></text>
+			</field>
+			<!-- <field name="ma_khupho_ex" label="[120]" field="[120]" allowBlank="false" format="U" disabled="true" hidden="true" fieldType="EX"> -->
+				<!-- <text v="Mã khu phố" e="Neighborhood Code"></text> -->
+			<!-- </field> -->
+			<field name="ten_khupho" label="[120]" field="-" allowBlank="false" disabled="false" importable="10">
+			  <text v="Tên khu phố" e="Neighborhood Name"></text>
+			</field>
+			<field name="ten_khupho2" label="1" field="-" allowBlank="true" importable="15">
+			  <text v="Tên tiếng anh" e="English Name "></text>
+			</field>
+			<field name="status" viewType="Combobox" inactivate="false" label="1" field="2" valueDefault="1" nextRow="true" importable="-1" >
+			  <text v="Trạng thái" e="Status"></text>
+			  <viewInfo>
+				<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 ">
+				</options>
+			  </viewInfo>
+			</field>
+      </fields>
+    </form>
+</forms>
+
+&DefaultButton;
+
+<js>
+    <text>
+  <![CDATA[<enc>nByIsbpfKLoKQX4fdVgJ3v4/2WNSHlZRH/SIQVZuOMogIs/JbQBaUg00aQ/kR9KKy+44USZS51oHQI2pLgQlFMmaH4Lcel+Hw4H10ltgQDAasLxJXQnmGiZ6rmUhGCGGLals/yy3iriW1pntufa7Zoe68+JQD26P/o1RnvC8q7EX613kBWuJ+/laF6MEeGWrhrbyXphlknw3esI67kcThSzSZMqdCrVTbTDtX76Rs0D/dZe9qOUuQ+U09NluKfLax23KHTjyPtcGoddEhLQj2v6FLWmK/fcwWCbBJo2p4pk+6Dn2uQ+evVYT/tLqT4mRv79x9+Qg2YiUDr1jEFqF1fpclZfLtieFHrQx2kWxIqd/P0Pq1JGIAWnpJpY6GnqeYIYW6Dl2mj9H1O4yaIpaVYFdiUbEamUqM3AM7SJrRLGF+gOjNXEF5ABVddmXcNPIWYVCMS8jaOapaonhgAQSe67Ww0pEonAtMDcgF9Lyd/2/JM4WX7W/J0jSGO7oV3FK/4CUW7EzrG7CyF1kGukM/AapBU52tbC1uRw6aeI9ArQ=</enc>]]>
+    </text>
+  </js>
+	<css>
+		<text>
+			  <![CDATA[<enc>s5XWMSrs6w5R2zI1vM6n20Sv621qXmmswtZ1eqbP+IbzCv9ZhQLGYN/0uQ605QTXbk6FatzHLLfnpZiaFEw57gTGv69ohOaMzetNC2aydGb43LQoOKDEXqnlgx7snuMgmQreGYCQmMhQ9EBmP/cVkz9FY0wXyFwLt//te1u6sWxR28iJ4NJ99MwY+VOQCGBH</enc>]]>
+		</text>
+	</css>
+	<script>
+		<request code="LoadMaKhuPhoMaPhuongXa">
+		<text>		
+			<![CDATA[<enc>KeGj6rYqiUccvXDvBhfBlGm/0jccz72o2EDmvwI9tnSdyr1km9yL8qzeqSzR2airG1rRxBBw2dySKwHKcyoWfxZ/lrz4eDLIjEMRKJIPcnA=</enc>]]>				
+		</text>
+		</request>
+
+		<query>
+		  <text>
+			<![CDATA[<enc>GJgBVkOd9xy3In+SUACpOOdXdTQbLjDNG098RVYG+mqJrACGNi8MwNsRrtmQkuMIYyR65+M+8FdE2nQkBtdUjjGtkBSGsDqbRbA3vrYN89ZzUnQVJ+W1/9AMkiZ8xTjPYAdSbE6TNHswawXCA3Q7ZKpywgArBHY6CKMo02cq6Ek=</enc>]]>
+		  </text>
+		</query>
+		<updated>
+		  <text>
+			<![CDATA[<enc>sxD5Swu0R4mcxEHdwcy2ynVkJ6IiRfsuHiDzDrC78ELIJg2k4xX5PxEITwgSuDtWSiTOU3sqnIo/Bv0T8e877uKHW6bIEuTFdpbPdQB+xElll2tzxh9iUOpwbot+jXTZNKo5+n5Fy+aXD8VrO81PEw==</enc>]]>
+		  </text>
+		</updated>
+		<inserting>
+		  <text>
+			<![CDATA[<enc>/T/6v4fr7JtuEWROY5bEog4q37AdyKX5y50iwuf8o+kQ/cMLdjO5yBgIja/EXDIb67gjtJCgsvsoKVHnH40ASfHmT/5Pyqyz9fEF+eXazaeFq1QdO25I17j8uqKw4sm7PDDzWS+uYkqIWo1FmMQqY1vwSihUQwhC3DMwYBlMdqW/7I05kvZGgi3lyKQDrJ1gd1u3eDHWrXNvOq+fBosahfSLln2pO8chassI1khVi2Brg84FNLLprzwizWkmE7Kk</enc>]]>
+		  </text>
+		</inserting>
+		<importing>
+			<text>
+			<![CDATA[<enc>sxD5Swu0R4mcxEHdwcy2yi46ZbQRyi0uEDh1tGVfNVOBZJeZZHskWnswm55XGvVMZq7vIrj1gngY5x8IJuKO1pkyFlxS8pifsEwHrhrpEjg=</enc>]]>
+			</text>
+		</importing>
+	</script>
+	<messages>
+		<message val="codeExistsNewMsg">
+		  <text v="Mã khu phố đã tồn tại trong danh mục." e="The neighborhood code already exists in the list."/>
+		</message>
+	</messages>
+</dir>

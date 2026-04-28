@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY ReportFilterItemGroup SYSTEM "..\Include\XML\ReportFilterItemGroup.xml">
+  <!ENTITY ReportFilterCustomerGroup SYSTEM "..\Include\XML\ReportFilterCustomerGroup.xml">
+  <!ENTITY ReportFilterStockType SYSTEM "..\Include\XML\ReportFilterStockType.xml">
+  <!ENTITY ReportJSLoading SYSTEM "..\Include\XML\ReportJSLoading.xml">
+  <!ENTITY ReportFilterUnit SYSTEM "..\Include\XML\ReportFilterUnitHidden.xml">
+  <!ENTITY ReportFiltering SYSTEM "..\Include\XML\ReportFiltering.xml">
+  <!ENTITY ReportDataAnalysisStruct SYSTEM "..\Include\XML\ReportDataAnalysisStruct.xml">
+
+]>
+
+<dir id="ss_cnptkh_NT" table="" height="" fieldKey="id" dirViewType="Dialog" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Công nợ phải trả thu khách hàng (Ngoại tệ)" e="Accounts payable and receivable from customers (Foreign currency)"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+  <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" dataType="D">
+          <text v="Ngày từ/đến" e="Date From/To"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+	    <field name="ma_kh" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Mã người thanh toán" e="Customer"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_kh" />
+        </field>
+        <field name="ten_kh" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+	    <field name="ma_nt" viewType="Lookup" label="1" field="1" allowBlank="false">
+          <text v="Ngoại tệ" e="Customer"></text>
+          <viewInfo lookupType="One" lookupId="dmnt" lookupKey="status = 1 and ma_nt not in ('VND')" lookupCheck="1 = 1" lookupRef="ten_nt" />
+        </field>
+        <field name="ten_nt" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+	&ReportFilterUnit;
+  </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$ss_cnptkh_NT(p){
+  this.constructor(p);
+}
+filter$ss_cnptkh_NT.prototype = new DirEvent();
+filter$ss_cnptkh_NT.prototype.afterInit = function(){
+  var p = this._dir, ev = this;
+}
+         ]]>
+    </text>
+  </js>
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+--@@gridFields
+        ]]>
+      </text>
+    </processing>
+    &ReportJSLoading;
+  </script>
+</dir>

@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmchiphi" table="dmchiphi" fieldKey="ma_phi" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục phí" e="List of fee"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_phi" format="U" label="1" field="1" allowBlank="false" fieldType="PK" >
+          <text v="Mã phí" e="Fee code"></text>
+        </field>
+        <field name="ten_phi" label="1" field="-" allowBlank="false" >
+          <text v="Tên phí" e="Fee name"></text>
+        </field>
+        <field name="ten_phi2" label="1" field="-">
+          <text v="Tên khác" e="Other name"></text>
+        </field>
+        <field name="ma_loai" allowBlank="false" viewType="Lookup" label="1" field="1" >
+          <text v="Mã loại" e="Type code"></text>
+          <viewInfo lookupType="One" lookupId="dmloaichiphi" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_loai" lookupInfo="dmloaichiphi|ma_loai|ten_loai" />
+        </field>
+        <field name="ten_loai" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_np" allowBlank="false" viewType="Lookup" label="1" field="1" >
+          <text v="Nhóm in (kế toán)" e="Printing team (accounting)"></text>
+          <viewInfo lookupType="One" lookupId="dmnphi_in" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_np" lookupInfo="dmnphi_in|ma_np|ten_np" />
+        </field>
+        <field name="ten_np" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="f_in" dataType="B" clientDefault="true" label="1" field="[40]" inactivate="true" >
+			<text v="In (Default)" e="In (Default)"></text>
+		</field> 
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmchiphi(p){
+  this.constructor(p);
+}
+dir$dmchiphi.prototype = new DirEvent();
+dir$dmchiphi.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmchiphi.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+dir$dmchiphiDisabledMasterField(p, g);
+
+}
+
+function dir$dmchiphiDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_phi').trim() != '')
+  {
+    p.setDisabled('ma_phi', true);
+  }
+  else
+  {
+    p.setDisabled('ma_phi', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+   <css>
+		<text>
+		  <![CDATA[
+	.control-label.ma_phi, .control-label.ten_phi
+	{	
+
+		color: #499b98;;
+	}
+		  ]]>
+		</text>
+  </css>
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã phí đã tồn tại' else N'Fee code is exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã phí đã tồn tại' else N'Fee code is exists' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+
+</dir>

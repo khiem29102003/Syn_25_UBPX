@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY ReportFilterItemGroup SYSTEM "..\Include\XML\ReportFilterItemGroup.xml">
+  <!ENTITY ReportFilterStockType SYSTEM "..\Include\XML\ReportFilterStockType.xml">
+  <!ENTITY ReportJSLoading SYSTEM "..\Include\XML\ReportJSLoading.xml">
+  <!ENTITY ReportFilterUnit SYSTEM "..\Include\XML\ReportFilterUnit.xml">
+  <!ENTITY ReportFiltering SYSTEM "..\Include\XML\ReportFiltering.xml">
+  <!ENTITY ReportDataAnalysisStruct SYSTEM "..\Include\XML\ReportDataAnalysisStruct.xml">
+]>
+
+<dir id="bdtkvt" table="" height="" fieldKey="id" dirViewType="Dialog" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo động tồn kho vật tư" e="Stock" />
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" dataType="D">
+          <text v="Đến ngày" e="Date From/To"></text>
+        </field>
+        <field name="ma_kho" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Mã kho" e="Site"></text>
+          <viewInfo lookupType="One" lookupId="dmkho" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_kho" />
+        </field>
+        <field name="ten_kho" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="1" gravity="MiddleLeft" height="0" columns="120,120,120,120,120"  >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="ma_vt" viewType="Lookup" operation="like" label="1" field="1">
+          <text v="Mã vật tư" e="Item"></text>
+          <viewInfo lookupType="One" lookupId="dmvt" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_vt" />
+        </field>
+        <field name="ten_vt" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_lo" viewType="Lookup" operation="like" label="1" field="1">
+          <text v="Mã lô" e="Lot"></text>
+          <viewInfo lookupType="One" lookupId="dmlo2" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_lo" />
+        </field>
+        <field name="ten_lo" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_vi_tri" viewType="Lookup" operation="like" label="1" field="1">
+          <text v="Mã vị trí" e="Position"></text>
+          <viewInfo lookupType="One" lookupId="dmvitri" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_vi_tri" />
+        </field>
+        <field name="ten_vi_tri" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        
+        &ReportFilterItemGroup;
+        &ReportFilterUnit;
+        &ReportFilterStockType;
+        <field name="mau_bc" dataType="I" viewType="Combobox" valueDefault="2" label="1" field="[360]" >
+          <text v="Mẫu báo cáo" e="Report Form"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Mẫu số lượng" e="Quantity Form"></text>
+              </option>
+              <option val="2">
+                <text v="Mẫu in số lượng và giá trị" e="Quantity and Values Form"/>
+              </option>
+              <option val="3">
+                <text v="Mẫu in số lượng và giá trị ngoại tệ" e="Quantity and FC Values Form"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="2" gravity="MiddleLeft" height="0" columns="120,120,120,120,120"  >
+      <text v="Khác" e="Other"></text>
+      <fields>
+        <field name="group_by" viewType="Combobox" valueDefault="" label="1" field="3" >
+          <text v="Nhóm theo" e="Group By"></text>
+          <viewInfo>
+            <options query="select id, name%l from syscolumncodes where xgroup = 3 and xindex > 0">
+              <option val="">
+                <text v="Không phân nhóm" e="No Group"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        &ReportFiltering;
+        &ReportDataAnalysisStruct;
+      </fields>
+    </form>
+    
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>5x0xAjmOjoX+Tmouu+gYA4yF/AJpIWjSdxhZV7CHn9rW4bPO5MrHWe2LsRbPYhQhqh3jUYiqaoWm72VK1+uPCdMZmEd8G+htBdOmRO7esBM3kcyjvOqSDmR7mLfhf5+LLd/+SowBdNHWIc5RrXWqxc90jk+yNZgT2LYrYqKm6My4aSDu09P3Pl6RxZSCcf6qL1551Uj1KA1dQHV5bfCs2K0EHp+PC17eQVFdj8XDxjHS6ZCkx+wXjPlwpipQEXe4PwYQAKh/6AgBwRKjEurz1zfoIeACS0bCa/11YdkX2jnBMI5g3YZxN7+nrHKVTWesrM61zXdvgzk3O9y4/0tMHN5v4LuoptIriTF1ClHpn6BQk7fm42blSURLpDL1ZMpDbiidxXD/mRq0jdkuG2PMJV0TcEeEacF0sonHPxFWRZa3M3GXsKOT5bs3987m4+1VUWckn0xjc5OKodqQLDRZL9J8En2brBb1ooWfNp+klRs=</enc>]]>
+    </text>
+  </js>
+
+  <script>
+    <processing>
+      <text>
+        <![CDATA[<enc>LvZimji1ffVYK2W5/1EZqQ5PcUedZgE6LnHEzM0cG6Xm/uIdKoe7tF2rOSwdvupip7lV+DVSNC+NkIIIGsEc9+ao/f1RxsdH4stUycGSp3Lt/NnR36rI/S3J8c9StZ+0xU32xScGWru9AhnG+IE1ssWMrGmBuOpROYvsgFrD4EE=</enc>]]>
+      </text>
+    </processing>
+    &ReportJSLoading;
+  </script>
+</dir>

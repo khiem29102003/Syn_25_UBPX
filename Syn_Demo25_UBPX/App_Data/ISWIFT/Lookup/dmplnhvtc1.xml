@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="dmplnhvtc1" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục nhóm phân loại vật tư 1" e="Material Group Level 1"></title>
+  <grids>
+    <grid table="dmplnhvtc1" fieldKey="ma_nh" fieldName="ten_nh" order="ma_nh" allowFilter="true" allowOrder="true" key="unit_id in (select unit_id from dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @@admin, ''''))" >
+      <fields>
+        <field name="ma_nh" fieldType="PK" width="120" filterType="Code" >
+          <text v="Mã nhóm plvt 1" e="MGroup Code 1"></text>
+        </field>
+        <field name="ten_nh" width="250">
+          <text v="Tên nhóm plvt 1" e="MGroup Name 1"></text>
+        </field>
+      </fields>
+	  <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = @lookupKey + case when @val = '' then '' else ' and (@@fieldKey like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or @@fieldName like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+    </grid>
+  </grids>
+</dir>

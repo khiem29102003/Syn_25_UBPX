@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="dmtgluuvb" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách thời hạn lưu trữ" e="List of Retention Periods"></title>
+  <grids>
+    <grid table="dmtgluuvb" fieldKey="ma_tg" fieldName="ten_tg" order="ma_tg" allowFilter="true" allowOrder="true">
+      <fields>
+		<field name="ma_tg" width="120" fieldType="PK" format="U" filterType="Code">
+			<text v="Mã thời hạn lưu trữ" e="Retention period code"></text>
+		</field>
+		<field name="ten_tg" width="250">
+		  <text v="Tên thời hạn lưu trữ" e="Retention period Name"></text>
+		</field>
+		<field name="ten_tg2" width="200">
+		  <text v="Tên English" e="Name English"></text>
+		</field>
+		<field name="he_so" dataType="N" format = "Amount" width="100">
+			<text v="Hệ số" e="Coefficient"></text>
+		</field>
+      </fields>
+	<script>
+	<query>
+	  <text>
+		<![CDATA[
+DECLARE @key2 nvarchar(3000)
+SELECT @key2 = (CASE WHEN @lookupKey = '' THEN '1=1' ELSE @lookupKey END) + CASE WHEN @val = '' THEN ''ELSE ' AND (@@fieldKey LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%''' + ' OR @@fieldName LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' END;
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+	 ]]>
+	  </text>
+	</query>
+	</script>
+    </grid>
+  </grids>
+</dir>

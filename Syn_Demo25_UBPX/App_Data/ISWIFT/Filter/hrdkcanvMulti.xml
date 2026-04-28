@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="hrdkcanvMulti" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Đăng ký hàng loạt" e=""></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120"  >
+      <fields>
+        <field name="ngay_tu" label="1" field="1" aliasName="@DFDFrom" allowBlank="false" dataType="D">
+          <text v="Ngày từ/đến" e="Date From/To"></text>
+        </field>
+        <field name="ngay_den" label="" field="1"  allowBlank="false" dataType="D" nextRow="false" >
+          <text v="Ngày đến" e="Voucher Date"></text>
+        </field>
+				<field name="ma_bp" format="U" viewType="Lookup" label="1" field="3" clientDefault="true" >
+					<text v="Bộ phận" e="Department"></text>
+					<viewInfo lookupType="Multi" lookupId="hrdmbp" lookupKey="status=1" lookupCheck="1=1"  />
+				</field>
+				<field name="ma_nv" fieldType="EXParam" viewType="Lookup" label="1" field="3" clientDefault="true"  >
+					<text v="Nhân viên" e="Employee ID"></text>
+					<viewInfo lookupType="Multi" lookupId="hrdmnv" lookupKey="status=1" lookupCheck="1=1" />
+				</field>
+
+				<field name="ma_ca" fieldType="PK" format="U" viewType="Lookup" label="1" field="1" clientDefault="true" >
+					<text v="Ca đăng ký" e=""></text>
+					<viewInfo lookupType="One" lookupId="hrdmca" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_ca" lookupInfo="hrdmca|ma_ca|ten_ca" />
+				</field>
+				<field name="ten_ca" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+					<text v="" e=""></text>
+				</field>
+				<field name="nh_ca" viewType="Lookup" label="1" field="1">
+					<text v="Nhóm ca đăng ký" e=""></text>
+					<viewInfo lookupType="One" lookupId="hrdmnh" lookupKey="ma_loai_nh = 'CA0' and status=1" lookupCheck="ma_loai_nh = 'CA0'" lookupRef="ten_nh_ca" lookupInfo="dmnh|ma_nh|ten_nh" />
+				</field>
+				<field name="ten_nh_ca" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+					<text v="" e=""></text>
+				</field>
+
+				<field name="xu_ly" viewType="Combobox" inactivate="true" label="1" field="2" >
+					<text v="Xử lý" e="Process"></text>
+					<viewInfo>
+						<options>
+							<option val="1">
+								<text v="1 - Chép đè lại đăng ký cũ" e=""></text>
+							</option>
+							<option val="0">
+								<text v="0 - Không chép đè" e=""></text>
+							</option>
+						</options>
+					</viewInfo>
+				</field>
+			</fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$hrdkcanvMulti(p){
+  this.constructor(p);
+}
+filter$hrdkcanvMulti.prototype = new DirEvent();
+filter$hrdkcanvMulti.prototype.afterInit = function(){
+  var p = this._dir;
+}
+filter$hrdkcanvMulti.prototype.beforeButtonDialogClick = function (id) {
+  var p = this._dir;
+  switch (id) {
+    case 'filterOk':
+      if (p.valForm('ma_nv').trim() + p.valForm('ma_bp').trim() == '') {
+         $.showToast(p.msg('NotEnoughInfoEmp'));
+         p.jObject('ma_bp').focus();
+				 return false;
+			}
+      if (p.valForm('ma_ca').trim() + p.valForm('nh_ca').trim() == '') {
+         $.showToast(p.msg('NotEnoughInfoCa'));
+         p.jObject('ma_ca').focus();
+				 return false;
+			}
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+filter$hrdkcanvMulti.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+    case 'ma_nv':
+      if (p.valForm('ma_nv') !='') {p.valForm('ma_bp', '')}
+      break;
+		case 'ma_bp':
+      if (p.valForm('ma_bp') !='') {p.valForm('ma_nv', '')}
+      break;
+		case 'ma_ca':
+			if (p.valForm('ma_ca') !='') p.valForm(['nh_ca', 'ten_nh_ca'], ['', '']);
+			break;
+		case 'nh_ca':
+			if (p.valForm('nh_ca') !='') p.valForm(['ma_ca', 'ten_ca'], ['', '']);
+			break;
+    default:
+      break;
+  }
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+		<processing>
+			<text>
+				<![CDATA[
+exec iswiftStoredMultiRegiterShift @ngay_tu, @ngay_den, @ma_bp, @ma_nv, @ma_ca, @nh_ca, @xu_ly, @@userId
+select '' as message, '$Processed' as toast, 'p.options.parent._refresh(true); p._close();' as script
+        ]]>
+			</text>
+		</processing>
+
+	</script>
+	<messages>
+    <message val="NotEnoughInfoEmp">
+      <text v="Phải nhập thông tin bộ phận hoặc nhân viên" e="" />
+    </message>
+		<message val="NotEnoughInfoCa">
+			<text v="Phải nhập thông tin ca hoặc nhóm ca" e="" />
+		</message>
+	</messages>
+</dir>

@@ -1,0 +1,437 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="searchinfo" table="" height="" fieldKey="ma_kh" dirViewType="Dialog" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title1 v="Tìm kiếm khách hàng" e="Customer Search"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120,120,120"  >
+      <fields>
+	    <field name="ma_kh" format="U" label="1" field="1" viewType="AutoIncrease" allowBlank="true" fieldType="PK" importable="1" hidden="true">
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+        <field name="ma_so_thue" label="1" field="2" allowBlank="false" importable="50">
+          <text v="Mã số thuế &lt;a id='btnTax' &gt;(Kiểm tra)&lt;/a&gt;" e="Tax Code &lt;a onclick='getTax(this);'&gt;(Test)&lt;/a&gt;"></text>
+        </field>
+		<field name="kc1" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="[220]" field="0">
+			<text v="" e=""></text>
+		</field>	
+		<field name="ngay_thuchien" label="1" field="1" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D" nextRow="false" disabled="true">
+          <text v="Ngày thực hiện" e="Voucher Date"></text>
+        </field>
+		 <field name="ten_kh" allowBlank="true" label="1" field="-" importable="5" hidden="false">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+		<field name="ten_kh2" label="1" field="-" importable="10" hidden="true">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+		<field name="dia_chi" label="1" field="-" allowBlank="true" importable="45" hidden="false">
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+		<field name="nguoi_lh" label="1" field="-" nextRow="false" importable="55" hidden="false">
+          <text v="Người liên hệ" e="Contact"></text>
+        </field>
+		<field name="dien_thoai" label="1" field="2" allowBlank="false" importable="60" hidden="false">
+          <text v="Điện thoại" e="Phone"></text>
+        </field>
+		<field name="e_mail" label="1" field="2" importable="70">
+          <text v="Email" e="Email"></text>
+        </field>
+		<field name="nh_kh1" viewType="Lookup" label="1" field="1" importable="85">
+          <text v="Nhóm 1" e="Group 1"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH1' and status=1" lookupCheck="ma_loai_nh = 'KH1'" lookupRef="ten_nh_kh1" lookupInfo="dmnh|ma_nh|ten_nh" importCheck="@@DF and z.ma_loai_nh = 'KH1' and z.status=1"/>
+        </field>
+        <field name="ten_nh_kh1" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="nh_kh2" viewType="Lookup" label="1" field="1" importable="90">
+          <text v="Nhóm 2" e="Group 2"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH2' and status=1" lookupCheck="ma_loai_nh = 'KH2'" lookupRef="ten_nh_kh2" lookupInfo="dmnh|ma_nh|ten_nh" importCheck="@@DF and z.ma_loai_nh = 'KH2' and z.status=1"/>
+        </field>
+        <field name="ten_nh_kh2" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="nh_kh3" viewType="Lookup" label="1" field="1" importable="95">
+          <text v="Nhóm 3" e="Group 3"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH3' and status=1" lookupCheck="ma_loai_nh = 'KH3'" lookupRef="ten_nh_kh3" lookupInfo="dmnh|ma_nh|ten_nh" importCheck="@@DF and z.ma_loai_nh = 'KH3' and z.status=1"/>
+        </field>
+        <field name="ten_nh_kh3" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="insertinto" label="1" field="" allowBlank="true" importable="50" fieldtype="EX">
+          <text v="&lt;a alt='Thêm' id='btnInsert' &gt;Thêm&lt;/a&gt;" e="Tax Code"></text>
+        </field>
+      </fields>
+    </form>
+   	<form tabPageIndex="1" gravity="MiddleLeft" height="280" columns="120,120,120,120,120,120,120,120" >
+		<text v="Chi tiết" e="Detail"></text>
+		<fields>
+			<field name="dmkh0" allowBlank="true" label="" field="-" viewType="Grid">
+			  <text v="Chi tiết" e="Detail"></text>
+			</field>
+		</fields>
+	</form>
+
+  </forms>
+  <grids>
+		<grid id="dmkh0" table="dmkh0" fieldKey="ma_so_thue" order="line" allowFilter="true" readOnly="false" allowOrder="true">
+		  <fields>
+			<!-- //ngay_thuchien, ma_so_thue, ten_kh, ten_kh2, dia_chi, nguoi_lh, dien_thoai, e_mail, nh_kh1, nh_kh2, nh_kh3 -->
+			<field name="ngay_thuchien" width="100" dataType="D" readOnly="false"  >
+				<text v="Ngày thực hiện" e="Execution Date"></text>
+			</field>
+			<field name="ma_so_thue" fieldType="PK" width ="120" hidden="false">
+			  <text v="Mã số thuế" e="Tax Code"></text>
+			</field>							
+			<field name="ten_kh" width ="200">
+			  <text v="Tên khách hàng" e="Customer Name"></text>
+			</field>
+			<field name="ten_kh2" width="200">
+			  <text v="Tên khác" e="Other Name"></text>
+			</field>
+			<field name="dia_chi" width="200">
+			  <text v="Địa chỉ" e="Address"></text>
+			</field>
+			<field name="nguoi_lh" width="200" >
+			  <text v="Người liên hệ" e="Contact"></text>
+			</field>
+			<field name="dien_thoai" width="120">
+			  <text v="Điện thoại" e="Phone"></text>
+			</field>
+			<field name="e_mail" width="200">
+			  <text v="Email" e="Phone"></text>
+			</field>
+			<field name="nh_kh1" viewType="Lookup" width="120">
+			  <text v="Nhóm 1" e="Group 1"></text>
+			  <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH1' and status=1" lookupCheck="ma_loai_nh = 'KH1'" lookupRef="ten_nh_kh1" lookupInfo="dmnh|ma_nh|ten_nh" importCheck="@@DF and z.ma_loai_nh = 'KH1' and z.status=1"/>
+			</field>
+			<field name="ten_nh_kh1" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('''' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="nh_kh2" viewType="Lookup" width="120" >
+			  <text v="Nhóm 2" e="Group 2"></text>
+			  <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH2' and status=1" lookupCheck="ma_loai_nh = 'KH2'" lookupRef="ten_nh_kh2" lookupInfo="dmnh|ma_nh|ten_nh" importCheck="@@DF and z.ma_loai_nh = 'KH2' and z.status=1"/>
+			</field>
+			<field name="ten_nh_kh2" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('''' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="nh_kh3" viewType="Lookup" width="120">
+			  <text v="Nhóm 3" e="Group 3"></text>
+			  <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH3' and status=1" lookupCheck="ma_loai_nh = 'KH3'" lookupRef="ten_nh_kh3" lookupInfo="dmnh|ma_nh|ten_nh" importCheck="@@DF and z.ma_loai_nh = 'KH3' and z.status=1"/>
+			</field>
+			<field name="ten_nh_kh3" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('''' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="user_id0" width="20" hidden="true">
+			  <text v="Userid0" e="Userid0"></text>
+			</field>
+		  </fields>
+		  <buttons>
+			<button id="refresh">
+			  <text v="Hiện tất cả" e="Show All"></text>
+			</button>
+			<button id="freeze">
+			  <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+			</button>
+		  </buttons>
+		  <script>
+			<query>
+			  <text>
+				<![CDATA[
+	declare @user_id0 int = @@userId, @q nvarchar(MAX), @key nvarchar(MAX), @order nvarchar(MAX)
+	set nocount on
+	SELECT TOP 0 @@fields into #t from @@table a
+	SELECT @key = ' WHERE EXISTS (select 1 from cusprocess b where a.ngay_thuchien = b.ngay_thuchien) '
+	IF @@admin = 0 SET @key = @key + ' and a.user_id0 = @@userId ';
+	SELECT @order = ' ORDER BY a.ma_kh DESC ';
+	SELECT @q = 'insert into #t select @@fields from dmkh0 a' + @key + @order
+	EXEC sp_executesql @q;
+	PRINT @q
+
+	SELECT * FROM #t;
+	DROP TABLE #t;
+			 ]]>
+			  </text>
+			</query>
+		  </script>
+		</grid>
+	</grids>
+
+
+  <buttons>
+
+    <button id="filterCancel">
+      <text v="$CancelLabel" e="$CancelLabel"></text>
+    </button>
+  </buttons>
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$searchinfo(p){
+  this.constructor(p);
+}
+filter$searchinfo.prototype = new DirEvent();
+
+function getTax(o, p) {
+  var tax = p.valForm('ma_so_thue');
+  if (tax.length != 10 && tax.length != 13) {
+    $.showToast('Thông tin mã số thuế không đúng.');
+    return;
+  }
+  
+  $.invoke('GetTax', { taxCode: tax }, this, 30000
+    , function (result) {
+      if (result) {
+        var obj = JSON.parse(result);
+		p.valForm('ma_kh', tax, true);
+        p.valForm('ten_kh', obj.Name, true);
+        p.valForm('dia_chi', obj.Address, true);
+		p.valForm('ten_kh2', obj.Other, true);
+		p.valForm('nguoi_lh', obj.Contact, true);
+		p.valForm('dien_thoai', obj.Telephone, true);
+		
+		//ma_kh, ten_kh, ten_kh2, dia_chi, ma_so_thue, nguoi_lh, dien_thoai, e_mail
+		
+		//dt.addRow([tax, obj.Name, obj.Other, obj.Address, obj.Contact, obj.Telephone],true)
+		//p.appendGrid(0, dt, true);
+		
+      }
+    }, function (event) {} );
+	
+}
+function getSystemDate(format) {
+	return new Promise(function(resolve, reject) {
+		$.ajax({
+			type: "POST",
+			url: "/Main/Defaults.aspx/getSystemDate",
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			data: JSON.stringify({ format: format }),
+			success: function(response) {
+				var systemDate = response.d;
+				resolve(systemDate);
+			},
+			error: function(error) {
+				reject(error);
+			}
+		});
+	});
+}
+function getCurrentDate(p) {
+    async function fetchCurrentDate() {
+        try {
+            var currentDate = await getSystemDate('dd/MM/yyyy');
+            return currentDate;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+    return fetchCurrentDate();
+}
+function insertData (p, g, dt, rErr) {
+
+  var maKh = p.valForm('ma_kh'), tenKh = p.valForm('ten_kh'), tenKh2 = p.valForm('ten_kh2'), masoThue = p.valForm('ma_so_thue'), diaChi = p.valForm('dia_chi'), nguoiLh = p.valForm('nguoi_lh'), dienThoai = p.valForm('dien_thoai'), eMail = p.valForm('e_mail'),  nhKh1 = p.valForm('nh_kh1'), nhKh2 = p.valForm('nh_kh2'), nhKh3 = p.valForm('nh_kh3'), ngayThuchien = p.valForm('ngay_thuchien')
+  var startedTime;
+  const dataNV = $.localVal('$USERINFO').Items[1];
+  const dataUnit = $.localVal('$USERINFO').Items[9];
+  if(masoThue == '')
+  {
+	$.showToast(p.msg('EmptyTax'));
+	p.jObject('ma_so_thue').focus();
+	return;
+  }
+  if(dienThoai == '')
+  {
+	$.showToast(p.msg('EmptyTelephone'));
+	p.jObject('dien_thoai').focus();
+	return;
+  }
+  async function fetchStartTime() {										
+	try {
+		startedTime = await getSystemDate('yyyy/MM/dd HH:mm:ss.FFF');
+		console.log(startedTime);
+		var m = new Memvars();
+
+
+	var controller = 'insertKH';
+
+	var s = window.location.href.toString();
+	s = s.substring(0, s.indexOf("Main/")) + 'AppService/EService.asmx/' + "GetData";//GetValue
+	//ma_kh, ten_kh, ten_kh2, ma_so_thue, dia_chi, nguoi_lh, dien_thoai, e_mail, nh_kh1, nh_kh2, nh_kh3
+	m.val('ma_kh', 'C', maKh);			
+	m.val('ten_kh', 'C', tenKh);			
+	m.val('ten_kh2', 'C', tenKh2);
+	m.val('ma_so_thue', 'C', masoThue);			
+	m.val('dia_chi', 'C', diaChi);			
+	m.val('nguoi_lh', 'C', nguoiLh);			
+	m.val('dien_thoai', 'C', dienThoai);			
+	m.val('e_mail', 'C', eMail);			
+	m.val('nh_kh1', 'C', nhKh1);
+	m.val('nh_kh2', 'C', nhKh2);
+	m.val('nh_kh3', 'C', nhKh3);
+	m.val('user_id0', 'N', dataNV);
+	m.val('user_id2', 'N', dataNV);
+	m.val('datetime0', 'C', startedTime);
+	m.val('datetime2', 'C', startedTime);
+	m.val('unit_id', 'I', dataUnit);
+	m.val('ngay_thuchien', 'C', startedTime);
+	//console.log(@@unit);
+
+	$.ajax({
+		type: "POST",
+		url: s,
+		header: '',
+
+		data: JSON.stringify({ controller: controller, oMemvar: m.val() }),
+		contentType: "application/json; charset=utf-8",
+		dataType: "json",
+		timeout: 30000,
+		success: function (msg, s) {
+			// ket qua o day
+			console.log(msg.d[0])
+			$.showToast(p.msg(`${msg.d[0].message}`));
+			if (msg.d[0].message === 'InsertComplete') {
+				<!-- //ngay_thuchien, ma_so_thue, ten_kh, ten_kh2, dia_chi, nguoi_lh, dien_thoai, e_mail, nh_kh1, nh_kh2, nh_kh3 -->
+				dt.addRow([ngayThuchien, masoThue, tenKh, tenKh2, diaChi, nguoiLh, dienThoai, eMail, nhKh1, nhKh2, nhKh3 ],true)
+				
+				p.appendGrid(0, dt, true);
+				p.valForm('ma_kh', '', true);
+				p.valForm('ten_kh', '', true);
+				p.valForm('dia_chi', '', true);
+				p.valForm('ten_kh2', '', true);
+				p.valForm('ma_so_thue', '', true);
+				p.valForm('nguoi_lh', '', true);
+				p.valForm('dien_thoai', '', true);
+			} else
+				p.jObject(`${msg.d[0].field}`).focus(); 
+			
+		},
+		error: function (e) {
+			// loi o day
+			console.log(e);
+		}
+	});
+	} catch (error) {
+		console.error(error);
+	}
+	}
+	fetchStartTime();
+			
+}
+filter$searchinfo.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(0), dt = g.data, rErr = '', masoThue = p.valForm('ma_so_thue');
+  document.getElementById('btnTax').addEventListener('click', function() {
+	getTax(this, p);
+  });
+  
+  document.getElementById('btnInsert').addEventListener('click', function() {
+	insertData(p, g, dt, rErr)
+  });
+  getCurrentDate(p)
+    .then(currentDate => {
+		p.valForm('ngay_thuchien', currentDate, true);
+    })
+    .catch(error => {
+        console.error('Failed to get current date:', error);
+    });
+}
+
+         ]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[
+		#btnInsert {
+			min-width: 90px;
+			height: 32px;
+			padding: 0;
+			cursor: default;
+			background-color: #188b86;
+			border: 2px solid #188b86;
+			
+			display: inline-block;
+			margin-bottom: 0;
+			font-weight: normal;
+			text-align: center;
+			vertical-align: middle;
+			-ms-touch-action: manipulation;
+			touch-action: manipulation;
+			background-image: none;
+			border: 1px solid transparent;
+			white-space: nowrap;
+			padding: 6px 12px;
+			font-size: 14px;
+			line-height: 1.42857143;
+			border-radius: 4px;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			color: #fff;
+			text-decoration: none;
+			transition: background-color 0.3s ease;
+
+		}
+		#btnInsert:hover {
+			background-color: #0cc99b;
+			border-color: #6FB98F;
+			text-decoration: none;
+			border: 2px solid #188b86;
+		}
+      ]]>
+    </text>
+  </css>
+  <script>
+
+    <query>
+      <text>
+        <![CDATA[
+select ngay_ks from sysinfo
+        ]]>
+      </text>
+    </query>
+
+    <processing>
+      <text>
+        <![CDATA[
+---select @ma_so_thue, @ten_kh, @dia_chi, @ten_kh2, @nguoi_lh, @dien_thoai
+select '$Processed' as message, 'p._close()' as script
+        ]]>
+      </text>
+    </processing>
+    
+    <loading>
+      <text>
+        <![CDATA[
+select 'p.options.action = ''EDIT''' as script
+        ]]>
+      </text>
+    </loading>
+  </script>
+  <messages>
+    <message val="EmptyTax">
+      <text v="Vui lòng nhập mã số thuế" e="Please enter your tax code"/>
+    </message>
+	<message val="EmptyTelephone">
+      <text v="Vui lòng nhập số điện thoại" e="Please enter your phone number"/>
+    </message>
+    <message val="InsertComplete">
+      <text v="Thêm khách hàng thành công." e="The customer code already exists in the catalog, please choose a different code."/>
+    </message>
+	<message val="codeExistsNewMsg">
+      <text v="Mã khách hàng đã tồn tại trong danh mục, vui lòng chọn một mã số thuế khác." e="The customer code already exists in the catalog, please choose a different code."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã khách hàng đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The customer code already exists in the catalog, please choose a different code."/>
+    </message>
+    <message val="taxtCodeExists">
+      <text v="&lt;span class='Highlight'&gt;Lưu ý:&lt;/span&gt; Mã số thuế đã tồn tại trong danh mục khách hàng" e="&lt;span class='Highlight'&gt;Warning:&lt;/span&gt; The tax code is already exists"/>
+    </message>
+  </messages>
+</dir>

@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+]>
+
+<dir id="thpkhTC1Select" table="" height="" fieldKey="id" voucherCode="AS1" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Chi tiết danh sách khách hàng" e="Customer list details"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_thuchien1" label="1" field="1" aliasName="@DFDFrom" allowBlank="false" dataType="D" disabled="true">
+          <text v="Ngày thực hiện từ/đến" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_thuchien2" label="" field="1" allowBlank="false" inactivate="true" dataType="D" nextRow="false" disabled="true">
+          <text v="Ngày đến" e="Voucher Date"></text>
+        </field>
+        <field name="unit_id" dataType="I" hidden="true" label="1" field="1">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="xprocess" label="1" field="2" valueDefault="2" viewType="Combobox">
+          <text v="Xử lý" e="Process"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Thêm vào chi tiết" e="Append To Detail"></text>
+              </option>
+              <option val="2">
+                <text v="Xóa hết chi tiết và thêm mới" e="Delete All Detail And Append New"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+	
+    <form tabPageIndex="1" gravity="MiddleLeft" height="350" columns="120,120,240" >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="thpkhct" label="" field="-" viewType="Grid">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+ <grids>
+    <grid id="thpkhct" table="thpkhct" fieldKey="id, line" order="id, line" allowFilter="true" readOnly="false" allowOrder="true">
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+		<field name="chon_yn" dataType="B" width="80" valueDefault="1" readOnly="false" >
+          <text v="Chọn" e="Check"></text>
+        </field>
+		 <field name="ma_so_thue" width="120" allowBlank="false" readOnly="false" >
+          <text v="Mã số thuế" e="Tax Code"></text>
+        </field>
+        <field name="ten_kh" width="300" inactivate="true" readOnly="true">
+          <text v="Họ tên" e="Fullname"></text>
+        </field>
+		<field name="dia_chi" width="300" inactivate="true" readOnly="true">
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[<enc>oajhPWwGETKtr3iQiGfH913YIkaszmghFU6ng+J1l9T+LijZYbeXULhMMo2hPE1BTbwFhmX/GtUuRiUbNoi/Q4lswj+Putb88/EdJvTen/ROhaspLvmvYUUdywBNgO9/Yq5g/NH/z/IY7NW1CyS4Q2Hp8u0lmMjJwgvtj6Jd/uIrAVqvhgTRQX9imcg1CiQjLzi+Gy/ByL7qtW0OvpMlniwo9yu8dWecZ5OkK17p3u7gVZeB+Ad11DHgst2kZmT8mKbbBrs/oRf5/9j/AkEO7F7PcD4DvnWCZmzh5ux7JuOTRdflD0UoNEvoT3wCmiIA1F3XZMCnyvw4pw7tHqZnnNnP9Sf/dNtTWs5t+5pCUf0=</enc>]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+   
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>VqUMBhs2JIRyA/o63KOuSLfhZBv0YijzgFEsYPOJg64mnkixtVE6gtznIunfy/Q+q7RNqugwp2QSuVARc2pS8QaWvQzPQQJknzS0eUcjXHgZ7zsGrYdPAFnELZMcXSLqhjTlWAbcIKC3HjVaa9K+y9fnBCnUnoVEoSofJ6JLJIKPoKPcZrBh+7eeVOIrUC7RLRCm+NJ69nmK9CXe0+T19GWTbv7Y0YAYcpUsgRDzTVRCxGNzZHJvSUUUf50qO4zSQOc54vJB2USDXN3nCX7b00PxVo39jIjwy+UEcdzyKsH7LiESkLxxXUNETBisR/DCGqF8EIAIs4zwYYzZO5STJ3ZQpdEAct28jQNLh9gGoCy6OkHhj8ja4BlgsMmar2LsUhi0t2xxtOI2ARSeYTofGxmNqtdbGaRmdwa9VmfxKfPzFEpS8fY9H4sXXFdsuoqAvP3qmWd3XJoHW1qsoRsNs0YgM+F8X9n6K9JYH+OilEdIsPxU+2f/DqtQnSotcsGoy6D5Z5FfKQlQdzox80/yya6gToiNhwfVVbHFxcnhjam3jWvUa1eD6wcDnlwzONKCkA9JA80aZtiAdYP+Hk8mhd0DKmozN4NDXJMx91PsgDyNJ+z+OG6ZSTkPpDjpP+CLf4cBdatFMSgcrIavxjyeU61iqWcuZJTPAKpJy46MtT6VPUDGnpXGIGiigLLkvYaN5UR5F+6Y1utgctnBvnpxN2jVsF6nIaRBujNf63rIasCwDzMPlYyoC8dFRnwUbw6g</enc>]]>
+    </text>
+  </js>
+  
+  <script>
+		<request code="tien_request">
+			<text>
+			  <![CDATA[<enc>yR1E57ukVCLmcZS/15gUZn0+Lgqw3a98UMRK7vcaMNgmjsEeAwDO3XRxm2E/aQlNmCAoaM5oUkCRVCtdzP9iZlhA2qhsziUgft1NfNWhP6fLemFhDROIqqC9SWqMxato</enc>]]>
+			</text>
+		</request>
+  </script>
+</dir>

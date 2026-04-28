@@ -1,0 +1,307 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="hrdmnv" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Thông tin nhân viên" e="Employee Information"></title>
+  <subtitle v="Thêm, sửa, xóa..." e="New, Edit, Delete..."></subtitle>
+  <grids>
+    <grid table="vhrdmnv" fieldKey="id" order="ma_nv" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="ma_nv" fieldType="PK" width="120" >
+          <text v="Mã nhân viên" e="Employee ID"></text>
+        </field>
+        <field name="ho_ten_nv" width="250">
+          <text v="Tên nhân viên" e="Employee Name"></text>
+        </field>
+        <field name="ten_bp" width="150">
+          <text v="Bộ phận" e="Department"></text>
+        </field>
+        <field name="ten_vtr" width="150">
+          <text v="Vị trí" e="Position"></text>
+        </field>
+
+        <field name="username" width="120" fieldType="EX" aliasName="b" hidden="true">
+          <text v="Tên đăng nhập" e="Username"></text>
+        </field>
+
+        <field name="id" dataType="N" fieldType="PK" format="0" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+exec iswiftStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', '', @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = '1=1'
+if @ma_bp <> '' set @strKey = @strKey + ' and ma_bp in (''' + replace(replace(dbo.iswiftFunctionReplaceSQLParam(@ma_bp), ' ', ''), ',', ''',''') + ''')'
+
+exec iswiftStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </finding>
+      </script>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$hrdmnv(f){
+  this.constructor(f);
+}
+grid$hrdmnv.prototype = new DirEvent();
+grid$hrdmnv.prototype.afterInit = function(){
+  var p = this._dir;
+
+  if(!p.options._isReload){
+    p.options._isReload = true;
+
+    refreshSizeGridDir();
+    $(window).resize(function() {
+      console.log(8888);
+      refreshSizeGridDir();
+    });
+
+    $('<div class="left-panel-tree" id="tree_left"><div id="tree_dept" class="tree-top"></div><div id="tree_info" class="tree-bottom"></div></div>').insertBefore("#content");
+    p.request('ViewTreeDept', 'GetTable', null, loadTreeDept);
+    p.request('ViewTreeInfo', 'GetTable', null, loadTreeInfo);
+    //test
+    var sBottomResize = '<div class="bottom-resize" id="bar_resize_grid"></div>'
+    var ss = sBottomResize + document.getElementById("DIR_hrdmnv2_Grid").outerHTML;
+    $(ss).insertAfter("#DIR_hrdmnv2_Grid");
+
+    //--resize
+  /*  var oG1Resize, oG2Resize, iStartY, iG1Height, isResize = false;
+    var _funMoveResize = function (e) {
+        if (isResize) {
+            var h1 = iG1Height, h2 = iG2Height;
+            h1 -= (iStartY - e.pageY);
+            h2 += (iStartY - e.pageY);
+
+            if (!(h1 <= 100 || h2 <= 100)){
+                $(oG1Resize).height(h1);
+                $(oG2Resize).height(h2);
+            }
+        }
+    }, _funUpResize = function () {
+        if (isResize) isResize = false;
+        $("body").removeClass("noselect");
+        $(document).unbind("mousemove", _funMoveResize);
+        $(document).unbind("mouseup", _funUpResize);
+    };
+
+    $(".g_resize_height").mousedown(function (e) {
+        var gridDir = $(this).closest("#content").find(".dir");
+        oG1Resize = $(gridDir.get(0));
+        oG2Resize = $(gridDir.get(1));
+console.log(oG1Resize)
+console.log(oG2Resize)
+        isResize = true;
+        iStartY = e.pageY;
+        iG1Height = oG1Resize.height();
+        iG2Height = oG2Resize.height();
+        $("body").addClass("noselect");
+
+        $(document).bind("mousemove", _funMoveResize);
+        $(document).bind("mouseup", _funUpResize);
+    });
+
+    */
+
+    var gridDir = $("#content").find(".dir");
+    var oG1Resize = $(gridDir.get(0));
+    var oG2Resize = $(gridDir.get(1));
+    $("#bar_resize_grid").boxresize({ divBox1: oG1Resize, divBox2: oG2Resize, resizeWidth: false});
+
+    //end
+
+    var s = '<button class="btn-action btn-action-v1" id="btnTreeAction"><div class="icon-btn-bottom ic-hide-tree" id="ic_btn_action_tree"></div></button>'
+    $("#content").append(s);
+
+    $("#btnTreeAction").click(function () {
+        var icBtn = $("#ic_btn_action_tree");
+        if (!p.options._isShow){
+          p.options._isShow = true;
+
+          var curLeft = $("#content").css("margin-left");
+
+          moveLeft("tree_left", "-=" + curLeft);
+          moveLeft("content", "-=" + curLeft);
+
+          setTimeout(function(){
+            icBtn.removeClass("ic-hide-tree");
+            icBtn.addClass("ic-show-tree");
+          }, 300);
+        }else{
+          p.options._isShow = false;
+
+          var curLeft = $("#tree_left").css("width");
+          moveLeft("tree_left", "+=" + curLeft);
+          moveLeft("content", "+=" + curLeft);
+
+          setTimeout(function(){
+            icBtn.removeClass("ic-show-tree");
+            icBtn.addClass("ic-hide-tree");
+          }, 300);
+        }
+    });
+  }
+}
+
+function refreshSizeGridDir(){
+  var wHeight = $(window).height(), hBar = 70;
+  if($(window).width() < 767)
+    hBar = 60;
+  $("#content").css("height", (wHeight - hBar) + "px");
+}
+
+function moveLeft(id, action){
+  $("#" + id).animate({
+      marginLeft: action
+  }, 500);
+}
+
+function loadTreeDept(p, d){
+  var d = new DataTable(d);
+  debugger;
+  var leftPanel = $("#tree_left");
+  var treeBottom = $("#tree_info");
+  var dContent = $("#content");
+  var fTree = $("#tree_dept").treeview({ tblData: d, expandAll: true, showCheck: true, minWidth: 95, inRight: false
+      , onSelectedItem: function(tr, v, v2){
+        var m = p.options.memvars, vtext = (v == '')?$.msg.get('AllLabel'):v;
+        m.val('ma_bp', 'C', v2, 'FIND')
+        p._setOptions({memvars:m, subtitle: ['{rg_code}', vtext, '%s2', '']});
+      }, onCheckedItem: function(tr, v, flag){
+        var m = p.options.memvars, v2 = tr.getCheckedItem(), vtext = (v2 == '') ? $.msg.get('AllLabel') : v2;
+        m.val('ma_bp', 'C', v2, 'FIND')
+        p._setOptions({memvars:m, subtitle: ['{rg_code}', vtext, '%s2', '']});
+      }, onResizeTree: function(tr, w){
+        leftPanel.width(w);
+        treeBottom.width(w);
+
+        dContent.css("margin-left", (w+1) + "px");
+      }
+    });
+}
+function loadTreeInfo(p, d){
+  var d = new DataTable(d);
+  var dContent = $("#content");
+
+  var fTree = $("#tree_info").treeview({ tblData: d, expandAll: true, showCheck: false, minWidth: 95
+      , onSelectedItem: function(tr, v, v2){
+        var m = p.options.memvars, vtext = (v == '')?$.msg.get('AllLabel'):v;
+        m.val('ma_bp', 'C', v2, 'FIND')
+        p._setOptions({memvars:m, subtitle: ['{rg_code}', vtext, '%s2', '']});
+      }, onCheckedItem: function(tr, v, flag){
+        var m = p.options.memvars, v2 = tr.getCheckedItem(), vtext = (v2 == '') ? $.msg.get('AllLabel') : v2;
+        m.val('ma_bp', 'C', v2, 'FIND')
+        p._setOptions({memvars:m, subtitle: ['{rg_code}', vtext, '%s2', '']});
+      }
+    });
+}
+         ]]>
+    </text>
+  </js>
+
+  <css>
+    <text>
+      <![CDATA[
+.bottom-resize {
+    display: block;
+    width: 100%;
+    height: 5px;
+    margin-top: -4px;
+    position: absolute;
+    cursor: n-resize;
+}
+
+#content{
+  margin-left: 300px;
+}
+.tree-form{
+    width: 300px;
+}
+.table-bottom{
+  height: calc(100% - 77px);
+  top: 0px;
+  position: relative;
+  margin-top: 27px;
+  clear: both;
+  border-bottom: 1px solid #ddd;
+}
+.left-panel-tree{
+  width: 300px;
+  height: 100%;
+  position: absolute;
+  margin-left: 1px;
+}
+.dir{
+  position: relative !important;
+  height: 50%;
+}
+
+.ic-hide-tree{
+  background-position: -108px 0px;
+}
+.ic-show-tree{
+  background-position: 0px 0px;
+}
+
+.tree-top{
+  height: calc(50% - 33px);
+  border-bottom: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+.tree-bottom{
+  height: calc(50% - 38px);
+  border-right: 1px solid #ddd;
+}
+.tree-bottom .right-resize{
+  display: none;
+}
+
+@media only screen and (max-width: 767px) {
+  .table-bottom{
+    margin-top: 42px;
+    height: calc(100% - 92px);
+  }
+  .left-panel-tree{
+    margin-top: -5px;
+  }
+}
+      ]]>
+    </text>
+  </css>
+
+  <script>
+    <request code="ViewTreeDept">
+      <text>
+        <![CDATA[
+exec ss_getTreeEmployeeDept
+]]>
+      </text>
+    </request>
+    <request code="ViewTreeInfo">
+      <text>
+        <![CDATA[
+exec ss_getTreeEmployeeInfo '@@lan'
+]]>
+      </text>
+    </request>
+  </script>
+</dir>

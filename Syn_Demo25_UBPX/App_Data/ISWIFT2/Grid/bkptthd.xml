@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="bkptthd" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Bảng kê phải thu theo hóa đơn" e="List of receivables by invoice"></title>
+  <subtitle v="Từ ngày {ngay_ct1} đến ngày {ngay_ct2}..." e="From {ngay_ct1} To {ngay_ct2}..."></subtitle>
+  <grids>
+    <grid>
+      <fields>
+        <field name="ma_unit" width="80" aliasName="d" join="left join sysunit d on a.unit_id = d.unit_id" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+        <field name="so_ct" width="100" link="V" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ma_kh" width="100">
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="250" aliasName="b" join="left join dmkh b on a.ma_kh = b.ma_kh">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+		 <field name="ma_dvvt" width="100">
+          <text v="Mã đơn vị vận tải" e="Trans Code"></text>
+        </field>
+        <field name="ten_dvvt" width="250" aliasName="C" join="left join dmdvvt C on a.ma_dvvt = C.ma_dvvt">
+          <text v="Tên đơn vị vận tải" e="Trans Name"></text>
+        </field>
+        <field name="dien_giai" width="250">
+          <text v="Diễn giải" e="Description"></text>
+        </field>
+       
+        <field name="t_so_luong" dataType="N" format="Qty" width="100">
+          <text v="Số lượng" e="Quantity"></text>
+        </field>
+        <field name="t_tt" dataType="N" format="FCPrice" width="100">
+          <text v="Tiền vận chuyển" e="FC Price"></text>
+        </field>
+              
+
+        <field name="unit_id" dataType="I" hidden="true" width="100" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="id" dataType="I" hidden="true" width="100" >
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="ma_ct" width="100" hidden="true">
+          <text v="Mã chứng từ" e="VC Code"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$bkptthd(f){
+  this.constructor(f);
+}
+grid$bkptthd.prototype = new DirEvent();
+grid$bkptthd.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+grid$bkptthd.prototype.beforeInit = function(){
+  var p = this._dir;
+}
+grid$bkptthd.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(), dt = g.data;
+
+  if (p.options._mau_bc == 1) p.setColumnHidden(0, ['gia_nt2', 'tien_nt2', 'thue_nt', 'ck_nt', 'pt_nt', 'gia_nt', 'tien_nt_xuat', 'ma_nt', 'ty_gia', 'gia2', 'tien2', 'thue', 'ck', 'pt', 'gia', 'tien_xuat'], true);
+  if (p.options._mau_bc == 2) p.setColumnHidden(0, ['gia_nt2', 'tien_nt2', 'thue_nt', 'ck_nt', 'pt_nt', 'gia_nt', 'tien_nt_xuat', 'ma_nt', 'ty_gia'], true);
+}
+]]>
+    </text>
+  </js>
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+exec ss_bkptthd @ngay_ct1, @ngay_ct2, '@@gridJoin', '@@gridFields', @strJoin, @strFinding, @ma_unit, '@@lan', @@userId, @@admin
+        ]]>
+      </text>
+    </processing>
+  </script>
+</dir>

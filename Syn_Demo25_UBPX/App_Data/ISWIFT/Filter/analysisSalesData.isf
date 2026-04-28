@@ -1,0 +1,295 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY ReportFilterItemGroup SYSTEM "..\Include\XML\ReportFilterItemGroup.xml">
+  <!ENTITY ReportFilterCustomerGroup SYSTEM "..\Include\XML\ReportFilterCustomerGroup.xml">
+  <!ENTITY ReportFilterStockType SYSTEM "..\Include\XML\ReportFilterStockType.xml">
+  <!ENTITY ReportJSLoading SYSTEM "..\Include\XML\ReportJSLoading.xml">
+  <!ENTITY ReportFilterUnit SYSTEM "..\Include\XML\ReportFilterUnit.xml">
+  <!ENTITY ReportFiltering SYSTEM "..\Include\XML\ReportFiltering.xml">
+  <!ENTITY PivotScript SYSTEM "..\Include\Script\ReportAnalysisJS.js">
+
+]>
+
+<dir id="analysisSalesData" dirViewType="Dialog" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Phân tích dữ liệu bán hàng" e=""></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120" >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" dataType="D">
+          <text v="Ngày từ/đến" e="Date From/To"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+        <field name="data_analysis_struct" label="1" field="[360]" inactivate="true" aliasName="@" viewType="Combobox">
+          <text v="Mẫu phân tích DL" e="Data Analysis Form"></text>
+          <viewInfo>
+            <options cache="false" query="select id, formname%l from sysreportpivot where (user_id in (0, @@userId) or form_type = 1) and controller = '@@controller' order by user_id, id">
+              <option val="">
+                <text v="Không phân tích" e="No Analysis"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="btn_save_new" nextRow="false" label="" field="[80]" viewType="Command">
+          <text v="Lưu mới" e="Save New"></text>
+        </field>
+        <field name="btn_save_overwrite" nextRow="false" label="" field="[80]" viewType="Command">
+          <text v="Lưu đè" e="Overwrite"></text>
+        </field>
+        <field name="btn_delete_form" nextRow="false" label="" field="[80]" viewType="Command">
+          <text v="Xóa" e="Delete"></text>
+        </field>
+      </fields>
+    </form>
+    <form tabPageIndex="1" gravity="MiddleLeft" height="520" columns="100,100,100" >
+      <text v="Mẫu phân tích" e=""></text>
+      <fields>
+        <field name="data_struct_label" label="3" field="">
+          <text v="Cột phân tích" e="Column"></text>
+        </field>
+        <field name="data_struct" cellCss="height: 420px;" label="" field="[270]" viewType="List">
+          <text v="Danh sách" e="List"></text>
+          <viewInfo listType="Multi"></viewInfo>
+        </field>
+      </fields>
+    </form>
+    <form tabPageIndex="1" gravity="MiddleRight" columns="100, 50, 50, 50, 50, 50, 100" >
+      <fields>
+        <field name="data_rows_label" blank="[220]" label="2" field="">
+          <text v="Dữ liệu dòng" e="Dữ liệu dòng"></text>
+        </field>
+
+        <field name="btn_remove_rows" label="" field="[50]" viewType="Command">
+          <text v="Xóa" e="Xóa"></text>
+        </field>
+        <field name="btn_add_rows"  nextRow="false"  label="" field="[90]" viewType="Command">
+          <text v="Thêm" e="Thêm"></text>
+        </field>
+
+        <field name="btn_moveup_rows" nextRow="false" label="" field="[40]" viewType="Command">
+          <text v="Lên" e="Up"></text>
+        </field>
+        <field name="btn_movedown_rows" nextRow="false" label="" field="[40]" viewType="Command">
+          <text v="Xuống" e="Down"></text>
+        </field>
+
+        <field name="data_rows" nextRow="false" label="" field="[220]" viewType="List" cellCss="height:229px;">
+          <text v="Danh sách" e="List"></text>
+          <viewInfo listType="Multi">
+          </viewInfo>
+        </field>
+
+        <field name="data_columns_label" label="[220]" field="">
+          <text v="Dữ liệu cột" e="Dữ liệu cột"></text>
+        </field>
+        <field name="data_pivot_label" label="[220]" field="" nextRow="false">
+          <text v="Giá trị" e="Giá trị xoay"></text>
+        </field>
+
+        <field name="data_columns" label="" field="[220]" viewType="List" cellCss="height:150px;">
+          <text v="Danh sách" e="List"></text>
+          <viewInfo listType="Multi">
+          </viewInfo>
+        </field>
+        <field name="data_pivot" label="" field="[220]" viewType="List" cellCss="height:150px;"  nextRow="false">
+          <text v="Danh sách" e="List"></text>
+          <viewInfo listType="Multi">
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+    <form tabPageIndex="2" gravity="MiddleLeft" height="500" columns="120,120,120,120,120" >
+      <text v="Thông tin mẫu" e="Form Info"></text>
+      <fields>
+        <field name="name" label="1" field="3" >
+          <text v="Tên mẫu" e="Name"></text>
+        </field>
+        <field name="name2" label="1" field="3" >
+          <text v="Tên khác" e="Name 2"></text>
+        </field>
+        <field name="form_type" label="1" viewType="Combobox" field="3" >
+          <text v="Loại mẫu"  e="Form Type"></text>
+          <viewInfo>
+            <options>
+              <option val="0">
+                <text v="Mẫu cho người sử dụng hiện tại"  e="Form For Current User"></text>
+              </option>
+              <option val="1">
+                <text v="Mẫu chung cho tất cả người dùng"  e="Common Form For All User"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        &ReportFiltering;
+      </fields>
+    </form>
+    <form tabPageIndex="3" gravity="MiddleLeft" height="500" columns="120,120,120,120,120" >
+      <text v="Lọc dữ liệu" e="Filter"></text>
+      <fields>
+        <field name="ma_kh" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Mã khách hàng" e="Customer"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_kh" />
+        </field>
+        <field name="ten_kh" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        &ReportFilterCustomerGroup;
+        <field name="ma_vt" viewType="Lookup" operation="like" label="1" field="1">
+          <text v="Mã vật tư" e="Item"></text>
+          <viewInfo lookupType="One" lookupId="dmvt" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_vt" />
+        </field>
+        <field name="ten_vt" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        &ReportFilterItemGroup;
+        <field name="ma_kho" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Mã kho" e="Site"></text>
+          <viewInfo lookupType="One" lookupId="dmkho" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_kho" />
+        </field>
+        <field name="ten_kho" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_gd" viewType="Lookup" label="1" field="3" operation="exists(select 1 from vdmgd x where a.ma_ct = x.ma_ct and a.ma_gd = x.ma_gd and charindex(x.code, '%s') > 0) ">
+          <text v="Mã giao dịch" e="Transaction"></text>
+          <viewInfo lookupType="Multi" lookupId="vdmgd" lookupKey="status = 1 and nh_ct in ('BH1', 'BH2', 'BH3')" />
+        </field>
+        &ReportFilterUnit;
+        <field name="nh_ct" label="1" viewType="Combobox" field="3" valueDefault="BH1,BH2,BH3" operation="ma_ct in (select ma_ct from dmct where charindex(nh_ct, '%s') &gt; 0)" >
+          <text v="Phân hệ"  e="Source"></text>
+          <viewInfo>
+            <options>
+              <option val="">
+                <text v="Tất cả"  e="All"></text>
+              </option>
+              <option val="BH1,BH2,BH3">
+                <text v="Bán hàng"  e="Sales"></text>
+              </option>
+              <option val="TK">
+                <text v="Tồn kho"  e="Stock"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        &ReportFilterStockType;
+      </fields>
+    </form>
+
+    <form tabPageIndex="4" gravity="MiddleLeft" height="500" columns="120,120,120,120,120" >
+      <text v="Lọc khác" e="Other Filter"></text>
+      <fields>
+        <field name="ma_khon" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Mã kho đ/c" e="Site Transfer"></text>
+          <viewInfo lookupType="One" lookupId="dmkho" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_khon" />
+        </field>
+        <field name="ten_khon" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_lo" viewType="Lookup" operation="like" label="1" field="1">
+          <text v="Mã lô" e="Lot"></text>
+          <viewInfo lookupType="One" lookupId="dmlo2" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_lo" />
+        </field>
+        <field name="ten_lo" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_vi_tri" viewType="Lookup" operation="like" label="1" field="1">
+          <text v="Mã vị trí" e="Position"></text>
+          <viewInfo lookupType="One" lookupId="dmvitri" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_vi_tri" />
+        </field>
+        <field name="ten_vi_tri" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="so_ct1"  label="1" field="1" operation="a.so_ct &gt;= N'%s'">
+          <text v="Số c/từ (từ/đến)" e="Voucher Number"></text>
+        </field>
+        <field name="so_ct2"  label="" nextRow="false" field="1" operation="a.so_ct &lt;= N'%s'">
+          <text v="" e=""></text>
+        </field>
+        <field name="dien_giai" label="1" field="3" operation="a.dien_giai like N'%%s%'">
+          <text v="Diễn giải" e="Voucher Number"></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  <buttons>
+    <button id="filterOk" default="true">
+      <text v="Xem" e="View"></text>
+    </button>
+    <button id="filterCancel">
+      <text v="$CancelLabel" e="$CancelLabel"></text>
+    </button>
+  </buttons>
+
+  <js>
+    <text>
+      <![CDATA[<enc>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</enc>]]>&PivotScript;
+    </text>
+  </js>
+
+  <css>
+    <text>
+      <![CDATA[<enc>4gSA/QaG1rlj3deT3Gd0+gf8ihIkgN5ZEEydkWvyrw4428CjrR7RiGF1Nxdv3qvXSsm2kjXwmKm+d46C9ZAEgJ4T7e17y+DNWbvw6ItBwu6b0dhP+vJTOyEdASrxkDr8dZJ+F+KhWVRdWwH+7RHgYLp77CrBjLlnh2wMAIV7EJKKc4XSkiOb/Zkh7GHh/9kEtZdlNSTPCZRZyGCFweYb4DyDSn0VoQD942vqSpCKF9WloeELxhunkfEw7tKMmvaxmHJqpUl8ZhHxcxaO63hEWUf5fBdyztMIC9yZ544IZaLY/lximDPNU3Y9DyclT6M4LpRtyol1d5+gsS9pQTMphsa5p5B6GgB0loWSE1b1J2tLejBkKk5OFuNt1HAyaFoCshTxWaWxZV32FIOMLHkj3x63+u+MOJtDx11JPWJsXUclclf46DEMsAqYKpmcif7jvS8NLAcu7nMAAXfhl9ukF4C3Bi8jd3+uY2cFKvCSf76kmODUljs/F2DOWebPAh7oqhnIVuM+ODZphPwMlAcx7dwMnjAAQeddcPlZrOGKm2PF/EQArp4wJRofFm0Kv/qa0vWlmhudAxH6uGXIEAGWRoZ0FxwDzVPP64m+THZRo9x3H7QYlR2Za4/YPFpWoYNaZuZ/9jWF4gwH5vrhGQ/yGHr85JDSXeNxwywqrvbR9KcIVB+Kx6DabzMOiN8hWOxnhhzOu+QRQonHd1iKH+uNcp9OfeTXeQn0en2GyOcQknZkV4VY+GFX/X3HY//k1my2mkMsO7gNs9egljkBczePxZl67kNP8k9YFSkV3Xssb0CiZX5e23Z2XnUMfBo4Ppi2l/D1a5JWoAiLuHiYJN2Bzo/i6n0QsnpGrxD5g2pwec/DMdlEi5CQR8GawEg0TtJercd9x80ASBVgyJpcanodrZuLrzKrgvZzPCclAcYSSIpB6pjVPbjvi2+9/v+JKSMztXB/olG2gwkIhRbFniI0pIgtSeXHxhbKmiGWgLVCpIGmUbUsjOMTGaU9W+cuDHXfPz4lv1YltD1o9CKZiwiRu/GZstbipUHmeDpuGdfP2P1u9636mI4vurDBC8cxAZRpV73PFEAZVSoSEpLAGPbRvZ2P3UJdr8Ae4AIiic7hdmBuUcMA6KLe+jldrg+gtQWUs4WsFIooJMC00ZOxTZ9fFVZ5F3P6th3A8D80dMtk5wW5OcAGk+BJivP1J0krynrjX7UunfrTXxR8dLxwr1eYA/hFQO/IFwVJHMNd7gtJmaVM7soYOBu0cbDlRKoui+Fs3fOrfKU8ZVvLM5ArowJruuNrdIefe1hOnjpak3gMQigsphESRTccVvPdTr2O+yMeXBdkYJJuO33jOja+8FK1iU+5DM4PBKWUNYbKB5T08dZyU4B4Z3TB51CATuZ+5t06bJQ/+tfq4cSwa3cvg6bGNXfAf06rxCNU54T0lovTCK2RxW59Kohhl7mDnWnhYWd4yydQs5rnqZt/ETYHw9V+3CJChCUToQZ7LugTsj5YmJwFIMXM/uRyTuvCo0veMVFbFLT58xpFOFHidoLALv+hWqJB35A0TvbSZcMDmxsF8ShIQIQUiSHXKgm8TOtJydHg0eB/TRYcwtDNNKrbp8VYdA==</enc>]]>
+    </text>
+  </css>
+
+  <script>
+    <request code="GetRight">
+      <text>
+        <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOGaLg5aHMTMR/UOodHw040klChZd6w51/1i7FXMiZJVOmjj24HqR8UgEykBcvsH7z9YYRdHIIf/uUP7QWJWjMYGl2LDG5IG5g2pZmjxydsWl</enc>]]>
+      </text>
+    </request>
+
+    <request code="GET">
+      <text>
+        <![CDATA[<enc>z0V0MGDsEwBAF9rbikyhSJjB4KC/JqwRs1g4GYfPqYHMXuJlJlnjGkI5LuyV5ZgF9BBvtchbfTrPeOZok8wxj6lodyjf0sneFuqtkIon7wYqtLfU4P6Pv/a1CTrWCwCL48CS18czCSQLdidWv5yVidurn8mMCR4xOJkTg4cfDEA=</enc>]]>
+      </text>
+    </request>
+
+    <request code="NEW">
+      <text>
+        <![CDATA[<enc>7aajkMD0/rGmJ+qopLKVYBljyr2jJ214P/m+oIvdW+BarqXQBatvgz9qH9ndUEwnsisHMHGkiKegGazsiUgR1HUVbqBzoyGAJyj1MBuuO/B1KVpkO8hmfWcfj4SKxU1Qh6V3XCuLJvpDqgyJNcGRNHiOwMg3Wxayju+vw/hZ+3O/DFuGyuXliWuJOkmaZsaYtZ/unIUcZ01sCbLJB+03TQpe9aItu3gYe39DVE1OPF+h+Il4Zy7tpZjyjpJ/2iFV+IW+rOYrjmSnpW+FkJGKxzBuZmCwVGirjvky7Cns7YL431NwCPavCkNBpXKmT0GpLXGKuZ/a8g6xFBfLQaHZ/BubqfBcRgtd735BUA+eyr0R0PUJB+fa6iArgpwekljZW8C3byW/UzUiJhZ7IZWHL6wAKV+TWDE7DOyKerXgJ9E=</enc>]]>
+      </text>
+    </request>
+
+    <request code="EDIT">
+      <text>
+        <![CDATA[<enc>Bj+NuiI8qYQA3jWUPbBWFC/nfhhUvEXAEIgl2Jnb7RnaCCSXYqjCjSlloIImQZ0i24qU/stO+HwE/lAXhov7SezrVCjeNBdSNir6qYxhc0vYAPi3gbZlTgo4xMGnKApUrYwJf+8meaXojZIoBIqlBJiKExXyMVzN0vvJSqy3r81UD5X5d1htjdDf28h0ACqhP2d00ztdh/l+2pZmy+t3S9Ur+oj9TA3itf9XGx+CvwjgpreF2qBQq8jI1XmqHMHMRK150aTwP6P+jqgQes4JpnxYKG5LC0RubDuTy829WNEJZKjWuUgFmyuWlVFxZ1JT7e5MSQyueJrlPtCz/niConjzVP7Hh1dfPykDdE+VhVm3+J1GhwedBO73soTCgxC0mY7rS4DZTz/anZ5Jfq5ZqCFdsPBwejmHbZo3h6gTNV4NvqGLsMyKAHXzxuUOz6RL</enc>]]>
+      </text>
+    </request>
+
+    <processing>
+      <text>
+        <![CDATA[<enc>TN45BLVvlQZWD1bhImJFui3B6za/B5OT7CPnricv7F9VxXndoQI7mrkZhe35dbbb</enc>]]>
+      </text>
+    </processing>
+    <loading code="2">
+      <text>
+        <![CDATA[<enc>yJZ+MPHTQvtTildbOwhS5Ra4ye0h8lm3Vnsfj7pLxFPN/kNPKQl3St15wrWUQdm5ziGd6MCvdBmqg1KW4XD/iAMBcGza7xm7y/6g2ItgUuWQmv9bOzc9X1lCtUgkyIyi2mNumEByVmiDob/Y1t9WGzPYuFdcVbCODOyUFxewJNEbFYjFzJiogB0JeDqgwNzF1enfkdC9bl5ykN+vemlTOnog1W8f5Q1CPpYr2qbRS4U=</enc>]]>
+      </text>
+    </loading>
+  </script>
+
+  <messages>
+    <message val="inputNewName">
+      <text v="Nhập tên mẫu mới" e="Input New Name"/>
+    </message>
+    <message val="formName">
+      <text v="Tên mẫu mới" e="New Name"/>
+    </message>
+    <message val="invalidColumns">
+      <text v="Chưa thêm cột dữ liệu hoặc danh sách các cột hiện tại không hợp lệ" e="Invalid Columns"/>
+    </message>
+    <message val="invalidDataColumns">
+      <text v="Chỉ thêm các cột kiểu chuỗi vào vùng dữ liệu cột" e="Invalid Value Columns"/>
+    </message>
+    <message val="invalidDataPivots">
+      <text v="Chỉ thêm các cột kiểu số vào vùng giá trị" e="Invalid Value Columns"/>
+    </message>
+    <message val="limitDataColumns">
+      <text v="Số lượng cột phân tích bị giới hạn" e="Limit Pivot Columns"/>
+    </message>
+  </messages>
+
+</dir>

@@ -1,0 +1,264 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="smailApprove" dirViewType="Grid" selectMultiple="Table" voucherCode="HU0" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Duyệt đề nghị hoàn ứng" e="Approve Reimbursement Request"></title>
+  <subtitle v="Xử lý &lt;b&gt;%s&lt;/b&gt; hoàn ứng" e="Process &lt;b&gt;%s&lt;/b&gt; Reimbursement"></subtitle>
+
+  <grids>
+    <grid table="smail" fieldKey="id" order="ngay_ct desc" key="xstatus = 0" allowFilter="true" allowOrder="true">
+      <fields>
+	    <field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+	   <field name="ma_unit" width="120" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="ten_unit" width="200" fieldType="EX" hidden="true">
+          <text v="Tên đơn vị" e="Unit Name"></text>
+        </field>
+        <field name="so_ct" width="100" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct" width="120" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+		<field name="s_mail" width="400" >
+          <text v="Mail gửi" e="Mail Sent"></text>
+        </field>
+        <field name="title" width="400" >
+          <text v="Tiêu đề" e="Subject"></text>
+        </field>
+        <field name="email_body" width="500" >
+          <text v="Nội dung" e="Body"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+		<field name="imageisf" width="100" fieldType="EX" hidden="true">
+          <text v="Hình ảnh" e="Image"></text>
+        </field>
+        <field name="id" dataType="N" fieldType="PK" format="0" >
+          <text v="ID" e="ID"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="approve">
+          <text v="Duyệt" e="Approve"></text>
+        </button>
+        <button id="cancel">
+          <text v="Hủy" e="Close"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="find">
+          <text v="$FindToolbar" e="$FindToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey =' ma_ct =  ''SM1'''
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id', 'b.ma_unit, b.ten_unit', '@@key', '', @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+		]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @strDetailKey nvarchar(3000); set @strDetailKey = ''
+
+if @r_mail <> '' set @strDetailKey = @strDetailKey + ' and x.r_mail like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@r_mail) + '%'''
+if @strDetailKey <> '' set @strDetailKey = ' and exists(select 1 from smailct x where a.id = x.id ' + @strDetailKey + ')'
+
+set @strKey = 'ngay_ct between ''' + convert(char(8), @ngay_ct1, 112) + ''' and ''' + convert(char(8), @ngay_ct2, 112) + ''' and ' + @strFinding + ' and ' + dbo.ISWIFTFunctionGetUnitIDRightKeys(@@admin, @@userId, @ma_unit, 'a.unit_id') + @strDetailKey
+set @strKey = @strKey +' and ma_ct =  ''SM1'''
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id', 'b.ma_unit', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+		]]>
+          </text>
+        </finding>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$smailApprove(f){
+  this.constructor(f);
+}
+grid$smailApprove.prototype = new DirEvent();
+grid$smailApprove.prototype.afterInit = function(renderType){
+  var p = this._dir;
+  if (p.options._status == 1) p.find(".toolbar-approve").attr('title', p.msg('approve'))
+  else if (p.options._status == 5) p.find(".toolbar-approve").attr('title', p.msg('undo'))
+  else p.find(".toolbar-approve").attr('title', p.msg('open'));
+  p.find(".toolbar-cancel").css("display", (p.options._status == 1)?"":"none")
+}
+grid$smailApprove.prototype.beforeButtonGridClick = function (id, gindex) {
+
+  var msg, p = this._dir, g = p.grid(gindex), dt = g.data, fees = p.selectedItems(), xstatus = p.options._status;
+  switch (id) {
+
+    case 'approve':
+      msg = (xstatus ==1)? p.msg('msg1'): (xstatus == 9)? p.msg('msg3'):p.msg('msg2');
+      if (fees.count() > 0)
+        $.question(msg, $.msg.get("QuestionTitle"), p, function (q, v) {
+          q._close();
+          if (v){
+            p.request('Approve', '', [["tblKeys", "T", fees.sqlval()],  ['xstatus', 'I', xstatus]], function(pp, d, run){
+              if (run) {
+                p._refresh();
+                p.clearSelectedItems();
+              }
+            });
+          }
+        });
+      return false;
+      break;
+    case 'cancel':
+      if (fees.count() > 0)
+        p.showFilter('messageInput', null, {title: p.msg('inputTitle'), label: p.msg('reason'), allowBlank: false, msgFunction: function (q, v, ctext) {
+          q._close();
+          if (v){
+            p.request('Close', '', [["tblKeys", "T", fees.sqlval()], ['xstatus', 'I', xstatus], ['ly_do_huy', 'C', ctext]], function(pp, d, run){
+              if (run) {
+                p._refresh();
+                p.clearSelectedItems();
+              }
+            });
+          }
+        }});
+      return false;
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		td.email_body {
+			display: -webkit-box;
+			-webkit-line-clamp: 1;       /* Hiển thị tối đa 3 dòng */
+			-webkit-box-orient: vertical;
+			overflow: hidden;
+			max-height: 4.5em;           /* Tùy theo font-size */
+		}
+		td.email_body img, td.email_body figure {
+			display: none;
+		}
+		
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+  <script>
+    <request code="Approve" transaction="true">
+      <text>
+        <![CDATA[
+declare @deststatus int, @uid int, @dduyet date, @DetailTable varchar(32), @MasterTable varchar(32), @key nvarchar(4000) = '',  @s NVARCHAR(4000)
+set @deststatus = case @xstatus when 1 then 5 when 5 then 1 else 5 end --else 9 - Huy thi tra ve duyet
+set @uid = case when @xstatus = 1 then @@userId else 1 end
+set @dduyet = case when @xstatus = 1 then getdate() else null end
+
+update smail set status = @deststatus, user_id_duyet = @uid, ngay_duyet = @dduyet where id in (select id from @tblKeys);
+update smailct set status = @deststatus where id in (select id from @tblKeys)
+
+select '' as message, '$Processed' as toast
+        ]]>
+      </text>
+    </request>
+    <request code="Close" transaction="true">
+      <text>
+        <![CDATA[
+declare @deststatus int, @uid int, @dduyet date
+set @deststatus = case when @xstatus = 1 then 9 else 5 end
+
+update smail set status = @deststatus, ly_do_huy = @ly_do_huy where id in (select id from @tblKeys)
+update smailct set status = @deststatus where id in (select id from @tblKeys)
+
+select '' as message, '$Processed' as toast
+        ]]>
+      </text>
+    </request>
+
+    &VoucherJSLoading;
+  </script>
+
+  <messages>
+    <message val="msg1">
+      <text v="Bạn có chắc chắn sẽ &lt;b&gt;duyệt&lt;/b&gt; các phiếu được chọn không?" e=""/>
+    </message>
+    <message val="msg2">
+      <text v="Bạn có chắc chắn sẽ &lt;b&gt;bỏ duyệt&lt;/b&gt; các phiếu được chọn trở về trạng thái [Chờ duyệt] không?" e=""/>
+    </message>
+    <message val="msg3">
+      <text v="Bạn có chắc chắn sẽ &lt;b&gt;bỏ đóng&lt;/b&gt; các phiếu được chọn trở về trạng thái [Đã duyệt] không?" e=""/>
+    </message>
+    <message val="close">
+      <text v="Hủy/đóng" e="Close"/>
+    </message>
+    <message val="approve">
+      <text v="Duyệt" e="Approve"/>
+    </message>
+    <message val="undo">
+      <text v="Bỏ duyệt" e="Undo"/>
+    </message>
+    <message val="open">
+      <text v="Bỏ đóng" e="Open &amp; Approve"/>
+    </message>
+      <message val="inputTitle">
+      <text v="Nhập lý do hủy hoàn ứng " e=""/>
+    </message>
+    <message val="reason">
+      <text v="Lý do" e="Reason"/>
+    </message>
+  </messages>
+</dir>

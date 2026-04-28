@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="bcthbht" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo cáo tổng hợp bán hàng thuần" e=""></title>
+  <subtitle v="Từ ngày {ngay_ct1} đến ngày {ngay_ct2}..." e="From {ngay_ct1} To {ngay_ct2}..."></subtitle>
+  <grids>
+    <grid>
+      <fields>
+        <field name="ma_vt" width="100" note="ten_vt,ten_vt2">
+          <text v="Mã hàng hóa" e="Goods Code"></text>
+        </field>
+        <field name="ten_vt" width="250" aliasName="vt" join="left join dmvt vt on a.ma_vt = vt.ma_vt|ma_vt">
+          <text v="Tên hàng hóa" e="Goods Name"></text>
+        </field>
+        <field name="dvt" width="50" aliasName="vt" join="left join dmvt vt on a.ma_vt = vt.ma_vt|ma_vt">
+          <text v="Đvt" e="UOM"></text>
+        </field>
+        <field name="ma_kh" width="100" note="ten_kh,ten_kh2,ma_so_thue" >
+          <text v="Mã khách hàng" e="Customer"></text>
+        </field>
+        <field name="ten_kh" width="250" aliasName="kh" join="left join dmkh kh on a.ma_kh = kh.ma_kh|ma_kh">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+        
+        <field name="sl_xuat" dataType="N" format="Qty" width="100">
+          <text v="Sl bán" e="Issued Q'ty"></text>
+        </field>
+        <field name="tien_ban_nt" dataType="N" format="FCAmount" width="100" aliasName="case when a.ct_nxd = 2 then a.tien_nt2 else 0 end as " join="|ct_nxd|tien_nt2">
+          <text v="Doanh thu nt" e="FC Revenue"></text>
+        </field>
+        <field name="tien_ban" dataType="N" format="FCAmount" width="100" aliasName="case when a.ct_nxd = 2 then a.tien2 else 0 end as " join="|ct_nxd|tien2">
+          <text v="Doanh thu" e="FC Revenue"></text>
+        </field>
+        
+        <field name="sl_nhap" dataType="N" format="Qty" width="100">
+          <text v="Sl trả lại" e="Received Q'ty"></text>
+        </field>
+        <field name="tien_tl_nt" dataType="N" format="FCAmount" width="100" aliasName="case when a.[ct_nxd] = 1 then a.[tien_nt2] else 0 end as " join="|ct_nxd|tien_nt2">
+          <text v="Trả lại nt" e="FC Revenue"></text>
+        </field>
+        <field name="tien_tl" dataType="N" format="FCAmount" width="100" aliasName="case when a.[ct_nxd] = 1 then a.[tien2] else 0 end as " join="|ct_nxd|tien2">
+          <text v="Trả lại" e="FC Revenue"></text>
+        </field>
+        
+        <field name="sl_cl" dataType="N" format="Qty" width="100" aliasName="[sl_xuat] - [sl_nhap] as " join="|||sl_xuat,sl_nhap">
+          <text v="Sl còn lại" e="Received Q'ty"></text>
+        </field>
+        <field name="tien_cl_nt" dataType="N" format="FCAmount" width="100" aliasName="[tien_ban_nt] - [tien_tl_nt] as " join="|||tien_ban_nt,tien_tl_nt">
+          <text v="Dt còn lại nt" e="FC Revenue"></text>
+        </field>
+        <field name="tien_cl" dataType="N" format="FCAmount" width="100" aliasName="[tien_ban] - [tien_tl] as " join="|||tien_ban,tien_tl">
+          <text v="Dt còn lại" e="FC Revenue"></text>
+        </field>
+        
+        <field name="tien_nt2" dataType="N" format="FCAmount" hidden="true" width="100">
+          <text v="Doanh thu nt" e="FC Revenue"></text>
+        </field>
+        <field name="tien2" dataType="N" format="Amount" hidden="true" width="100">
+          <text v="Doanh thu" e="Revenue"></text>
+        </field>
+        <field name="ct_nxd" dataType="I" hidden="true" width="100" >
+          <text v="NXT" e="NXT"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$bcthbht(f){
+  this.constructor(f);
+}
+grid$bcthbht.prototype = new DirEvent();
+grid$bcthbht.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+grid$bcthbht.prototype.beforeInit = function(){
+  var p = this._dir;
+  p.options.hiddenNotExistsColumn = true;
+  p.options.orderFieldsBySource = true;
+}
+grid$bcthbht.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(), dt = g.data;
+}
+]]>
+    </text>
+  </js>
+<css>
+    <text>
+		<![CDATA[
+		.toolbar-close > div {
+			background-position: -336px -400px !important;
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+declare @analysis varchar(512) 
+select @analysis = pivotinfo from sysreportpivot where controller = 'bcthbht' and id = @mau_bc
+exec ss_analysisSalesData @ngay_ct1, @ngay_ct2, @analysis
+  , '@@gridFieldJoins', '@@gridFields', @strJoin, @strFinding, @loai_du_lieu, @ma_unit, '@@lan', @@userId, @@admin
+        ]]>
+      </text>
+    </processing>
+  </script>
+
+</dir>

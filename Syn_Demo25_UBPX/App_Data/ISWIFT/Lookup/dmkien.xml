@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="dmkien" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục kiện" e="List of Packages"></title>
+  <grids>
+    <grid table="dmkien" fieldKey="ma_kien" fieldName="ten_kien" order="ma_kien" allowFilter="true" allowOrder="true" key="" >
+      <fields>
+        <field name="ma_kien" fieldType="PK" width="120" filterType="Code" >
+          <text v="Mã kiện" e="Package Code"></text>
+        </field>
+        <field name="ten_kien" width="250">
+          <text v="Tên kiện" e="Package Name"></text>
+        </field>        
+		<field name="ten_kien2" width="250">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+		<field name="ma_kien3" width="120">
+          <text v="Mã cũ" e="Old Case Code"></text>
+        </field>
+		 <field name="ten_kien3" width="250">
+          <text v="Tên cũ" e="Old Case Name"></text>
+        </field>
+      </fields>
+	  <script>
+		<query>
+		  <text>
+			<![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = @lookupKey + case when @val = '' then '' else ' and (@@fieldKey like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or @@fieldName like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+			 ]]>
+		  </text>
+		</query>
+	  </script>
+    </grid>
+  </grids>
+</dir>

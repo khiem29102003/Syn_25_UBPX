@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<report xmlns="urn:schemas-iswift:struct-report">
+  <query>
+    <text>
+      <![CDATA[
+	SELECT DISTINCT z.ma_khon, a.unit_id, a.ma_kh, a.ma_job, a.so_job, a.ma_job + a.so_job ms_job,
+		b.ma_so_thue,
+		d.ten_dc, d.ten_dc2, d.lien_he_gh , d.chuc_vu, d.dt_gh
+		from m74 a with(nolock)
+				left join sysunit b on a.unit_id = b.unit_id
+				left join dmkh c on a.ma_kh = c.ma_kh
+				left join dmdc d on a.ma_dc = d.ma_dc
+				left join d74 z on a.id = z.id
+		where a.id = @id
+
+	SELECT line as stt, a.ma_vt, a.ma_model, a.so_luong,
+			b.ten_vt
+		from d74 a with(nolock)
+				left join dmvt b with(nolock) on a.ma_vt = b.ma_vt
+				left join m74 c on a.id = c.id
+		where a.id = @id
+
+
+
+]]>
+    </text>
+  </query>
+
+  <forms>	
+    <form id="005" fileName="m74_01" fileType="rdlc" exportExt="pdf" image="pdf">
+      <text v="Phiếu bán hàng CTY(.pdf)" e="Payment Invoice Company"></text>
+    </form>
+	<form id="010" fileName="m74_01" fileType="rdlc" exportExt="docx" image="word">
+      <text v="Phiếu bán hàng CTY(.docx)" e="Payment Invoice Company"></text>
+    </form>
+	 <form id="015" fileName="m74_01" fileType="rdlc" exportExt="xlsx" image="excel">
+      <text v="Phiếu bán hàng CTY(.xlsx)" e="Payment Invoice Company"></text>
+    </form>
+	 
+    <!-- <form id="020" fileName="m74_01" fileType="rdlc" exportExt="pdf" image="pdf"> -->
+      <!-- <text v="Phiếu bán hàng (.pdf)" e="Payment Invoice"></text> -->
+    <!-- </form> -->
+    <!-- <form id="025" fileName="m55_pxk2" fileType="rdlc" exportExt="docx" image="word"> -->
+      <!-- <text v="Phiếu bán hàng (.docx)" e="Payment Invoice "></text> -->
+    <!-- </form> -->
+	 <!-- <form id="030" fileName="m55_pxk2" fileType="rdlc" exportExt="xlsx" image="excel"> -->
+      <!-- <text v="Phiếu bán hàng (.xlsx)" e="Payment Invoice"></text> -->
+    <!-- </form> -->
+  </forms>
+
+  <fields>
+    <field name="isFC" type="B">
+      <text v="False" e="False"/>
+    </field>
+    <field name="title" type="C">
+      <text v="BIÊN BẢN BÀN GIAO" e="HANDOVER MINUTES"/>
+    </field>
+    <field name="h_day" type="C">
+      <text v="Ngày" e="Date"/>
+    </field>
+    <field name="h_month" type="C">
+      <text v="tháng" e="Month"/>
+    </field>
+    <field name="h_year" type="C">
+      <text v="năm" e="Year"/>
+    </field>
+
+    <field name="h_so_seri" type="C">
+      <text v="Ký hiệu" e="Serial No."/>
+    </field>
+    <field name="h_so_ct" type="C">
+      <text v="Số phiếu:" e="Invoice No.:"/>
+    </field>
+
+    <field name="h_don_vi_ban" type="C">
+      <text v="Đơn vị bán hàng:" e="Seller:"/>
+    </field>
+
+    <field name="h_nguoi_mua" type="C">
+      <text v="Họ tên người mua hàng:" e="Buyer:"/>
+    </field>
+    <field name="h_don_vi_mua" type="C">
+      <text v="Tên đơn vị:" e="Company:"/>
+    </field>
+    <field name="h_ma_so_thue" type="C">
+      <text v="Mã số thuế:" e="Tax Code:"/>
+    </field>
+    <field name="h_dia_chi" type="C">
+      <text v="Địa chỉ:" e="Address:"/>
+    </field>
+
+    <field name="h_company" type="C">
+      <text v="Đơn vị" e="Company"/>
+    </field>
+    <field name="h_address" type="C">
+      <text v="Địa chỉ:" e="Address:"/>
+    </field>
+    <field name="h_kh" type="C">
+      <text v="Tên khách hàng:" e="Customer Name:"/>
+    </field>
+    <field name="h_noi_giao" type="C">
+      <text v="BÊN GIAO/BÊN A:" e="DELIVERING PARTY/PARTY A:"/>
+    </field>
+    <field name="h_stt" type="C">
+      <text v="STT" e="No."/>
+    </field>
+    <field name="h_vt" type="C">
+      <text v="Hàng hóa" e="Goods"/>
+    </field>
+    <field name="h_dvt" type="C">
+      <text v="Đvt" e="UOM"/>
+    </field>
+    <field name="h_sl" type="C">
+      <text v="Số lượng" e="Quantity"/>
+    </field>
+    <field name="h_gia" type="C">
+      <text v="Đơn giá" e="Price"/>
+    </field>
+    <field name="h_tien" type="C">
+      <text v="Thành tiền" e="Amount"/>
+    </field>
+    <field name="h_total" type="C">
+      <text v="Cộng tiền bán hàng hóa, dịch vụ:" e="Total Amount:"/>
+    </field>
+    <field name="h_bang_chu" type="C">
+      <text v="Bằng chữ:" e="In words:"/>
+    </field>
+    <field name="h_kiem_tra" type="C">
+      <text v="(Cần kiểm tra, đối chiếu khi lập, giao, nhận hóa đơn)" e="(Please do check, compare when issuing, delivering and receiving invoice)"/>
+    </field>
+    <field name="h_nguoi_mua_hang" type="C">
+      <text v="Người mua hàng" e="Buyer"/>
+    </field>
+    <field name="h_nguoi_ban_hang" type="C">
+      <text v="Người bán hàng" e="Seller"/>
+    </field>
+	
+	<!-- <field name="h_thue" type="C"> -->
+      <!-- <text v="Thuế (%)" e="Tax (%)"/> -->
+    <!-- </field> -->
+	<field name="h_ck" type="C">
+      <text v="C.Khấu (%)" e="Discount (%)"/>
+    </field>
+	<field name="h_con_lai" type="C">
+      <text v="Tổng tiền" e="Total"/>
+    </field>
+	<field name="h_chi_phi" type="C">
+      <text v="Tổng chi phí:" e="Total Cost:"/>
+    </field>
+	<field name="h_tong_cong" type="C">
+      <text v="Tổng cộng:" e="Total All Amount:"/>
+    </field>
+	<field name="h_ly_do" type="C">
+      <text v="Lý do xuất kho:" e="Note"/>
+    </field>
+	<field name="h_ma_kho" type="C">
+      <text v="Kho" e="Warehouse"/>
+    </field>
+	<field name="h_so_luong" type="C">
+      <text v="Số lượng" e="Warehouse"/>
+    </field>
+	<field name="h_dien_giai" type="C">
+      <text v="Diễn giải" e="Goods code"/>
+    </field>
+	<!-- -->
+	<field name="h_ma_tt" type="C">
+      <text v="Thanh toán:" e="Payments"/>
+    </field>
+	<field name="h_ma_pttt" type="C">
+      <text v="Phương thức thanh toán:" e=""/>
+    </field>
+	<field name="h_dien_thoai" type="C">
+      <text v="Điện thoại:" e="Phone"/>
+    </field>	
+	<field name="h_ma_nvbh" type="C">
+      <text v="Nhân viên kinh doanh:" e="Business staff:"/>
+    </field>
+	<field name="h_ma_vt" type="C">
+      <text v="Tên sản phẩm" e="Product Name"/>
+    </field>
+	<field name="h_ma_model" type="C">
+      <text v="Seri Number" e="Seri Number"/>
+    </field>
+
+	<field name="h_ck_nt" type="C">
+      <text v="Chiết khấu" e="Goods code"/>
+    </field>
+	<field name="h_thue" type="C">
+      <text v="Thuế (VAT)" e="Goods code"/>
+    </field>
+
+	<field name="h_t_sl" type="C">	
+      <text v="Tổng số lượng:" e="Goods code"/>
+    </field>
+	<field name="h_t_thue" type="C">
+      <text v="Tổng tiền thuế (VAT):" e="Goods code"/>
+    </field>
+	<field name="h_t_ck" type="C">
+      <text v="Tổng chiết khấu:" e="Goods code"/>
+    </field>
+	<field name="h_t_tien" type="C">
+      <text v="Tổng tiền:" e="Goods code"/>
+    </field>
+	
+	
+	
+	<!---->
+	<field name="h_title" type="C">
+      <text v="CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM" e="CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM"/>
+    </field>	
+	<field name="h_title2" type="C">
+      <text v="Độc lập – Tự do – Hạnh phúc" e="Độc lập – Tự do – Hạnh phúc"/>
+    </field>
+	<field name="h_dai_dien" type="C">
+      <text v="Đại diện bởi:" e="Represented by:"/>
+    </field>
+	<field name="h_noi_nhan" type="C">
+      <text v="BÊN NHẬN/BÊN B:" e="RECEIVING PARTY/PARTY B:"/>
+    </field>
+	<field name="h_chuc_vu" type="C">
+      <text v="Chức vụ:" e="Position:"/>
+    </field>
+	<field name="h_ong_ba" type="C">
+      <text v="Ông/ Bà:" e="Mr./ Mrs.:"/>
+    </field>
+	<field name="h_cccd" type="C">
+      <text v="CCCD Số:" e="ID No.:"/>
+    </field>
+	<field name="h_hktt" type="C">
+      <text v="HKTT:" e="Permanent Residence:"/>
+    </field>	
+	<field name="h_dt_gh" type="C">
+      <text v="Điện thoại:" e="Phone:"/>
+    </field>
+  </fields>
+
+</report>

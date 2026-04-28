@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridFinding.xml">
+]>
+
+<dir id="cnkhbh" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Cập nhật kế hoạch bán hàng" e="Sales Target"></title>
+  <subtitle v="Cập nhật kế hoạch bán hàng kỳ {ky} năm {nam}" e="Sale Plan Input Month {ky} Year {nam}"></subtitle>
+  <grids>
+    <grid table="cnkhbh" fieldKey="ky,nam,ma_nvbh,ma_vt,ma_kh" order="ma_nvbh" allowFilter="true" allowOrder="true" key="" >
+      <fields>
+        <field name="ky" width="80" fieldType="PK" hidden="true" format="-1" dataType="I">
+          <text v="Kỳ" e="Month"></text>
+        </field>
+        <field name="nam" width="100" fieldType="PK" hidden="true" format="-1" dataType="I">
+          <text v="Năm" e="Year"></text>
+        </field>
+        <field name="ma_nvbh" fieldType="PK" width="100">
+          <text v="Mã nhân viên" e="Saleman Code"></text>
+        </field>
+        <field name="ten_nvbh" width="250" fieldType="EX" aliasName="b">
+          <text v="Tên nhân viên" e="Saleman Name"></text>
+        </field>
+        <field name="ma_vt" fieldType="PK" width="80">
+          <text v="Mã vật tư" e="Item Code"></text>
+        </field>
+        <field name="ten_vt" fieldType="EX" width="250" aliasName="b">
+          <text v="Tên vật tư" e="Item Name"></text>
+        </field>
+        <field name="ma_kh" fieldType="PK" width="100">
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="250" fieldType="EX" aliasName="b">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+        <field name="so_luong" width="120" dataType="N">
+          <text v="Số lượng" e="Packing Qty"></text>
+        </field>
+        <field name="tien2" width="120" dataType="N" format="0">
+          <text v="Doanh số" e="Sales"></text>
+        </field>
+        <field name="nh_kh1" width="100">
+          <text v="Nhóm khách hàng 1" e="Customer Group 1"></text>
+        </field>
+        <field name="nh_kh2" width="100">
+          <text v="Nhóm khách hàng 2" e="Customer Group 2"></text>
+        </field>
+        <field name="nh_kh3" width="100">
+          <text v="Nhóm khách hàng 3" e="Customer Group 3"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = 'ky = ' + rtrim(@ky) + ' and nam = ' + rtrim(@nam)
+if @@admin = 0 and exists(select 1 from dmnvbh where user_id = @@userId)
+  set @strKey = @strKey + ' and a.ma_kh in (select ma_kh from dmkh where ma_nvbh in (select ma_nvbh from dbo.sf_GetEmployeeList(@@userId)))'
+
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmnvbh b on a.ma_nvbh = b.ma_nvbh left join dmvt c on a.ma_vt = c.ma_vt left join dmkh d on a.ma_kh = d.ma_kh', 'b.ten_nvbh, c.ten_vt, d.ten_kh', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$cnkhbh(f){
+  this.constructor(f);
+}
+grid$cnkhbh.prototype = new DirEvent();
+grid$cnkhbh.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+</dir>

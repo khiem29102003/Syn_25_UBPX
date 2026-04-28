@@ -1,0 +1,202 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+]>
+
+<dir id="m63CR1Select" table="" height="" fieldKey="id" voucherCode="CR1" dirViewType="Dialog" readOnly="true" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Chi tiết đơn hàng được chọn" e="Quotation Entry Detail"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" readOnly="true" aliasName="@DFDFrom" disabled="true" allowBlank="false" dataType="D">
+          <text v="Ngày c/từ từ/đến" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" allowBlank="false" disabled="true" inactivate="true" dataType="D" nextRow="false">
+          <text v="Ngày đến" e="Voucher Date"></text>
+        </field>
+        <field name="ma_nt" hidden="true" label="1" field="1">
+          <text v="Mã ngoại tệ" e="Ex Code"></text>
+        </field>
+        <field name="unit_id" dataType="I" hidden="true" label="1" field="1">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>	
+		<field name="ma_kh" format="U" label="1" disabled="true"  field="1" operation="like" >
+          <text v="Mã khách hàng" e="Code"></text>
+        </field>
+		<field name="ten_kh" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+		 <field name="ma_hang" viewType="Lookup" label="1" disabled="true" field="1" operation="like">
+			<text v="Hãng tàu/ Đại lý" e="Carrier/ Agent Code"></text>
+		</field>
+		<field name="ten_hang" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+		<field name="ds_cong" allowBlank="true" viewType="Lookup" label="1" field="-"  hidden="false" disabled="true">
+			<text v="Container" e="Container List"></text>
+			<viewInfo lookupType="Multi" lookupId="dmcong2" lookupKey="status=1" lookupCheck="status=1" lookupRef="" lookupInfo="dmcong|ma_cong|ten_cong" />
+		</field>
+        <field name="ma_noi_di" viewType="Lookup" label="1" disabled="true" field="1" operation="like">
+			<text v="Nơi đi" e="Origin "></text>
+			<viewInfo lookupType="One" lookupId="vdmcangdi" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_di" />
+		</field>
+		<field name="ten_noi_di" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+		<field name="ma_noi_den" viewType="Lookup" disabled="true" label="1" field="1" operation="like">
+			<text v="Nơi đến" e="Destination"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangden" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_den"  />
+		</field>
+		<field name="ten_noi_den" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field>  
+		<field name="so_ct" label="1" field="1" disabled="true" hidden="true">
+          <text v="Số báo giá" e="Quot. Number"></text>
+        </field>
+		<field name="dien_giai" label="1" rows="1" field="-" disabled="true">
+		  <text v="Diễn giải" e="Explain"></text>
+		</field>
+		<field name="id" dataType="N" hidden="true" fieldType="PK" label="1" field="1"  >
+			 <text v="ID" e="Code"></text>
+		</field>
+		
+      </fields>
+    </form>
+    <form tabPageIndex="1" gravity="MiddleLeft" height="0" columns="120,120,240" >
+      <text v="" e=""></text>
+      <fields>
+        <field name="v61" label="" field="-" viewType="Grid">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+ <grids>
+    <grid id="v61" table="v61" fieldKey="id, line" order="id, line" allowFilter="true" readOnly="true" allowOrder="true">
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+		
+      </fields>
+
+      <buttons>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+	select data as id into #id from dbo.ISWIFTFunction$Split(@so_ct, ',')
+	select @@fields into #t from v61 a @@join
+	  where a.id in (select id from #id)
+	  order by a.line, a.id
+
+	select * from #t
+	
+	select a.dien_giai, a.id id_dh, a.so_job so_job_dh, a.id_bg, a.id_tg, a.so_ct so_ct_dh,
+	a.ma_noi_di, a.ma_noi_den, a.ma_hang, a.ma_job, a.ma_ct ma_ct_dh ,d.ten_hang, b.ten_noi_di, c.ten_noi_den
+	from s61 a 
+	  left join vdmhangtau d on a.ma_hang = d.ma_hang
+	  left join vdmcangdi b on a.ma_noi_di = b.ma_noi_di
+	  left join vdmcangden C on a.ma_noi_den = c.ma_noi_den
+
+	where a.id in (select top 1 id from #id order by id desc) 
+	
+     drop table #id, #t
+
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+   
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$m63CR1Select(p){
+  this.constructor(p);
+}
+filter$m63CR1Select.prototype = new DirEvent();
+filter$m63CR1Select.prototype.beforeInit = function(){
+  var p = this._dir;
+  
+}
+
+
+filter$m63CR1Select.prototype.afterInit = function(){
+	var p = this._dir,g = p.grid(0),master = g.ds.get(1), rErr = '';
+  p.valForm(['ngay_ct1','ngay_ct2','id', 'ma_noi_di', 'ten_noi_di', 'ma_noi_den', 'ten_noi_den', 'ma_nt', 'unit_id'], [p.options._ngay_ct1,p.options._ngay_ct2,p.options._so_ct,p.options._ma_noi_di, p.options._ten_noi_di,p.options._ma_noi_den, p.options._ten_noi_den,  p.options._ma_nt, p.options._unit_id]);
+	dir$m63CR1SetMaster(p);
+
+}
+
+function dir$m63CR1SetMaster(p) {
+  p.request('ma_kh_request', '', ['id']);
+}
+
+filter$m63CR1Select.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir, pa = p.options.parent, g = p.grid(), dt = g.data, master = g.ds.get(1), rErr = '';
+ 
+ var fun = function(){
+	//dt.removeRow('[so_luong] == 0');
+    //pa.appendGrid(0, dt, p.valForm('xprocess') == "2", 'so_luong', 'so_luong');
+	//pa.calcExpressionAll(0, 'so_luong');
+    pa.appendForm(master, 0);
+    p._close();
+  }
+
+  if (rErr.length) {
+    $.question('$VoucherRetrieveLimit', null, p, function(q, v){
+      q._close();
+      if (v) fun();
+    });
+  } else fun();
+  
+
+  //p._close();
+  
+  return false;
+}
+         ]]>
+    </text>
+  </js>
+  
+  <script>
+		<request code="ma_kh_request">
+			<text>
+			  <![CDATA[
+			  
+			  		DECLARE @ds_cong VARCHAR(4000)  
+					SELECT distinct ma_cong into #tt FROM v61 a where a.id = @id
+					SELECT @ds_cong = COALESCE(@ds_cong + ', ','') + ltrim(rtrim(ma_cong)) FROM #tt
+					
+					select top 1 a.ma_kh as [!ma_kh],a.ma_hang as [!ma_hang], a.ma_noi_di as [!ma_noi_di], a.ma_noi_den as [!ma_noi_den], 
+					@ds_cong as [!ds_cong],b.ten_noi_di as [!ten_noi_di],c.ten_noi_den as [!ten_noi_den],d.ten_kh as [!ten_kh],e.ten_hang as [!ten_hang], a.dien_giai as [!dien_giai]
+				  from s61 a 
+				  left join vdmcangdi b on a.ma_noi_di =b.ma_noi_di 
+				  left join vdmcangden c on a.ma_noi_den =c.ma_noi_den 
+				  left join dmkh d on a.ma_kh =d.ma_kh 
+				  left join vdmhangtau e on a.ma_hang =e.ma_hang 
+				  where a.id = @id
+			]]>
+			</text>
+		  </request>
+    
+  </script>
+  
+</dir>

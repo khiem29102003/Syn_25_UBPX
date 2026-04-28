@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="dmhotline_td" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách số điện thoại tiếp nhận tiếp dân" e="List of Citizen Reception Contact Numbers"></title>
+  <grids>
+    <grid table="dmhotline_td" fieldKey="ma_hl" fieldName="hl_name" order="ma_hl" allowFilter="true" allowOrder="true">
+      <fields>
+		<field name="ma_hl" width="120" fieldType="PK" filterType="Code">
+          <text v="Mã hotline" e="Hotline Code"></text>
+        </field>
+		<field name="hl_name" width="200">
+			<text v="Tên hiển thị" e="Display Name"></text>
+        </field>
+		<field name="hl_lienhe" width="120">
+			<text v="Người liên hệ" e="Contact Person"></text>
+        </field>
+		<field name="ma_loai" width="120">
+          <text v="Mã loại" e="Type Code"></text>
+        </field>
+		<field name="ma_ttp" width="120">
+          <text v="Mã tỉnh thành" e="Province/City Code"></text>
+        </field>
+		<field name="ma_phuongxa" width="120">
+          <text v="Mã phường xã" e="Ward/Commune Code"></text>
+        </field>
+		<field name="dien_thoai" width="150" align="right" fieldType="PK">
+          <text v="Điện thoại" e="Phone"></text>
+        </field>
+		<field name="ghi_chu" width="150" align="right">
+          <text v="Ghi chú" e="Note"></text>
+        </field>
+      </fields>
+	<script>
+	<query>
+	  <text>
+		<![CDATA[
+DECLARE @key2 nvarchar(3000)
+SELECT @key2 = (CASE WHEN @lookupKey = '' THEN '1=1' ELSE @lookupKey END) + CASE WHEN @val = '' THEN ''ELSE ' AND (@@fieldKey LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%''' + ' OR @@fieldName LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' END;
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+	 ]]>
+	  </text>
+	</query>
+	</script>
+    </grid>
+  </grids>
+</dir>

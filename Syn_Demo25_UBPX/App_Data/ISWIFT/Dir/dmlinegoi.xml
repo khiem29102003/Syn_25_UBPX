@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmlinegoi" table="dmlinegoi" fieldKey="ma_line" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục line gọi" e="List of contract types"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120" >
+      <fields>
+        <field name="ma_line" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="1">
+          <text v="Mã line" e="Type code"></text>
+        </field>
+        <field name="ten_line" label="1" field="-" allowBlank="false" fieldType="PK" importable="2" >
+          <text v="Tên line" e="Type name"></text>
+        </field>
+        <field name="ten_line2" label="1" field="-" importable="3">
+          <text v="Tên khác" e="Other name"></text>
+        </field>
+
+        <field name="status" viewType="Combobox" inactivate="true" valueDefault="1" label="1" field="2" importable="-1" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmlinegoi(p){
+  this.constructor(p);
+}
+dir$dmlinegoi.prototype = new DirEvent();
+dir$dmlinegoi.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmlinegoi.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+  dir$dmlinegoiDisabledMasterField(p, g);
+
+}
+
+function dir$dmlinegoiDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_line').trim() != '')
+  {
+    p.setDisabled('ma_line', true);
+  }
+  else
+  {
+    p.setDisabled('ma_line', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+	<css>
+		<text>
+			<![CDATA[
+				.control-label.ma_line, .control-label.ten_line{
+					color: #499b98;
+				}
+			]]>
+		</text>
+	</css>
+  <script>
+   <importing>
+      <text>
+        <![CDATA[
+@@insert
+        ]]>
+      </text>
+    </importing>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã loại đã tồn tại' else N'Type code is exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã loại đã tồn tại' else N'Type code is exists' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+</dir>

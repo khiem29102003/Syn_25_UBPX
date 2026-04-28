@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridFinding.xml">
+]>
+
+<dir id="dmnk" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục quyển chứng từ" e="List of voucher book"></title>
+  <subtitle v="Chứng từ: &lt;i&gt;{ma_ct}&lt;/i&gt;" e="Voucher: &lt;i&gt;{ma_ct}&lt;/i&gt;"></subtitle>
+  <grids>
+    <grid table="dmnk" fieldKey="ma_nk" order="ma_nk" allowFilter="true" allowOrder="true" key="" >
+      <fields>
+        <field name="ma_nk" fieldType="PK" width="100" filterType="Code">
+          <text v="Mã quyển" e="Code"></text>
+        </field>
+        <field name="ten_nk" width="250">
+          <text v="Tên quyển" e="Name"></text>
+        </field>
+        <field name="so_ct_mau" width="150">
+          <text v="Số khai báo" e="Voucher Number"></text>
+        </field>
+        <field name="unit_id" dataType="I" hidden="true" width="80">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="ma_unit" fieldType="EX" width="120" aliasName="b">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="kieu_trung_so" viewType="Combobox" valueDefault="5" width="120" >
+          <text v="Kiểm tra trùng số" e="Check Duplication"></text>
+          <viewInfo>
+            <options>
+              <option val="0">
+                <text v="0 - Không kiểm tra" e="0 - No"></text>
+              </option>
+              <option val="1">
+                <text v="1 - Theo ngày" e="1 - Daily"/>
+              </option>
+              <option val="2">
+                <text v="2 - Theo tháng" e="2 - Monthly"/>
+              </option>
+              <option val="3">
+                <text v="3 - Theo quý" e="3 - Quarterly"/>
+              </option>
+              <option val="4">
+                <text v="4 - Theo năm" e="4 - Annually"/>
+              </option>
+              <option val="5">
+                <text v="5 - Tất" e="5 - All"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+select * into #$t1 from dbo.ISWIFTFunctionString2Table(@ma_ct)
+select b.user_id into #$t2 from dbo.ISWIFTFunctionString2Table(@username) a join vsysuserinfo b on a.val = b.username
+declare @strKey nvarchar(128)
+if @ma_ct <> '' set @strKey = 'exists(select 1 from dmnk3 x where a.ma_nk = x.ma_nk and x.ma_ct in (select val from #$t1))'
+if @username <> '' set @strKey = case when @strKey is null then '' else ' and ' end + 'exists(select 1 from dmnk3 x where a.ma_nk = x.ma_nk and x.user_id in (select user_id from #$t2))'
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id', 'b.ma_unit', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+drop table #$t1,#$t2
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmnk(f){
+  this.constructor(f);
+}
+grid$dmnk.prototype = new DirEvent();
+grid$dmnk.prototype.afterInit = function() {
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+</dir>

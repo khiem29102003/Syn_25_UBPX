@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmnhomkh" table="dmnhomkh" fieldKey="ma_nhom" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục nhóm khách hàng" e="List of customer groups"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_nhom" format="U" label="1" field="1" allowBlank="false" fieldType="PK" >
+          <text v="Mã nhóm KH" e="Customer group code"></text>
+        </field>
+        <field name="ten_nhom" label="1" field="2" allowBlank="false" fieldType="PK" >
+          <text v="Tên nhóm KH" e="Customer group name"></text>
+        </field>
+        <field name="ten_nhom2" label="1" field="2">
+          <text v="Tên khác" e="Other name"></text>
+        </field>    
+		<field name="ma_loai" viewType="Lookup" label="1" field="[120] ">
+           <text v="Mã loại KH" e="Position"></text>
+           <viewInfo lookupType="One" lookupId="dmloaiKH" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_loai" lookupInfo="dmloaiKH|ma_loai|ten_loai" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_loai" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmnhomkh(p){
+  this.constructor(p);
+}
+dir$dmnhomkh.prototype = new DirEvent();
+dir$dmnhomkh.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmnhomkh.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+  dir$dmnhomkhDisabledMasterField(p, g);
+
+}
+
+function dir$dmnhomkhDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_nhom').trim() != '')
+  {
+    p.setDisabled('ma_nhom', true);
+  }
+  else
+  {
+    p.setDisabled('ma_nhom', false);
+  }
+}
+
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã nhóm khách hàng đã tồn tại' else N'Department code is exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã nhóm khách hàng đã tồn tại' else N'Department code is exists' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+
+</dir>

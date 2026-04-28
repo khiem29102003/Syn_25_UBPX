@@ -1,0 +1,33 @@
+﻿<field name="unit_id" viewType="Combobox" dataType="I" clientDefault="true" inactivate="true" label="[60]" field="[180]" >
+  <text v="Đơn vị" e="Unit"></text>
+  <viewInfo>
+	<options cache="false" query="select unit_id, ten_unit%l from sysunit where unit_id in (select unit_id from dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @@admin, ''))">
+	</options>
+  </viewInfo>
+</field>
+<field name="i_so_ct" inactivate="true" hidden="true" label="[60]" field="[60]">
+  <text v="Số tăng" e="Number"></text>
+</field>
+<field name="ma_nk" inactivate="true" label="[60]" field="[60]" hidden="true" clientDefault="true" viewType="Lookup">
+  <text v="Quyển/Số ct" e="Book/No"></text>
+  <viewInfo lookupType="One" lookupId="dmnk" lookupKey="unit_id in (0, ![unit_id]!) and exists(select 1 from dmnk3 x where x.ma_nk = a.ma_nk and x.ma_ct = '@@voucherCode' and (x.user_id in (0, @@userId) or @@admin = 1)) and (ngay_hl1 is null or ![ngay_ct]! &gt;= ngay_hl1) and (ngay_hl2 is null or ![ngay_ct]! &lt;= ngay_hl2) " lookupCheck="1=1" lookupRef="ten_nk" lookupInfo="dmnk|ma_nk|ten_nk" />
+</field>
+<field name="ten_nk" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="[100]" aliasName="cast('' as nvarchar(4000)) as ">
+  <text v="" e=""></text>
+</field>
+<field name="so_ct" format="U" allowBlank="false" label="1" field="1">
+  <text v="Số c/từ" e="Voucher No"></text>
+</field>
+<field name="ngay_ct" label="1" field="1" valueDefault="new Date()" copy="false" allowBlank="false" dataType="D" importable = "2">
+  <text v="Ngày chứng từ" e="Date of registration"></text>
+</field>
+<field name="ngay_lct" label="1" field="1" hidden="true" valueDefault="new Date()" allowBlank="false" disabled="true" dataType="D">
+  <text v="Ngày lập ct" e="Create Date"></text>
+</field>
+<field name="status" viewType="Combobox" valueDefault="" inactivate="true" label="[60]" field="[180]" >
+	  <text v="Trạng thái" e="Status"></text>
+	  <viewInfo>
+		<options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+		</options>
+	  </viewInfo>
+</field>

@@ -1,0 +1,1267 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+  <!ENTITY VoucherRequiredFields01 SYSTEM "..\Include\XML\VoucherRequiredFields03.xml">
+  <!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid05.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+  <!ENTITY JobNumberBeforeSave SYSTEM "..\Include\Script\JobNumberBeforeSave.txt">
+
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+
+  <!ENTITY VoucherSaleRequest SYSTEM "..\Include\XML\VoucherSaleRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from s61 where id = @id and status in (6,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+  if @@admin = 0 and exists(select 1 from s61 a where status = 7 and id = @id and not exists(select 1 from kbnguoiduyet y where y.user_id = @@userId and y.status = 1 and y.loai = 1 and a.ma_nt = y.ma_nt and (y.tien = 0 or a.t_tt_nt &lt;= y.tien))) begin
+    select '$notApproveRightEdit' as message
+    return
+  end
+    ">
+]>
+
+
+<dir id="s613" table="s61" fieldKey="id" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" voucherCode="AIR" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Đơn hàng vận tải hàng không" e="Air Freight Order"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120" >
+      <fields>
+	  	<field name="ma_ngv" viewType="Combobox" valueDefault=""  hidden="false" label="[100]" field="1" >
+          <text v="Loại đơn hàng" e="Inv. Type"></text>
+          <viewInfo>
+            <options query="select ma_ngv, ten_ngv%l from dmngv where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+		<field name="tt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="1" field="">
+          <text v="&lt;a onclick='getRequest(this);'&gt;(Lấy dữ liệu)&lt;/a&gt; " e="&lt;a onclick='getRequest(this);'&gt;(Get data)&lt;/a&gt;"></text>
+        </field>
+		<field name="ma_gd" nextRow="false" viewType="Combobox" valueDefault=""  hidden="false" label="[100]" field="1" >
+          <text v="Giao dịch" e="Transaction"></text>
+          <viewInfo>
+            <options query="select ma_gd, ten_gd%l from dmgd where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+		<field name="ma_job" allowBlank="false" viewType="Lookup" label="[100]" field="1"  hidden="false" tabIndex="1">
+          <text v="Mã Job" e="Job Code"></text>
+          <viewInfo lookupType="One" lookupId="vdmjob" lookupKey="status = 1 /*and ma_gd = ![ma_gd]!*/" lookupCheck="1=1" lookupRef="ten_job" lookupInfo="vdmjob|ma_job|ten_job" />
+        </field>
+        <field name="ten_job" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="1" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="so_job" format="U" allowBlank="false" disabled="true" nextRow = "false" label="[100]" field="1">
+		<text v="Số job" e="Job No"></text>
+		</field>
+		
+		<field name="ma_kh" allowBlank="true" viewType="Lookup" label="[100]" field="1"  hidden="false" nextRow="true">
+          <text v="Khách hàng" e="Customer"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1 and kh_yn = 1" lookupCheck="1=1" lookupRef="ten_kh" lookupInfo="dmkh|ma_kh|ten_kh" />
+        </field>
+        <field name="ten_kh" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="1" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_dl" allowBlank="true" viewType="Lookup" label="[100]" field="1"  hidden="false" tabIndex="2" nextRow="false">
+		  <text v="Đại lý" e="Agent"></text>
+		  <viewInfo lookupType="One" lookupId="vdmdaily" lookupKey="status = 1 and dl_yn =1" lookupCheck="1=1" lookupRef="ten_dl" lookupInfo="vdmdaily|ma_dl|ten_dl" />
+		</field>
+		<field name="ten_dl" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="" field="1" aliasName="cast('' as nvarchar(200)) as ">
+		  <text v="" e=""></text>
+		</field>
+		
+		<field name="ma_kh_s" allowBlank="true" viewType="Lookup" label="[100]" field="1"  hidden="false">
+          <text v="Người gửi" e="Shipper"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_kh_s" lookupInfo="dmkh|ma_kh|ten_kh" />
+        </field>
+		<field name="ten_kh_s" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="1" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_hang" allowBlank="true" viewType="Lookup" label="[100]" field="1"  hidden="false" tabIndex="2" nextRow="false">
+		  <text v="Hãng tàu" e="Carrier"></text>
+		  <viewInfo lookupType="One" lookupId="vdmhangtau" lookupKey="status = 1 and ncc_yn =1 " lookupCheck="1=1" lookupRef="ten_hang" lookupInfo="vdmhangtau|ma_hang|ten_hang" />
+		</field>
+		<field name="ten_hang" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="" field="1" aliasName="cast('' as nvarchar(200)) as ">
+		  <text v="" e=""></text>
+		</field>
+		
+		<field name="ma_kh_g" allowBlank="true" viewType="Lookup" label="[100]" field="1"  hidden="false">
+          <text v="Người nhận" e="Consignee"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_kh_g" lookupInfo="dmkh|ma_kh|ten_kh" />
+        </field>
+        <field name="ten_kh_g" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="1" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_kh_n" allowBlank="true" viewType="Lookup" label="[100]" field="1"  hidden="false" tabIndex="3" nextRow="false">
+          <text v="Bên nhận t/báo" e="Notify"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_kh_n" lookupInfo="dmkh|ma_kh|ten_kh" />
+        </field>
+        <field name="ten_kh_n" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="1" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		
+		<field name="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+		  <text v="" e=""></text>
+		</field>
+		<field name="id_yc" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+		  <text v="" e=""></text>
+		</field>
+		<field name="id_bg" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+		  <text v="" e=""></text>
+		</field>
+		<field name="ma_ct_bg" fieldType="PK" format="0" copy="false" hidden="true">
+		  <text v="" e=""></text>
+		</field>
+		<field name="id_tg" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+		  <text v="" e=""></text>
+		</field>
+		<field name="ma_ct_tg" fieldType="PK" format="0" copy="false" hidden="true">
+		  <text v="" e=""></text>
+		</field>
+      </fields>
+    </form>
+
+    <form gravity="TopRight" columns="120,120" >
+      <fields>
+        &VoucherRequiredFields01;
+        &VoucherRequiredFields02;
+      </fields>
+    </form>
+
+   <!-- General Infor -->
+	<form tabPageIndex="1" gravity="MiddleLeft" height="300" columns="120,120,120,120,120,120,120,120" >
+      <text v="Thông tin chung" e="General Infor"></text>
+	<fields>
+		<field name="mbl_no" label="[80]" field="1" allowBlank="true">
+			<text v="Số MBL" e="MBL No."></text>
+		</field>
+		<field name="ngay_mbl" label="0" field="1" dataType="D" allowBlank="true" nextRow="false" >
+			<text v="Ngày MBL" e="MBL Date"></text>
+		</field>
+		<field name="di1_ngay" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="" field="[80]" >
+			<text v="" e=""></text>
+		</field>
+		<field name="hbl_no" label="[80]" field="1" allowBlank="true" nextRow="false">
+			<text v="Số B/L" e="B/L No"></text>
+		</field>
+		<field name="ngay_hbl" label="0" field="1" dataType="D" allowBlank="true" nextRow="false" >
+			<text v="Ngày HBL" e="HBL date"></text>
+		</field>
+
+		<field name="hanh_trinh" label="[80]" field="1" allowBlank="true">
+			<text v="Chuyến" e="Flight/Voy"></text>
+		</field>
+
+		<field name="hanh_trinh2" label="0" field="1" allowBlank="true" nextRow="false">
+			<text v="" e=""></text>
+		</field>
+		<field name="di_ngay" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="" field="[80]" >
+			<text v="" e=""></text>
+		</field>
+		<field name="book_no" label="[80]" field="[120]" allowBlank="true" nextRow="false">
+			<text v="Book No." e="Book No."></text>
+		</field>
+		<field name="di_ngay" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="[20]" field="[120]" >
+			<text v="" e=""></text>
+		</field>
+		
+		<field name="ngay_hld" label="[50]" field="[120]" valueDefault="new Date()" dataType="D" allowBlank="true" hidden="false" nextRow="false" >
+			<text v="ETA" e="ETA"></text>
+		</field>
+
+		<field name="ma_tau" allowBlank="true" viewType="Lookup" label="[80]" field="1"  hidden="false" >
+		  <text v="M.bay/Tàu" e="Vessel"></text>
+		  <viewInfo lookupType="One" lookupId="dmtau" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_tau" lookupInfo="dmtau|ma_tau|ten_tau" />
+		</field>
+		<field name="ten_tau" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="[200]" aliasName="cast('' as nvarchar(4000)) as ">
+		  <text v="" e=""></text>
+		</field>
+		<field name="so_tk" label="[80]" field="[120]" allowBlank="true" nextRow="false">
+			<text v="Số tờ khai" e="Declaration No"></text>
+		</field>	
+		<field name="ngay_tk" label="0" field="[120]" dataType="D" allowBlank="true" nextRow="false" hidden="false" >
+			<text v="Ngày tờ khai" e="Declaration Date"></text>
+		</field>
+		<field name="di_ngay" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="" field="[20]" >
+			<text v="" e=""></text>
+		</field>
+		<field name="ngay_hl" label="[50]" field="[120]" dataType="D" allowBlank="true" nextRow="false" hidden="false" >
+			<text v="ETD" e="ETD"></text>
+		</field>
+
+		<field name="ma_svc" allowBlank="true" viewType="Lookup" label="[80]" field="1"  hidden="false" nextRow="true">
+		  <text v="Mã Svc" e="Svc Code"></text>
+		  <viewInfo lookupType="One" lookupId="dmsvc" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_svc" lookupInfo="dmsvc|ma_svc|ten_svc" />
+		</field>
+		<field name="ten_svc" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="[200]" aliasName="cast('' as nvarchar(4000)) as ">
+		  <text v="" e=""></text>
+		</field>
+		<field name="di_ngay" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="[100]" field="[120]" >
+			<text v="" e=""></text>
+		</field>
+		<field name="di_ngay" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="[120]" field="0" >
+			<text v="" e=""></text>
+		</field>
+		<field name="ngay_hantra" label="[50]" field="[120]" dataType="D" allowBlank="true" nextRow="false" >
+			<text v="PAY" e="PAY"></text>
+		</field>
+		<field name="dien_giai" label="[80]" field="5">
+		  <text v="Diễn giải" e="Explain"></text>
+		</field>
+      </fields>
+    </form>
+
+	<!-- Port Infor -->
+	<form tabPageIndex="2" gravity="MiddleLeft" height="300" columns="120,120,120,120,120,120,120,120">
+      <text v="Thông tin cảng" e="Port Infor"></text>
+      <fields>
+		<field name="ma_noi_di" viewType="Lookup" label="1" field="1" allowBlank="true">
+			<text v="Cảng đi" e="Origin"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangdi" lookupKey="hk_yn = 1 and status = 1" lookupCheck="1=1" lookupRef="ten_noi_di" lookupInfo="vdmcangdi|ma_noi_di|ten_noi_di" />
+		</field>
+		<field name="ten_noi_di" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[200]"  aliasName="cast('' as nvarchar(4000)) as ">
+			<text v="" e=""></text>
+		</field>
+		<field name="ma_cang_ct" viewType="Lookup" label="1" field="1" allowBlank="true" nextRow="false">
+			<text v="Cảng chuyển tải" e="Transit Port"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangct" lookupKey="status = 1 hk_yn = 1 " lookupCheck="1 = 1" lookupRef="ten_cang_ct" lookupInfo="vdmcangct|ma_cang_ct|ten_cang_ct"/>
+		</field>
+		<field name="ten_cang_ct" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="true" label="" field="[200]" aliasName="cast('' as nvarchar(200)) as ">
+			<text v="" e=""></text>
+		</field>
+		<field name="ma_noi_den" viewType="Lookup" label="1" field="1" allowBlank="true">
+			<text v="Cảng đến" e="Destination"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangden" lookupKey="hk_yn = 1  and status = 1" lookupCheck="1=1" lookupRef="ten_noi_den" lookupInfo="vdmcangden|ma_noi_den|ten_noi_den"/>
+		</field>
+		<field name="ten_noi_den" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="true" label="" field="[200]" aliasName="cast('' as nvarchar(200)) as ">
+			<text v="" e=""></text>
+		</field> 
+		<field name="ma_nv" clientDefault="true" viewType="Lookup" label="1" field="1" allowBlank="true"  setype="1" nextRow="false">
+          <text v="Mã nhân viên" e="Employee Code"></text>
+          <viewInfo lookupType="One" lookupId="vdmnvbh" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_nv" lookupInfo="vdmnvbh|ma_nv|ten_nv" />
+        </field>
+        <field name="ten_nv" clientDefault="true" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>	
+		<field name="ma_noi_dodong" viewType="Lookup" label="1" field="1" allowBlank="true">
+			<text v="Cảng dỡ/đóng" e="Discharge/Loading Port "></text>
+			<viewInfo lookupType="One" lookupId="vdmcangdodong" lookupKey="status = 1 and hk_yn = 1" lookupCheck="1 = 1" lookupRef="ten_noi_dodong" lookupInfo="vdmcangdodong|ma_noi_dodong|ten_noi_dodong" />
+		</field>
+		<field name="ten_noi_dodong" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[120]"  aliasName="cast('' as nvarchar(4000)) as ">
+			<text v="" e=""></text>
+		</field>
+		<field name="ma_noi_giaonhan" viewType="Lookup" label="1" field="1" allowBlank="true">
+			<text v="Cảng giao/ nhận" e="Delivery/Receipt Port"></text>
+			<viewInfo lookupType="One" lookupId="vdmcanggiaonhan" lookupKey="status = 1 and hk_yn = 1" lookupCheck="1 = 1" lookupRef="ten_noi_giaonhan" lookupInfo="vdmcanggiaonhan|ma_noi_giaonhan|ten_noi_giaonhan"/>
+		</field>
+		<field name="ten_noi_giaonhan" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="true" label="" field="-" aliasName="cast('' as nvarchar(200)) as ">
+			<text v="" e=""></text>
+		</field>
+		
+      </fields>
+    </form>
+	<!-- Other -->
+	<form tabPageIndex="3" gravity="MiddleLeft" height="300" columns="120,120,120,120,120,120,120" >
+      <text v="Khác" e="Other"></text>
+      <fields>
+		<field name="doc_no" label="1" field="1" allowBlank="true">
+			<text v="Doc No" e="Doc No"></text>
+		</field>
+		<field name="di_ngay" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="" field="[20]" >
+			<text v="" e=""></text>
+		</field>
+		<field name="ma_hq" allowBlank="true" nextRow="false" viewType="Lookup" label="1" field="1"  hidden="false">
+          <text v="Hải quan" e="Custom House"></text>
+          <viewInfo lookupType="One" lookupId="dmhaiquan" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_hq" lookupInfo="dmhaiquan|ma_hq|ten_hq" />
+        </field>
+        <field name="ten_hq" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="2" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="doc_nam" label="1" field="1" allowBlank="true">
+			<text v="Doc Year" e="Doc Year"></text>
+		</field>
+		<field name="di_ngay" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="" field="[20]" >
+			<text v="" e=""></text>
+		</field>
+		<field name="chk_yes" dataType="B" clientDefault="true" label="1" field="[40]" nextRow="false" valueDefault="0"  inactivate="true">
+          <text v="Require Original HBL" e="Require Original HBL"></text>
+        </field>
+		<field name="chk_original" dataType="B" clientDefault="true" label="[100]" field="[40]" nextRow="false" valueDefault="0"  inactivate="true">
+          <text v="Original HBL" e="Require Original HBL"></text>
+        </field>
+		<field name="chk_notice" dataType="B" clientDefault="true" label="[100]" field="[40]" nextRow="false" valueDefault="0"  inactivate="true">
+          <text v="Notice of Arrival" e="Notice of Arrival"></text>
+        </field>
+		<field name="doc_export" label="1" field="1" allowBlank="true">
+			<text v="Export Ref" e="Export Ref"></text>
+		</field>
+		<field name="di_ngay" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="" field="[20]" >
+			<text v="" e=""></text>
+		</field>
+		<field name="freighttemp" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="[80]" field="" >
+			<text v="Freight Temp" e=""></text>
+		</field>
+		<field name="chk_cc" dataType="B" clientDefault="true" label="[40]" field="[40]" nextRow="false" valueDefault="0"  inactivate="true">
+          <text v="CC" e="Freight Temp"></text>
+        </field>
+		<field name="chk_dvc" dataType="B" clientDefault="true" label="[40]" field="[40]" nextRow="false" valueDefault="0"  inactivate="true">
+          <text v="PP" e="PP"></text>
+        </field>
+		<field name="di_ngay" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="" field="[20]" >
+			<text v="" e=""></text>
+		</field>
+		<field name="chk_recom" dataType="B" clientDefault="true" label="[140]" field="[40]" nextRow="false" valueDefault="0"  inactivate="true">
+          <text v="Recommendation Letter" e="Recommendation Letter"></text>
+        </field>
+		<field name="ma_cnct" viewType="Lookup" label="1" field="1" allowBlank="true">
+			<text v="Doc Function" e="Doc Function"></text>
+			<viewInfo lookupType="One" lookupId="dmcnct" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_cnct" lookupInfo="dmcnct|ma_cnct|ten_cnct" />
+		</field>
+		<field name="ten_cnct" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="2" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="so_do" label="1" field="1" allowBlank="true" >
+			<text v="Số lệnh" e="Order number"></text>
+		</field>
+		<field name="ma_tham_chieu" label="1" field="1" allowBlank="true" >
+			<text v="Mã tham chiếu" e="Reference Nnumber"></text>
+		</field>
+      </fields>
+    </form>
+	
+
+	<!-- Phí bán -->
+	<form tabPageIndex="6" gravity="MiddleLeft" height="300" columns="120,120,120,120,120,120,120,120" >
+      <text v="Phí bán" e="Attach Files"></text>
+      <fields>
+        <field name="d54" allowBlank="false" label="" field="-" viewType="Grid">
+          <text v="Chi tiết" e="Detail"></text>
+        </field>
+      </fields>
+    </form>
+	<form tabPageIndex="7" gravity="MiddleLeft" height="300" columns="120,120,120,120,120,120,120,120" >
+      <text v="Thu hộ" e="Attach Files"></text>
+      <fields>
+        <field name="f54" allowBlank="false" label="" field="-" viewType="Grid">
+          <text v="Thu hộ" e="Detail"></text>
+        </field>
+      </fields>
+    </form>
+	<!-- Tạm ứng -->
+	<!-- <form tabPageIndex="8" gravity="MiddleLeft" height="300" columns="120,120,120,120,120,120,120,120" > -->
+      <!-- <text v="Tạm ứng" e="Attach Files"></text> -->
+      <!-- <fields> -->
+        <!-- <field name="m82" allowBlank="false" label="" field="-" viewType="Grid"> -->
+          <!-- <text v="Chi tiết" e="Detail"></text> -->
+        <!-- </field> -->
+      <!-- </fields> -->
+    <!-- </form> -->
+	<!-- Hoàn ứng -->
+	<!-- <form tabPageIndex="9" gravity="MiddleLeft" height="300" columns="120,120,120,120,120,120,120,120" > -->
+      <!-- <text v="Hoàn ứng" e="Attach Files"></text> -->
+      <!-- <fields> -->
+        <!-- <field name="d64" allowBlank="false" label="" field="-" viewType="Grid"> -->
+          <!-- <text v="Chi tiết" e="Detail"></text> -->
+        <!-- </field> -->
+      <!-- </fields> -->
+    <!-- </form> -->
+	<form tabPageIndex="10" gravity="MiddleLeft" height="300" columns="120,120,120,120,120,120,120,120" >
+      <text v="Đính kèm" e="Attach Files"></text>
+      <fields>
+        <field name="xfile" label="1" field="-" viewType="File" fieldType="EXParam">
+          <text v="Chọn files" e="Attach Files"></text>
+          <viewInfo fileFieldId0="id" fileGroup="AIR" fileExtension="*" maxFileSize="10240" maxFileCount="10"></viewInfo>
+        </field>
+      </fields>
+    </form>
+	<!-- Detail Bottom -->
+	<form tabPageIndex="" gravity="BottomLeft"   height="300" columns="120,120,120,120,120,120,120,120" >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="v61" allowBlank="true" label="" field="-" viewType="Grid">
+          <text v="Chi tiết" e="Detail"></text>
+        </field>
+      </fields>
+    </form>
+
+    <form gravity="BottomLeft" columns="100,100,100,100,100,100,130" >
+      <fields>
+        <field name="t_so_luong" label="1" field="1" dataType="N" disabled="true" format="Amount" hidden="true" >
+          <text v="Tổng số lượng" e="Total Quatity"></text>
+        </field>
+		<field name="t_tong_trong" label="0" field="1" dataType="N" disabled="true" nextRow="false" format="FCAmount" hidden="true" >
+          <text v="Tổng trọng lượng" e="Total Weight"></text>
+        </field>
+		
+		<field name="t_tong_khoi" label="0" field="1" dataType="N" disabled="true" nextRow="false" format="FCAmount" hidden="true" >
+          <text v="Tổng Volume" e="Total Volume"></text>
+        </field>
+
+		<field name="t_ban" label="[100]" field="[120]" dataType="N" disabled="true" nextRow="true" format="Amount" fieldType="EX" >
+          <text v="Tổng bán" e=""></text>
+        </field>
+		<field name="t_thuho" label="[100]" field="[120]" dataType="N" disabled="true" nextRow="false" format="Amount" fieldType="EX">
+          <text v="Tổng thu hộ" e="Total Disbursement"></text>
+        </field>
+
+		<!-- <field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="" field="[240]" > -->
+			<!-- <text v="" e=""></text> -->
+		<!-- </field> -->
+
+      </fields>
+    </form>
+  </forms>
+
+  <grids>
+    <grid id="v61" table="v61" fieldKey="id, line" order="id, line" allowFilter="true" readOnly="false" allowOrder="true">
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+
+		 <field name="ma_cong" width="100" allowBlank="true" viewType="Lookup" readOnly="false" hidden="true">
+          <text v="Mã container" e="Container"></text>
+          <viewInfo lookupType="One" lookupId="dmcong" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_cong" lookupInfo="dmcong|ma_cong|ten_cong" />
+        </field>
+        <field name="ten_cong" width="100" fieldType="EX" inactivate="true" hidden="true" readOnly="true" aliasName="c" join=" left join dmcong c on a.ma_cong = c.ma_cong ">
+          <text v="Tên container" e="Container Name"></text>
+        </field>
+		<field name="ma_kien" width="100" allowBlank="true" viewType="Lookup" readOnly="false" hidden="false"  >
+          <text v="Mã kiện" e="Package Code"></text>
+          <viewInfo lookupType="One" lookupId="dmkien" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_kien" lookupInfo="dmkien|ma_kien|ten_kien" />
+        </field>
+        <field name="ten_kien" width="120" fieldType="EX" inactivate="true" readOnly="true" aliasName="k" join=" left join dmkien k on a.ma_kien = k.ma_kien " hidden="false" >
+          <text v="Tên kiện" e="Package Name"></text>
+        </field>
+		
+        <field name="so_luong" dataType="N" format="Amount" allowBlank="false" valueDefault="1" width="100" readOnly="false" >
+          <text v="Số lượng" e="Quantity"></text>
+        </field>
+		<field name="ty_trong" dataType="N" format="ExRate" width="120" readOnly="false" hidden="true">
+          <text v="Trọng lượng(KGS)" e="Gross Weight(KGS)"></text>
+        </field>
+		 <field name="tong_trong" dataType="N" inactivate="false" format="ExRate" readOnly="false" disabled="false" width="150">
+          <text v="Trọng lượng (KGS)" e="Gross Weight(KGS)"></text>
+        </field>
+		<field name="tong_trong_cw" dataType="N" inactivate="false" format="ExRate" readOnly="false" disabled="false" width="150">
+          <text v="Trọng Lượng C.W" e="Chargeable Weight"></text>
+        </field>
+		<field name="ty_khoi" dataType="N" format="ExRate" width="120" readOnly="false" hidden="true" >
+          <text v="Volume(CBM)" e="Volume(CBM)"></text>
+        </field>
+		<field name="tong_khoi" dataType="N" inactivate="false" format="ExRate" readOnly="false" disabled="false" width="150">
+          <text v="Volume(CBM)" e="Volume(CBM)"></text>
+        </field>			
+		<field name="cont_no" width="150" readOnly="false" >
+          <text v="Cont No." e="Cont No"></text>
+        </field>
+		<field name="seal_no" width="150" readOnly="false" >
+          <text v="Seal No." e="Seal No"></text>
+        </field>
+		<field name="hs_code" width="150" valueDefault="0" readOnly="false" >
+          <text v="HS Code" e="HS Code"></text>
+        </field>
+		<field name="dien_giai" width="200" inactivate="false" readOnly="false">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+		<field name="id_bg" dataType="N" inactivate="true" hidden="true" format="0" width="80" copy="false">
+          <text v="ID BG" e="ID BG"></text>
+        </field>
+        <field name="so_ct_bg" width="100" fieldType="EX" copy="false" readOnly="true" hidden="true" inactivate="true" link="v41|id_bg as id" aliasName="cast('' as nvarchar(3000)) as ">
+          <text v="Số báo giá" e="Quot. No."></text>
+        </field>
+        <field name="line_bg" dataType="I" width="70" copy="false" hidden="true" inactivate="true">
+          <text v="Dòng BG" e="Quot. Line"></text>
+        </field>
+		<field name="id_tg" dataType="N" inactivate="true" hidden="true" format="0" width="80" copy="false">
+          <text v="ID TG" e="ID BG"></text>
+        </field>
+        <field name="so_ct_tg" width="100" fieldType="EX" copy="false" readOnly="true" hidden="true" inactivate="true" link="v51|id_tg as id" aliasName="cast('' as nvarchar(3000)) as ">
+          <text v="Số báo giá" e="Quot. No."></text>
+        </field>
+        <field name="line_tg" dataType="I" width="70" copy="false" hidden="true" inactivate="true">
+          <text v="Dòng TG" e="Quot. Line"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="paste">
+          <text v="$PasteToolbar" e="$PasteToolbar"></text>
+        </button>
+        <button id="moveup">
+          <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+        </button>
+        <button id="movedown">
+          <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+        </button>
+		<button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+				set nocount on
+				select @@fields into #t from v61 a 
+					left join dmcong c on a.ma_cong = c.ma_cong 
+					left join dmnt d on a.ma_nt = d.ma_nt
+					left join dmkien k on a.ma_kien = k.ma_kien
+					left join dmdvt x on a.ma_dvt=x.dvt where @@key order by line
+				select * from #t order by line
+				drop table #t
+         ]]>
+          </text>
+        </query>
+      </script>
+    </grid>
+	
+	<grid id="d54" table="d54" fieldKey="ngay_ct, so_ct" order="ngay_ct, so_ct" allowFilter="true" readOnly="false" allowOrder="true">
+      <fields>
+		<field name="ngay_ct" width="100" valueDefault=""  copy="false" readOnly="false" allowBlank="true" dataType="D" fieldType="EX" disabled="true"  >
+		  <text v="Ngày c/t" e="Voucher Date"></text>
+		</field>
+        <field name="so_ct" width="100"  dataType="N" copy="false" hidden="false" fieldType="EX" disabled="true" >
+          <text v="Số /ct" e="Voucher Number"></text>
+        </field>
+		<field name="ma_kh" width="150" allowBlank="true" viewType="Lookup" readOnly="false" aliasName="b" disabled="true">
+          <text v="Khách hàng" e="Customer Code"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_kh" lookupInfo="dmkh|ma_kh|ten_kh" />
+        </field>
+		<field name="ten_kh" width="200" fieldType="EX" inactivate="true" readOnly="true" aliasName="k" join=" left join dmkh k on a.ma_kh = k.ma_kh ">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+		<field name="ma_vt" width="100" allowBlank="true" viewType="Lookup" readOnly="false" fieldType="EX" disabled="true"  >
+          <text v="Mã phí" e="Fee Code"></text>
+          <viewInfo lookupType="One" lookupId="dmvt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_vt" lookupInfo="dmvt|ma_vt|ten_vt" />
+        </field>
+        <field name="ten_vt" width="250" fieldType="EX" inactivate="true" readOnly="true" aliasName="vt" join=" left join dmvt vt on a.ma_vt = vt.ma_vt " disabled="true"  >
+          <text v="Tên Mã phí" e="Fee Name"></text>
+        </field>
+        <field name="dvt" width="100" readOnly="false" allowBlank="true" viewType="Lookup" aliasName="a" fieldType="EX" disabled="true"  >
+          <text v="Đơn vị" e="UOM"></text>
+          <viewInfo lookupType="One" lookupId="dmdvt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_dvt" lookupInfo="dmdvt|ma_dvt|ten_dvt" />
+        </field>
+        <field name="ten_dvt" width="120" inactivate="true" readOnly="true" hidden="true" aliasName="c" join=" left join dmdvt c on a.dvt = c.dvt " fieldType="EX" disabled="true"  >
+          <text v="Tên đvt" e="UOM"></text>
+        </field>
+        <field name="so_luong" dataType="N" format="Amount" allowBlank="true" width="100" valueDefault="1"  readOnly="false"  fieldType="EX" disabled="true"  >
+          <text v="Số lượng" e="Quantity"></text>
+        </field>
+        <field name="gia_nt2" dataType="N" format="FCPrice" width="100" readOnly="false" fieldType="EX" disabled="true"   >
+          <text v="Giá mua" e="Purchase Price"></text>
+        </field>
+        <field name="tien_nt2" dataType="N" format="ExRate" width="100" readOnly="true" fieldType="EX" disabled="true"   >
+          <text v="Thành tiền" e="Amount"></text>
+        </field>
+		<field name="ma_nt" width="70" allowBlank="true" valueDefault="" viewType="Lookup" readOnly="false"  fieldType="EX" disabled="true"  >
+          <text v="Mã NT" e="Currency"></text>
+          <viewInfo lookupType="One" lookupId="dmnt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_nt" lookupInfo="dmnt|ma_nt|ten_nt" />
+        </field>
+		 <field name="ten_nt" width="0" fieldType="EX" inactivate="true" readOnly="true" aliasName="t" join=" left join dmnt t on a.ma_nt = t.ma_nt " disabled="true"  >
+          <text v="Tên NT" e="Currency Name"></text>
+        </field>
+		 <field name="ty_gia" dataType="N" format="Price" width="100" valueDefault="1" hidden="false" readOnly="false"  fieldType="EX" disabled="true"  > 
+          <text v="Tỷ giá" e="Curr.Rate"></text>
+        </field>
+        <field name="gia2" dataType="N" format="Price" width="100" inactivate="true" readOnly="false" fieldType="EX" disabled="true"   >
+          <text v="Giá mua VND" e=" VND Purchase Price"></text>
+        </field>
+        <field name="tien2" dataType="N" format="Amount" width="100" inactivate="true" readOnly="false" fieldType="EX" disabled="true"   >
+          <text v="Tiền VND" e=" VND Amount"></text>
+        </field>
+		<field name="thue_suat" dataType="N" format="0" width="100" readOnly="false" clientDefault="true" hidden="false" fieldType="EX" disabled="true"  >
+          <text v="Thuế suất(%)" e="Tax Rate(%)"></text>
+        </field>
+		 <field name="thue_nt" dataType="N" format="ExRate" width="100" readOnly="false" hidden="true">
+          <text v="Thuế" e="Tax"></text>
+        </field>
+        <field name="thue" dataType="N" format="Amount" width="100" inactivate="true" readOnly="false" disabled="true"  fieldType="EX" >
+          <text v="Thuế" e="Tax"></text>
+        </field>
+		<field name="tt" dataType="N" format="Amount" width="100" hidden="false" valueDefault="0" inactivate="false" readOnly="true" fieldType="EX" disabled="true"   >
+          <text v="Tổng cộng" e="Total"></text>
+        </field>
+		<field name="so_hd" width="150" disabled="true" readOnly="false" fieldType="EX">
+          <text v="Số Hóa Đơn" e="Invoice Number"></text>
+        </field>
+		<field name="ngay_hd" width="150" dataType="D" disabled="true" readOnly="false" fieldType="EX">
+			<text v="Ngày Hóa Đơn " e="Invoice date"></text>
+		</field>
+		<field name="dien_giai" width="300" disabled ="true" readOnly="false" fieldType="EX">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+	</fields>
+
+      <buttons>
+		<button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+set nocount on
+select @@fields into #t from d54 a 
+left join m54 b on a.id = b.id
+left join dmvt vt on a.ma_vt = vt.ma_vt
+left join dmdvt c on a.dvt = c.dvt
+left join dmnt t on a.ma_nt = t.ma_nt
+left join dmkh k on a.ma_kh = k.ma_kh
+where b.id_dh = @id and @action != 'NEW'
+select * from #t
+drop table #t
+         ]]>
+          </text>
+        </query>
+      </script>
+    </grid>
+	<grid id="f54" table="f54" fieldKey="ngay_ct, so_ct" order="ngay_ct, so_ct" allowFilter="true" readOnly="false" allowOrder="true">
+      <fields>
+		<field name="ngay_ct" width="100" valueDefault="" copy="false" readOnly="false" allowBlank="true" dataType="D" fieldType="EX" disabled="true"  >
+		  <text v="Ngày c/t" e="Voucher Date"></text>
+		</field>
+        <field name="so_ct" width="100" copy="false" hidden="false" fieldType="EX" disabled="true" >
+          <text v="Số /ct" e="Voucher Number"></text>
+        </field>
+		<field name="ma_kh" width="150" allowBlank="true" viewType="Lookup" readOnly="false" aliasName="b" fieldType="EX" disabled="true" >
+          <text v="Khách hàng" e="Customer Code"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_kh" lookupInfo="dmkh|ma_kh|ten_kh" />
+        </field>
+		<field name="ten_kh" width="200" fieldType="EX" inactivate="true" readOnly="true" aliasName="k" join=" left join dmkh k on a.ma_kh = k.ma_kh ">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+		<field name="ma_vt" width="100" allowBlank="true" viewType="Lookup" readOnly="false" fieldType="EX" disabled="true"  >
+          <text v="Mã phí" e="Fee"></text>
+          <viewInfo lookupType="One" lookupId="dmvt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_vt" lookupInfo="dmvt|ma_vt|ten_vt" />
+        </field>
+        <field name="ten_vt" width="250" fieldType="EX" inactivate="true" readOnly="true" aliasName="vt" join=" left join dmvt vt on a.ma_vt = vt.ma_vt " disabled="true"  >
+          <text v="Tên Mã phí" e="Fee Name"></text>
+        </field>
+        <field name="dvt" width="100" readOnly="false" allowBlank="true" viewType="Lookup" aliasName="a" fieldType="EX" disabled="true"  >
+          <text v="Đơn vị" e="UOM"></text>
+          <viewInfo lookupType="One" lookupId="dmdvt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_dvt" lookupInfo="dmdvt|ma_dvt|ten_dvt" />
+        </field>
+        <field name="ten_dvt" width="120" inactivate="true" readOnly="true" hidden="true" aliasName="c" join=" left join dmdvt c on a.dvt = c.dvt " fieldType="EX" disabled="true"  >
+          <text v="Tên đvt" e="UOM"></text>
+        </field>
+        <field name="sox_luong" dataType="N" format="Amount" allowBlank="true" width="100" valueDefault="1"  readOnly="false"  fieldType="EX" disabled="true"  >
+          <text v="Số lượng" e="Quantity"></text>
+        </field>
+        <field name="giax_nt2" dataType="N" format="FCPrice" width="100" readOnly="false" fieldType="EX" disabled="true"   >
+          <text v="Giá mua" e="Purchase Price"></text>
+        </field>
+        <field name="tienx_nt2" dataType="N" format="ExRate" width="100" readOnly="true" fieldType="EX" disabled="true"   >
+          <text v="Thành tiền" e="Amount"></text>
+        </field>
+		<field name="ma_ntx" width="70" allowBlank="true" valueDefault="" viewType="Lookup" readOnly="false"  fieldType="EX" disabled="true"  >
+          <text v="Mã NT" e="Currency"></text>
+          <viewInfo lookupType="One" lookupId="dmnt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_nt" lookupInfo="dmnt|ma_nt|ten_nt" />
+        </field>
+		 <field name="ten_nt" width="0" fieldType="EX" inactivate="true" readOnly="true" aliasName="t" join=" left join dmnt t on a.ma_nt = t.ma_nt " disabled="true"  >
+          <text v="Tên NT" e="Fee Name"></text>
+        </field>
+		 <field name="ty_giax" dataType="N" format="Price" width="100" valueDefault="1" hidden="false" readOnly="false"  fieldType="EX" disabled="true"  > 
+          <text v="Tỷ giá" e="Curr.Rate"></text>
+        </field>
+        <field name="giax2" dataType="N" format="Price" width="100" inactivate="true" readOnly="false" fieldType="EX" disabled="true"   >
+          <text v="Giá mua VND" e=" VND Purchase Price"></text>
+        </field>
+        <field name="tienx2" dataType="N" format="Amount" width="100" inactivate="true" readOnly="false" fieldType="EX" disabled="true"   >
+          <text v="Tiền VND" e=" VND Amount"></text>
+        </field>
+		<field name="thuex_suat" dataType="N" format="0" width="100" readOnly="false" clientDefault="true" hidden="false" fieldType="EX" disabled="true"  >
+          <text v="Thuế suất(%)" e="Tax Rate(%)"></text>
+        </field>
+        <field name="thuex" dataType="N" format="Amount" width="100" inactivate="true" readOnly="false" disabled="true"  fieldType="EX" >
+          <text v="Thuế" e="Tax"></text>
+        </field>
+		<field name="ttx" dataType="N" format="Amount" width="100" hidden="false" valueDefault="0" inactivate="false" readOnly="true" fieldType="EX" disabled="true"   >
+          <text v="Tổng cộng" e="Total"></text>
+        </field>
+		<field name="so_hd" inactivate="false" hidden="false" width="150" copy="false" disabled="false" readOnly="false" fieldType="EX">
+          <text v="Số Hóa Đơn" e="Invoice Number"></text>
+        </field>
+		<field name="ngay_hd" width="150" dataType="D" readOnly="false" fieldType="EX" >
+			<text v="Ngày Hóa Đơn " e="Invoice date"></text>
+		</field>
+		<field name="dien_giai" width="300" inactivate="false" readOnly="false" fieldType="EX">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+      </fields>
+
+      <buttons>
+		<button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+set nocount on
+select @@fields into #t from f54 a
+left join m54 b on a.id = b.id
+left join dmvt vt on a.ma_vt = vt.ma_vt
+left join dmdvt c on a.dvt = c.dvt
+left join dmnt t on a.ma_ntx = t.ma_nt
+left join dmkh k on b.ma_kh = k.ma_kh
+where b.id_dh = @id and @action != 'NEW'
+select * from #t
+drop table #t
+         ]]>
+          </text>
+        </query>
+      </script>
+    </grid>
+  </grids>
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$s613(p){
+  this.constructor(p);
+}
+dir$s613.prototype = new DirEvent();
+dir$s613.prototype.beforeInit = function(renderType){
+  this._dir.options._files = null;
+  document._dir = this._dir;
+}
+dir$s613.prototype.afterInit = function(renderType){
+  var p = this._dir, g = p.grid(0);
+  var exp = {
+    t_so_luong: ['@t_so_luong', '[so_luong]'],
+	t_tong_trong: ['@t_tong_trong', '[tong_trong]'],
+	t_tong_khoi: ['@t_tong_khoi', '[tong_khoi]'],
+  }
+  p.applyExpression(exp, g, false);
+  
+  g.FomulaApplied = {
+	"!ty_gia":[],
+    "so_luong":["t_so_luong", "t_tong_trong", "t_tong_khoi"],
+	"tong_trong":["t_tong_trong"],
+	"tong_khoi":["t_tong_khoi"],
+
+  }
+  //console.log(JSON.stringify(g.FomulaApplied)); //Gan la ds cong thuc tinh cho cot nao do: 
+  
+  
+  p.options.FCColumns = {FC: [], BC: []};
+  g.FCColumns = {FC: [], BC: []};
+  
+  var oldTG = '', oTG = p.jObject('ma_nt'); //Neu ty gia thay doi
+  oTG.focus(function(){ oldTG = oTG.fval(); }).blur(function(){ if (oldTG != oTG.fval()) onExRateChanged(oTG, p);});
+  p.applyFCColumns();
+  p.applyFCColumns(g);
+ // p.setFCHidden(oTG.fval());
+  
+  dir$s613DisabledMasterField(p, g);
+  dir$s613HiddenColumnByType(p);
+  dir$s613HiddenColumnByTran(p);
+  dir$s613DisabledMasterPort(p);
+  dir$s613DisabledStatusByAction(p);
+  dir$s613LoadDataQuote(p);
+
+}
+
+dir$s613.prototype.beforeButtonDialogClick = function (id) {
+  var p = this._dir, g = p.grid(0), dt = g.data;
+  switch (id) {
+    case 'ok':
+  		  
+    default:
+      break;
+  }
+  return true;
+}
+dir$s613.prototype.beforeButtonGridClick = function (id, gindex) {
+
+  var p = this._dir;
+  switch (id) {
+
+    default:
+      break;
+  }
+  return true;
+}
+
+dir$s613.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+]]>&VoucherExRateValid01;<![CDATA[
+    case 'ma_gd':
+      dir$s613HiddenColumnByTran(p);
+      break;
+    case 'ma_ngv':
+      dir$s613HiddenColumnByType(p);
+      break;
+    case 'ty_gia':
+      p.calcExpressionAll(0, '!ty_gia');
+      break;
+    case 'ma_kh':
+      p.request('Customer', '', ['ma_kh', 'ngay_ct', 'ma_nt']);
+      break;
+	case 'ma_dk_ngay':
+      dir$s613HiddenColumnByDay(p);
+	   break;
+	case 'unit_id':
+	 dir$s613DisabledMasterField(p, g);
+      break;
+	  case 'id_bg':
+	 dir$s613DisabledMasterPort(p);
+      break;
+	  case 'ma_job':
+	 	p.request('so_job', '',['ngay_ct','ma_job'])
+      break;
+    default:
+      break;
+  }
+}
+function getRequest(o) {
+   var p = document._dir;
+   
+   var v = p.valForm('ma_ngv')
+	if(p.options.action =="NEW")
+	{
+		if (v==2)
+		{
+
+			p.showFilter("s613BQ3", null, {_ngay_ct: p.valForm('ngay_ct'),_ngay_ct1: p.valForm('ngay_hl'),_ngay_ct2: p.valForm('ngay_hld'),_ma_noi_di: p.valForm('ma_noi_di'), _ten_noi_di: p.valForm('ten_noi_di'), _ma_noi_den: p.valForm('ma_noi_den'), _ten_noi_den: p.valForm('ten_noi_den'),_ma_gd: p.valForm('ma_gd')});	  
+			p.setInactive([ 'ma_noi_di','ma_noi_den'], false);
+			return;
+		}
+
+	}
+	else $.showToast(p.msg('OnLyNew'));
+
+}
+
+
+dir$s613.prototype.gridCellValueChange = function (o, g, r, c, v) {
+ var p = this._dir;
+  switch (c){
+]]>
+<![CDATA[
+    case 'ma_nt':
+		p.grequest(g, 'GetExRateDetail', '', ['ma_nt', '!ngay_ct'], null, r);
+      break;
+    
+]]>
+<![CDATA[
+    default:
+      break;
+  }
+}
+
+]]>&VoucherExRateValid02;<![CDATA[
+dir$s613.prototype.gridDetailActionChange = function(gindex, action, r){
+  var p = this._dir;
+  if (action == 'AfterDeleteRow' || action == 'AfterAppendGrid') dir$s613DisabledMasterField(p, p.grid(gindex));
+  return true;
+}
+function dir$s613DisabledMasterPort(p){
+
+}
+function dir$s613DisabledMasterField(p, g){
+if (p.options.action !="NEW")
+ p.setDisabled(['so_ct','ngay_ct', 'ma_nt','ma_ngv','ma_job','unit_id'], true);
+  
+}
+function dir$s613HiddenColumnByType(p){
+  var v = p.valForm('ma_ngv'), nt = p.valForm('ma_nt'), bc = p.options.struct.baseCurrency;
+  var date = new Date();
+  if(p.options.action == 'NEW') {
+	if(v ==1) {
+		p.setInvisible('tt', true);
+		p.valForm('ma_kh', "" , true);
+		p.valForm('ma_hang', "" , true);
+		p.valForm('ma_noi_di', "" , true);
+		p.valForm('ma_noi_den', "" , true);
+		p.valForm('ma_nv', "" , true);
+		p.valForm('id_tg', "" , true);
+		p.valForm('ds_cong',"",true);
+		p.valForm('ngay_hl',date,true);
+		p.valForm('ngay_hld',"",true);
+		p.valForm('t_so_luong',"",true);
+		p.clearGrid(0);
+		
+		return;
+	}if(v == 2) {
+		p.setInvisible('tt', false);
+		p.valForm('ma_kh', "" , true);
+		p.valForm('ma_hang', "" , true);
+		p.valForm('ma_noi_di', "" , true);
+		p.valForm('ma_noi_den', "" , true);
+		p.valForm('ma_nv', "" , true);
+		p.valForm('id_bg', "" , true);
+		p.valForm('ds_cong',"",true);
+		p.valForm('ngay_hl',date,true);
+		p.valForm('ngay_hld',"",true);
+		p.valForm('t_so_luong',"",true);
+		p.clearGrid(0);
+		
+		
+		return;
+	}
+  }
+}
+function dir$s613HiddenColumnByTran(p){
+	var gd = p.valForm('ma_gd').trim();
+	
+	if (p.options.action == "NEW")
+	{
+		p.valForm('ma_job',"",true);
+		p.valForm('so_job',"",true);
+	}
+}
+function dir$s613LoadDataQuote(p){
+	if (p.options.action != "NEW" ) {
+	
+		p.request('get_tongtien', '', 'id')
+
+	}
+}
+
+function dir$s613HiddenColumnByDay(p){
+	var v = p.valForm('ma_dk_ngay');
+	if (v == 1) p.request('ma_dk_ngay', '', ['t2_yn','t3_yn','t4_yn','t5_yn','t6_yn','t7_yn','t8_yn']);
+	p.setDisabled(['t2_yn','t3_yn','t4_yn','t5_yn','t6_yn','t7_yn','t8_yn'], v == 1);
+	}
+
+function dir$s613DisabledStatusByAction(p){
+  var o = p.jObject('status');
+  if (p.options.action != 'VIEW') o.find("[value=6],[value=7],[value=9]").remove();
+}
+
+
+         ]]>
+    </text>
+  </js>
+
+<css>
+    <text>
+      <![CDATA[
+		.control-label.t_so_luong,.control-label.t_so_kien,.control-label.t_tong_trong,.control-label.t_tong_khoi,
+		.input-field.t_so_luong,.input-field.t_so_kien,.input-field.t_tong_trong,.input-field.t_tong_khoi,
+		.control-label.t_tl_ln, .control-label.t_mua, .control-label.t_ban, .control-label.t_tamung,.control-label.t_cl, .control-label.t_hoanung, .control-label.t_ln, .control-label.tl, .control-label.t_chiho, .control-label.t_thuho,
+		.input-field.t_tl_ln, .input-field.t_mua, .input-field.t_ban,.input-field.t_tamung, .input-field.t_hoanung, .input-field.t_ln, .input-field.t_cl, .input-field.t_chiho,.input-field.t_thuho
+		{
+			font-weight:bold;
+		}
+		.control-label.ma_noi_di,.control-label.ma_noi_den, .control-label.ma_kh, .control-label.so_ngay_vc,
+		.control-label.ma_job, .control-label.ma_kh_s,.control-label.mbl_no, .control-label.hbl_no,.control-label.so_tk, .control-label.book_no,.control-label.so_job,.control-label.ma_kh_g
+		{	
+			color: #499b98;
+		}
+		.input-field.status, .input-field.unit_id,.control-label.tt,.control-label.tt2,.control-label.tt3,.input-field.ma_gd
+		{
+			color: #ab6926;
+		}	
+		
+		.ma_phi,.tl_ban, .ma_kien, .tong_trong, .tong_khoi span {
+		  color: #ab6926;
+		}
+		.input-field.t_tl_ln,.input-field.t_ln
+		{
+			color: #499b98;
+		}
+		
+		.grid-input-field.ma_phi, .grid-input-field.tl_ban ,.grid-input-field.ma_kien,.grid-input-field.tong_trong,.grid-input-field.tong_khoi
+		{
+			color: #ab6926;	
+		}
+		
+		.tien_nt1, .gia1, .tien1, .tien_ln span, .gia_nt1
+		{
+			color: #499b98;
+		}
+		
+		.grid-input-field.tien_nt1, .grid-input-field.gia1, .grid-input-field.tien1, .grid-input-field.tien_ln, .grid-input-field.gia_nt1
+		{
+			color: #499b98;
+		}	
+		.modal-dialog-lg{min-width:960px!important;}
+		.col-fill-100{width:calc(100% - 120px);}
+      ]]>
+    </text>
+  </css>
+  <script>
+    &VoucherRequest;
+    &VoucherSaleRequest;
+
+		<request code="ma_dk_ngay">
+			<text>
+			  <![CDATA[
+				  select @t2_yn = 1,@t3_yn = 1,@t4_yn = 1,@t5_yn = 1,@t6_yn = 1,@t7_yn = 1,@t8_yn = 1
+				  select @t2_yn as [!t2_yn],@t3_yn as [!t3_yn],@t4_yn as [!t4_yn],@t5_yn as [!t5_yn],@t6_yn as [!t6_yn],@t7_yn as [!t7_yn],@t8_yn as [!t8_yn]
+			]]>
+			</text>
+		  </request>
+		  <request code="so_job">
+			<text> <![CDATA[ exec st_get_voucher_number 's61', @ma_job, @ngay_ct]]> </text>
+		  </request>
+		  <request code="get_tongtien">
+			<text> 
+				<![CDATA[  
+					DECLARE @tien_ban NUMERIC(16,2), 
+							@chi_ho NUMERIC(16,2),  
+							@tien_mua NUMERIC(16,2), 
+							@thu_ho NUMERIC(16,2), 
+							@tien_ln NUMERIC(16,2), 
+							@t_tl_ln NUMERIC(16,2)
+
+					SELECT @tien_mua = ISNULL(SUM(t_tieny2),0), @chi_ho = ISNULL(SUM(t_tienx2),0) FROM m72 WHERE id_dh = @id
+					
+					SELECT @tien_ban = ISNULL(SUM(t_tieny2),0), @thu_ho = ISNULL(SUM(t_tienx2),0) FROM m54 WHERE id_dh = @id
+					
+					SELECT @tien_ln = @tien_ban - @tien_mua
+
+					IF @tien_mua <> 0
+						SELECT @t_tl_ln = ISNULL(ROUND(((@tien_ln)/ABS(@tien_mua)) * 100,2),0)
+					ELSE
+						SELECT @t_tl_ln = 0
+
+					SELECT @tien_mua [!t_mua] , @chi_ho [!t_chiho],  @tien_ban [!t_ban], @thu_ho [!t_thuho], @tien_ln [!t_ln], @t_tl_ln [!t_tl_ln]
+				]]> 
+			</text>
+		  </request>
+		  
+	<request code="GetExRateDetail">
+      <text>
+        <![CDATA[
+			select dbo.sf_GetExRate(@ma_nt, @ngay_ct) as #ty_gia
+        ]]>
+      </text>
+    </request>
+	
+    <query>
+      <text>
+        <![CDATA[
+if @action = 'EDIT' begin
+]]>&CheckUpdatingDeleting;<![CDATA[
+end
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+if @action in ('EDIT', 'VIEW') exec ISWIFTStoreGetListFiles 'xfile', @id, '@@voucherCode', '', @script output
+if @script is null set @script = ''
+
+if @action = 'NEW' begin
+  declare @ma_nk varchar(32), @ten_nk nvarchar(3000), @ngay_ct date, @so_ct varchar(32), @i_so_ct int, @unit_id int
+  select @ngay_ct = getdate(), @unit_id = @@unit
+  
+  
+]]>&VoucherNumberQuery;<![CDATA[
+  if @so_ct is null
+    select '' as [so_ct], 0 as [i_so_ct], @unit_id as [unit_id], '' as ma_nk, '' as ten_nk
+  else
+    select @so_ct as [so_ct], @i_so_ct as [i_so_ct], @unit_id as [unit_id], @ma_nk as ma_nk, @ten_nk as ten_nk
+end
+else select @script as script
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+
+    <declare>
+      <text>
+        <![CDATA[
+declare @warning nvarchar(256), @dOldVoucherDate date, @dVoucherDate date, @nVoucherType tinyint, @strIds varchar(256), @q nvarchar(4000)
+set @warning = ''
+create table #idupdatestatusTG(id int); create table #idupdatestatusBG(id int)
+
+         ]]>
+      </text>
+    </declare>
+
+    &VoucherJSLoading;
+
+    <beforesave>
+      <text>
+        &VoucherNumberBeforeSave;
+		&JobNumberBeforeSave;
+		<![CDATA[
+		if @@admin = 0 and @status = 7 and not exists(select 1 from kbnguoiduyet y where y.user_id = @@userId and y.status = 1 and y.loai = 1 and @ma_nt = y.ma_nt and (y.tien = 0 or @t_tt_nt <= y.tien)) begin
+		  select '$notApproveRight' as message, 'status' as field
+		  return
+		end
+		]]>
+      </text>
+    </beforesave>
+
+    <deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[
+		if exists(select 1 from m72 where id_dh = @id UNION select 1 from m54 where id_dh = @id) begin
+			select '$NotEditVoucherRetrieved' as message
+			return
+		end
+		
+select @dOldVoucherDate = ngay_ct, @dVoucherDate = ngay_ct, @nVoucherType = ma_ngv from s61 where id = @id
+        ]]>
+      </text>
+    </deleting>
+
+    <deleted>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+-- Áp dụng cho dữ liệu lớn
+insert into #idupdatestatusBG select id_bg from v61 where id = @id and id_bg <> 0 group by id_bg
+insert into #idupdatestatusTG select id_tg from v61 where id = @id and id_tg <> 0 group by id_tg
+
+exec ISWIFTStoredDeleteDataWithKey 'v61', @strIds, '', @dVoucherDate
+
+exec ISWIFTStoredUpdateRetrieveStatus 's41', 'v41', 's61', 'v61', 'id_bg', 'line_bg', '#idupdatestatusBG', 5, 6, 7
+exec ISWIFTStoredUpdateRetrieveStatus 's51', 'v51', 's61', 'v61', 'id_tg', 'line_tg', '#idupdatestatusTG', 5, 6, 7
+drop table #idupdatestatusTG, #idupdatestatusBG
+
+        ]]>
+      </text>
+    </deleted>
+
+    <updating>
+      <text>
+
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct from s61 where id = @id
+insert into #idupdatestatusTG select id_tg from v61 where id = @id and id_tg <> 0 group by id_tg
+insert into #idupdatestatusBG select id_bg from v61 where id = @id and id_bg <> 0 group by id_bg
+        ]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId, i_so_ct = @i_so_ct, so_ct = @so_ct where [%whereFieldKey]
+update dmttin set status = 0 from dmttin where id0 = rtrim(@id) and xgroup = '@@voucherCode'
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+         ]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @ma_ct = '@@voucherCode'
+exec ISWIFTStoredGetIdentityNumber '@@voucherCode', '@@table', @id output
+         ]]>
+      </text>
+    </inserting>
+
+    <inserted>
+      <text>
+        <![CDATA[
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+]]>
+      </text>
+    </inserted>
+
+    <aftersave>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+if @action = 'NEW' set @dOldVoucherDate = @ngay_ct
+update @v61 set id = @id, ma_kh = @ma_kh, ma_noi_di = @ma_noi_di, ma_noi_den = @ma_noi_den, ngay_ct = @ngay_ct, so_ct = @so_ct, status = @status, unit_id = @unit_id
+delete v61 where id = @id
+insert v61 select * from @v61
+
+insert into #idupdatestatusBG select id_bg from @v61 where id = @id and id_bg not in (select id from #idupdatestatusBG) and id_bg <> 0 group by id_bg
+exec ISWIFTStoredUpdateRetrieveStatus 's41', 'v41', 's61', 'v61', 'id_bg', 'line_bg', '#idupdatestatusBG', 5, 6, 7
+drop table #idupdatestatusBG
+
+insert into #idupdatestatusTG select id_tg from @v61 where id = @id and id_tg not in (select id from #idupdatestatusTG) and id_tg <> 0 group by id_tg
+exec ISWIFTStoredUpdateRetrieveStatus 's51', 'v51', 's61', 'v61', 'id_tg', 'line_tg', '#idupdatestatusTG', 5, 6, 7
+drop table #idupdatestatusTG
+
+--exec ISWIFTStoredPostingVoucher 's61', 'v61', @dOldVoucherDate, @ngay_ct, @id, '@@voucherCode', '', ''
+--exec ISWIFTStoredPostingVoucher 's61', 'v61_1', @dOldVoucherDate, @ngay_ct, @id, '@@voucherCode', '', ''
+--exec ISWIFTStoredPostingVoucher 's61', 'v61_2', @dOldVoucherDate, @ngay_ct, @id, '@@voucherCode', '', ''
+--exec ISWIFTStoredPostingVoucher 's61', 'v61_3', @dOldVoucherDate, @ngay_ct, @id, '@@voucherCode', '', ''
+
+exec ISWIFTStoredIncreaseVoucherNo @ma_nk, @ngay_ct, '@@voucherCode', @i_so_ct, @so_ct, '@@table'
+select '' as message, @warning as warning, @id as [#id], @so_ct as [#so_ct], @ma_unit as [#ma_unit]
+]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+  	<message val="NumberVoucherExists">
+      <text v="&lt;span class='Highlight'&gt;Lưu ý:&lt;/span&gt; Mã và số đã tồn tại đã tự cập nhật" e="&lt;span class='Highlight'&gt;Warning:&lt;/span&gt; The tax code is already exists"/>
+    </message>
+      <message val="SoCtExists">
+      <text v="&lt;span class='Highlight'&gt;Lưu ý:&lt;/span&gt; Số chứng từ đã tồn tại trong đơn hàng" e="&lt;span class='Highlight'&gt;Warning:&lt;/span&gt; Number of documents that already exist in the order"/>
+    </message>
+	<message val="EmptyContainer">
+      <text v="Vui lòng nhập Container" e="Please Enter Congtainer" />
+    </message>
+    <message val="physicalRetrieve">
+      <text v="Chỉ xử lý nghiệp vụ sổ sách lấy dữ liệu từ thực tế" e="" />
+    </message>
+	 <message val="noDate">
+      <text v="Ngày hiệu lực đến không hợp lệ." e="Error Expiry Date."/>
+    </message>
+	<message val="notApproveRightEdit">
+      <text v="Không có quyền sửa/xóa đơn hàng đã duyệt ngoài mức được phân quyền" e="" />
+    </message>
+	<message val="notApproveRight">
+      <text v="Không có quyền duyệt đơn hàng" e="" />
+    </message>
+	 <message val="OnLyNew">
+      <text v="Chỉ thực hiện chức này ở trạng thái thêm mới." e="Only perform this function in the newly added state."/>
+    </message>
+	<message val="GetQuote">
+      <text v="Chỉ xử lý khi ở chế độ chào giá nhanh" e="Processing only when in quote mode" />
+    </message>
+	<message val="GetSearchQuote">
+      <text v="Chỉ xử lý khi ở chế độ tìm giá nhanh" e="Processing only when in quote mode" />
+    </message>
+  </messages>
+</dir>

@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+]>
+
+<dir id="ctct20" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Hóa đơn" e="Invoice"></title>
+  <grids>
+    <grid table="ctct20" fieldKey="id" fieldName="so_ct" order="ngay_ct,so_ct" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="id" dataType="N" width="50" format="0" >
+          <text v="ID" e="ID"></text>
+        </field>
+		<field name="so_ct" width="80" fieldType="RF" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+		<field name="ma_ct" width="80" >
+          <text v="Mã c/từ" e="Voucher Code"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+		<field name="ma_kh" width="100" >
+          <text v="Mã đối tượng TT" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="200" fieldType="EX" >
+          <text v="Tên đối tượng TT" e="Customer name"></text>
+        </field>
+        <field name="t_tt" dataType="N" format="FCAmount" width="120">
+          <text v="Tiền trên hóa đơn" e="Invoice amount"></text>
+        </field>
+        <field name="da_tt_nt" dataType="N" format="FCAmount" width="120" aliasName="t_tt*0 as ">
+          <text v="Đã thanh toán" e="Received"></text>
+        </field>
+        <field name="cl_nt" dataType="N" format="FCAmount" width="120" aliasName="t_tt*0 as ">
+          <text v="Còn phải thanh toán" e="Receivable"></text>
+        </field>
+
+		<!--
+        <field name="t_tt" dataType="N" format="FCAmount" width="120">
+          <text v="Tiền trên hóa đơn" e="Invoice amount"></text>
+        </field>
+		-->
+        <field name="dien_giai" width="250" >
+          <text v="Diễn giải" e="Description"></text>
+        </field>
+      </fields>
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @key2 nvarchar(3000), @sUpdate nvarchar(4000)
+select @key2 = @lookupKey + case when @val = '' then '' else ' and (@@fieldKey like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or @@fieldName like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+set @sUpdate = '
+  update #v set da_tt_nt = b.tt from #v a join (select id_tt, sum(tt) as tt from ctct20 x1 where x1.loai_tt = 1 and id <> ' + rtrim(@id) + ' and exists (select 1 from #v x2 where x1.id_tt = x2.id) group by id_tt) b on a.id = b.id_tt
+  update #v set cl_nt = t_tt - da_tt_nt
+'
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmkh b on a.ma_kh = b.ma_kh ', 'b.ten_kh', N'@@key', @key2, @@filterKey, @sUpdate, @pageIndex, 10, @@admin, @@userId
+
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+</dir>

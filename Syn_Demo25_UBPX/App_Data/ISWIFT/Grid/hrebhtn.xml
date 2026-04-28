@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="hrebhtn" width="Large" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Bảo hiểm thất nghiệp &lt;b&gt;[%s]&lt;/b&gt;" e="&lt;b&gt;[%s]&lt;/b&gt;"></title>
+  <subtitle v="Thêm, sửa, xóa..." e="Add, Edit, Delete..."></subtitle>
+  <grids>
+    <grid table="hrebhtn" fieldKey="id, line" order="id, line" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="id" dataType="N" fieldType="PK" width="100" format="0" hidden="true">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="line" dataType="N" fieldType="PK" width="100" format="0" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+        <field name="ngay_tu" width="100" dataType="D">
+          <text v="Ngày tg từ" e=""></text>
+        </field>
+        <field name="ngay_den" width="100" dataType="D">
+          <text v="Ngày tg đến" e=""></text>
+        </field>
+        <field name="dien_giai" width="300">
+          <text v="Diễn giải" e="Description"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = 'id = ' + rtrim(@id)
+exec iswiftStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '@@join', '', '@@key', @key2, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$hrebhtn(f){
+  this.constructor(f);
+}
+grid$hrebhtn.prototype = new DirEvent();
+grid$hrebhtn.prototype.afterInit = function(){
+  var p = this._dir;
+}
+]]>
+    </text>
+  </js>
+   <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

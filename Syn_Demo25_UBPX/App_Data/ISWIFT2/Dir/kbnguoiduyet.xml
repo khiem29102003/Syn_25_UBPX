@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="kbnguoiduyet" table="kbnguoiduyet" fieldKey="id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Khai báo người duyệt" e="Approving Officers List"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="id" label="1" field="1" format="-1" hidden="true" fieldType="PK" dataType="N">
+          <text v="" e=""></text>
+        </field>
+
+        <field name="loai" viewType="Combobox" fieldType="PK" inactivate="true" label="1" field="2" >
+          <text v="Loại duyệt" e="Type"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Đơn hàng" e="Sales Orders"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+
+        <field name="user_id" label="1" field="1" format="-1" hidden="true" dataType="N" fieldType="PK">
+          <text v="" e=""></text>
+        </field>
+        <field name="username" viewType="Lookup" allowBlank="false" label="1" field="1" operation="like" fieldType="EXParam">
+          <text v="Nhân viên" e="Sale"></text>
+          <viewInfo lookupType="One" lookupId="sysuserinfo" lookupKey="@@admin = 1 or user_ref like '@@userRef%'" lookupCheck="1=1" lookupRef="nickname" lookupInfo="sysuserinfo|username|nickname" />
+        </field>
+        <field name="nickname" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+
+        <field name="ma_nt" format="U" label="1" field="1" viewType="Lookup" clientDefault="true" allowBlank="false" fieldType="PK" >
+          <text v="Mã ngoại tệ" e="Saleman Code"></text>
+          <viewInfo lookupType="One" lookupId="dmnt" lookupKey="status = 1" lookupCheck="1=1"  lookupRef="ten_nt" lookupInfo="dmnt|ma_nt|ten_nt" />
+        </field>
+        <field name="ten_nt" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="tien" label="1" field="1" format="Amount" dataType="N">
+          <text v="Giới hạn duyệt" e="Amount Limit"></text>
+        </field>
+        <field name="footer_tien" label="[240]" field="" nextRow="false" fieldType="EX">
+          <text v="(0 - Được duyệt tất cả số tiền)" e="(0 - Allow no limit)"></text>
+        </field>
+
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$kbnguoiduyet(p){
+  this.constructor(p);
+}
+dir$kbnguoiduyet.prototype = new DirEvent();
+dir$kbnguoiduyet.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <query>
+      <text>
+        <![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+if @action IN ('EDIT', 'VIEW') select username, nickname from sysuserinfo where user_id in (select user_id from #@@table)
+drop table #@@table
+]]>
+      </text>
+    </query>
+
+    <beforesave>
+      <text>
+        <![CDATA[
+select @user_id = user_id from sysuserinfo where username = @username
+
+if @action = 'NEW' and exists(select 1 from @@table a where user_id = @user_id and loai = @loai and ma_nt = @ma_nt) begin
+  select '$codeExistsNewMsg' as message, 'user_id' as field
+  return
+end
+
+if @action = 'EDIT' and exists(select 1 from @@table where (id != @id) and user_id = @user_id and loai = @loai and ma_nt = @ma_nt) begin
+  select '$codeExistsNewMsg' as message, 'id' as field
+  return
+end
+
+if @action = 'NEW' begin
+  select @id = max(id) + 1 from @@table
+end
+if @id is null select @id = 1
+
+IF @action = 'EDIT' update @@table set user_id = @user_id where id = @id
+
+]]>
+      </text>
+    </beforesave>
+
+    <aftersave>
+      <text>
+        <![CDATA[
+select '' as message, '' as warning, @id as [#id], @user_id as [#user_id]
+]]>
+      </text>
+    </aftersave>
+
+  </script>
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Khai báo người duyệt đã tồn tại." e="The record already exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Khai báo người duyệt đã tồn tại." e="The record already exists."/>
+    </message>
+  </messages>
+
+</dir>

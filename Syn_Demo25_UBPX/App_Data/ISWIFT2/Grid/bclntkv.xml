@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="bclntkv" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo cáo lợi nhuận theo khu vực" e="Profitability by Region"></title>
+  <subtitle v="Từ ngày {ngay_ct1} đến ngày {ngay_ct2}..." e="From {ngay_ct1} To {ngay_ct2}..."></subtitle>
+  <grids>
+    <grid>
+      <fields>
+        <field name="rg_code" width="100" aliasName="b" join="left join dmkh b on a.ma_kh = b.ma_kh" link="~bclntkh" operation="=">
+          <text v="Khu vực" e="Region Code"></text>
+        </field>
+        <field name="rgname" width="250" aliasName="c" join="left join sysregioninfo c on b.rg_code = c.rg_code">
+          <text v="Tên khu vực" e="Region Name"></text>
+        </field>
+        <field name="tien_nt2" dataType="N" format="FCAmount" width="100">
+          <text v="Doanh thu nt" e="FC Turnover"></text>
+        </field>
+        <field name="tien_nt_xuat" dataType="N" format="FCAmount" width="100">
+          <text v="Tiền vốn nt" e="FC Cogs Amt."></text>
+        </field>
+        <field name="tien_lai_nt" dataType="N" format="FCAmount" width="100">
+          <text v="Lãi nt" e="FC Profit."></text>
+        </field>
+        <field name="ty_le_nt" dataType="N" format="2" width="100">
+          <text v="Tỷ trọng lãi (%)" e="Interest (%)"></text>
+        </field>
+        <field name="tien2" dataType="N" format="Amount" width="100">
+          <text v="Doanh thu" e="Turnover"></text>
+        </field>
+        <field name="tien_xuat" dataType="N" format="Amount" width="100">
+          <text v="Tiền vốn" e="Cogs Amt."></text>
+        </field>
+        <field name="tien_lai" dataType="N" format="Amount" width="100">
+          <text v="Lãi" e="Profit."></text>
+        </field>
+        <field name="ty_le" dataType="N" format="2" width="100">
+          <text v="Tỷ trọng lãi (%)" e="Interest (%)"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$bclntkv(f){
+  this.constructor(f);
+}
+grid$bclntkv.prototype = new DirEvent();
+grid$bclntkv.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+grid$bclntkv.prototype.beforeInit = function(){
+  var p = this._dir;
+}
+grid$bclntkv.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(), dt = g.data;
+
+  if (p.options._mau_bc == 1) p.setColumnHidden(0, ['tien_nt2', 'tien_nt_xuat', 'tien_lai_nt', 'ty_le_nt'], true);
+  if (p.options._mau_bc == 2) p.setColumnHidden(0, ['tien2', 'tien_xuat', 'tien_lai', 'ty_le'], true);
+}
+]]>
+    </text>
+  </js>
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+exec ss_bclntkv @ngay_ct1, @ngay_ct2, @tinh_ck, 0, '@@gridJoin', '@@gridFields', @strJoin, @strFinding, @loai_du_lieu, @ma_unit, '@@lan', @@userId, @@admin
+        ]]>
+      </text>
+    </processing>
+  </script>
+</dir>

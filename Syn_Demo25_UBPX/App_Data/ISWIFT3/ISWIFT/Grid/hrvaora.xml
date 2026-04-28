@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridFinding.xml">
+
+  <!ENTITY ScriptLoading "
+declare @strKey nvarchar(3000), @d smalldatetime, @q nvarchar(4000)
+set @strKey = 'ngay between ''' + convert(varchar(10), @ngay_ct1, 112) + ''' and ''' + convert(varchar(10), @ngay_ct2, 112) + ''''
+if @ma_nv &lt;&gt; '' begin
+  declare @idnv int
+  select @idnv = id from hrdmnv where ma_nv = @ma_nv
+  if @idnv is not null set @strKey = @strKey + ' and id = ' + rtrim(@idnv)
+end
+
+select top 0 * into #hrvaora from hrvaora$000000
+set @d = @ngay_ct1
+while @d &lt;= @ngay_ct2 begin
+  set @q = 'insert into #hrvaora select * from hrvaora$' + convert(varchar(6), @d, 112) + ' where ' + @strKey
+  exec(@q)
+  set @d = dateadd(month, 1, @d)
+end
+
+exec iswiftStoreTableLoading '#hrvaora', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join vhrdmnv b on a.id = b.id', 'b.ma_nv, b.ho_ten_nv, convert(varchar(12), a.thoi_gian, 103) + space(2) + substring(convert(varchar(8), a.thoi_gian, 108), 1, 5) as tg_cc', '@@key', '', @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+    ">
+]>
+
+<dir id="hrvaora$000000" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lấy số liệu chấm công" e="Timekeeping Data Import"></title>
+  <subtitle v="Từ ngày {ngay_ct1} đến ngày {ngay_ct2}..." e="From Date {ngay_ct1} To Date {ngay_ct2}..."></subtitle>
+  <grids>
+    <grid table="hrvaora$000000" fieldKey="id, thoi_gian" order="id, thoi_gian" allowFilter="true" allowOrder="true" >
+      <fields>
+        <field name="id" fieldType="PK" width="0" hidden="true" dataType="I">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="thoi_gian" fieldType="PK" width="0" hidden="true" dataType="DT">
+          <text v="" e=""></text>
+        </field>
+
+        <field name="ngay" width="120" dataType="D">
+          <text v="Ngày" e="Date"></text>
+        </field>
+        <field name="ma_nv" width="120" fieldType="EX">
+          <text v="Mã nhân viên" e="Employee ID"></text>
+        </field>
+        <field name="ho_ten_nv" width="300"  fieldType="EX">
+          <text v="Tên nhân viên" e="Employee Name"></text>
+        </field>
+        <field name="so_the" width="120">
+          <text v="Số thẻ" e="Card Number"></text>
+        </field>
+        <field name="tg_cc" width="120" fieldType="EX">
+          <text v="Thời gian" e="Date Time"></text>
+        </field>
+        <field name="vao_ra" viewType="Combobox" width="100">
+          <text v="Loại" e="Type"></text>
+          <viewInfo>
+            <options>
+              <option val="">
+                <text v="Chưa xác định" e="Chưa xác định"></text>
+              </option>
+              <option val="1">
+                <text v="1 - Vào" e="1 - In"></text>
+              </option>
+              <option val="2">
+                <text v="2 - Ra" e="2 - Out"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="find">
+          <text v="$FindToolbar" e="$FindToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="export">
+          <text v="$ExportToolbar" e="$ExportToolbar"></text>
+        </button>
+        <button id="downtemplate">
+          <text v="Tải mẫu Excel" e="Down import template"></text>
+        </button>
+        <button id="import">
+          <text v="Lấy dữ liệu từ tập tin" e="Import data"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            &ScriptLoading;
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            &ScriptLoading;
+          </text>
+        </finding>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$hrvaora$000000(f){
+  this.constructor(f);
+}
+grid$hrvaora$000000.prototype = new DirEvent();
+grid$hrvaora$000000.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  <messages>
+    <message val="dbLockDate">
+      <text v="Đã khóa số liệu, kiểm tra lại ngày khóa sổ." e="Data is locked, you must modify system locked date."/>
+    </message>
+    <message val="ErrorTimeCell">
+      <text v="Giá trị tại ô %cell nhập giá trị ngoài phạm vi cho phép." e=""/>
+    </message>
+  </messages>
+</dir>

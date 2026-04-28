@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY ReportFiltering SYSTEM "..\Include\XML\ReportFiltering.xml">
+]>
+
+<dir id="hrdkcatl" table="" height="" fieldKey="id" dirViewType="Dialog" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Đăng ký ca/nhóm ca cho nhân viên" e=""></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_tu" label="1" field="1" aliasName="@DFDFrom" allowBlank="false" dataType="D">
+          <text v="Ngày từ/đến" e="Date From/To"></text>
+        </field>
+        <field name="ngay_den" label="" field="1" aliasName="@DFDTo" allowBlank="false" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+				<field name="ma_nv" viewType="Lookup" label="1" field="1"  aliasName="b">
+					<text v="Nhân viên" e="Employee ID"></text>
+					<viewInfo lookupType="One" lookupId="hrdmnv" lookupKey="status=1" lookupCheck="1=1" lookupRef="ho_ten_nv" lookupExactValue="1" />
+				</field>
+				<field name="ho_ten_nv" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" >
+					<text v="Tên nhân viên" e="Employee Name"></text>
+				</field>
+				<field name="ma_bp"  format="U" viewType="Lookup" label="1" field="1" >
+					<text v="Bộ phận" e="Department"></text>
+					<viewInfo lookupType="One" lookupId="hrdmbp" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_bp" />
+				</field>
+				<field name="ten_bp" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-">
+					<text v="" e=""></text>
+				</field>
+      </fields>
+    </form>
+
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$hrdkcatl(p){
+  this.constructor(p);
+}
+filter$hrdkcatl.prototype = new DirEvent();
+filter$hrdkcatl.prototype.afterInit = function(){
+  var p = this._dir, ev = this;
+}
+filter$hrdkcatl.prototype.commandActionClick = function(action, xid, po){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+
+	<script>
+		<processing>
+			<text>
+				<![CDATA[
+exec hs_dkcatl @ngay_tu, @ngay_den, @ma_nv, @ma_bp, 1, 1
+        ]]>
+			</text>
+		</processing>
+
+	</script>
+
+</dir>

@@ -1,0 +1,527 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+  <!ENTITY VoucherRequiredFields01 SYSTEM "..\Include\XML\VoucherRequiredFields01.xml">
+  <!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid01.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+
+  <!ENTITY VoucherPurchaseRequest SYSTEM "..\Include\XML\VoucherPurchaseRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from m32 where id = @id and status in (6,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+  if exists(select 1 from d56 with(index(id_hd)) where id_hd = @id) begin
+    select '$DaTraLai' as message
+    return
+  end
+  
+    ">
+]>
+
+<dir id="m32" table="m32" fieldKey="id" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" voucherCode="CN1" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Phiếu chi hoạt động" e="Payment Slip for Activitye"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_ngv" viewType="Combobox" valueDefault="" label="1" field="[180]" >
+          <text v="Loại hóa đơn" e="Inv. Type"></text>
+          <viewInfo>
+            <options query="select ma_ngv, ten_ngv%l from dmngv where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="ma_kh" allowBlank="true" viewType="Lookup" label="1" field="1" importable="5">
+          <text v="Mã nhà cung cấp" e="Customer Code"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_kh" lookupInfo="dmkh|ma_kh|ten_kh" />
+        </field>
+        <field name="ten_kh" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+       
+        <field name="dien_giai" label="1" rows="1" field="-">
+          <text v="Diễn giải" e="Memo"></text>
+        </field>
+        <field name="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+
+    <form gravity="TopRight" columns="120,120" >
+      <fields>
+       <field name="unit_id" viewType="Combobox" dataType="I" clientDefault="true" inactivate="true" label="[60]" field="[180]" >
+  <text v="Đơn vị" e="Unit"></text>
+  <viewInfo>
+    <options cache="false" query="select unit_id, ten_unit%l from sysunit where unit_id in (select unit_id from dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @@admin, ''))">
+    </options>
+  </viewInfo>
+</field>
+<field name="i_so_ct" inactivate="true" hidden="true" label="[60]" field="[60]">
+  <text v="Số tăng" e="Number"></text>
+</field>
+<field name="ten_nk" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="[100]" aliasName="cast('' as nvarchar(4000)) as ">
+  <text v="" e=""></text>
+</field>
+<field name="ma_nk" inactivate="true" label="[60]" field="[60]" clientDefault="true" viewType="Lookup">
+  <text v="Quyển/Số ct" e="Book/No"></text>
+  <viewInfo lookupType="One" lookupId="dmnk" lookupKey="unit_id in (0, ![unit_id]!) and exists(select 1 from dmnk3 x where x.ma_nk = a.ma_nk and x.ma_ct = '@@voucherCode' and (x.user_id in (0, @@userId) or @@admin = 1)) and (ngay_hl1 is null or ![ngay_ct]! &gt;= ngay_hl1) and (ngay_hl2 is null or ![ngay_ct]! &lt;= ngay_hl2) " lookupCheck="1=1" lookupRef="ten_nk" lookupInfo="dmnk|ma_nk|ten_nk" />
+</field>
+<field name="so_ct" format="U" allowBlank="false" nextRow="false" label="" field="[120]">
+  <text v="Số c/từ" e="Voucher No"></text>
+</field>
+<field name="ngay_ct" label="1" field="1" valueDefault="new Date()" copy="false" allowBlank="false" dataType="D">
+  <text v="Ngày chứng từ" e="Voucher Date"></text>
+</field>
+<field name="ngay_lct" label="1" field="1" hidden="true" valueDefault="new Date()" allowBlank="false" disabled="true" dataType="D">
+  <text v="Ngày lập ct" e="Create Date"></text>
+</field>
+        &VoucherRequiredFields02;
+      </fields>
+    </form>
+
+    <form tabPageIndex="1" gravity="MiddleLeft" height="320" columns="120,120,240" >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="d32" allowBlank="false" label="" field="-" viewType="Grid">
+          <text v="Chi tiết" e="Detail"></text>
+        </field>
+      </fields>
+    </form>
+
+      
+  </forms>
+
+  <grids>
+    <grid id="d32" table="d32" fieldKey="id, line" order="line" readOnly="false">
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+
+        <field name="ma_dv" width="100" allowBlank="false" viewType="Lookup" readOnly="false" >
+          <text v="Mã dịch vụ" e="Service"></text>
+          <viewInfo lookupType="One" lookupId="dmdv" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_dv" lookupInfo="dmdv|ma_dv|ten_dv" />
+        </field>
+        <field name="ten_dv" width="250" fieldType="EX" inactivate="true" readOnly="true" aliasName="b" join=" left join dmdv b on a.ma_dv = b.ma_dv ">
+          <text v="Tên dịch vụ" e="Service Name"></text>
+        </field>            
+        
+        <field name="gia_nt2" dataType="N" format="FCPrice" width="100" readOnly="false" >
+          <text v="Giá mua %s" e="%s Price"></text>
+        </field>
+        
+       
+       
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="paste">
+          <text v="$PasteToolbar" e="$PasteToolbar"></text>
+        </button>
+        <button id="moveup">
+          <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+        </button>
+        <button id="movedown">
+          <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+set nocount on
+--select @@fields into #t from d32 a @@join where @@key order by line
+select @@fields into #t from d32 a @@join where @@key order by line
+--select a.*,b.ten_dv from #t left join dmdv b on a.ma_dv=b.ma_dv order by line
+
+Select * from #t
+drop table #t
+         ]]>
+          </text>
+        </query>
+      </script>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="paste">
+          <text v="$PasteToolbar" e="$PasteToolbar"></text>
+        </button>
+        <button id="moveup">
+          <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+        </button>
+        <button id="movedown">
+          <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+       
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+set nocount on
+select @@fields into #t from d32 a @@join where @@key order by line
+
+select * from #t order by line
+drop table #t
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+    
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$m32(p)
+{
+  this.constructor(p);
+}
+dir$m32.prototype = new DirEvent();
+dir$m32.prototype.beforeInit = function(renderType)
+{
+  this._dir.options._files = null;
+}
+
+
+dir$m32.prototype.beforeButtonGridClick = function (id, gindex) {
+  var p = this._dir;
+  switch (id) {
+    case '10':
+      if (p.valForm('ma_kh').trim() == '') {
+        p.jObject('ma_kh').focus(); 
+        return;
+      }
+      p.showFilter("m32PN1", null, {_ngay_ct2: p.valForm('ngay_ct'), _ma_kh: p.valForm('ma_kh'), _ten_kh: p.valForm('ten_kh'), _ma_nt: p.valForm('ma_nt'), _unit_id: p.valForm('unit_id')});
+      return false;
+      break;
+    case '20':
+      if (p.valForm('ma_ngv') != 1) {
+        p.jObject('ma_ngv').focus();
+        $.showToast(p.msg('invoiceRetrieve'));
+        return;
+      }
+      if (p.valForm('ma_kh').trim() == '') {
+        p.jObject('ma_kh').focus(); 
+        return;
+      }
+      p.showFilter("m32PN3", null, {_ngay_ct2: p.valForm('ngay_ct'), _ma_kh: p.valForm('ma_kh'), _ten_kh: p.valForm('ten_kh'), _ma_nt: p.valForm('ma_nt'), _unit_id: p.valForm('unit_id')});
+      return false;
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+
+dir$m32.prototype.gridCellValueChange = function (o, g, r, c, v) {
+  var p = this._dir;
+  switch (c){
+  
+	
+	
+]]>&VoucherSaleRequestGrid;<![CDATA[
+    default:
+      break;
+  }
+}
+dir$m32.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+]]>&VoucherExRateValid01;<![CDATA[
+    case 'ma_gd':
+      dir$m32HiddenColumnByTran(p);
+      break;
+    case 'ma_ngv':
+      dir$m32HiddenColumnByType(p);
+      break;
+    case 'ty_gia':
+      p.calcExpressionAll(0, '!ty_gia');
+      break;
+    case 'ma_kh':
+      p.request('Customer', '', ['ma_kh', 'ngay_ct', 'ma_nt']);
+      break;
+    default:
+      break;
+  }
+}
+]]>&VoucherExRateValid02;<![CDATA[
+dir$m32.prototype.gridDetailActionChange = function(gindex, action, r){
+  if(gindex > 0) return true;
+  
+  var p = this._dir;
+  if (action == 'AfterDeleteRow' || action == 'AfterAppendGrid') dir$m32DisabledMasterField(p, p.grid(gindex));
+  return true;
+}
+function dir$m32DisabledMasterField(p, g){
+  var dt = g.data, rows = dt.findRow("[ma_dv].trim() != ''"), dis = rows.length > 0;
+  p.setDisabled('unit_id', dis);
+  p.setInactive('unit_id', true);
+  p.setDisabled('ma_ngv', dis);
+  if (p.options._sale_lock_master == 1) 
+    p.setDisabled(['ma_kh', 'ngay_ct', 'ma_nt'], dis);
+  else {
+    rows = dt.findRow("[ma_dv].trim() != '' && [id_pn] > 0"), dis = rows.length > 0;
+    p.setDisabled('ma_kh', dis);
+  }
+}
+function dir$m32HiddenColumnByType(p){
+  var v = p.valForm('ma_ngv'), nt = p.valForm('ma_nt'), bc = p.options.struct.baseCurrency;
+  p.setColumnHidden(0, ['sl_pn'], v == 3);
+  p.setColumnHidden(0, ['line_pn', 'so_ct_pn'], v == 3);
+  p.setColumnHidden(0, ['gia', 'tien'], nt == bc);
+  p.setInvisible(['t_tien'], nt == bc);
+}
+function dir$m32HiddenColumnByTran(p){
+  
+}
+function dir$m32DisabledStatusByAction(p){
+  var o = p.jObject('status');
+  if (p.options.action != 'VIEW') o.find("[value=6],[value=7],[value=9]").remove();
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+
+
+    &VoucherRequest;
+    &VoucherPurchaseRequest;
+
+    <query>
+      <text>
+        <![CDATA[
+if @action = 'EDIT' begin
+]]>&CheckUpdatingDeleting;<![CDATA[
+end
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+if @script is null set @script = ''
+
+if @action = 'NEW' begin
+  declare @ma_nk varchar(32), @ten_nk nvarchar(3000), @ngay_ct date, @so_ct varchar(32), @i_so_ct int, @unit_id int
+  select @ngay_ct = getdate(), @unit_id = @@unit
+]]>&VoucherNumberQuery;<![CDATA[
+  if @so_ct is null
+    select '' as [so_ct], 0 as [i_so_ct], @unit_id as [unit_id], '' as ma_nk, '' as ten_nk
+  else
+    select @so_ct as [so_ct], @i_so_ct as [i_so_ct], @unit_id as [unit_id], @ma_nk as ma_nk, @ten_nk as ten_nk
+end
+else select @script as script
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+
+    <declare>
+      <text>
+        <![CDATA[
+declare @warning nvarchar(256), @dOldVoucherDate date, @dVoucherDate date, @nVoucherType tinyint, @strIds varchar(256), @q nvarchar(4000)
+set @warning = ''
+create table #idupdatestatusPN(id int); create table #idupdatestatusDH(id int)
+         ]]>
+      </text>
+    </declare>
+
+    &VoucherJSLoading;
+
+    <beforesave>
+      <text>
+        &VoucherNumberBeforeSave;
+      </text>
+    </beforesave>
+
+    <deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct, @dVoucherDate = ngay_ct, @nVoucherType = ma_ngv from m32 where id = @id
+        ]]>
+      </text>
+    </deleting>
+
+    <deleted>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+insert into #idupdatestatusPN select id_pn from d32 where id = @id and id_pn <> 0 group by id_pn
+insert into #idupdatestatusDH select id_dh from d32 where id = @id and id_dh <> 0 and id_pn = 0 group by id_dh
+
+]]>
+<![CDATA[  
+select ma_vt ma_dv, ma_kho, ma_lo, ma_vi_tri, so_luong, he_so, id, datetime2, ct_nxd, 0 as del into #in0 from wrkin
+set @q = 'insert into #in0 select ma_vt ma_dv, ma_kho, ma_lo, ma_vi_tri, so_luong, he_so, id, datetime2, ct_nxd, 1 from r90$' + convert(char(6), @dOldVoucherDate, 112) + ' where id in (' + @strIds + ')'
+exec (@q)
+]]>
+<![CDATA[
+exec ISWIFTStoredDeleteDataWithKey 'd32,r70$%Partition,r90$%Partition,r00$%Partition', @strIds, '', @dVoucherDate
+
+]]><![CDATA[
+
+
+drop table #idupdatestatusPN, #idupdatestatusDH
+        ]]>
+      </text>
+    </deleted>
+
+    <updating>
+      <text>
+        <![CDATA[
+insert into #idupdatestatusPN select id_pn from d32 where id = @id and id_pn <> 0 group by id_pn
+insert into #idupdatestatusDH select id_dh from d32 where id = @id and id_dh <> 0 and id_pn = 0 group by id_dh
+select @dOldVoucherDate = ngay_ct from m32 where id = @id
+        ]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId, i_so_ct = @i_so_ct, so_ct = @so_ct where [%whereFieldKey]
+update dmttin set status = 0 from dmttin where id0 = rtrim(@id) and xgroup = '@@voucherCode'
+         ]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @ma_ct = '@@voucherCode'
+exec ISWIFTStoredGetIdentityNumber '@@voucherCode', '@@table', @id output
+         ]]>
+      </text>
+    </inserting>
+
+    <inserted>
+      <text>
+        <![CDATA[
+]]>
+      </text>
+    </inserted>
+
+    <aftersave>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+if @action = 'NEW' set @dOldVoucherDate = @ngay_ct
+update @d32 set id = @id, ma_kh = @ma_kh, ngay_ct = @ngay_ct, so_ct = @so_ct, status = @status
+
+delete d32 where id = @id
+
+insert d32 select * from @d32
+
+update d32 set ngay_kt = dateadd(day,so_ngay_bh,ngay_bh) where id = @id and convert(char(8),ngay_bh,112) <>''
+
+]]><![CDATA[  
+select ma_vt ma_dv, ma_kho, ma_lo, ma_vi_tri, so_luong, he_so, id, datetime2, ct_nxd, 0 as del into #in0 from wrkin
+set @q = 'insert into #in0 select ma_vt ma_dv, ma_kho, ma_lo, ma_vi_tri, so_luong, he_so, id, datetime2, ct_nxd, 1 from r90$' + convert(char(6), @dOldVoucherDate, 112) + ' where id in (' + @strIds + ')'
+exec (@q)
+]]><![CDATA[
+
+exec ISWIFTStoredDeleteDataWithKey 'r70$%Partition,r90$%Partition,r00$%Partition', @strIds, '', @dOldVoucherDate
+
+--exec ISWIFTStoredPostingVoucher 'm32', 'd32', @dOldVoucherDate, @ngay_ct, @id, '@@voucherCode', '', ''
+
+exec ISWIFTStoredPostingInventory @ma_ngv, 'm32', 'd32', @dOldVoucherDate, @ngay_ct, @id, '@@voucherCode', '', ''
+exec ISWIFTStoredPostingARFund @ma_ngv, 0, 'm32', 'd32', @dOldVoucherDate, @ngay_ct, @id, '@@voucherCode', '', ''
+exec ISWIFTStoredPostingGL @ma_ngv, 'm32', 'd32', @dOldVoucherDate, @ngay_ct, @id, '@@voucherCode'
+
+]]>
+<![CDATA[  
+set @q = 'insert into #in0 select ma_vt ma_dv , ma_kho, ma_lo, ma_vi_tri, so_luong, he_so, id, datetime2, ct_nxd, 0 from r90$' + convert(char(6), @ngay_ct, 112) + ' where id in (' + @strIds + ')'
+exec (@q)
+]]><![CDATA[
+
+insert into #idupdatestatusPN select id_pn from @d32 where id = @id and id_pn not in (select id from #idupdatestatusPN) and id_pn <> 0 group by id_pn
+insert into #idupdatestatusDH select id_dh from @d32 where id = @id and id_dh not in (select id from #idupdatestatusDH) and id_dh <> 0 and id_pn = 0 group by id_dh
+
+drop table #idupdatestatusPN, #idupdatestatusDH
+
+exec ISWIFTStoredIncreaseVoucherNo @ma_nk, @ngay_ct, '@@voucherCode', @i_so_ct, @so_ct, '@@table'
+select '' as message, @warning as warning, @id as [#id], @so_ct as [#so_ct], @ma_unit as [#ma_unit]
+]]>
+      </text>
+    </aftersave>
+
+  </script>
+
+  <messages>
+    <message val="invoiceRetrieve">
+      <text v="Chỉ xử lý nghiệp vụ lấy số liệu cho hóa đơn" e="" />
+    </message>
+    <message val="DaThanhToan">
+      <text v="Đã có chứng từ thanh toán cho hóa đơn này, không được sửa/xóa." e=""/>
+    </message>
+    <message val="DaTraLai">
+      <text v="Đã có chứng từ trả lại cho hóa đơn này, không được sửa/xóa." e=""/>
+    </message>
+  </messages>
+</dir>

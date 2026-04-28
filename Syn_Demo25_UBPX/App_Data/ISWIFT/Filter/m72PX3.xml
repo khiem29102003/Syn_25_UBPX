@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="m72PX3" fieldKey="id" voucherCode="CR1" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lọc danh sách phiếu bán" e="Filter FCL Order Numbers"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D">
+          <text v="Ngày từ/đến" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+		<field name="id_dh"  label="1" field="1" nextRow="true" hidden="true">
+          <text v="ID DH" e="Voucher Number"></text>
+        </field>
+		
+		<field name="ma_job" label="1" field="1" disabled="true">
+          <text v="Mã đơn hàng" e="Order Code"></text>
+        </field>
+		<field name="so_job_dh" label="0" field="1" nextRow="false" disabled="true">
+          <text v="Số đơn hàng" e="Order Number"></text>
+        </field>
+		<field name="id_m54" label="1" field="1" allowBlank="false" viewType="Lookup" operation="like">
+          <text v="Lấy số phiếu bán" e="Get the order number"></text>
+          <viewInfo lookupType="one" lookupId="m54" lookupRef="ds_id_m54" lookupKey="ngay_ct between ![ngay_ct1]! and ![ngay_ct2]! and id_dh_nb like ![id_dh]! + '%' and xstatus = 5" lookupCheck="id_nb like ![id_dh]! + '%' and xstatus = 5" />
+        </field>
+        <field name="ds_id_m54" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>	
+      </fields>
+    </form>
+	
+	
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$m72PX3(p){
+  this.constructor(p);
+}
+filter$m72PX3.prototype = new DirEvent();
+
+filter$m72PX3.prototype.afterInit = function(){
+  var p = this._dir;
+  
+  p.valForm(['ngay_ct2', 'id_dh', 'ma_job', 'so_job_dh'], [p.options._ngay_ct, p.options._id_dh, p.options._ma_job, p.options._so_job_dh]);
+}
+filter$m72PX3.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir;
+  m2.val('id', 'I', p.options.parent.valForm('id'))
+  opt = $.extend({}, opt, {controller: "m72PX3Select", folder: "Filter", dirViewType: "Dialog", parent: p.options.parent, useDataSet: true, memvars: m2});
+  p._close();
+  $.createDir(false, opt);
+  return false;
+}
+
+
+         ]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[
+		.control-label.so_ct
+		{
+			font-weight:bold;
+		}
+		.control-label.ma_kh
+		{
+			color:black;
+		}
+		.control-label.ngay_ct1 ,.control-label.ngay_ct2
+		{
+			color: #499b98;
+		}
+		
+      ]]>
+    </text>
+  </css>
+  <script>
+
+  </script>
+</dir>

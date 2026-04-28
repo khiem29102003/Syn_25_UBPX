@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+  <!ENTITY VoucherRequiredFields01 SYSTEM "..\Include\XML\VoucherRequiredFields01.xml">
+  <!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid01.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+
+  <!ENTITY VoucherSaleRequest SYSTEM "..\Include\XML\VoucherSaleRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from t91 where id = @id and status in (6,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+    ">
+]>
+<dir id="t91" table="t91" fieldKey="id" voucherCode="BG1" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo giá" e="Quotation Entry"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_kh" allowBlank="false" viewType="Lookup" label="1" field="1">
+          <text v="Mã khách hàng" e="Customer Code"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_kh" lookupInfo="dmkh|ma_kh|ten_kh" />
+        </field>
+        <field name="ten_kh" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_cong" allowBlank="false" viewType="Lookup" label="1" field="1">
+          <text v="Mã container" e="Customer Code"></text>
+          <viewInfo lookupType="One" lookupId="dmcong" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_cong" lookupInfo="dmcong|ma_cong|ten_cong" />
+        </field>
+        <field name="ten_cong" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ong_ba" label="1" rows="1" field="-">
+          <text v="Người liên hệ" e="Contact"></text>
+        </field>
+        <field name="ma_tt" viewType="Lookup" label="1" field="1">
+          <text v="Mã thanh toán" e="Credit Term"></text>
+          <viewInfo lookupType="One" lookupId="dmtt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_tt" lookupInfo="dmtt|ma_tt|ten_tt" />
+        </field>
+        <field name="ten_tt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="dien_giai" label="1" rows="1" field="-">
+          <text v="Diễn giải" e="Memo"></text>
+        </field>
+        <field name="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+    <form gravity="TopRight" columns="120,120" >
+      <fields>
+        &VoucherRequiredFields01;
+        <field name="ngay_duyet" dataType="D" label="1" rows="1" field="1">
+          <text v="Ngày hiệu lực" e="Effective to"></text>
+        </field>
+        &VoucherRequiredFields02;
+      </fields>
+    </form>
+    <form tabPageIndex="1" gravity="MiddleLeft" height="320" columns="120,120,240" >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="r91" allowBlank="false" label="" field="-" viewType="Grid">
+          <text v="Chi tiết" e="Detail"></text>
+        </field>
+      </fields>
+    </form>
+    <form tabPageIndex="2" gravity="MiddleLeft" height="0" columns="120,120,120,120" >
+      <text v="Thông tin khách hàng" e="Customer Info"></text>
+      <fields>
+        <field name="ma_dc" viewType="Lookup" label="1" field="1">
+          <text v="Địa chỉ" e="Địa chỉ"></text>
+          <viewInfo lookupType="One" lookupId="dmdc" lookupKey="ma_kh in (![ma_kh]!, '') and status = 1" lookupCheck="ma_kh in (![ma_kh]!, '')" lookupRef="ten_dc" lookupInfo="dmdc|ma_dc|ten_dc"/>
+        </field>
+        <field name="ten_dc" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="dia_chi" label="1" field="-">
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+        <field name="ma_so_thue" label="1" field="-">
+          <text v="Mã số thuế" e="Tax Code"></text>
+        </field>
+      </fields>
+    </form>
+    <form tabPageIndex="3" gravity="MiddleLeft" height="0" columns="120,120,360" >
+      <text v="Đính kèm" e="Attach Files"></text>
+      <fields>
+        <field name="xfile" label="1" field="2" viewType="File" fieldType="EXParam">
+          <text v="Chọn files" e="Attach Files"></text>
+          <viewInfo fileFieldId0="id" fileGroup="BG1" fileExtension="*" maxFileSize="10240" maxFileCount="10"></viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+    <grids>
+        <grid id="r91" table="r91" fieldKey="id, line" order="line" readOnly="false">
+            <fields>
+                <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+                <text v="" e=""></text>
+                </field>
+                <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+                <text v="Dòng" e="Line"></text>
+                </field>
+                <field name="ma_phi" width="100" allowBlank="false" viewType="Lookup" readOnly="false" >
+                <text v="Mã phí" e="Container Code"></text>
+                <viewInfo lookupType="One" lookupId="dmphi" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_phi" lookupInfo="dmphi|ma_phi|ten_phi" />
+                </field>
+                <field name="ten_phi" width="250" fieldType="EX" inactivate="true" readOnly="true" aliasName="b" join=" left join dmphi b on a.ma_phi = b.ma_phi ">
+                <text v="Tên phí" e="Container Name"></text>
+                </field>
+                <field name="dvt" width="100" allowBlank="false" viewType="Lookup" readOnly="false" >
+                <text v="Đơn vị tính" e="Item"></text>
+                <viewInfo lookupType="One" lookupId="dmdvt" lookupKey="status=1" lookupCheck="1=1" lookupInfo="dmdvt|ma_dvt |ten_dvt" />
+                </field>
+                <field name="ten_dvt" width="120" inactivate="true" readOnly="true" hidden="true" aliasName="c" join=" left join dmdvt c on a.dvt = c.dvt ">
+                <text v="Tên đvt" e="UOM"></text>
+                </field>
+                <field name="so_luong" dataType="N" format="Qty" allowBlank="false" width="100" readOnly="false" >
+                <text v="Số lượng" e="Quantity"></text>
+                </field>
+                <field name="gia" dataType="N" format="FCPrice" width="100" readOnly="false" >
+                <text v="Giá bán" e="%s Price"></text>
+                </field>
+                <field name="gia_nt" dataType="N" format="FCPrice" width="100" readOnly="false" >
+                <text v="Giá bán %s" e="%s Price"></text>
+                </field>
+                <field name="tien" dataType="N" format="FCAmount" width="100" readOnly="false" >
+                <text v="Doanh số" e="%s Amount"></text>
+                </field>
+                <field name="tien_nt" dataType="N" format="FCAmount" width="100" readOnly="false" >
+                <text v="Doanh số %s" e="%s Amount"></text>
+                </field>
+                <field name="ma_thue" width="100" allowBlank="false" viewType="Lookup" readOnly="false" >
+                <text v="Mã thuế" e="Item"></text>
+                <viewInfo lookupType="One" lookupId="dmthue" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_thue" lookupInfo="dmthue|ma_thue|ten_thue" />
+                </field>
+                <field name="thue_nt" dataType="N" format="FCAmount" width="100" readOnly="false">
+                    <text v="Thuế %s" e="%s Tax"></text>
+                </field>
+            </fields>
+
+            <buttons>
+                <button id="add">
+                <text v="$AddToolbar" e="$AddToobar"></text>
+                </button>
+                <button id="delete">
+                <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+                </button>
+                <button id="copy">
+                <text v="$CopyToolbar" e="$CopyToolbar"></text>
+                </button>
+                <button id="paste">
+                <text v="$PasteToolbar" e="$PasteToolbar"></text>
+                </button>
+                <button id="moveup">
+                <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+                </button>
+                <button id="movedown">
+                <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+                </button>
+                <button id="split">
+                <text v="-" e="-"></text>
+                </button>
+                <button id="freeze">
+                <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+                </button>
+            </buttons>
+    <script>
+        <query>
+          <text>
+            <![CDATA[
+set nocount on
+select @@fields into #t from r91 a @@join where @@key order by line
+select * from #t order by line
+drop table #t
+         ]]>
+          </text>
+        </query>
+      </script>
+        </grid>
+    </grids>
+    &DefaultButton;
+
+<js>
+    <text>
+      <![CDATA[
+function dir$t91(p){
+  this.constructor(p);
+}
+dir$t91.prototype = new DirEvent();
+dir$t91.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+</js>
+</dir>

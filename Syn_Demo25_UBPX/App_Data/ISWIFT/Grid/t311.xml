@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="t311" dirViewType="Grid" dirObjectType="Voucher" voucherCode="TT1" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Tạo điều xe tròn tua" e="Create a shipment"></title>
+  <subtitle v="Thêm, sửa, xóa..." e="New, Edit, Delete..."></subtitle>
+
+  <grids>
+    <grid table="t311" fieldKey="id" order="id desc" allowFilter="true" allowOrder="true">
+      <fields>
+	  	<field name="ma_ldx" width="80" >
+          <text v="Hình thức" e="Carrier"></text>
+        </field>
+        <field name="so_ct" width="100" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct" width="120" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+
+        <field name="ma_xe" width="0" hidden = "false">
+          <text v="Mã đầu kéo" e="Tractor Code"></text>
+        </field>
+        <field name="ten_xe" width="250" fieldType="EX" >
+          <text v="Đầu kéo" e="Tractor Name"></text>
+        </field>
+		<field name="ten_ldx" width="250" fieldType="EX" >
+          <text v="Tên hình thức" e="Carrier"></text>
+        </field>
+		<field name="ma_tx" width="0" >
+          <text v="Tài xế" e="Carrier"></text>
+        </field>
+		<field name="ten_tx" width="250" fieldType="EX" >
+          <text v="Tài xế" e="Carrier"></text>
+        </field>			
+		
+		<field name="ma_rm" width="0" >
+          <text v="Tên rơ mooc" e="Carrier"></text>
+        </field>
+		<field name="ten_rm" width="250" fieldType="EX" >
+          <text v="Rơ mooc" e="Carrier"></text>
+        </field>	
+		
+		<field name="dien_giai" width="250">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+		<field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="120" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="id" dataType="N" fieldType="PK" format="0" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey =' ma_ct =  ''TT1'''
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmxe c on a.ma_xe = c.ma_xe left join dmldx d on a.ma_ldx = d.ma_ldx left join dmnv f on a.ma_tx = f.ma_nv left join dmxe k on a.ma_rm = k.ma_xe', 'b.ma_unit, c.ten_xe, d.ten_ldx, f.ten_nv ten_tx,k.ten_xe ten_rm', '@@key', '', @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @strDetailKey nvarchar(3000); set @strDetailKey = ''
+if @ma_cong <> '' set @strDetailKey = @strDetailKey + ' and x.ma_cong like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@ma_cong) + '%'''
+if @strDetailKey <> '' set @strDetailKey = ' and exists(select 1 from r311 x where a.id = x.id ' + @strDetailKey + ')'
+
+set @strKey = 'ngay_ct between ''' + convert(char(8), @ngay_ct1, 112) + ''' and ''' + convert(char(8), @ngay_ct2, 112) + ''' and ' + @strFinding + ' and ' + dbo.ISWIFTFunctionGetUnitIDRightKeys(@@admin, @@userId, @ma_unit, 'a.unit_id') + @strDetailKey
+set @strKey = @strKey +' and ma_ct =  ''TT1'''
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmxe c on a.ma_xe = c.ma_xe left join dmldx d on a.ma_ldx = d.ma_ldx left join dmnv f on a.ma_tx = f.ma_nv left join dmxe k on a.ma_rm = k.ma_xe', 'b.ma_unit, c.ten_xe, d.ten_ldx, f.ten_nv ten_tx,k.ten_xe ten_rm', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+drop table #unitright
+         ]]>
+          </text>
+        </finding>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+	  
+	  
+
+function grid$t311(f){
+  this.constructor(f);
+}
+grid$t311.prototype = new DirEvent();
+grid$t311.prototype.afterInit = function(renderType){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+</dir>

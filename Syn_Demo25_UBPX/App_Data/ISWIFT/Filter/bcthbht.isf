@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY ReportFilterItemGroup SYSTEM "..\Include\XML\ReportFilterItemGroup.xml">
+  <!ENTITY ReportFilterCustomerGroup SYSTEM "..\Include\XML\ReportFilterCustomerGroup.xml">
+  <!ENTITY ReportFilterStockType SYSTEM "..\Include\XML\ReportFilterStockType.xml">
+  <!ENTITY ReportJSLoading SYSTEM "..\Include\XML\ReportJSLoading.xml">
+  <!ENTITY ReportFilterUnit SYSTEM "..\Include\XML\ReportFilterUnit.xml">
+  <!ENTITY ReportFiltering SYSTEM "..\Include\XML\ReportFiltering.xml">
+  <!ENTITY ReportDataAnalysisStruct SYSTEM "..\Include\XML\ReportDataAnalysisStruct.xml">
+
+]>
+
+<dir id="bcthbht" table="" height="" fieldKey="id" dirViewType="Dialog" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo cáo tổng hợp bán hàng thuần" e=""></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" dataType="D">
+          <text v="Ngày từ/đến" e="Date From/To"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="1" gravity="MiddleLeft" height="0" columns="120,120,120,120,120"  >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="ma_kh" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Mã khách hàng" e="Customer"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_kh" />
+        </field>
+        <field name="ten_kh" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        &ReportFilterCustomerGroup;
+        <field name="ma_vt" viewType="Lookup" operation="like" label="1" field="1">
+          <text v="Mã vật tư" e="Item"></text>
+          <viewInfo lookupType="One" lookupId="dmvt" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_vt" />
+        </field>
+        <field name="ten_vt" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        &ReportFilterItemGroup;
+        <field name="ma_kho" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Mã kho" e="Site"></text>
+          <viewInfo lookupType="One" lookupId="dmkho" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_kho" />
+        </field>
+        <field name="ten_kho" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        &ReportFilterUnit;
+        <field name="nh_ct" hidden="true" label="1" viewType="Combobox" field="3" valueDefault="BH1,BH2,BH3" operation="ma_ct in (select ma_ct from dmct where charindex(nh_ct, '%s') &gt; 0)" >
+          <text v="Phân hệ"  e="Source"></text>
+          <viewInfo>
+            <options>
+              <option val="">
+                <text v="Tất cả"  e="All"></text>
+              </option>
+              <option val="BH1,BH2,BH3">
+                <text v="Bán hàng"  e="Sales"></text>
+              </option>
+              <option val="TK">
+                <text v="Tồn kho"  e="Stock"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        &ReportFilterStockType;
+        <field name="mau_bc" label="1" field="[360]" inactivate="true" aliasName="@" viewType="Combobox">
+          <text v="Mẫu báo cáo" e="Report Form"></text>
+          <viewInfo>
+            <options cache="false" query="select id, formname%l from sysreportpivot where (user_id in (0, @@userId) or form_type = 1) and controller = '@@controller' order by user_id, id">
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="2" gravity="MiddleLeft" height="0" columns="120,120,120,120,120"  >
+      <text v="Khác" e="Other"></text>
+      <fields>
+        <field name="ma_gd" viewType="Lookup" label="1" field="3" operation="exists(select 1 from vdmgd x where a.ma_ct = x.ma_ct and a.ma_gd = x.ma_gd and charindex(x.code, '%s') > 0) ">
+          <text v="Mã giao dịch" e="Transaction"></text>
+          <viewInfo lookupType="Multi" lookupId="vdmgd" lookupKey="status = 1 and nh_ct in ('BH1', 'BH2', 'BH3')" />
+        </field>
+        <field name="ma_lo" viewType="Lookup" operation="like" label="1" field="1">
+          <text v="Mã lô" e="Lot"></text>
+          <viewInfo lookupType="One" lookupId="dmlo2" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_lo" />
+        </field>
+        <field name="ten_lo" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_vi_tri" viewType="Lookup" operation="like" label="1" field="1">
+          <text v="Mã vị trí" e="Position"></text>
+          <viewInfo lookupType="One" lookupId="dmvitri" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_vi_tri" />
+        </field>
+        <field name="ten_vi_tri" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="so_ct1"  label="1" field="1" operation="a.so_ct &gt;= N'%s'">
+          <text v="Số c/từ (từ/đến)" e="Voucher Number"></text>
+        </field>
+        <field name="so_ct2"  label="" nextRow="false" field="1" operation="a.so_ct &lt;= N'%s'">
+          <text v="" e=""></text>
+        </field>
+        <field name="dien_giai" label="1" field="3" operation="a.dien_giai like N'%%s%'">
+          <text v="Diễn giải" e="Voucher Number"></text>
+        </field>
+        &ReportFiltering;
+      </fields>
+    </form>
+
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>jXURNvzdl9OjE9ExOQPHam6YiJEXcS8+k2OL1678YAUrYhSdjEcG8p+5NL7mPW0zmUmABiCxcLhjxsxvUPk2AXAs1o6nf+WFolhHdlyq5Uj4/7nEU0ZHVFfk+sHRqTfmhTcZdhsRSzYc2lzTWQs2Oz2zENbqEZuC99m2ab6Uuab/foJ+JnhnchyOdbgCFnfXkinbiYMUg68k7hCSgSyiQg==</enc>]]>
+    </text>
+  </js>
+
+  <script>
+    <processing>
+      <text>
+        <![CDATA[<enc>TN45BLVvlQZWD1bhImJFui3B6za/B5OT7CPnricv7F9VxXndoQI7mrkZhe35dbbb</enc>]]>
+      </text>
+    </processing>
+    &ReportJSLoading;
+  </script>
+</dir>

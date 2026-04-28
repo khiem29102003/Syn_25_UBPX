@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="qldangvien_dc" table="qldangvien" fieldKey="ma_dangvien" transaction="true" tryCatch="true" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Quản lý đảng viên Dân cư" e="Resident Party Member Management"></title>
+  <title0 v="Thêm mới - đảng viên" e="New - party member"></title0>
+  <title1 v="Sửa -đảng viên" e="Edit - party member"></title1>
+
+  <forms>
+	<form gravity="TopLeft" columns="120,120,120,120" >
+		<fields>
+			<field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_dangvien" format="U" label="1" field="1" allowBlank="false" disabled="false" fieldType="PK" importable="5">
+				<text v="Mã đảng viên" e="Party Member Code"></text>
+			</field>
+			<field name="ma_dancu" viewType="Lookup" label="1" field="1" allowBlank="false" importable="10">
+				<text v="Mã cư dân" e="Resident code"></text>
+			  <viewInfo lookupType="One" lookupId="qldctcccd" lookupKey="ma_dancu not in (select ma_dancu from dmnv where ma_dancu IS NOT NULL AND ma_dancu != '')" lookupRef="ten_dancu" lookupCheck="ma_dancu not in (select ma_dancu from dmnv where ma_dancu IS NOT NULL AND ma_dancu != '')" lookupInfo="qldctcccd|ma_dancu|ten_dancu" importCheck="@@DF and z.status=1"/>
+			</field>
+			<field name="ten_dancu" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="so_the_dang" allowBlank="false" label="1" field="1" importable="15">
+				<text v="Số thẻ đảng" e="Party card number"></text>
+			</field>
+			<field name="ngay_vao_dang" label="1" field="1" dataType="D" importable="20">
+				<text v="Ngày vào đảng" e="Party admission"></text>
+			</field>
+			<field name="ngay_chinh_thuc" label="1" field="1" dataType="D" importable="25">
+				<text v="Ngày chính thức" e="Official admission"></text>
+			</field>
+			<field name="ma_chibo" viewType="Lookup" label="1" field="1" allowBlank="true" importable="30">
+				<text v="Mã chi bộ" e="Party Cell code"></text>
+			  <viewInfo lookupType="One" lookupId="dmchibo" lookupKey="status=1" lookupRef="ten_chibo" lookupCheck="1=1" lookupInfo="dmchibo|ma_chibo|ten_chibo" importCheck="@@DF and z.status=1"/>
+			</field>
+			<field name="ten_chibo" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_loai" viewType="Combobox" label="1" field="1" inactivate="true" disabled="true" importable="-1">
+			  <text v="Mã loại" e="Type Code"></text>
+			  <viewInfo>
+				<options query="select ma_loai, ten_loai%l from dmloaidangvien where status = 1 and ma_loai = 'DANCU' order by ma_loai">
+				</options>
+			  </viewInfo>
+			</field>
+      </fields>
+    </form>
+</forms>
+
+&DefaultButton;
+
+<js>
+    <text>
+  <![CDATA[<enc>u2MNfAYa6KZyHl1xckFyaWAlhG40ncUIHn8Lr55kCdqYSIwsKK6ZjsuHsnsEiQuXIjdJGINZHfxvWmaDovNaMSvpdYhxunaJpr5cf14A0mDwlAVFCL7cyE2gqVKkbUtjC/6nz7JCgA1UdVtC5yjCmantFztSScKmzwD8fBr2PSNaK5ogzH5kexcV0Hb3y5ihFe1fSVhr6gfjrhT7VF9m9pMhoFDtpLJeKaYAQC7JUQlOduIh1UqfeV6oZkvLwLHFfhtN/Y3g41R5eQ0uMXbKeCM4kq8GM5F01kpl3PWEg2t4+G+XGGAjLEWYADCtO01hxL7uNG5eWDHSsDoe5ojqbC18Ov84++Xjwja9MCATdkG4clmUPMoiPGSz6vNOPHVksS8l7D5M6mKe6pOU61kKSJ+vUGbKMWCYEV70tYWL7i8=</enc>]]>
+    </text>
+  </js>
+	<css>
+		<text>
+			  <![CDATA[<enc>oQzagFEVvgZSRpzoWY9G1phlZSq0WQwmi+19y1rB4gEW+QWQS2dFDfC5CRUkaB42FOgjl87uYlrhduPDG8WtOJ9QwJyCdgP7SpkMMHw1VND2A+rf6xvdWk5PivqbNXmX/07l3rxY2FgUj9MVL9C3MUfNPnXfbaj6O41Hgc0Z+RBEm/FFA/cmF0v5PKVZ7rkoMxE5hpeVa4EyKurXHwMsUw==</enc>]]>
+		</text>
+	</css>
+	<script>
+		<query>
+		  <text>
+			<![CDATA[<enc>GJgBVkOd9xy3In+SUACpOOdXdTQbLjDNG098RVYG+mqJrACGNi8MwNsRrtmQkuMIYyR65+M+8FdE2nQkBtdUjjGtkBSGsDqbRbA3vrYN89ZzUnQVJ+W1/9AMkiZ8xTjPYAdSbE6TNHswawXCA3Q7ZKpywgArBHY6CKMo02cq6Ek=</enc>]]>
+		  </text>
+		</query>
+		<updated>
+		  <text>
+			<![CDATA[<enc>sxD5Swu0R4mcxEHdwcy2ynVkJ6IiRfsuHiDzDrC78ELIJg2k4xX5PxEITwgSuDtWSiTOU3sqnIo/Bv0T8e877uKHW6bIEuTFdpbPdQB+xElll2tzxh9iUOpwbot+jXTZNKo5+n5Fy+aXD8VrO81PEw==</enc>]]>
+		  </text>
+		</updated>
+		<inserting>
+		  <text>
+			<![CDATA[<enc>u6Z81Kb9YpSTA0BxB7xBJtFSn9/kOWMvACnZ6giRODtOpOFrdSiVo9ks61uO54n2VEGl0ToxAAC35xN5jFlCHt80dorcVnU5wLea31lwWwXV2M3pxWuywOhuWC9ZHmiRFZtP6bkqYd93JFz1jpIS7JkXKZd07AO0efTfx2ZAxtOeKyPBiVC3wyjPIXcRwwR8hMVlDXI0LdrhYjsFsGF5DITMDhF/XyUEjaZcUppxQcD1IBtc39yhS3XTju+ylwofyo++QT5AnMyNNdX994adVWQ/jArkbEL6iF4rIpjlNweeGPRfwZLYtj1xM3jKfIYmJWwnbora6y9GB13gs8OH5AG4lE8z/7cfybQ6s0fOQfhKklVyHaPRknSuIGEMJRJU9mpYeS92RdqDnzyg6WNDmhk+1TQCUxGLxlh5W3OiV0g=</enc>]]>
+		  </text>
+		</inserting>
+		<importing>
+			<text>
+			<![CDATA[<enc>sxD5Swu0R4mcxEHdwcy2yi46ZbQRyi0uEDh1tGVfNVNRcvUP6dkPQS2QqQDWYbiopG11wrPysVf4UKrnMuSo1WkyiiRd5KP+YJwF1aszQ/jXpHXvNhxwXixUxPEGD0fM</enc>]]>
+			</text>
+		</importing>
+	</script>
+	<messages>
+		<message val="codeExistsNewMsg">
+		  <text v="Mã đảng viên đã tồn tại trong danh mục." e="The party member code already exists in the list."/>
+		</message>
+		<message val="StdDuplicate">
+		  <text v="Số thẻ đảng đã tồn tại trong danh mục." e="The party card number already exists in the list."/>
+		</message>
+	</messages>
+</dir>

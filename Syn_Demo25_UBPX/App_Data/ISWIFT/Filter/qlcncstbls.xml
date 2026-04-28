@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="qlcncstbls" table="" height="" fieldKey="ma_dancu" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Điều kiện lọc" e="Filter Condition"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120"  >
+      <fields>
+	  	<field name="ngay_bd" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D">
+          <text v="Từ ngày/Đến ngày" e="From date/To date)"></text>
+        </field>
+        <field name="ngay_kt" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_dancu" allowBlank="true" viewType="Lookup" label="1" field="1" hidden="false" operation="like">
+		  <text v="Mã dân cư" e="Household Head Code"></text>
+		  <viewInfo lookupType="One" lookupId="qldctcccd" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_dancu" lookupInfo="qldctcccd|ma_dancu|ten_dancu" />
+		</field>
+		<field name="ten_dancu" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+		  <text v="" e=""></text>
+		</field>
+		<field name="ma_pldancu" allowBlank="false" viewType="Lookup" label="1" field="1"  hidden="false" operation="like">
+			<text v="Mã phân loại" e="Classification Code"></text>
+		  <viewInfo lookupType="One" lookupId="dmpldancu" lookupKey="ma_pl in ('TB', 'LS') and status = 1" lookupCheck="1=1" lookupRef="ten_pldancu" lookupInfo="dmpldancu|ma_pl|ten_pl" />
+		</field>
+		<field name="ten_pldancu" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+		  <text v="" e=""></text>
+		</field>
+		<field name="so_giay_cn" label="1" field="1" allowBlank="true" inactivate="false" operation="a.so_giay_cn like N'%%s%'">
+			<text v="Số giấy chứng nhận" e="Certificate No."></text>
+		</field>
+		<field name="status" viewType="Combobox" label="1" field="1" operation="=" >
+          <text v="Trạng thái" e="Status"></text>
+		  <viewInfo>
+			<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 ">
+				<option val="">
+                <text v="Tất cả" e="All"></text>
+              </option>
+			</options>
+		  </viewInfo>
+		</field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$qlcncstbls(p){
+  this.constructor(p);
+}
+filter$qlcncstbls.prototype = new DirEvent();
+filter$qlcncstbls.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+</dir>

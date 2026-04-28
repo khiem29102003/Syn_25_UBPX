@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmloaitau" table="dmloaitau" fieldKey="ma_loai" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục loại tàu" e="Port Type"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_loai" format="U" label="1" field="1" allowBlank="false" fieldType="PK" >
+          <text v="Mã loại" e="Type Code"></text>
+        </field>
+        <field name="ten_loai" label="1" field="2" allowBlank="false">
+          <text v="Tên loại" e="Type Name"></text>
+        </field>
+		<field name="ten_loai2" label="1" field="2" >
+          <text v="Tên khác" e="Aother Name"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmloaitau(p){
+  this.constructor(p);
+}
+dir$dmloaitau.prototype = new DirEvent();
+dir$dmloaitau.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmloaitau.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+  dir$dmloaitauDisabledMasterField(p, g);
+
+}
+
+function dir$dmloaitauDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_loai').trim() != '')
+  {
+    p.setDisabled('ma_loai', true);
+  }
+  else
+  {
+    p.setDisabled('ma_loai', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã loại tàu đã tồn tại' else N'Ship type code is exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã loại tàu đã tồn tại' else N'Ship type code is exists' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+
+</dir>

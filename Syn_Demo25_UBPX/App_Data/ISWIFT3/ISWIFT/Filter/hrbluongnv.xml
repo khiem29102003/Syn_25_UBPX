@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY ReportFilterItemGroup SYSTEM "..\Include\XML\ReportFilterItemGroup.xml">
+  <!ENTITY ReportFilterStockType SYSTEM "..\Include\XML\ReportFilterStockType.xml">
+  <!ENTITY ReportJSLoading SYSTEM "..\Include\XML\ReportJSLoading.xml">
+  <!ENTITY ReportFilterUnit SYSTEM "..\Include\XML\ReportFilterUnit.xml">
+  <!ENTITY ReportFiltering SYSTEM "..\Include\XML\ReportFiltering.xml">
+  <!ENTITY ReportDataAnalysisStruct SYSTEM "..\Include\XML\ReportDataAnalysisStruct.xml">
+]>
+
+<dir id="hrbluongnv" table="" height="" fieldKey="id" dirViewType="Dialog" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Bảng chi tiết thanh toán lương cho nhân viên" e="" />
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+				<field name="ky" label="1" field="[40]" format="-1" maxLength="2" allowBlank="false"  dataType="I" aliasName="@DFMonth" >
+					<text v="Kỳ" e="Perid"></text>
+				</field>
+				<field name="nam" label="1" field="[60]" format="-1" maxLength="4" allowBlank="false" dataType="I" aliasName="@DFYear">
+					<text v="Năm" e="Year"></text>
+				</field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="1" gravity="MiddleLeft" height="210" columns="120,120,120,120,120"  >
+      <text v="Thông tin chung" e="General"></text>
+      <fields>
+        <field name="ma_bp" format="U" viewType="Lookup" label="1" field="1" clientDefault="true" >
+          <text v="Bộ phận" e="Department"></text>
+          <viewInfo lookupType="One" lookupId="hrdmbp" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_bp" lookupInfo="hrdmbp|ma_bp|ten_bp" />
+        </field>
+        <field name="ten_bp" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_nv" viewType="Lookup" label="1" field="1"  aliasName="b">
+          <text v="Mã nhân viên" e="Employee ID"></text>
+          <viewInfo lookupType="One" lookupId="hrdmnv" lookupKey="status=1" lookupCheck="1=1" lookupRef="ho_ten_nv"/>
+        </field>
+        <field name="ho_ten_nv" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" >
+          <text v="Tên nhân viên" e="Employee Name"></text>
+        </field>
+        <field name="mau_bc" viewType="Combobox" valueDefault="hrbluongnvA" label="1" field="[360]" >
+          <text v="Mẫu báo cáo" e="Report Form"></text>
+          <viewInfo>
+						<options cache="false" query="select mau_bc, ten_maubc from dmmaubc where ma_maubc = '@@controller' order by mau_bc">
+						</options>
+          </viewInfo>
+        </field>
+				<field name="mau_bc_cmd" nextRow="false" label="" field="[40]" viewType="Command" >
+					<text v="..." e="..."></text>
+					<viewInfo>
+						<options>
+							<option val="add">
+								<text v="Tạo mẫu báo cáo mới" e="Create New Report Form"></text>
+							</option>
+							<option val="edit">
+								<text v="Sửa mẫu đang chọn" e="Edit Selected Report Form"></text>
+							</option>
+							<option val="delete">
+								<text v="Xóa mẫu đang chọn" e="Delete Selected Report Form"></text>
+							</option>
+						</options>
+					</viewInfo>
+				</field>
+				&ReportDataAnalysisStruct;
+      </fields>
+    </form>
+
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$hrbluongnv(p){
+  this.constructor(p);
+}
+filter$hrbluongnv.prototype = new DirEvent();
+filter$hrbluongnv.prototype.afterInit = function(){
+  var p = this._dir, ev = this;
+  var oPt = p.jObject('data_analysis_struct');
+  oPt.find("[value='']").remove();
+  p.options.pivotGroupAvailable = 1;
+
+}
+
+filter$hrbluongnv.prototype.commandActionClick = function (action, id, po) {
+  var p = this._dir;
+	var opt, m = new Memvars(), ma_maubc = 'hrbluongnv', mau_bc
+  switch (action) {
+    case 'mau_bc_cmd.add':
+			/*
+			var xm = m.val('ma_maubc', 'C', ma_maubc);
+				p.request('hrmauluong01', '', xm, function(p, d){
+
+				$.createDir(false, {controller: "dmmaubc", folder: "Filter", dirViewType: "Dialog", parent: p, _ma_maubc: ma_maubc, _mau_bc: d.Items[0]});
+      });
+		  */
+      p.showFilter('dmmaubc', null, {_ma_maubc: ma_maubc});
+		  //$.createDir(false, {controller: "dmmaubc", folder: "Filter", dirViewType: "Dialog", parent: p, _ma_maubc: ma_maubc});
+	  	break;
+		case 'mau_bc_cmd.edit':
+			mau_bc = p.valForm('mau_bc');
+			m.val('mau_bc', 'C', mau_bc);
+			opt = $.extend({}, { controller: 'hrmauluong01', folder: "Grid", dirViewType: "Lookup", parent: p, memvars: m, lookupOk: false, _mau_bc: mau_bc, title: []}, {});
+			$.createDir(false, opt);
+			 break;
+		case 'mau_bc_cmd.delete':
+			var xm = m.val('ma_maubc', 'C', ma_maubc);
+			p.request('deleteForm', '', ['mau_bc', ['ma_maubc', 'C', ma_maubc]]);
+			break;
+    default:
+      break;
+  }
+  return true;
+}
+
+filter$hrbluongnv.prototype.beforeButtonGridClick = function (id, gindex) {
+  var p = this._dir;
+  switch (id) {
+
+    default:
+      break;
+  }
+  return true;
+}
+
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+      <![CDATA[
+.toolbar-savegrid > div {
+  background-position: -336px -144px !important;
+}
+      ]]>
+    </text>
+  </css>
+  <script>
+		<request code="deleteForm">
+			<text>
+				<![CDATA[
+delete dmmaubc where ma_maubc = @ma_maubc and mau_bc = @mau_bc
+select '' as val
+
+        ]]>
+			</text>
+		</request>
+		<request code="hrmauluong01">
+			<text>
+				<![CDATA[
+
+declare @mau_bc varchar(33)
+select @mau_bc = max(mau_bc) from dmmaubc where ma_maubc = @ma_maubc
+if @mau_bc is null
+	set @mau_bc = @ma_maubc
+else begin
+	declare @symbol char(1)
+	select @symbol = upper(replace(rtrim(@mau_bc), @ma_maubc, ''))
+	if @symbol = '' set @mau_bc = @ma_maubc + 'A'
+	else set @mau_bc = @ma_maubc + char(ascii(@symbol) + 1)
+end
+select @mau_bc as mau_bc
+
+        ]]>
+			</text>
+		</request>
+    <processing>
+      <text>
+        <![CDATA[
+exec ss_hrbluongnv @ky, @nam, @ma_bp, @ma_nv, @mau_bc, '@@lan', @@userId, @@admin
+        ]]>
+      </text>
+    </processing>
+    &ReportJSLoading;
+  </script>
+
+  <messages>
+    <message val="savedone">
+      <text v="Mẫu báo cáo đã lưu thành công" e=""/>
+    </message>
+  </messages>
+</dir>

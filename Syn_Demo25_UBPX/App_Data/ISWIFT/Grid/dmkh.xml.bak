@@ -1,0 +1,182 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridFinding.xml">
+]>
+
+<dir id="dmkh" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục khách hàng" e="Customer List"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit..."></subtitle>
+  <grids>
+    <grid table="dmkh" fieldKey="ma_kh" order="ma_kh" allowFilter="true" allowOrder="true" >
+      <fields>
+        <field name="ma_kh" fieldType="PK" width="120" link="1">
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="300">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+        <field name="ma_so_thue" width="120">
+          <text v="Mã số thuế" e="Tax Code"></text>
+        </field>
+        <field name="ma_nvbh" width="120">
+          <text v="Mã nhân viên" e="Tax Code"></text>
+        </field>
+        <field name="kh_yn" dataType="B" align="Center" width="100" allowOrder="false">
+          <text v="Khách hàng" e="Customer"></text>
+        </field>
+        <field name="ncc_yn" dataType="B" align="Center" width="100" allowOrder="false">
+          <text v="Nhà cung cấp" e="Supplier"></text>
+        </field>
+        <field name="rg_code" width="120">
+          <text v="Nhà cung cấp" e="Supplier"></text>
+        </field>
+		
+      </fields>
+      
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="edit">
+          <text v="$EditToolbar" e="$EditToolbar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="view">
+          <text v="$ViewToolbar" e="$ViewToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="find">
+          <text v="$FindToolbar" e="$FindToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="export">
+          <text v="$ExportToolbar" e="$ExportToolbar"></text>
+        </button>
+        <button id="downtemplate">
+          <text v="Tải mẫu Excel" e="Down import template"></text>
+        </button>
+        <button id="import">
+          <text v="Lấy dữ liệu từ tập tin" e="Import data"></text>
+        </button>
+      </buttons>
+      
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', '', @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = @strFinding
+if @rg_code <> '' set @strKey = @strKey + ' and rg_code in (''' + replace(replace(dbo.ISWIFTFunctionReplaceSQLParam(@rg_code), ' ', ''), ',', ''',''') + ''')'
+  
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </finding>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmkh(f){
+  this.constructor(f);
+}
+grid$dmkh.prototype = new DirEvent();
+grid$dmkh.prototype.afterInit = function(){
+  var p = this._dir;
+  if (!$('#content .btn-action').length){
+    var s = '<button class="btn-action btn-action-v1" id="btnViewTree"><div class="icon-btn-bottom ic-view-dept"></div></button>'
+    $("#content").append(s);
+    $("#btnViewTree").click(function () {
+      var f = $("#tree_form_region");
+      if(p.options._tblTreeData){
+        $("#form_tree_region").show(150);
+        $("#btnViewTree").hide(150);
+      }
+      else
+        p.request('viewtree', 'GetTable', null, loadTree);
+    });
+    p.setSubtitle(['{rg_code}', $.msg.get('AllLabel'), '%s2', '']);
+  }
+}
+function loadTree(p, d){
+  var d = new DataTable(d);
+  p.options._tblTreeData = d.obj.Rows;
+  
+  var treeID = "tree_region", treebox = $.fn.addTreeContainer(treeID, p.msg("TreeName"), null, function () {$("#btnViewTree").show(150);})
+  $("#content").append(treebox);
+  var fTree = $("#" + treeID).treeview({ tblData: d, expandAll: true
+      , onSelectedItem: function(tr, v, v2){
+        var m = p.options.memvars, vtext = (v == '')?$.msg.get('AllLabel'):v;
+        m.val('rg_code', 'C', v2, 'FIND')
+        p._setOptions({memvars:m, subtitle: ['{rg_code}', vtext, '%s2', '']});
+      }, onCheckedItem: function(tr, v, flag){
+        var m = p.options.memvars, v2 = tr.getCheckedItem(), vtext = (v2 == '') ? $.msg.get('AllLabel') : v2;
+        m.val('rg_code', 'C', v2, 'FIND')
+        p._setOptions({memvars:m, subtitle: ['{rg_code}', vtext, '%s2', '']});
+      }
+    });
+  
+  treebox.show(150);
+  $("#btnViewTree").hide(150);
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+      <![CDATA[
+.tree-form{
+    width: 250px;
+}
+.ic-view-dept{
+  background-position: 0px 0px;
+}
+      ]]>
+    </text>
+  </css>
+
+  <script>
+    <request code="viewtree">
+      <text>
+        <![CDATA[
+exec ss_getTreeCustomerRegion
+]]>
+      </text>
+    </request>
+  </script>
+
+  <messages>
+    <message val="TreeName">
+      <text v="Cây phân vùng. khu vực" e="Region tree"/>
+    </message>
+  </messages>
+</dir>

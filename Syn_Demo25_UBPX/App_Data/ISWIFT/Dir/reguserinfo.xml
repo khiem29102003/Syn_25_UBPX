@@ -1,0 +1,446 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="reguserinfo" table="reguserinfo" fieldKey="user_id" dirViewType="Dialog" transaction="true" tryCatch="true" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Khai báo người sử dụng" e="User Maintenance"></title>
+  <title0 v="Thêm thông tin người sử dụng" e="New User's Information"></title0>
+  <title1 v="Sửa thông tin người sử dụng" e="Edit User's Information"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120"  >
+      <fields>
+        <field name="user_id" label="" field="1" dataType="I" hidden="true" fieldType="PK" >
+          <text v="" e=""></text>
+        </field>
+        <field name="admin" label="1" field="1" dataType="I" hidden="true" >
+          <text v="" e=""></text>
+        </field>
+		<field name="username" format="U" label="1" field="1" allowBlank="false" >
+          <text v="Tên người dùng" e="Name"></text>
+        </field>
+		<field name="type_member" viewType="Combobox" valueDefault="" label="1" field="2" nextRow="true" >
+		<text v="Chọn loại thành viên" e="Type of Member"></text>
+		<viewInfo>
+			<options query="select ma_bgn, ten_bgn%l from dmbgn where ma_ct = 'RSU' and status = 1 order by stt">
+			</options>
+		</viewInfo>
+		</field>
+        <field name="ma_so_thue" label="1" field="1"  importable="35">
+          <text v="Mã số thuế &lt;a onclick='getTax(this);'&gt;(Kiểm tra)&lt;/a&gt;" e="Tax code &lt;a onclick='getTax(this);'&gt;(Test)&lt;/a&gt;"></text>
+        </field>
+		<field name="nguoi_lh" label="1" field="2" hidden="false" nextRow="false">
+          <text v="Người liên hệ" e="Description"></text>
+        </field>		
+		<field name="company" format="U" label="1" field="2" >
+          <text v="Tên công ty" e="Company Name"></text>
+        </field>
+		<field name="phone" label="1" field="1" nextRow="true" allowBlank="false">
+          <text v="Điện thoại" e="Mobile Phone Number"></text>
+        </field>
+		<field name="e_mail" label="1" field="2" nextRow="false">
+          <text v="Email" e="Email Address"></text>
+        </field>
+        <field name="image_id" label="0" field="1" viewType="Image">
+          <text v="" e=""></text>
+          <viewInfo fileFieldId0="user_id" fileGroup="SysUser" fileExtension="jpg,png" maxFileSize="10240" maxFileCount="1"></viewInfo>
+        </field>	
+        <field name="nickname" allowBlank="false" label="1" field="2" hidden="true">
+          <text v="Tên đầy đủ" e="Description"></text>
+        </field>
+        <field name="vpassword" allowBlank="false" fieldType="EX" valueDefault="********" label="1" field="2">
+          <text v="Mật khẩu" e="Password"></text>
+        </field>
+        <field name="vpassword2" allowBlank="false" fieldType="EX" valueDefault="********" label="1" field="2">
+          <text v="Nhập lại mật khẩu" e="Re-Password"></text>
+        </field>
+
+        <field name="birthday" label="1" field="1" clientDefault="true" dataType="D" hidden="true">
+          <text v="Ngày sinh" e="Birthday"></text>
+        </field>
+        <field name="parent_user" label="-" field="1" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="parent_username" clientDefault="true" fieldType="EXParam" viewType="Lookup" label="1" field="1" hidden="true">
+          <text v="Nhân viên cấp trên" e="Parent User"></text>
+          <viewInfo lookupType="One" lookupId="sysuserinfo" lookupKey="1=1" lookupCheck="1=1" lookupRef="parent_username_name" lookupInfo="sysuserinfo|username|nickname" />
+        </field>
+        <field name="parent_username_name" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="user_ref" label="" field="1" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="rg_code" clientDefault="true" viewType="Lookup" label="1" field="1">
+          <text v="Khu vực" e="Region"></text>
+          <viewInfo lookupType="One" lookupId="sysregioninfo" lookupKey="1=1" lookupCheck="1=1" lookupRef="rg_code_name" lookupInfo="sysregioninfo|rg_code|rgname" />
+        </field>
+        <field name="rg_code_name" clientDefault="true" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="language" viewType="Combobox" inactivate="true" label="1" field="1" >
+          <text v="Ngôn ngữ ngầm định" e="Default Language"></text>
+          <viewInfo>
+            <options>
+              <option val="v">
+                <text v="Tiếng Việt" e="Vietnamese"></text>
+              </option>
+              <option val="e">
+                <text v="Tiếng Anh" e="English"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="lock_yn" dataType="B" valueDefault="1" label="1" field="[60]" fieldType="EXParam" aliasName="case when errorpass > 5 then 1 else 0 end as ">
+          <text v="Khóa đăng nhập" e="Khóa đăng nhập"></text>
+        </field>
+
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e=""></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="password" label="" hidden="true" field="1">
+          <text v="" e=""></text>
+        </field>
+        <field name="update_pass" fieldType="EXParam" label="" hidden="true" field="1">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$reguserinfo(p){
+  this.constructor(p);
+}
+dir$reguserinfo.prototype = new DirEvent();
+dir$reguserinfo.prototype.beforeInit = function(){
+  var p = this._dir;
+}
+dir$reguserinfo.prototype.afterInit = function(){
+  var p = this._dir;
+  document._dir = p;
+  
+  p.jObject('vpassword').attr('type', 'password');
+  p.jObject('vpassword2').attr('type', 'password');
+  
+  if(p.options.action == 'NEW'){
+    p.valForm('vpassword', '');
+    p.valForm('vpassword2', '');
+  }else{
+    p.valForm('vpassword', '*******' + String.fromCharCode(255));
+    p.valForm('vpassword2', '*******' + String.fromCharCode(255));
+  }
+  
+  //readonly field
+  if(p.options._admin == 0){
+    p.setDisabled('parent_username', true);
+    p.setDisabled('rg_code', true);
+    p.setDisabled('language', true);
+    p.setDisabled('lock_yn', true);
+  }
+  if (p.valForm('admin') == 1) p.setHidden('parent_username', true);
+}
+function getTax(o) {
+  var p = document._dir;
+  var tax = p.valForm('ma_so_thue');
+  if (tax.length != 10 && tax.length != 13) {
+    $.showToast('Thông tin mã số thuế không đúng.');
+    return;
+  }
+  
+  $.invoke('GetTax', { taxCode: tax }, this, 30000
+    , function (result) {
+      if (result) {
+        var obj = JSON.parse(result);
+        p.valForm('company', obj.Name, true);
+		p.valForm('nguoi_lh', obj.Contact, true);
+		p.valForm('phone', obj.Telephone, true);
+		p.valForm('e_mail', obj.Email, true);
+      }
+    }, function (event) {} );
+	
+}
+
+dir$reguserinfo.prototype.beforeButtonDialogClick = function(id){
+  if (id == 'cancel') return true;
+  var p = this._dir, l = ($.lan == 'v' ? 0 : 1);
+  p.valForm('password', MD5(p.valForm('vpassword')));
+  
+  var hidden = '*******' + String.fromCharCode(255), message = [
+  ['Mật khẩu vừa nhập không hợp lệ.', 'Your password is too simple. Please retype.'],
+  ['Kiểm tra lại mật khẩu nhập không đúng.', 'Your password is invalid. Please retype.'],
+  ['Mật khẩu tối thiểu phải từ 6 ký tự.', 'Password must consist of at least 6 characters.'],
+  ['Mật khẩu tối thiểu phải từ 6 ký tự và phải có số và chữ', 'Password must consist of at least 6 characters in both numbers and letters.'],
+  ['Mật khẩu tối thiểu phải từ 6 ký tự và phải có số, chữ, chữ hoa.', 'Password must consist of at least 6 characters in both numbers and letters with upper-case letter.'],
+  ['Mật khẩu tối thiểu phải từ 6 ký tự và phải có số, chữ, chữ hoa, kí tự khác ngoài chữ và số.', 'Password must consist of at least 6 characters in both numbers and letters with upper-case letter and other characters except numbers and letters.']
+  ], o2 = p.jObject('vpassword'), o3 = p.jObject('vpassword2'), o = $.trim(o2.val()), u = $.trim(o3.val()), v = (o != hidden), errorMessage = null;
+
+  username = $.trim(p.jObject('username').val());
+  var e = (($.lan == 'v') ? 'Trường <span class="Highlight">Thư (Email)</span> không hợp lệ.' : 'Invalid <span class="Highlight">Email</span>.');
+
+  if(v) p.valForm('update_pass', '1');
+  else p.valForm('update_pass', '0');
+  
+  if(o2.val() != o3.val()){
+    $.alert(message[1][l], null, p, function(e){p.jObject('vpassword').focus(); e._close()});
+    return false;
+  }
+  
+  if (v) {
+    var wordList = '111111,123456,654321,1234567,12345678,123456789,0123456789,1234567890,123123,abc123,password,passw0rd,iloveyou';
+    
+    if ((wordList.indexOf(u) > -1) || (u == username)) errorMessage = message[0][l];
+    else{
+      if (o != u) errorMessage = message[1][l];
+      else {
+        var type = 2;
+        switch (type) {
+          case 2:
+            if (o.length < 6) errorMessage = message[2][l];
+            break;
+          case 3:
+            if (!/^(?=.*\d)(?=.*[a-z]).{6,}/.test(o)) errorMessage = message[3][l];
+            break;
+          case 4:
+            if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/.test(o)) errorMessage = message[4][l];
+            break;
+          case 5:
+            if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{6,}/.test(o)) errorMessage = message[5][l];
+            break;
+          default:
+            break;
+        }
+      }
+    }
+    if(errorMessage){
+      $.alert(errorMessage, null, p, function(e){p.jObject('vpassword').focus(); e._close()});
+      return false;
+    }
+  }
+  
+  if ($.trim(username).indexOf(' ', 0) >= 0 || username.indexOf('.', 0) >= 0) {
+    var msg = ($.lan == 'v' ? 'Trường <span class="Highlight">Tên</span> không được phép có khoảng trắng hoặc chứa ký tự: <span class="Highlight">[.]</span>.' : 'Field <span class="Highlight">Name</span> cannot contain blank or any of the following character: <span class="Highlight">[.]</span>.');
+    $.alert(msg, null, p, function(msg){p.jObject('username').focus(); msg._close()});
+    return false;
+  }
+  
+  if ((p.valForm('e_mail') != '') && (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(p.valForm('e_mail')) == false)) {
+    $.alert(e, null, p, function(e){p.jObject('e_mail').focus(); e._close()});
+    return false;
+  }
+  return true;
+}
+]]>
+    </text>
+  </js>
+
+  <css>
+    <text>
+      <![CDATA[
+@media only screen and (min-width: 768px){
+  .css4control-image_id{
+      position: absolute;
+      right: 0px;
+      top: 5px;
+  }
+}
+         ]]>
+    </text>
+  </css>
+
+  <script>
+
+    <query>
+      <text>
+        <![CDATA[
+if @action = 'NEW' and @@admin = 0 begin
+  select N'$AdminAccess' as message
+  return
+end
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @fscript nvarchar(4000)
+if @action in ('EDIT', 'VIEW') exec ISWIFTStoreGetListFiles 'image_id', @user_id, 'SysUser', '', @fscript output
+if @fscript is null set @fscript = ''
+if @action = 'EDIT' begin
+  if exists (select 1 from @@table a where a.user_id in (select parent_user from #@@table))
+    select a.username as parent_username, a.nickname as parent_username_name, @fscript as script from @@table a where a.user_id in (select parent_user from #@@table)
+  else
+    select @fscript as script
+end
+
+
+drop table #@@table
+]]>
+      </text>
+    </query>
+
+    <loading code="1">
+      <text>
+        <![CDATA[
+declare @rk varchar(16), @admin bit
+select @rk = lower(left(replace(newid(),'-',''),16))
+update reguserinfo set random_key = @rk where user_id = @@userId
+
+select @admin = admin from @@table where user_id = @@userId
+select 'p.options._key = ''' + @rk + '''; p.options._admin = ' + rtrim(@admin) as script
+]]>
+      </text>
+    </loading>
+
+    <updating>
+      <text>
+        <![CDATA[
+declare @ename varchar(64)
+select @ename = username from @@table where user_id = @user_id
+if @username <> @ename begin
+  if exists(select 1 from @@table where username = @username and user_id <> @user_id) or exists(select 1 from sysgroupinfo where groupname = @username) begin
+    select '' as field, '$exists' as message
+    return
+  end
+end
+if @parent_username <> '' and @admin = 1 begin
+  select '$NotParent4Admin' as message, 'parent_username' as field
+  return
+end
+if rtrim(@e_mail) <> '' and exists(select 1 from @@table where e_mail = @e_mail and user_id <> @user_id) begin
+  select 'e_mail' as field, '$emailExists' as message
+  return
+end
+if rtrim(@phone) <> '' and exists (select 1 from @@table where phone = @phone and user_id <> @user_id) begin
+  select 'phone' as field, '$phoneExists' as message
+  return
+end
+declare @res tinyint, @old_parent_username varchar(64)
+select @old_parent_username = username from @@table where user_id in (select parent_user from @@table where user_id = @user_id)
+select @old_parent_username = isnull(@old_parent_username, '')
+exec ISWIFTStoredSystemRegUserRef @user_id, @parent_username, @old_parent_username, 'EDIT', @user_ref output, @res output
+
+if @res = 0 begin
+  select 'parent_user' as field, '$parentConflict' as message
+  return
+end
+
+if @update_pass = 0 select @password = password from @@table where user_id = @user_id
+]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[
+update dmttin set status = 0 from dmttin where id0 = rtrim(@user_id) and xgroup = 'SysUser'
+if @image_id <> '' update dmttin set status = 1, id0 = rtrim(@user_id) from dmttin where charindex(id, @image_id) > 0 and xgroup = 'SysUser'
+
+if @update_pass = 0 update @@table set password = @password where user_id = @user_id
+else exec dbo.ISWIFTStoreUpdatePasswordRegUser @username, @password
+
+select @parent_user = isnull(max(user_id), 0) from @@table where username = @parent_username
+update @@table set parent_user = @parent_user, datetime2 = getdate(), user_id2 = @@userId, image_id = @image_id where [%whereFieldKey]
+if exists (select 1 from @@table where user_id = @@userId and admin = 1) begin
+  if @lock_yn = 0
+    update @@table set errorpass = 0 where user_id = @user_id
+  else
+    update @@table set errorpass = 99 where user_id = @user_id
+end
+]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[
+if (select count(1) from reguserinfo where status = 1) >= (select maxuser from sysinfo) begin
+  select '' as field, '$maxUser' as message
+  return
+end
+
+if exists(select 1 from @@table where username = @username) or exists(select 1 from sysgroupinfo where groupname = @username) begin
+	select '' as field, replace('$exists', '%s', rtrim(@username)) as message
+  return
+end
+if exists(select 1 from sysuserinfo where username = @username) or exists(select 1 from sysgroupinfo where groupname = @username) begin
+	select 'username' as field, replace('$exists', '%s', rtrim(@username)) as message
+  return
+end
+if rtrim(@e_mail) <> '' and exists (select 1 from @@table where e_mail = @e_mail) begin
+  select 'e_mail' as field, '$emailExists' as message
+  return
+end
+if rtrim(@phone) <> '' and exists (select 1 from @@table where phone = @phone) begin
+  select 'phone' as field, '$phoneExists' as message
+  return
+end
+select @parent_user = user_id from @@table where username = @parent_username
+
+declare @res tinyint
+exec ISWIFTStoredSystemRegUserRef @user_id, @parent_username, '', 'NEW', @user_ref output, @res output
+
+if @res = 0 begin
+  select 'parent_user' as field, '$parentConflict' as message
+  return
+end
+
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId
+--select @user_id = max(user_id) + 1 from @@table
+select @user_id = max(id) + 1 from (select max(user_id) as id from reguserinfo union all select max(group_id) as id from sysgroupinfo) a
+
+if @user_id is null select @user_id = 1
+/*]]>
+      </text>
+    </inserting>
+
+    <inserted>
+      <text>
+        <![CDATA[*/
+begin transaction
+begin try
+if @image_id <> '' update dmttin set status = 1, id0 = rtrim(@user_id) from dmttin where charindex(id, @image_id) > 0 and xgroup = 'SysUser'
+
+exec dbo.ISWIFTStoredSystemCreateRegUser @user_id, @username, @nickname, @ma_so_thue, @company, @nguoi_lh, @type_member, @password, @user_ref, @phone, @e_mail, @language, @birthday, @parent_user, @rg_code, @status, @@userId
+exec dbo.ISWIFTStoreUpdatePasswordRegUser @username, @password
+select '' as message, @user_id as [#user_id]
+]]>
+      </text>
+    </inserted>
+
+  </script>
+
+  <messages>
+    <message val="exists">
+      <text v="Tên người dùng đã tồn tại" e="User name already exists." />
+    </message>
+    <message val="maxUser">
+      <text v="Số lượng người dùng vượt quá giới hạn." e="Số lượng người dùng vượt quá giới hạn." />
+    </message>
+    <message val="phoneExists">
+      <text v="Số điện thoại di động đã tồn tại." e="Phone Number already exists." />
+    </message>
+    <message val="emailExists">
+      <text v="Địa chỉ Thư (Email) đã tồn tại." e="Email already exists." />
+    </message>
+    <message val="parentConflict">
+      <text v="Nhân viên cấp trên không hợp lệ." e="Invalid Parent User." />
+    </message>
+    <message val="NotParent4Admin">
+      <text v="Không nhập cấp trên cho administrator" e="" />
+    </message>
+  </messages>
+</dir>

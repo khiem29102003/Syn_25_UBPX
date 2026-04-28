@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="dmhmdx" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục hạng mục đề xuất" e="List of proposed types"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="dmhmdx" fieldKey="ma_hmdx" order="ma_hmdx" allowFilter="true" allowOrder="true">
+      <fields >
+        <field name="ma_hmdx" fieldType="PK" width="120">
+          <text v="Mã hạng mục" e="Type code"></text>
+        </field>
+        <field name="ten_hmdx" width="200">
+          <text v="Tên hạng mục" e="Type name"></text>
+        </field>
+	    <field name="ten_hmdx2" width="200">
+          <text v="Tên khác" e="Type name"></text>
+        </field>	
+		<field name="nguoi_check" width="250">
+          <text v="Người check" e="Type name"></text>
+        </field>
+		<field name="nguoi_duyet" width="250">
+          <text v="Người duyệt" e="Type name"></text>
+        </field>	
+		<field name="nguoi_thuchien" width="250">
+          <text v="Người thực hiện" e="Type name"></text>
+        </field>	
+		<field name="status" width="80" align="center">
+          <text v="Trạng thái" e="Status"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+      <script>	
+        <query>	
+          <text>	
+            <![CDATA[	
+			declare @strKey nvarchar(3000)	
+				
+			exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey , @@filterKey, '', @pageIndex, 50, @@admin, @@userId	
+         ]]>	
+          </text>	
+        </query>	
+        <finding>	
+          <text>	
+            <![CDATA[	
+declare @strKey nvarchar(3000)	
+set @strKey = @strFinding	
+if @ma_hmdx <> '' set @strKey = @strKey + ' and ma_hmdx in (''' + replace(replace(dbo.ISWIFTFunctionReplaceSQLParam(@ma_hmdx), ' ', ''), ',', ''',''') + ''')'	
+  	
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId	
+         ]]>	
+          </text>	
+        </finding>	
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmhmdx(f){
+  this.constructor(f);
+}
+grid$dmhmdx.prototype = new DirEvent();
+grid$dmhmdx.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

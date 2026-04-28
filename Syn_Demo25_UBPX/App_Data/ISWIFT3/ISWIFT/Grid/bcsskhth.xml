@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="bcsskhth" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo cáo so sánh kế hoạch và thực hiện năm" e=""></title>
+  <subtitle v="Năm {nam}..." e="Year {nam}..."></subtitle>
+  <grids>
+    <grid>
+      <fields>
+        <field name="ky" width="80" hidden="true" >
+          <text v="Kỳ ORDER" e=""></text>
+        </field>
+        <field name="kytext" width="80" >
+          <text v="Kỳ" e=""></text>
+        </field>
+        <field name="nam" width="80" >
+          <text v="Năm" e=""></text>
+        </field>
+        <field name="xtype" width="80" dataType="I" hidden="true" >
+          <text v="Dữ liệu ORDER" e=""></text>
+        </field>
+        <field name="xtypetext" width="100" >
+          <text v="Dữ liệu" e=""></text>
+        </field>
+        <field name="nn_yn" width="100" >
+          <text v="Phòng Sales ORDER" e=""></text>
+        </field>
+        <field name="nnyntext" width="100" >
+          <text v="Phòng Sales" e=""></text>
+        </field>
+        
+        
+        <field name="ma_kh" width="100">
+          <text v="Mã đối tượng" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="250" aliasName="b" join="left join dmkh b on a.ma_kh = b.ma_kh">
+          <text v="Tên đối tượng" e="Customer Name"></text>
+        </field>
+        <field name="so_luong"  dataType="N" format="2" width="100" >
+          <text v="Số lượng" e="Amount"></text>
+        </field>
+        <field name="tien2"  dataType="N" format="2" width="120" >
+          <text v="Doanh số" e="Amount"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$bcsskhth(f){
+  this.constructor(f);
+}
+grid$bcsskhth.prototype = new DirEvent();
+grid$bcsskhth.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+
+grid$bcsskhth.prototype.beforeInit = function(){
+  var p = this._dir;
+}
+
+grid$bcsskhth.prototype.afterInit = function(){
+  var p = this._dir;
+}
+
+grid$bcsskhth.prototype.beforeRenderGrid = function(g, gdt){
+  var p = this._dir, k = g.pivotFields.length;
+  while(k--) {
+    fi = g.pivotFields[k];
+    if (fi.name.indexOf('@4#') != -1 || fi.name.indexOf('@5#') != -1) fi.lastSymbol = '%'
+  }
+}
+]]>
+    </text>
+  </js>
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+exec ss_bcsskhth @nam, '@@gridJoin', '@@gridFields', @strJoin, @strFinding, '@@lan', @@userId, @@admin
+        ]]>
+      </text>
+    </processing>
+  </script>
+</dir>

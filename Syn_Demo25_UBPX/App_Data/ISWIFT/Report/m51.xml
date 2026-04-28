@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<report xmlns="urn:schemas-iswift:struct-report">
+  <query>
+    <text>
+      <![CDATA[
+select line as stt, a.ma_vt, b.ten_vt, b.ten_vt2, a.dvt, a.so_luong, a.gia_nt2 as gia2, a.tien_nt2 as tien2, a.tl_ck, a.thue_suat, a.ck, a.thue, c.t_tt, c.t_tien2, c.t_ck
+  into #d51 from d51 a with(nolock) left join dmvt b on a.ma_vt = b.ma_vt 
+									left join m51 c on a.id = c.id
+									where a.id = @id
+
+declare @t numeric(19, 5)
+select @t = t_tt from #d51
+
+select a.unit_id, a.so_ct, a.ma_kh, b.ten_kh, b.ten_kh2, b.dia_chi, d.ten_nvbh, d.dien_thoai, a.dien_giai, a.ma_nt, dbo.iswiftFunctionReadCurrency(a.ma_nt, @t) as t_tt_in_word
+	  , replace(str(day(a.ngay_ct),2),' ','0') day, replace(str(month(a.ngay_ct),2),' ','0') month, cast(year(a.ngay_ct) as char(4)) year, a.ngay_ct,
+	  convert(char(10),a.ngay_hl,103) ngay_hl,e.ten_tt,a.ong_ba
+	from m51 a with(nolock)
+		left join dmkh b with(nolock) on a.ma_kh = b.ma_kh
+		left join dmnvbh d on a.ma_nvbh = d.ma_nvbh
+		left join dmtt e on a.ma_tt = e.ma_tt
+	where a.id = @id
+
+select * from #d51
+]]>
+    </text>
+  </query>
+
+  <forms>
+    <form id="030" fileName="m51_01" fileType="rdlc" exportExt="pdf" image="pdf">
+      <text v="Mẫu chuẩn" e="Standard Form"></text>
+    </form>
+	 <form id="040" fileName="m51_01" fileType="docx" exportExt="docx" image="xlsx">
+      <text v="Mẫu chuẩn" e="Standard Form"></text>
+    </form>
+	 <form id="050" fileName="m51_01" fileType="rdlc" exportExt="xlsx" image="xlsx">
+      <text v="Mẫu chuẩn" e="Standard Form"></text>
+    </form>
+  </forms>
+
+  <fields>
+    <field name="title" type="C">
+      <text v="BÁO GIÁ" e="QUOTE"/>
+    </field>
+    <field name="h_day" type="C">
+      <text v="Ngày" e="Date"/>
+    </field>
+    <field name="h_month" type="C">
+      <text v="tháng" e="Month"/>
+    </field>
+    <field name="h_year" type="C">
+      <text v="năm" e="Year"/>
+    </field>
+
+    <field name="h_so_ct" type="C">
+      <text v="Số đơn hàng: " e="Order No.: "/>
+    </field>
+
+    <field name="h_company" type="C">
+      <text v="Đơn vị:" e="Company"/>
+    </field>
+    <field name="h_address" type="C">
+      <text v="Địa chỉ:" e="Address:"/>
+    </field>
+    <field name="h_kh" type="C">
+      <text v="Tên khách hàng:" e="Customer Name:"/>
+    </field>
+    <field name="h_noi_giao" type="C">
+      <text v="Nơi giao:" e="Ship - to"/>
+    </field>
+	<field name="h_ong_ba" type="C">
+      <text v="Người liên hệ:" e="Contact"/>
+    </field>
+	<field name="h_ten_tt" type="C">
+      <text v="Phương thức thanh toán:" e="Payment Term:"/>
+    </field>
+	<field name="h_ngay_hl" type="C">
+      <text v="Báo giá hiệu lực đến ngày:" e="Quotation effective until date:"/>
+    </field>
+	<field name="h_dien_giai" type="C">
+      <text v="Ghi chú:" e="Note:"/>
+    </field>
+    <field name="h_vt" type="C">
+      <text v="Hàng hóa" e="Goods"/>
+    </field>
+    <field name="h_dvt" type="C">
+      <text v="ĐVT" e="UOM"/>
+    </field>
+    <field name="h_sl" type="C">
+      <text v="Số lượng" e="Quantity"/>
+    </field>
+    <field name="h_gia" type="C">
+      <text v="Đơn giá" e="Price"/>
+    </field>
+    <field name="h_tien" type="C">
+      <text v="Thành tiền" e="Amount"/>
+    </field>
+
+    <field name="h_bang_chu" type="C">
+      <text v="Bằng chữ:" e="In words:"/>
+    </field>
+	
+	<field name="hotline" type="C">
+      <text v="Hotline: 1900 2862 - Liên hệ: 086 686 4878" e="Hotline: 1900 2862 - Contact: 086 686 4878"/>
+    </field>
+
+	<!---->
+    <field name="h_ck" type="C">
+      <text v="Chiết khấu" e="UOM"/>
+    </field>
+	<field name="h_thue" type="C">
+      <text v="Thuế (%)" e="Tax (%)"/>
+    </field>
+	
+	<field name="h_t_sl" type="C">
+      <text v="Tổng số lượng" e="Total"/>
+    </field>
+	<field name="h_t_ck" type="C">
+      <text v="Tổng tiền chiết khấu" e="Total discount"/>
+    </field>
+	<field name="h_t_thue" type="C">
+      <text v="Tổng tiền thuế" e="Total tax"/>
+    </field>
+	<field name="h_t_tien" type="C">
+      <text v="Tổng giá tiền" e="Total "/>
+    </field>
+	<field name="h_tt" type="C">
+      <text v="Tổng tiền" e="Total"/>
+    </field>
+	<field name="h_total" type="C">
+      <text v="Tổng cộng tiền thanh toán" e="Total Amount"/>
+    </field>
+	
+	<field name="h_ma_nv" type="C">
+      <text v="Nhân viên kinh doanh:" e="Salesperson:"/>
+    </field>
+	<field name="h_dien_thoai" type="C">
+      <text v="Điện thoại:" e="Phone:"/>
+    </field>
+	
+  </fields>
+</report>

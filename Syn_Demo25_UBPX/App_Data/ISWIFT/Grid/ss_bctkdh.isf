@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="ss_bctkdh" dirViewType="Grid" dirObjectType="Voucher" voucherCode="OTH" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo cáo thống kê đơn hàng" e="Order statistics report"></title>
+  <subtitle v="Thêm, sửa, xóa..." e="New, Edit, Delete..."></subtitle>
+
+  <grids>
+    <grid table="s61" fieldKey="id" order="ma_ct asc, ma_job desc, so_job asc" allowFilter="true" allowOrder="true">
+      <fields>
+	    <field name="id" width ="50" dataType="N" fieldType="PK" format="0" hidden="true" link="1" align="Center">
+          <text v="CT" e="DT"></text>
+        </field>
+		<field name="ma_ct" width="80" link="V">
+          <text v="Mã c/từ" e="Voucher Code"></text>
+        </field>
+		<field name="so_ct" width="0" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+		<field name="ma_job" width="100" hidden = "false" link="V">
+          <text v="Mã" e="Job Code"></text>
+        </field>
+		<field name="so_job" width="100" link="V" >
+          <text v="Số" e="Job Number"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+		<!-- <field name="ma_log" width="100"> -->
+          <!-- <text v="Mã log" e="Log Code"></text> -->
+        <!-- </field> -->
+		<field name="ma_ngv" viewType="Combobox" inactivate="true" width="120">
+          <text v="Loại hóa đơn" e="Inv. Type"></text>
+          <viewInfo>
+            <options query="select ma_ngv, ten_ngv%l from dmngv where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+		<field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="ma_kh" width="0" hidden = "false">
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="250" fieldType="EX" >
+          <text v="Khách hàng" e="Customer"></text>
+        </field>		
+		<field name="ma_noi_di" width="0" hidden="false">
+          <text v="Nơi đi" e="Origin"></text>
+        </field>
+		<field name="ten_noi_di" width="250" fieldType="EX">
+		  <text v="Nơi đi " e="Origin"></text>
+		</field>
+		<field name="ma_noi_den" width="0" hidden="false" >
+          <text v="Nơi đến" e="Destination"></text>
+        </field>	
+		<field name="ten_noi_den" width="250" fieldType="EX" >
+		  <text v="Nơi đến " e="Destination"></text>
+		</field>
+		<field name="hbl_no" width="120">
+          <text v="Số HBL" e="HBL No"></text>
+        </field>
+		<field name="mbl_no" width="120">
+          <text v="Số MBL" e="MBL No"></text>
+        </field>
+		<field name="so_tk" width="120">
+          <text v="Số tờ khai" e="Declaration No"></text>
+        </field>
+		<field name="book_no" width="120">
+          <text v="Book No" e="Book No"></text>
+        </field>
+		<field name="dien_giai" width="200">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+
+        <field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="120" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+      </fields>
+<buttons>
+ <button id="view">
+    <text v="$ViewToolbar" e="$ViewToolbar"></text>
+  </button>
+  <button id="split">
+    <text v="-" e="-"></text>
+  </button>
+   <button id="find">
+		<text v="$FindToolbar" e="$FindToolbar"></text>
+   </button>
+  <button id="refresh">
+    <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+  </button>
+  <button id="freeze">
+    <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+  </button>
+  <button id="split">
+    <text v="-" e="-"></text>
+  </button>
+   <button id="print">
+    <text v="$PrintToolbar" e="$PrintToolbar"></text>
+  </button>
+  <button id="export">
+    <text v="$ExportToolbar" e="$ExportToolbar"></text>
+  </button>
+</buttons>
+      <script>
+        <query>
+          <text>
+            <![CDATA[<enc>+cqRnw3xIxP6k5U1nfeaCGLyQn7k0TLmYRz24CjV7gblQs8TvKZvNek+CB8CmTHIuRt9HQtGzt4q0bFnfmcdLEdEUL1KWJqryUUYRfr6iwAk8TRiyDUfFSIh4pAcoQIh9OQeCNbrdibmpnR05f5C3net+K/Z+DNZhd+Gw75VZLTMWNPa7qoHCor4/isIuoFj686zr7ldZoWwL5WRC/b5f2Z3n9O6VqcytdZaNOc4cvPaWUs1qJLKIDdhgv86z9Mzy21p4Fz9Z4FkS1mjkiEMtuhTg9HCss7ATJZCT8ioAaKPo21R7bsba4TTHeXYFRN0LCCfe2fp4GeZFU1ZqZwPlA0G3PlU4RV3TwGtpIS4ZYA=</enc>]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[<enc>+X9sfqDNRQHlmI8CW9fiG7vY5jxCWJQLuFyU21vyX8V31j9d1/MP0aCvEwpQNUitE/LB5pKoXzkbgBWAMvf2oxYv+Gxi2kFMaXuGLN2GgW8KAtjiApEp/umIZCSF+Pz7dt/jxqz1NTzAs7++Ru7gu3fNk2rOqSG+UZ0slvaOIqmiqwuTq+Jho9+qrmmnudxczWxfSHbVQ2Q0IU71J+eV2/3T5btMBlgE740C9m/KUkZsOuicEPnNha4uwhgYvLMZCxn/uilkXMJTYllbaltIi5ZWEiTa6FMjdZozHfyu60Y2kqCHz2Qfwn8ksy4Mt7UJVGB5STKYuw7h0rQjpR99/Cy/O4SNtl26r9VsqDjb11nq8UP199vSScSBt4Yb24nhDYG8s8Ug7R4hdPSvjkJ3EPoAJDn9QSksxQPVgbbPbZKWLeDuOju0yKm7soOlDn21chihhmVnwGseJHYspRot0l2Zg2q6HIZOr9c/okHd3Dv2fBr/wBkOgZUpsLibGHfqBsp/MQ3f3NMlnDMsq4QKmtimGu7AU6Vj3xInZRWpRD2JvYEK/0S0AruAQ/8zERQdtwVfHMBpCS+ybpeR9/y19A3j3Cougy/WzjyYTNOz3PPwuF8Jjdr+aIDFUEMQyKNHrax4JLNW9ptXMcO86Fq9WLkTD1+kH/kJVMW8Ui3DYcY=</enc>]]>
+          </text>
+        </finding>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[<enc>jZb9FDYVSfjBoAJC9oCNgoSgcMPgERRqoP01wmF2Sn6o4aGvTRR1yneXuvUJrlsCXFgptsX3z+TQpufcMZnVeIlcYSAxib3zgtHWUYsRhdb60//tNMVc683Lu53Jsf3bOapTZ02dFN3jYmTaMGptLSkSFowRhlsQmAISgF0MGaqY9S8PvMr0x5OTXiVPr0vQ0k/JimyRnsNDS5uwSDLtBg==</enc>]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[<enc>dfnT9ALQc8bNNRNNODv6ipjUJRxnE8SldWYBvvnvIxV6y0vDHgi++5gz+s8mtlEbxaQXTGjnRYjcOj2QtZUN2xc4zvaSd0JHmoIjW6x93fxALKNbvAdGbOEjwgGf4u6aBxO4XevTifLUDA01c1Y+/rO/P75GAPp+DW9PbgK85c2xyqJqBz3NI7aREzcCgDNIn+pb3Zy5cr1ptWzwD19z4Nm3pLK4N0gOyJxgDIThGPjrhD0fEy/CP/eQGnjn00+7yxrv2CXZnkLYgk1Wq1ckP3Nn6XQdvI8J3GGVQP7qbW+Fn3fGxn6XePqqF91qnR0E</enc>]]>
+    </text>
+  </css>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+</dir>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmlocation" table="dmlocation" fieldKey="ma_location" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục nhà văn hóa phường" e="Ward Cultural House List"></title>
+  <title0 v="Thêm mới - nhà văn hóa phường" e="New - Ward Cultural House"></title0>
+  <title1 v="Sửa - địa điểm" e="Edit - Location"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+	    <field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_location" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="5">
+          <text v="Mã địa điểm" e="Ward Cultural House Code"></text>
+        </field>
+        <field name="ten_location" label="1" field="-" allowBlank="false" fieldType="PK" importable="10">
+          <text v="Tên địa điểm" e="Ward Cultural House Name"></text>
+        </field>
+		 <field name="ten_location2" label="1" field="-" allowBlank="true" importable="15">
+          <text v="Tên tiếng anh" e="English Name"></text>
+        </field>
+		 <field name="ma_lhhd" allowBlank="true" viewType="Lookup" label="1" field="1" hidden="false" importable="20">
+          <text v="Mã loại" e="Type Code"></text>
+          <viewInfo lookupType="One" lookupId="dmlhhd" lookupKey="status = 1 and ma_lhhd = 'VH'" lookupCheck="1=1" lookupRef="ten_lhhd" lookupInfo="dmlhhd|ma_lhhd|ten_lhhd" />
+        </field>
+        <field name="ten_lhhd" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+
+      </fields>
+    </form>
+	<form tabPageIndex="1" gravity="MiddleLeft" height="250" columns="120,120,240" >
+		<text v="Thông tin chi tiết" e="Infor Detail"></text>
+		<fields>
+			<field name="nguoi_lh" label="1" field="-" allowBlank="true" importable="25">
+			  <text v="Người liên hệ" e="Contact Person"></text>
+			</field>
+			<field name="dia_chi" label="1" field="-" allowBlank="false" importable="30">
+			  <text v="Địa chỉ" e="longitude - X"></text>
+			</field>
+			<field name="dien_thoai" label="1" field="-" allowBlank="true" importable="35">
+			  <text v="Điện thoại" e="Telephone"></text>
+			</field>
+			<field name="linkweb" label="1" field="-" allowBlank="true" importable="40">
+			  <text v="Link website" e="Link Website"></text>
+			</field>
+			<field name="status" viewType="Combobox" inactivate="true" label="1" field="2" valueDefault="1" nextRow="true" importable="-1" >
+			  <text v="Trạng thái" e="Status"></text>
+			  <viewInfo>
+				<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 ">
+				</options>
+			  </viewInfo>
+			</field>
+		</fields>
+	</form>
+	<form gravity="BottomLeft" columns="120,120,240" >
+		<fields>
+			<field name="tdx" label="1" field="1" allowBlank="true" importable="45">
+			  <text v="Tọa độ x" e="longitude - X"></text>
+			</field>
+			<field name="tdy" label="1" field="1" allowBlank="true" importable="50">
+			  <text v="Tọa độ y" e="latitude - Y"></text>
+			</field>
+		</fields>
+	</form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmlocation(p){
+  this.constructor(p);
+}
+dir$dmlocation.prototype = new DirEvent();
+dir$dmlocation.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmlocation.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+}
+         ]]>
+    </text>
+  </js>
+<css>
+	<text>
+	  <![CDATA[
+.control-label.ma_location, .control-label.ten_location, .control-label.dia_chi
+{	 
+	//font-weight:bold;	
+	color: #499b98;;
+}
+.control-label.tt
+{	
+	//font-weight:bold;	
+	color: red;;
+}
+	  ]]>
+	</text>
+</css>
+
+<script>
+    <query>
+      <text>
+        <![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+	<updated>
+      <text>
+        <![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId where [%whereFieldKey]
+         ]]>
+      </text>
+    </updated>
+	<inserting>
+      <text>
+        <![CDATA[
+if exists(select 1 from @@table a where [%whereFieldKey]) begin
+  select '$codeExistsNewMsg' as message, '@@firstFieldKey' as field
+  return
+end
+
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @unit_id = @@unit
+]]>
+      </text>
+    </inserting>
+	<importing>
+		<text>
+		<![CDATA[
+			update #data set unit_id = @@unit
+			@@insert
+		]]>
+		</text>
+	</importing>
+</script>
+	<messages>
+		<message val="codeExistsNewMsg">
+		  <text v="Mã địa điểm đã tồn tại." e="Location code already exists."/>
+		</message>
+		<message val="codeExistsEditMsg">
+		  <text v="Mã địa điểm đã tồn tại." e="Location code already exists."/>
+		</message>
+	</messages>
+</dir>

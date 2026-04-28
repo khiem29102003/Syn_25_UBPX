@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="qlcuochop" table="qlcuochop" fieldKey="ma_cuochop" transaction="true" tryCatch="true" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách cuộc họp" e="List of Meetings"></title>
+  <title0 v="Mới - cuộc họp" e="New - meeting"></title0>
+  <title1 v="Sửa - cuộc họp" e="Edit - meeting"></title1>
+
+  <forms>
+	<form gravity="TopLeft" columns="120,120,120,120,120,120">
+		<fields>
+			<field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_cuochop" label="1" field="-" allowBlank="false" fieldType="PK" disabled="true" importable="-1">
+				<text v="Mã cuộc họp" e="Meeting code"></text>
+			</field>
+			<field name="ten_cuochop" label="1" field="-" allowBlank="false" disabled="false" importable="10">
+			  <text v="Tên cuộc họp" e="Meeting Name"></text>
+			</field>
+			<field name="ten_cuochop2" label="1" field="-" allowBlank="true" disabled="false"  importable="15">
+			  <text v="Tên tiếng anh" e="English name"></text>
+			</field>
+			<field name="noi_dung" label="1" field="-" allowBlank="false" disabled="false" rows="3"  importable="15">
+			  <text v="Nội dung cuộc họp" e="Meeting Content"></text>
+			</field>
+			<field name="ma_lcuochop" allowBlank="false" viewType="Lookup" label="1" field="1" hidden="false" importable="20">
+			  <text v="Mã loại cuộc họp" e="Meeting Type Code"></text>
+			  <viewInfo lookupType="One" lookupId="dmlcuochop" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_lcuochop" lookupInfo="dmlcuochop|ma_lcuochop|ten_lcuochop" />
+			</field>
+			<field name="ten_lcuochop" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ngay_hop" nextRow="true" dataType="D" valueDefault="new Date()" label="1" field="1" importable="5" >
+				<text v="Ngày họp" e="Meeting Date"></text>
+			</field>
+			<field name="gio_bd" label="1" field="[100]" allowBlank="true" disabled="false" nextRow="false" >
+				<text v="Giờ bắt đầu" e="Time Start"></text>
+			</field>
+			<field name="gio_kt" label="1" field="[100]" allowBlank="true" disabled="false" nextRow="false">
+				<text v="Giờ kết thúc" e="Time End"></text>
+			</field>
+			<field name="dia_chi" label="1" field="1" allowBlank="false" disabled="false" importable="15">
+			  <text v="Địa điểm" e="Location"></text>
+			</field>
+			<field name="ds_chutri" viewType="Lookup" label="1" field="-" allowBlank="false" setype="1" nextRow="true">
+			  <text v="Chủ trì" e="Chairperson "></text>
+			  <viewInfo lookupType="Multi" lookupId="dmnv" lookupKey="xstatus = 5 and status = 1" lookupCheck="1=1" lookupRef="" lookupInfo="dmnv|ma_nv|ten_nv" />
+			</field>
+			<field name="ds_nguoithamgia" viewType="Lookup" label="1" field="-" allowBlank="false" setype="1" nextRow="true">
+			  <text v="Thành phần tham gia" e="Participants"></text>
+			  <viewInfo lookupType="Multi" lookupId="dmnv" lookupKey="xstatus = 5 and status = 1" lookupCheck="1=1" lookupRef="" lookupInfo="dmnv|ma_nv|ten_nv" />
+			</field>
+			<field name="status" viewType="Combobox" inactivate="false" label="1" field="2" valueDefault="1" nextRow="true" importable="-1" >
+			  <text v="Trạng thái" e="Status"></text>
+			  <viewInfo>
+				<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 ">
+				</options>
+			  </viewInfo>
+			</field>
+      </fields>
+    </form>
+	<form tabPageIndex="1" gravity="MiddleLeft" height="300" columns="120,120,360" >
+      <text v="Đính kèm" e="Attach Files"></text>
+      <fields>
+        <field name="xfile" label="1" field="2" viewType="File" fieldType="EXParam">
+          <text v="Chọn files" e="Attach Files"></text>
+          <viewInfo fileFieldId0="ma_cuochop" fileGroup="qlcuochop" fileExtension="*" maxFileSize="10240" maxFileCount="10"></viewInfo>
+        </field>
+      </fields>
+    </form>
+</forms>
+
+&DefaultButton;
+
+<js>
+<text>
+  <![CDATA[<enc>l3i+yHnSA/A2fwoKMGS/zAMP+Ymci0+w4Oqpbpm3ip/4QYpBzGyOGBB6b4WAgPLCNBgnn1iYHVzLyI+JbwR52ZRZFQa1TTwT2ZRU7n4LpSviVE/dc67StKcneLG4HhVciLCBXcicOefrkziNX9bOpGmJblzCAGJ2q5ZB4fyjseyxWRG3GZ0/FS4yoXEIILUOg4XgKz4bWQprdt28keLv/uvgiKvTB0eMt5F5GACg8x8OgnmhoRvRzNL0ayKK6okmSWhsSODsGPjMTy8yEDifkvcZyzP6DD09DFbsytqSvcxrQhIRTqC3ASAWr4ukGWyQmAvGiww6J483oUDokpz2QHtmSo5hjM27Aqw7tNGVpG5Xgq3UqB12t9SPbclUFJ1HtbWxPmXggcsFgYSPa5PUyPbMj+rYYDjk15NNG6oHZ+bpHz429mzBTBvxAoZ3YH5zObwPPj1rjHqcP9hv6PkY9wd0Eh+OxFMR1ScZGiIyw/4yFC/usFJuvUts5sKEhSmujKSJjtzeRhQ6YsKPZoweBChklw4PBcpqgYAgb49JrKvPuXHythwDEqg1z+SNHacPqcQ4MO47DobtO4RBvsKqtPGXKlauBG2w5o7ouIjL6apH7FvjTGxmPod5+qDBRwL9n+CsY8f5W3Out3TAX6uY/hdxcyCPCON20EykCAF6R4nWBAktVX/RUwIaPz/SGKdGCAxx7CQHJHBKAldw1/ubXbxYWtmW6WXL7xZtqeiSGfCG4uEpHZJ0ogHNEP10/TIQPxZ+2p+txvD/RvqisEZ7K27lTX+kvXPdAVJY7PPr/LX567gg78O4czmZ1XT7jzGKV2FbcRQpeodXTGAAwruZWcWoh0tyeLkD+Iuoh4VSZRaHNC+FOSeOrABmWkuy8RvIrHXiSzYcFr7zAeN/lZ5Ogex7wNHZlGW2CQLAjY+sYhbi/mM3OdS8gciRYzA6xQI8fVA/E+OF4CIb+W6zhVIHMW7D2kczDAflW6TxG9m9Vqh8979hSljvvQ/WcRygj1deUdgjL7df9Sk943DKXfqrS+5gIqVoqDO9TTabMjfFLWScrncUlWvyN3KlVjZ8by+kB387aZtoJidIe4KdsFbmE1cegPQH1/rfJYutM3zENo8fyU1aYCMp7eS2+AyJRGOaR1zqUOQA6RV03n9CoA825s0qgNszJug0+n28sd6S/Qj6THaegybufZQ+2c1NzPmI9hkSMxwNiK5YT758RlkGzV2Z72Jtv/y+y7wsscwUw38PqFiJI3LCu8B0quZJAu/XZtg6ip618xKPt1x/AdIpz1Fq9KJ5dcmxYBAyiESjQrUKCEAQEsZ4wPoLKx4HVmQUmVKXz7whk7DVMdjS3VtI2iTdsbphaA7auBAk7J8PiGx39wWkgLjN4OpGMtUHSTGRyvpJImCjCl3HVNNiP4eTOnshC14pvu6sTlAmNvrtRvH3LzpsD7YP77twxd6wDUSQhNlD2qFAYUdGSIN8eO5qEd3lQFjNwJkLH0bTHqQ/TN0Cya4/r+WHYwIqJUu+DBrlJ1aLg8u4vRcYhA7M/ZPQy6ScjQUi0mng3gVjga0nLa0=</enc>]]>
+    </text>
+  </js>
+	<css>
+		<text>
+			  <![CDATA[<enc>+3Zh1tIxfLXevS/El6E31ajgB8ZntVyfhISenwYzYOafeKjC2/UxNvKNu06+3I6IGRC8M2rEHq4P29ZMnPyyhWrPidTge7gyAMyxplX68ZAIoTVhc03RlEfjj/6mATOVVYdC7mJWQ0Z86LOtIgUYCDOqvF/Hu7U0dfYea1e+QhFCsnAEZEHwaVM7loI7Npo/3hhe3HENuVlwbroqflYlxGuyhjaVHQOjR3wTfSZTMww=</enc>]]>
+		</text>
+	</css>
+	<script>
+		<request code="LoadMaCuocHop">
+		<text>		
+			<![CDATA[<enc>KeGj6rYqiUccvXDvBhfBlGm/0jccz72o2EDmvwI9tnQM7P2S/Pf05eVuHL3mm0lSikzu8EJInK6b215FpO9azqYv79Z9NMjoU5KIVUlD918=</enc>]]>				
+		</text>
+		</request>
+  		<query>
+		  <text>
+			<![CDATA[<enc>GJgBVkOd9xy3In+SUACpOOdXdTQbLjDNG098RVYG+mqJrACGNi8MwNsRrtmQkuMIYyR65+M+8FdE2nQkBtdUjjGtkBSGsDqbRbA3vrYN89ZzUnQVJ+W1/9AMkiZ8xTjPYAdSbE6TNHswawXCA3Q7ZKpywgArBHY6CKMo02cq6Ek=</enc>]]>
+		  </text>
+		</query>
+		<updated>
+		  <text>
+			<![CDATA[<enc>sxD5Swu0R4mcxEHdwcy2ynVkJ6IiRfsuHiDzDrC78ELIJg2k4xX5PxEITwgSuDtWSiTOU3sqnIo/Bv0T8e877uKHW6bIEuTFdpbPdQB+xElll2tzxh9iUOpwbot+jXTZNKo5+n5Fy+aXD8VrO81PEw==</enc>]]>
+		  </text>
+		</updated>
+		<inserting>
+		  <text>
+			<![CDATA[<enc>/T/6v4fr7JtuEWROY5bEog4q37AdyKX5y50iwuf8o+kQ/cMLdjO5yBgIja/EXDIb67gjtJCgsvsoKVHnH40ASfHmT/5Pyqyz9fEF+eXazaeFq1QdO25I17j8uqKw4sm7PDDzWS+uYkqIWo1FmMQqY1vwSihUQwhC3DMwYBlMdqW/7I05kvZGgi3lyKQDrJ1gd1u3eDHWrXNvOq+fBosahfSLln2pO8chassI1khVi2Brg84FNLLprzwizWkmE7Kk</enc>]]>
+		  </text>
+		</inserting>
+		<importing>
+			<text>
+			<![CDATA[<enc>sxD5Swu0R4mcxEHdwcy2yi46ZbQRyi0uEDh1tGVfNVOBZJeZZHskWnswm55XGvVMZq7vIrj1gngY5x8IJuKO1pkyFlxS8pifsEwHrhrpEjg=</enc>]]>
+			</text>
+		</importing>
+		<aftersave>
+			<![CDATA[<enc>O+3mlrY85LveCKlOP0mogAXl8MDapt0xvsbAAOOvvQEWHiA4iSgARjUkSE8Fz6b2sOSUvfmVAb/O3/5RF4Dan/IjO23HwLxAOkzU0aFAgBepdxoZxjLADZ1Lh8JJJloXCc/KWCos+4Maukfopq6XWiPMUd5RfvuBcAPaIfSDBNPmdswoIwDlZXLx8qFn2Zl3Vi/NsyuCFoyY5BlOwVrHEqhBDqoZNiTzj1HHotnRoCKCyPWKXx4cm78f7zQM4KBKIE+kOjuFDyp+NUNSYyKO/dIbF/8CAxoDsF54OQjw5IbdbvwS/W4WWMX8jAwTHAl0ldCckLkHSG0PZzi7C4A4A/0GGD3lr57cLTsL1qo/wPB3jbVt1QgdcocrOh3fTXlamUWDQ5mmismRk0GIhCMq0g==</enc>]]>
+		</aftersave>
+	</script>
+  <messages>
+
+	 <message val="RequireMaPl">
+      <text v="Vui lòng chọn văn bản lưu hành để tạo mã văn bản" e="Please select a circulation document to generate a document code."/>
+    </message>
+	<message val="RequireMaNVB">
+      <text v="Vui lòng chọn nhóm văn bản để tạo mã văn bản" e="Please select a document group to generate a document code."/>
+    </message>
+	<message val="codeExistsNewMsg">
+	  <text v="Mã văn bản đã tồn tại trong danh mục." e="The document code already exists in the list."/>
+	</message>
+  </messages>
+</dir>

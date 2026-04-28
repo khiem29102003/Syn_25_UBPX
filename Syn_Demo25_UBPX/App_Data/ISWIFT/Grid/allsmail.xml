@@ -1,0 +1,411 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucherImport.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="allsmail" dirViewType="Grid" dirObjectType="Voucher" voucherCode="SM2" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách gửi Mail vãng lai" e="Mailing list"></title>
+  <subtitle v="Thêm, sửa, xóa..." e="New, Edit, Delete..."></subtitle>
+
+  <grids>
+    <grid table="allsmail" fieldKey="id" order="ngay_ct desc" allowFilter="true" allowOrder="true">
+      <fields>
+	    <field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+	   <field name="ma_unit" width="120" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="ten_unit" width="200" fieldType="EX" hidden="true">
+          <text v="Tên đơn vị" e="Unit Name"></text>
+        </field>
+        <field name="so_ct" width="100" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct" width="120" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+		<field name="s_mail" width="400" >
+          <text v="Mail gửi" e="Mail Sent"></text>
+        </field>
+        <field name="title" width="400" >
+          <text v="Tiêu đề" e="Subject"></text>
+        </field>
+		<field name="ds_mail" width="400" >
+          <text v="D/s mail" e="Mail Sent"></text>
+        </field>
+        <field name="email_body" width="500" >
+          <text v="Nội dung" e="Body"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+		<field name="imageisf" width="100" fieldType="EX" hidden="true">
+          <text v="Hình ảnh" e="Image"></text>
+        </field>
+        <field name="id" dataType="N" fieldType="PK" format="0" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="edit">
+          <text v="$EditToolbar" e="$EditToolbar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+		<button id="view">
+		  <text v="$ViewToolbar" e="$ViewToolbar"></text>
+		</button>
+		<button id="split">
+		  <text v="-" e="-"></text>
+		</button>
+		<button id="refresh">
+		<text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+		</button>
+		<button id="freeze">
+		<text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+		</button>
+		<button id="split">
+		<text v="-" e="-"></text>
+		</button>
+		<button id="print">
+		<text v="$PrintToolbar" e="$PrintToolbar"></text>
+		</button>
+		<button id="export">
+		<text v="$ExportToolbar" e="$ExportToolbar"></text>
+		</button>
+		<button id="split">
+		<text v="-" e="-"></text>
+		</button>
+		<button id="downtemplate">
+		<text v="Tải mẫu Excel" e="Down import template"></text>
+		</button>
+		<button id="import">
+		<text v="Lấy dữ liệu từ Excel" e="Import data"></text>
+		</button>
+		<button id="send">
+		  <text v="Gửi mail" e="Send an email"></text>
+		</button>
+
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id', 'b.ma_unit, b.ten_unit', '@@key', '', @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @strDetailKey nvarchar(3000); set @strDetailKey = ''
+set @strKey = 'ngay_ct between ''' + convert(char(8), @ngay_ct1, 112) + ''' and ''' + convert(char(8), @ngay_ct2, 112) + ''' and ' + @strFinding + ' and ' + dbo.ISWIFTFunctionGetUnitIDRightKeys(@@admin, @@userId, @ma_unit, 'a.unit_id') + @strDetailKey
+
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id', 'b.ma_unit', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+drop table #unitright
+         ]]>
+          </text>
+        </finding>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+		<![CDATA[
+			function grid$allsmail(f){
+				this.constructor(f);
+			}
+			grid$allsmail.prototype = new DirEvent();
+			grid$allsmail.prototype.afterInit = function(renderType){
+				var p = this._dir, g = p.grid(), r = p.curr("r");
+			}
+			grid$allsmail.prototype.beforeButtonGridClick = function(id){
+				if (id == 'send') {
+					var p = this._dir, g = p.grid(), r = p.curr("r");
+					if (r == null || r < 0) return;
+					
+					var vc = g.data.val(r, 'id');   
+					var ttMail = g.data.val(r, 'status');
+				
+					// 👉 Làm mới danh sách file theo từng phiếu
+					p.options._files = []; // 🧹 Xóa sạch file cũ nếu cần
+					p.request('GetData', '', [['id', 'I', vc]] , function(pp, d, run){
+						if (run) {
+							const listFiles = p.options._files;
+							console.log(listFiles);
+							const attachments = [];
+
+							listFiles.forEach(item => {
+								const param = "Download[@#]0[@#]" + item.id + "[@#]" + vc + "[@#][@#]";
+								const encoded = $.encodeb64UTF8(param);
+								const url = "../AppHandler/FileHandlerNoLogin.ashx?param=" + encoded;
+
+								// 👉 Tách đuôi mở rộng từ tên file
+								const filename = item.name;
+								const extMatch = filename.match(/\.([a-zA-Z0-9]+)$/);
+								const ext = extMatch ? extMatch[1].toLowerCase() : "";
+
+								const mimeMap = {
+									"jpg": "image/jpeg",
+									"jpeg": "image/jpeg",
+									"png": "image/png",
+									"gif": "image/gif",
+									"pdf": "application/pdf",
+									"xls": "application/vnd.ms-excel",
+									"xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+									"doc": "application/msword",
+									"docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+									"zip": "application/zip"
+								};
+
+								attachments.push({
+									path: url,
+									filename: filename,
+									contentType: mimeMap[ext] || "application/octet-stream"
+								});
+							});
+
+							console.log(attachments);
+
+							send(this, vc, ttMail, attachments, p);
+							p._refresh();
+						}
+					});
+				
+					return false;
+				}
+				return true;
+			}
+
+			function send(o, id, status, attachments, pDir) {
+				$.showToast(id);
+				if (id == null) {
+					$.showToast('Không này rỗng');
+					return;
+				}
+				if (status !== 5) {
+					$.showToast('Phiếu chưa duyệt hoặc đã hoàn thành');
+					return;
+				}
+				popupOpen();
+				var controller = 'allsmail';
+				
+				var m = new Memvars();
+				m.val("id", 'C', id);
+					
+				var p = window.location.href.toString();
+				p = p.substring(0, p.indexOf("Main/")) + 'AppService/EService.asmx/' + "GetData";//GetValue
+				$.ajax({
+					type: "POST",
+					url: p,
+					header: '',
+
+					data: JSON.stringify({ controller: controller, oMemvar: m.val() }),
+					contentType: "application/json; charset=utf-8",
+					dataType: "json",
+					timeout: 30000,
+					success: function (msg, s) {
+						// ket qua o day
+						var emailList = msg.d;
+						console.log(emailList);
+						
+						let currentIndex = 0;
+						let isPaused = false;
+						let isCancelled = false;
+						
+						document.getElementById("totalEmails").innerText = emailList.length;
+						document.getElementById("countDone").innerText = currentIndex;
+
+						function logProgress(msg, cssClass = "") {
+							const progress = document.getElementById("progressArea");
+							const div = document.createElement("div");
+							div.className = cssClass;
+							div.textContent = msg;
+							progress.appendChild(div);
+							progress.scrollTop = progress.scrollHeight;
+						}
+
+						function updateProgressBar() {
+							const percent = Math.floor((currentIndex / emailList.length) * 100);
+							const bar = document.getElementById("progressBar");
+							bar.style.width = percent + "%";
+							bar.innerText = percent + "%";
+						}
+
+						function sendNextEmail() {
+							if (currentIndex >= emailList.length || isCancelled) {							
+								const progressBar = document.getElementById("progressBar");
+								progressBar.style.backgroundColor = "#2ecc71"; // xanh lá
+								progressBar.innerText = "✔ Hoàn tất!";
+								logProgress("✅ Gửi xong!", "log-success");
+								updateProgressBar();
+								
+								// 👉 Ẩn các nút sau khi xong
+								document.getElementById("controlButtons").style.display = "none";
+								return;
+							}
+
+							if (isPaused) {
+								logProgress("⏸ Đang tạm dừng...", "log-paused");
+								return;
+							}
+
+							const email = emailList[currentIndex];
+							// ✅ Gắn mảng attachments vào email hiện tại
+							email.attachments = attachments;
+
+							fetch("/Main/SendSingleEmail.aspx", {
+								method: "POST",
+								headers: { "Content-Type": "application/json" },
+								body: JSON.stringify(email)
+							})
+							.then(res => res.text())
+							.then(result => {
+								logProgress(`✅ (${currentIndex + 1}/${emailList.length}) ${email.r_mail} (${result})`, "log-success");
+								pDir.request('Complete', '', [['id', 'I', id], ['r_mail', 'C', `${email.r_mail}`]] , function(pp, d, run){
+									if (run) {
+										pDir._refresh();
+									}
+								});
+								document.getElementById("countDone").innerText = currentIndex + 1;
+								currentIndex++;
+								updateProgressBar();
+								setTimeout(sendNextEmail, 300);
+							})
+							.catch(err => {
+								logProgress(`❌ (${currentIndex + 1}/${emailList.length}) ${email.r_mail}: Lỗi ${err}`, "log-error");
+								document.getElementById("countDone").innerText = currentIndex + 1;
+								currentIndex++;
+								updateProgressBar();
+								setTimeout(sendNextEmail, 300);
+							});
+						}
+
+						function startSending() {
+							currentIndex = 0;
+							isPaused = false;
+							isCancelled = false;
+
+							document.getElementById("progressArea").innerHTML = "";
+							updateProgressBar();
+
+							// 👉 Hiện các nút điều khiển khi bắt đầu gửi
+							document.getElementById("controlButtons").style.display = "block";
+							document.getElementById("pauseBtn").style.display = "inline-block";
+
+							sendNextEmail();
+						}
+
+						function togglePause() {
+							isPaused = !isPaused;
+							const btn = document.getElementById("pauseBtn");
+							btn.innerText = isPaused ? "▶️ Tiếp tục" : "⏸ Tạm dừng";
+
+							if (!isPaused) sendNextEmail();
+						}
+
+						function cancelAll() {
+							isCancelled = true;
+							logProgress("❌ Đã hủy toàn bộ quá trình gửi!", "log-error");
+
+							// 👉 Ẩn nút điều khiển sau khi hủy
+							document.getElementById("pauseBtn").style.display = "none";
+							document.getElementById("controlButtons").style.display = "none";
+						}
+						
+						startSending();
+						
+						document.getElementById("pauseBtn").addEventListener("click", function (event) {
+							togglePause(event);
+						});		
+						
+						document.getElementById("cancelBtn").addEventListener("click", function () {
+							cancelAll();
+						});	
+					},
+					error: function (e) {
+						// loi o day
+						console.log(e);
+					}
+				});
+			}	
+		]]>
+    </text>
+  </js>
+  <css>
+    <text>
+      <![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+    .toolbar-send{
+      background-repeat: no-repeat;
+      background-image: url('data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAAB+ElEQVR4nLXU70sTcQDHcf+AoEcj6MGBPiukBzoRpAyhH1I72B5I6AN7YAqngjif9GQwTMciNMdQH8SSkDGRvN0N73RO8WTJTEULSlBkZJNczQrnj1x5+8i+QrVr7G5oX3g/+fL9vvh+j+Obl/e/hn0R53teJwJqTX6UbZpAxxJ0PfMJqLW6I0OKyP1nBq7Fk/iwl1RHHTmAG/saUIdGcOHLEd5uy6Tl2FHSt/bz4alAZVb/u9EihvLoGaosK/h49gC24H7GuucOT9YEo7jWVhIvZigUM1RnVpB+FkHpk/WMmYXv6ArtoNJqSkGpFi836s5lBZu4r6j1fE6rbmgTLpZDYMaH2k6aYBXmKz9K6/IvqH5DJXjfE8UCbwXGaLwPFaK8hcLN1gJEXt4Cxgx2VVB55RG3nWADfBUswasIr1/E6uB1MneSAlWC7dIeLFNx0tTEC7JpRGBAe00wsUaEXUWI9hUiKRr+oCLtVj1hjTNIFgvsA1R7jTB6jXjj0uOT8xK+PddDFu78dUoaqv+hc34X/LQbwngDIHWQTb/420iwN9IgaAVT1Y8/xSNfFXb9NRkR5ALapRjucc0wT/MY9ouQhF7EB8twwKWuasgdbBfDsE1upc31hmIYmFkB5/eBfTUXwOjdApJYqfsNan1g/+3QkvFxOKtxDMNGWyT5OsJFAAAAAElFTkSuQmCC');
+   }
+		]]>
+    </text>
+  </css>
+
+  <script>
+    &VoucherJSLoading;
+	<request code="Complete" transaction="true">
+      <text>
+        <![CDATA[
+		
+			update allsmail set status = 7 from allsmail where id = @id
+
+			select '' as message
+
+        ]]>
+      </text>
+    </request>
+	<request code="GetData" transaction="true">
+      <text>
+        <![CDATA[
+
+			declare @script nvarchar(4000)
+			exec ISWIFTStoreGetListFiles 'xfile', @id, '@@voucherCode', '', @script output
+			
+			if @script is null set @script = ''
+			
+			select @script as script
+
+        ]]>
+      </text>
+    </request>
+  </script>
+</dir>

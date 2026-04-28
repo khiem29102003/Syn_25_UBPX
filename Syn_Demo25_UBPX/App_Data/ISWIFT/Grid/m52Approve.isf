@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="m52Approve" dirViewType="Grid" selectMultiple="Table" voucherCode="DH1" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Duyệt đơn hàng" e="Approve Sales Orders"></title>
+  <subtitle v="Xử lý &lt;b&gt;%s&lt;/b&gt; Đơn hàng" e="&lt;b&gt;%s&lt;/b&gt; Sales Orders"></subtitle>
+
+  <grids>
+    <grid table="m52" fieldKey="id" order="id desc" key="xstatus = 0" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="so_ct" width="100" link="V" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+        <field name="ma_ngv" viewType="Combobox" width="100" >
+          <text v="Loại chứng từ" e="Voucher Type"></text>
+          <viewInfo>
+            <options query="select ma_ngv, ten_ngv%l from dmngv where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="ma_kh" width="120" >
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="250" fieldType="EX" >
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+        <field name="ma_nt" width="80" >
+          <text v="Ngoại tệ" e="FC"></text>
+        </field>
+        <field name="t_tt_nt" dataType="N" format="FCAmount" width="100">
+          <text v="Tổng tiền" e="Pcs UOM"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="unit_id" hidden="true" dataType="I" width="80" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="80" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="ma_ct" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="id" dataType="N" fieldType="PK" format="0" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="approve">
+          <text v="Duyệt" e="Approve"></text>
+        </button>
+        <button id="cancel">
+          <text v="Hủy" e="Close"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="find">
+          <text v="$FindToolbar" e="$FindToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[<enc>ut7bmtX51o7ohlkZy11sVIaZnUwHEM+ebZUTVuvKujT003xHFhXk+bfhdo+bOLeOc6q63u3F2aexGLbLnl1qTTXhLrNlXeSxVkMrIqXqOIV0K//tFN5voZDEwxmggErUPzh+qFPUrUMIk3h+Ki6PotHKs2S1UZVa98zmFp4o9+J+uINWCG/0sLwuHcsDKIU19OP6Sc81dVTM/vl6dUUBlcpGftcyDenTxwFE2b469gB46nBpzJU1ETEPwEwoY+NGyJC2fwU1SXrO9LnA5xSiMg==</enc>]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[<enc>mahAySDri6k13UWwqODycR5Vq2Uj4JpSeSF+rucY9DiyQOSPuXzSBYctEJzF1qcBHtQmcbL14bFboosm2vmqjyG3JobwjzpI4t5TRfE2TzvaNFk64JVrR6QHyNC9LHGGgu5B7k2cZV69oClNXNeRscw52YE0xDWRNa4U0qyFvpwC2ZJWir+k1+6X9QXEqKgp9Rfzy+0yV3NCsfCFhPjZj4YFrb71exgYxZfOcysjn0M0ZGW/DTO9uVmbzt/vyrbwawTmvjIkwdTEOVXQ5n+u8J2GEiBb0+6RiPqYLc/v3HIymJS7BjJNPofpj9QjjDBj3kovAZbIWIgnNZ50yIVht+/y4OCayaMkVmKz+Hv9wIlnUztyWFJdEkVDmKwHeSVv4RUkootF0u8o+zzDMFkMPikjHfa74w14LaSJDF9LnkK3HvsfmDslAHyDvXi646iF5s3KUNJnZxPEFKszJJZ+n2bz15yq+ZG/ws92QiS42nizXiq1imxmsQZjjFFOWcj6Od7zdwABeTyWSXPx3goce3HKhsNpqkmJ8PSe1uIJvqW+P9zOLlKo9rfXUlPHg4yrFYsHcfYsn8j4r7/FIubHZNhuqeo15oRKQJAnl5HhkCyGpxC4KNSxhm31wWTUOwvk4SmAKE2w1UbL3ufM4bko+W+CSO0BUIQqPbhPVNNNMAepjT5tG/ikdhh7IZAFBuA/</enc>]]>
+          </text>
+        </finding>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[<enc>hMNpb+ya+hTY4Yu5t+qT3M4Y+61GLAXgcPxhFPrea8xltmZPjiyF1rDvg63J0DVPMV1+8lsd4GIIuZOYxWkpBA1RVOyxtoibFUaXUCeux1nWF4YicLqyAIHvCWMZJGaCWtmYA9vVjeczXTKDJhJ+sKLPjJ3/g3dQamuNHbDMlZQ0zmosGrZBUFgyYuLaSfvDwxSga5hMI4B8Bu9nLBhWh79GTbEvdMxA0Xexip3aLMHs8Vb2XN2WUuh6U1dZOPk4l0EEGNLbiS8voT4vMMRnT7UzHJHbqqAAeWAZ6Rhu7/nQ+3DbDqUjMjZpPMMFGdWCkSnT31gTKsiy20pWSKMqAiBQI3cwwsL5WOYZZ3hsOxUMsG9wZ4ozAgrW9GV6baBpjwVA1rm3ZO0NdUuaSEZuw9PZphUSiTixbQLyRy+Y4pCjt97Nkg9x/izxDh2hAsDTKVoBkcf5gUXg0eh0XpPirXe7NpKYvO1T6pjxJ7xEeF0g0XyJlRuCc7vyuGfBi91fKHPWaz/m6+T8B9pZ4eGZsGDp3KSMplnfohAV3fz+4bEp+MQZW3Iw3JS845h8DM4jwIi61sEG7S4lk6CXJWLqt5Bs9KjDC3FpPgE8BH4BmLeA0fCF4dIgSnrY5RSa2zdDeX4OT/vihXdyI30KB/E/86MxVqkDRLyKA9ftpUBP/6uWG5ECadIciZ1abkmih3yHbJGx/k+ZsRHV2kJ3QZawZ0jr/MS+aRRf1YiBIw6I7zoLwv9H+x0mmiEHiBNJoqR81HT4+2n8cfYVcS41Mbtr/P+RHrIEf5TU7LL1Wa+v3ARpsVWdex35ELLCfX6+gSNukruKxc2iK1YX2DtN3e46CjVT3TexVOwyJA8AwhAN0ZutUkKfe3i0okb5mBJ9xZpb+71LdDbHGUxWvC6t+IAk9kC72PSuecakukJWplgx/B0=</enc>]]>
+    </text>
+  </js>
+ <css>
+    <text>
+		<![CDATA[<enc>dfnT9ALQc8bNNRNNODv6ipjUJRxnE8SldWYBvvnvIxV6y0vDHgi++5gz+s8mtlEbxaQXTGjnRYjcOj2QtZUN2xc4zvaSd0JHmoIjW6x93fxALKNbvAdGbOEjwgGf4u6aBxO4XevTifLUDA01c1Y+/rO/P75GAPp+DW9PbgK85c2xyqJqBz3NI7aREzcCgDNIn+pb3Zy5cr1ptWzwD19z4Nm3pLK4N0gOyJxgDIThGPjrhD0fEy/CP/eQGnjn00+7yxrv2CXZnkLYgk1Wq1ckP3Nn6XQdvI8J3GGVQP7qbW+Fn3fGxn6XePqqF91qnR0E</enc>]]>
+    </text>
+  </css>
+
+  <script>
+    <request code="Approve" transaction="true">
+      <text>
+        <![CDATA[<enc>Pf1CmsSxxmIN1yAHezlB5uIxJx0adFzvI/cwWhCRCvPEoANkDP12rQIGX0JXxPFewv6ogNyS/+8ryZJreIXnNCXFMSGRlfqtFX0SBtVpl5lgmnX+8q59TzhL7sM5jtUiie7so7mfQU3TSOOeRMX7Au4bMvRMbKFBK9TbQGY2ehn3gWrkw5vmOjpKV6dDe1mLa6ucSa+RaOBbHrrskFTv+oeJE+HiAErP8z7VgexjdlLj7gt1/dohItlwuTubpJY9ahVu24VASuv+zB9FJa0sLQTnrEFWMBbsqpg728rVAt7PqR5jhnk05wgmP7WzEc9HR1A5NGlZS6C5A1YyfJ544INK/uuUONLkQWdmKZFPY7I=</enc>]]>
+      </text>
+    </request>
+    <request code="Close" transaction="true">
+      <text>
+        <![CDATA[<enc>LQPUDPFmeSSKqSr3lqsWmSMov0/DbezjPthLGw7c2zHV58hE0uTHgO4WNFWg7/xF4xoMwa+qUKt1lQUXuGELhQIT39O1xZAHOnSQ06xgnfNotrghpKxaCvE0yRqh9vv0zzRVzHIfcTpIhaauzQPiky/wDKpcWJq7PhG+j2pFtlManyFYat50W12rD4CEyGF/BXrxEgwXFtxVobr0mqHDe78BihLlDH8RRF/8ECi6/zVDbBVpbLRZKBzhxYWpR/dR</enc>]]>
+      </text>
+    </request>
+
+    &VoucherJSLoading;
+  </script>
+
+  <messages>
+    <message val="msg1">
+      <text v="Bạn có chắc chắn sẽ &lt;b&gt;duyệt&lt;/b&gt; các đơn hàng được chọn không?" e=""/>
+    </message>
+    <message val="msg2">
+      <text v="Bạn có chắc chắn sẽ &lt;b&gt;bỏ duyệt&lt;/b&gt; các đơn hàng được chọn trở về trạng thái [Chờ duyệt] không?" e=""/>
+    </message>
+    <message val="msg3">
+      <text v="Bạn có chắc chắn sẽ &lt;b&gt;bỏ đóng&lt;/b&gt; các đơn hàng được chọn trở về trạng thái [Đã duyệt] không?" e=""/>
+    </message>
+    <message val="close">
+      <text v="Hủy/đóng" e="Close"/>
+    </message>
+    <message val="approve">
+      <text v="Duyệt" e="Approve"/>
+    </message>
+    <message val="undo">
+      <text v="Bỏ duyệt" e="Undo"/>
+    </message>
+    <message val="open">
+      <text v="Bỏ đóng" e="Open &amp; Approve"/>
+    </message>
+      <message val="inputTitle">
+      <text v="Nhập lý do hủy đơn hàng" e=""/>
+    </message>
+    <message val="reason">
+      <text v="Lý do" e="Reason"/>
+    </message>
+  </messages>
+</dir>

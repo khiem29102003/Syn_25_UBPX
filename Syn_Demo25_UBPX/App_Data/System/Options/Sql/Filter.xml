@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<script>
+  <voucherFilterRight>
+    <text>
+      <![CDATA[
+if @@admin <> 1
+  if not exists(select 1 from sysmenu a where controller = '@@controller' and exists(select 1 from sysrightmenu b where b.user_id = @@userId and a.id = b.menu_id and b.a_view_all = 1)) begin
+    select 'if (p.field(''user_id0'')) {p.field(''user_id0'').valueDefault=''1''; p.field(''user_id0'').disabled = true;} ;' as script
+    return
+  end
+select '' as script
+         ]]>
+    </text>
+  </voucherFilterRight>
+
+  <getJsonForm>
+    <text>
+      <![CDATA[
+select jsonform from sysreportform where id = @id and user_id in (0, @@userId) and controller = @controller
+         ]]>
+    </text>
+  </getJsonForm>
+  <saveJsonForm>
+    <text>
+      <![CDATA[
+if not exists(select 1 from sysreportform where id = @id and user_id = @@userId and controller = @controller) begin
+  select '$ReportPivotNotEdit' as message, 'name' as field
+  return
+end
+update sysreportform set jsonform = @reportForm where id = @id and user_id = @@userId and controller = @controller
+select '$Processed' as message
+         ]]>
+    </text>
+  </saveJsonForm>
+  <deleteJsonForm>
+    <text>
+      <![CDATA[
+if not exists(select 1 from sysreportform where id = @id and user_id = @@userId and controller = @controller) begin
+  select '$ReportPivotNotEdit' as message, 'name' as field
+  return
+end
+delete from sysreportform where id = @id and user_id = @@userId and controller = @controller
+select '' as message
+         ]]>
+    </text>
+  </deleteJsonForm>
+  <deletePivotForm>
+    <text>
+      <![CDATA[
+if not exists(select 1 from sysreportpivot where id = @id and user_id = @@userId and controller = @controller) begin
+  select '$ReportPivotNotEdit' as message, 'name' as field
+  return
+end
+delete from sysreportpivot where id = @id and user_id = @@userId and controller = @controller
+select '' as message
+         ]]>
+    </text>
+  </deletePivotForm>
+
+</script>

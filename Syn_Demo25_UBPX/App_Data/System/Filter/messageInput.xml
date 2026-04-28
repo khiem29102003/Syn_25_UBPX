@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="messageInput" table="" height="" fieldKey="id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="" e=""></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="data" label="1" allowBlank="false" rows="1" field="-">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$messageInput(p){
+  this.constructor(p);
+}
+filter$messageInput.prototype = new DirEvent();
+filter$messageInput.prototype.beforeInit = function(){
+  var p = this._dir;
+  p.field('data').allowBlank = p.options.allowBlank;
+}
+filter$messageInput.prototype.afterInit = function(){
+  var p = this._dir;
+  p.valLabel('data', p.options.label)
+  p.setTitle(p.options.title)
+}
+filter$messageInput.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir;
+  if (p.options.msgFunction) p.options.msgFunction(p, true, p.valForm('data'));
+  return false;
+}
+         ]]>
+    </text>
+  </js>
+</dir>

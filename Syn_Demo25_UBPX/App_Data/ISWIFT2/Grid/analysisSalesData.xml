@@ -1,0 +1,419 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="analysisSalesData" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Phân tích dữ liệu bán hàng" e=""></title>
+  <subtitle v="Từ ngày {ngay_ct1} đến ngày {ngay_ct2}..." e="From {ngay_ct1} To {ngay_ct2}..."></subtitle>
+  <grids>
+    <grid>
+      <fields>
+        <field name="g_detail" width="100" fieldType="Temp" note2="#">
+          <text v="Thông tin chi tiết" e="Detail"></text>
+        </field>
+        <field name="ma_unit" width="80" aliasName="d" note="ten_unit" join="left join sysunit d on a.unit_id = d.unit_id|unit_id" note2="g_detail" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="ten_unit" width="250" aliasName="d" join="left join sysunit d on a.unit_id = d.unit_id|unit_id" note2="g_detail" >
+          <text v="Tên đơn vị" e="Unit"></text>
+        </field>
+        <field name="so_ct" width="100" link="V" note2="g_detail" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ma_nt" width="100" link="!" note2="g_detail" >
+          <text v="Mã ngoại tệ" e="Currency"></text>
+        </field>
+        <field name="dien_giai" width="250" note2="g_detail" >
+          <text v="Diễn giải" e="Description"></text>
+        </field>
+
+        <field name="g_time" width="100" fieldType="Temp" note2="#">
+          <text v="Thời gian" e="Datetime"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D" note2="g_time">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+        <field name="thang" width="80" aliasName="substring(rtrim(a.ngay_ct), 6, 2) as " join="|ngay_ct" note2="g_time">
+          <text v="Tháng" e="Month"></text>
+        </field>
+        <field name="nam" width="80" aliasName="left(a.ngay_ct, 4) as " join="|ngay_ct" note2="g_time">
+          <text v="Năm" e="Year"></text>
+        </field>
+
+        <field name="g_vt" width="100" fieldType="Temp" note2="#">
+          <text v="Vật tư/hàng hóa" e="Item/Product"></text>
+        </field>
+        <field name="ma_vt" width="100" note="ten_vt,ten_vt2" link="!" note2="g_vt">
+          <text v="Mã vật tư" e="Item Code"></text>
+        </field>
+        <field name="ten_vt" width="250" aliasName="vt" join="left join dmvt vt on a.ma_vt = vt.ma_vt|ma_vt" note2="g_vt">
+          <text v="Tên vật tư" e="Item Name"></text>
+        </field>
+        <field name="ten_vt2" width="250" aliasName="vt" join="left join dmvt vt on a.ma_vt = vt.ma_vt|ma_vt" note2="g_vt">
+          <text v="Tên vật tư khác" e="Item Name 2"></text>
+        </field>
+        <field name="dvt" width="50" aliasName="vt" join="left join dmvt vt on a.ma_vt = vt.ma_vt|ma_vt" note2="g_vt">
+          <text v="Đvt" e="UOM"></text>
+        </field>
+        <field name="nh_vt1" width="100" note="ten_nh_vt1" aliasName="vt" join="left join dmvt vt on a.ma_vt = vt.ma_vt|ma_vt" note2="g_vt">
+          <text v="Nhóm vật tư 1" e="Item Group 1"></text>
+        </field>
+        <field name="ten_nh_vt1" width="250" aliasName="nhvt1.ten_nh as " join="left join dmnh nhvt1 on vt.nh_vt1 = nhvt1.ma_nh and nhvt1.ma_loai_nh = ''VT1''|nh_vt1" note2="g_vt">
+          <text v="Tên nhóm vật tư 1" e="Item Group 1"></text>
+        </field>
+        <field name="nh_vt2" width="100" note="ten_nh_vt2" aliasName="vt" join="left join dmvt vt on a.ma_vt = vt.ma_vt|ma_vt" note2="g_vt">
+          <text v="Nhóm vật tư 2" e="Item Group 2"></text>
+        </field>
+        <field name="ten_nh_vt2" width="250" aliasName="nhvt2.ten_nh as " join="left join dmnh nhvt2 on vt.nh_vt2 = nhvt2.ma_nh and nhvt2.ma_loai_nh = ''VT2''|nh_vt2" note2="g_vt">
+          <text v="Tên nhóm vật tư 2" e="Item Group 2"></text>
+        </field>
+        <field name="nh_vt3" width="100" note="ten_nh_vt3" aliasName="vt" join="left join dmvt vt on a.ma_vt = vt.ma_vt|ma_vt" note2="g_vt">
+          <text v="Nhóm vật tư 3" e="Item Group 3"></text>
+        </field>
+        <field name="ten_nh_vt3" width="250" aliasName="nhvt3.ten_nh as " join="left join dmnh nhvt3 on vt.nh_vt3 = nhvt3.ma_nh and nhvt3.ma_loai_nh = ''VT3''|nh_vt3" note2="g_vt">
+          <text v="Tên nhóm vật tư 3" e="Item Group 3"></text>
+        </field>
+
+        <field name="g_kho" width="100" fieldType="Temp" note2="#">
+          <text v="Kho/lô" e="Site/Lot"></text>
+        </field>
+        <field name="ma_kho" width="100" link="!" note="ten_kho" note2="g_kho" >
+          <text v="Mã kho" e="Site"></text>
+        </field>
+        <field name="ten_kho" width="250" aliasName="kho" join="left join dmkho kho on a.ma_kho = kho.ma_kho|ma_kho" note2="g_kho">
+          <text v="Tên kho" e="Item Name"></text>
+        </field>
+        <field name="ma_lo" width="100" link="!" note2="g_kho" >
+          <text v="Mã lô" e="Lot"></text>
+        </field>
+        <field name="ma_vi_tri" width="100" link="!" note2="g_kho">
+          <text v="Mã vị trí" e="Location"></text>
+        </field>
+
+        <field name="g_kh" width="100" fieldType="Temp" note2="#">
+          <text v="Khách hàng/nhà cung cấp" e="Customer/Supplier"></text>
+        </field>
+        <field name="ma_kh" width="100" link="!" note="ten_kh,ten_kh2,ma_so_thue" note2="g_kh" >
+          <text v="Mã khách hàng" e="Customer"></text>
+        </field>
+        <field name="ten_kh" width="250" aliasName="kh" join="left join dmkh kh on a.ma_kh = kh.ma_kh|ma_kh" note2="g_kh">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+        <field name="ten_kh2" width="250" aliasName="kh" join="left join dmkh kh on a.ma_kh = kh.ma_kh|ma_kh" note2="g_kh">
+          <text v="Tên khách hàng khác" e="Customer Name"></text>
+        </field>
+        <field name="nh_kh1" width="100" note="ten_nh_kh1" aliasName="kh" join="left join dmkh kh on a.ma_kh = kh.ma_kh|ma_kh" note2="g_kh">
+          <text v="Nhóm khách hàng 1" e="Item Group 1"></text>
+        </field>
+        <field name="ten_nh_kh1" width="250" aliasName="nhkh1.ten_nh as " join="left join dmnh nhkh1 on kh.nh_kh1 = nhkh1.ma_nh and nhkh1.ma_loai_nh = ''KH1''|nh_kh1" note2="g_kh">
+          <text v="Tên nhóm khách 1" e="Customer Group 1"></text>
+        </field>
+        <field name="nh_kh2" width="100" note="ten_nh_kh2" aliasName="kh" join="left join dmkh kh on a.ma_kh = kh.ma_kh|ma_kh" note2="g_kh">
+          <text v="Nhóm khách hàng 2" e="Item Group 2"></text>
+        </field>
+        <field name="ten_nh_kh2" width="250" aliasName="nhkh2.ten_nh as " join="left join dmnh nhkh2 on kh.nh_kh2 = nhkh2.ma_nh and nhkh2.ma_loai_nh = ''KH2''|nh_kh2" note2="g_kh">
+          <text v="Tên nhóm khách 2" e="Customer Group 2"></text>
+        </field>
+        <field name="nh_kh3" width="100" note="ten_nh_kh3" aliasName="kh" join="left join dmkh kh on a.ma_kh = kh.ma_kh|ma_kh" note2="g_kh">
+          <text v="Nhóm khách hàng 3" e="Item Group 3"></text>
+        </field>
+        <field name="ten_nh_kh3" width="250" aliasName="nhkh3.ten_nh as " join="left join dmnh nhkh3 on kh.nh_kh3 = nhkh3.ma_nh and nhkh3.ma_loai_nh = ''KH3''|nh_kh3" note2="g_kh">
+          <text v="Tên nhóm khách 3" e="Customer Group 3"></text>
+        </field>
+        <field name="dia_chi" width="250" aliasName="kh" join="left join dmkh kh on a.ma_kh = kh.ma_kh|ma_kh" note2="g_kh">
+          <text v="Địa chỉ" e="Customer Address"></text>
+        </field>
+        <field name="ma_so_thue" width="150" aliasName="kh" join="left join dmkh kh on a.ma_kh = kh.ma_kh|ma_kh" note2="g_kh">
+          <text v="MST" e="Tax Code"></text>
+        </field>
+        <field name="gioi_han_no" width="100" dataType="N" aliasName="kh" join="left join dmkh kh on a.ma_kh = kh.ma_kh|ma_kh" note2="g_kh">
+          <text v="Giới hạn nợ" e="Limit Debt"></text>
+        </field>
+        <field name="rg_code" width="100" note="rgname" aliasName="kh" join="left join dmkh kh on a.ma_kh = kh.ma_kh|ma_kh" note2="g_kh">
+          <text v="Khu vực" e="Region"></text>
+        </field>
+        <field name="rgname" width="250" aliasName="rg" join="left join sysregioninfo rg on kh.rg_code = rg.rg_code|rg_code" note2="g_kh">
+          <text v="Tên khu vực" e="Region Name"></text>
+        </field>
+
+        <field name="g_nvbh" width="100" fieldType="Temp" note2="#">
+          <text v="Nhân viên bán hàng" e="Sales"></text>
+        </field>
+        <field name="ma_nvbh" width="100" link="!" note="ten_nvbh" note2="g_nvbh">
+          <text v="Mã nhân viên bh" e="Sales"></text>
+        </field>
+        <field name="ten_nvbh" width="250" aliasName="nv" join="left join dmnvbh nv on a.ma_nvbh = nv.ma_nvbh|ma_nvbh" note2="g_nvbh">
+          <text v="Tên nhân viên" e="Sales Name"></text>
+        </field>
+
+        <field name="g_number" width="100" fieldType="Temp" note2="#">
+          <text v="Số liệu phân tích" e="Number Analysis"></text>
+        </field>
+        <field name="sl_nhap" dataType="N" format="Qty" width="100" note2="g_number">
+          <text v="Sl nhập" e="Received Q'ty"></text>
+        </field>
+        <field name="tien_nt_nhap" dataType="N" format="FCAmount" width="100" note2="g_number">
+          <text v="Tiền nhập nt" e="FC Receive Amt."></text>
+        </field>
+        <field name="tien_nhap" dataType="N" format="Amount" width="100" note2="g_number">
+          <text v="Tiền nhập" e="Receive Amt."></text>
+        </field>
+
+        <field name="sl_xuat" dataType="N" format="Qty" width="100" note2="g_number">
+          <text v="Sl xuất" e="Issued Q'ty"></text>
+        </field>
+        <field name="tien_nt_xuat" dataType="N" format="FCAmount" width="100" note2="g_number">
+          <text v="Tiền xuất nt" e="FC Issued Amt."></text>
+        </field>
+        <field name="tien_xuat" dataType="N" format="Amount" width="100" note2="g_number">
+          <text v="Tiền xuất" e="Issued Amt."></text>
+        </field>
+        <field name="sl_cl" dataType="N" format="Qty" width="100" aliasName="[sl_xuat] - [sl_nhap] as " note2="g_number">
+          <text v="Sl còn lại" e="Received Q'ty"></text>
+        </field>
+
+        <field name="gia_nt1" dataType="N" format="FCAmount" width="100" note2="g_number">
+          <text v="Giá chuẩn nt" e="FC Std.Price"></text>
+        </field>
+        <field name="gia1" dataType="N" format="Amount" width="100" note2="g_number">
+          <text v="Giá chuẩn" e="Std.Price"></text>
+        </field>
+        <field name="gia_nt2" dataType="N" format="FCAmount" width="100" note2="g_number">
+          <text v="Giá bán nt" e="FC Price"></text>
+        </field>
+        <field name="gia2" dataType="N" format="Amount" width="100" note2="g_number">
+          <text v="Giá bán" e="Price"></text>
+        </field>
+        <field name="gia_nt" dataType="N" format="FCAmount" width="100" note2="g_number">
+          <text v="Giá tồn nt" e="FC St.Price"></text>
+        </field>
+        <field name="gia" dataType="N" format="Amount" width="100" note2="g_number">
+          <text v="Giá tồn" e="St.Price"></text>
+        </field>
+
+        <field name="tien_ban_nt" dataType="N" format="FCAmount" width="100" aliasName="case when a.ct_nxd = 2 then a.tien_nt2 else 0 end as " join="|ct_nxd|tien_nt2" note2="g_number">
+          <text v="Doanh thu nt" e="FC Revenue"></text>
+        </field>
+        <field name="tien_ban" dataType="N" format="FCAmount" width="100" aliasName="case when a.ct_nxd = 2 then a.tien2 else 0 end as " join="|ct_nxd|tien2" note2="g_number">
+          <text v="Doanh thu" e="FC Revenue"></text>
+        </field>
+        <field name="tien_tl_nt" dataType="N" format="FCAmount" width="100" aliasName="case when a.[ct_nxd] = 1 then a.[tien_nt2] else 0 end as " join="|ct_nxd|tien_nt2" note2="g_number">
+          <text v="Trả lại nt" e="FC Revenue"></text>
+        </field>
+        <field name="tien_tl" dataType="N" format="FCAmount" width="100" aliasName="case when a.[ct_nxd] = 1 then a.[tien2] else 0 end as " join="|ct_nxd|tien2" note2="g_number">
+          <text v="Trả lại" e="FC Revenue"></text>
+        </field>
+        <field name="tien_cl_nt" dataType="N" format="FCAmount" width="100" aliasName="case when a.[ct_nxd] = 2 then a.[tien_nt2] else -a.[tien_nt2] end as " join="|ct_nxd|tien2" note2="g_number">
+          <text v="Dt còn lại nt" e="FC Revenue"></text>
+        </field>
+        <field name="tien_cl" dataType="N" format="FCAmount" width="100" aliasName="case when a.[ct_nxd] = 2 then a.[tien2] else -a.[tien2] end as " join="|ct_nxd|tien2" note2="g_number">
+          <text v="Dt còn lại" e="FC Revenue"></text>
+        </field>
+        <field name="ck_nt" dataType="N" format="FCAmount" width="100" note2="g_number">
+          <text v="Chiết khấu nt" e="FC Discount"></text>
+        </field>
+        <field name="ck" dataType="N" format="Amount" width="100" note2="g_number">
+          <text v="Chiết khấu" e="Discount"></text>
+        </field>
+        <field name="thue_nt" dataType="N" format="FCAmount" width="100" note2="g_number">
+          <text v="Thuế nt" e="FC Tax"></text>
+        </field>
+        <field name="thue" dataType="N" format="Amount" width="100" note2="g_number">
+          <text v="Thuế" e="Tax"></text>
+        </field>
+
+        <field name="tien_nt2" dataType="N" format="FCAmount" hidden="true" width="100" note2="g_number">
+          <text v="Doanh thu nt (All)" e="FC Revenue"></text>
+        </field>
+        <field name="tien2" dataType="N" format="Amount" hidden="true" width="100" note2="g_number">
+          <text v="Doanh thu (All)" e="Revenue"></text>
+        </field>
+
+        <field name="lai_nt" dataType="N" format="FCAmount" width="100" aliasName="case when a.[ct_nxd] = 2 then a.[tien_nt2] else -a.[tien_nt2] end - a.[tien_nt_xuat] - a.[ck_nt] as " join="|ct_nxd|tien_nt2,tien_nt_xuat,ck_nt" note2="g_number">
+          <text v="Lợi nhuận nt" e="FC Profit"></text>
+        </field>
+        <field name="lai" dataType="N" format="Amount" width="100" aliasName="case when a.[ct_nxd] = 2 then a.[tien2] else -a.[tien2] end - a.[tien_xuat] - a.[ck] as " join="|ct_nxd|tien2,tien_xuat,ck" note2="g_number">
+          <text v="Lợi nhuận" e="Profit"></text>
+        </field>
+
+        <field name="g_khac" width="100" fieldType="Temp" note2="#">
+          <text v="Phân tích khác" e="Other"></text>
+        </field>
+        <field name="ma_bp" note="ten_bp" width="100" link="!" note2="g_khac">
+          <text v="Mã bộ phận" e="Department"></text>
+        </field>
+        <field name="ten_bp" width="250" aliasName="bp" join="left join dmbp bp on a.ma_bp = bp.ma_bp|ma_bp" note2="g_khac">
+          <text v="Tên bộ phận" e="Dept Name"></text>
+        </field>
+        <field name="ma_vv" note="ten_vv" width="100" link="!" note2="g_khac">
+          <text v="Mã vụ việc" e="Job"></text>
+        </field>
+        <field name="ten_vv" width="250" aliasName="vv" join="left join dmvv vv on a.ma_vv = vv.ma_vv|ma_vv" note2="g_khac">
+          <text v="Tên vụ việc" e="Job Name"></text>
+        </field>
+        <field name="ma_ct" width="100" link="!" note2="g_khac">
+          <text v="Mã chứng từ" e="VC Code"></text>
+        </field>
+        <field name="unit_id" dataType="I" hidden="true" width="100" note2="g_khac">
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="id" dataType="I" hidden="true" width="100" note2="g_khac">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="ct_nxd" dataType="I" hidden="true" width="100" note2="g_khac" >
+          <text v="NXT" e="NXT"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$analysisSalesData(f){
+  this.constructor(f);
+}
+grid$analysisSalesData.prototype = new DirEvent();
+grid$analysisSalesData.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+grid$analysisSalesData.prototype.beforeInit = function(){
+  var p = this._dir;
+  p.options.hiddenNotExistsColumn = (p.options._data_analysis_struct == '');
+}
+grid$analysisSalesData.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(), dt = g.data;
+
+  if (!$('#content .btn-action').length){
+    var color = Chart.helpers.color;
+    var chartData = {
+        labels: [],
+        datasets: []
+    };
+    var chartView = null;
+  
+    var s = '<button class="btn-action btn-action-v1" id="btnViewChart"><div class="icon-btn-bottom ic-view-dept"></div></button>'
+    $("#content").append(s);
+    $("#btnViewChart").click(function () {
+      var f = $("#form_ChartView");
+      if(f.length == 0){
+        var chartBox = $.fn.addBottomBox("ChartView", p.msg("ChartName"), null, function () { $("#btnViewChart").show(150); });
+        chartBox.append("<div style='height: calc(100% - 30px); overflow-x: hidden; overflow-y: auto;'><canvas id='canvas'></canvas><div>");
+        
+        var ctx = document.getElementById("canvas").getContext("2d");
+        chartView = new Chart(ctx, {
+            type: 'bar',
+            data: chartData,
+            options: {
+                responsive: true,
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: false,
+                    text: ''
+                }
+            }
+        });
+  
+        showChartBox();
+      }
+      else{
+        showChartBox();
+      }
+    });
+    
+    $(".table-bottom table tbody").selectrange({onSelectedRange: function (tbody, allSelected, iFrom, iTo, jFrom, jTo) {
+		  var allData = [], allHeader = [], allLabels = [];
+      var tr = $(".table-bottom table thead tr");
+      var trHead = tr.eq(tr.length - 1).find("th");
+      var xIndex = 0;
+      for(var j = jFrom; j <= jTo; j++){
+        var dType = dt.obj.DataTypes[j + 1];
+        if(dType == "N" || dType == "I"){
+          allHeader.push(trHead.eq(j).find("span").html());
+          allData.push([dt.obj.Rows[iFrom][j + 1]]);
+        
+          for(var i = iFrom; i <= iTo; i++){
+            if(xIndex == 0){
+              var row = tbody.find("tr:nth-child(" + (i + 1) + ")");
+              allLabels.push(row.find("td:nth-child(2)").html());
+            }
+            if(i > iFrom)
+              allData[xIndex].push(dt.obj.Rows[i][j + 1]);
+          }
+          xIndex++;
+        }
+      }
+      chartData.labels = allLabels;
+      chartData.datasets = [];
+      var colorNames = Object.keys(window.chartColors);
+      for(var i = 0; i < allHeader.length; i++){
+        var colorName = colorNames[chartData.datasets.length % colorNames.length];
+        var dsColor = window.chartColors[colorName];
+      
+        var newDataset = {
+            label: allHeader[i],
+            backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+            borderColor: dsColor,
+            borderWidth: 1,
+            data: allData[i]
+        };
+        chartData.datasets.push(newDataset);
+      }
+      chartView.update();    
+	  }});
+  }
+}
+
+function showChartBox(){
+  $("#form_ChartView").show(150);
+  $("#btnViewChart").hide(150);
+}
+window.chartColors = {
+	red: 'rgb(255, 99, 132)',
+	orange: 'rgb(255, 159, 64)',
+	green: 'rgb(75, 192, 192)',
+	blue: 'rgb(54, 162, 235)',
+  yellow: 'rgb(255, 205, 86)',
+	purple: 'rgb(153, 102, 255)'
+};
+]]>
+    </text>
+  </js>
+  <css>
+    <text>
+      <![CDATA[
+canvas {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  margin-left: 10px;
+}      
+.bottom-box-form{
+    width: 450px;
+}
+.ic-view-dept{
+  background-position: 0px 0px;
+}
+      ]]>
+    </text>
+  </css>
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+exec ss_analysisSalesData @ngay_ct1, @ngay_ct2, @data_analysis_struct, '@@gridFieldJoins', '@@gridFields', @strJoin, @strFinding, @loai_du_lieu, @ma_unit, '@@lan', @@userId, @@admin
+        ]]>
+      </text>
+    </processing>
+  </script>
+  <messages>
+    <message val="ChartName">
+      <text v="Biểu đồ" e="Chart"/>
+    </message>
+  </messages>
+</dir>

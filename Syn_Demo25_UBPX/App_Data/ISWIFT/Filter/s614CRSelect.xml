@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+]>
+
+<dir id="s614CRSelect" table="" height="" fieldKey="id" voucherCode="BQ2" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Chi tiết báo giá được chọn" e="Quotation Entry Detail"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" readOnly="true" aliasName="@DFDFrom" disabled="true" allowBlank="false" dataType="D">
+          <text v="Ngày c/từ từ/đến" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" allowBlank="false" disabled="true" inactivate="true" dataType="D" nextRow="false">
+          <text v="Ngày đến" e="Voucher Date"></text>
+        </field>
+        <field name="ma_nt" hidden="true" label="1" field="1">
+          <text v="Mã ngoại tệ" e="Ex Code"></text>
+        </field>
+        <field name="unit_id" dataType="I" hidden="true" label="1" field="1">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+		<field name="ma_job"  hidden="false" label="1" field="1" disabled="true">
+          <text v="Mã/ Số" e="Code/Number Job"></text>
+        </field>
+		<field name="so_job"  hidden="false" nextRow="false" label="" field="1" disabled="true">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_kh" format="U" label="1" disabled="true"  field="1">
+          <text v="Mã khách hàng" e="Code"></text>
+        </field>
+		<field name="ten_kh" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+		 <field name="ma_hang" viewType="Lookup" label="1" disabled="true" field="1" operation="like">
+			<text v="Hãng tàu/ Đại lý" e="Carrier/ Agent Code"></text>
+		</field>
+		<field name="ten_hang" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+        <field name="ma_noi_di" viewType="Lookup" label="1" disabled="true" field="1" operation="like">
+			<text v="Nơi đi" e="Origin "></text>
+			<viewInfo lookupType="One" lookupId="vdmcangdi" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_di" />
+		</field>
+		<field name="ten_noi_di" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+		<field name="ma_noi_den" viewType="Lookup" disabled="true" label="1" field="1" operation="like">
+			<text v="Nơi đến" e="Destination"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangden" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_den"  />
+		</field>
+		<field name="ten_noi_den" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field>  
+		<field name="so_ct" label="1" field="1" disabled="true" hidden="true">
+          <text v="Số báo giá" e="Quot. Number"></text>
+        </field>
+		<field name="so_tk" label="1" rows="1" field="-" disabled="true">
+			<text v="Số tờ khai" e="Declaration No"></text>
+		</field>
+		<field name="book_no" label="1" rows="1" field="-" disabled="true">
+		  <text v="Book No." e="Book No."></text>
+		</field>
+		<field name="dien_giai" label="1" rows="1" field="-" disabled="true">
+		  <text v="Diễn giải" e="Explain"></text>
+		</field>
+		
+        <field name="xprocess" label="1" field="2" valueDefault="2" viewType="Combobox" hidden="true">
+          <text v="Xử lý" e="Process"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Thêm vào chi tiết" e="Append To Detail"></text>
+              </option>
+              <option val="2">
+                <text v="Xóa hết chi tiết và thêm mới" e="Delete All Detail And Append New"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+		<field name="id" dataType="N" hidden="true" fieldType="PK" label="1" field="1"  >
+			<text v="ID" e="Code"></text>
+		</field>
+      </fields>
+    </form>
+	
+    <form tabPageIndex="1" gravity="MiddleLeft" height="0" columns="120,120,240" >
+      <text v="" e=""></text>
+      <fields>
+        <field name="v61" label="" field="-" viewType="Grid">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+ <grids>
+    <grid id="v61" table="v61" fieldKey="id, line" order="id, line" allowFilter="true" readOnly="false" allowOrder="true">
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+			
+	select data as id into #id from dbo.ISWIFTFunction$Split(@so_ct, ',') 
+	
+	select top 0 ma_kien,so_luong,ty_trong,tong_trong,ty_khoi,tong_khoi,id as id_bg,so_ct as so_ct_bg,line as line_bg from v61 a
+	 
+	select a.ma_kh ma_dt_vc , a.so_tk , a.book_no, a.id id_dh_nb, a.so_ct so_ct_nb, a.ma_ct ma_ct_nb, b.ten_kh ten_dt_vc from s61 a 
+	  left join dmkh b on a.ma_kh =b.ma_kh 
+	where a.id in (select top 1 id from #id order by id desc)
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+   
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$s614CRSelect(p){
+  this.constructor(p);
+}
+filter$s614CRSelect.prototype = new DirEvent();
+filter$s614CRSelect.prototype.beforeInit = function(){
+  var p = this._dir;
+  
+}
+
+
+filter$s614CRSelect.prototype.afterInit = function(){
+  var p = this._dir;
+  p.valForm(['ngay_ct1','ngay_ct2','id', 'ma_noi_di', 'ten_noi_di', 'ma_noi_den', 'ten_noi_den','ma_kh','ten_kh', 'ma_nt', 'unit_id'], [p.options._ngay_ct1,p.options._ngay_ct2,p.options._so_ct,p.options._ma_noi_di, p.options._ten_noi_di,p.options._ma_noi_den, p.options._ten_noi_den,p.options._ma_kh, p.options._ten_kh,  p.options._ma_nt, p.options._unit_id]);
+	dir$s614CRSetMaster(p);
+
+}
+
+function dir$s614CRSetMaster(p) {
+  p.request('ma_kh_request', '', ['id']);
+}
+
+filter$s614CRSelect.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir, pa = p.options.parent, g = p.grid(), dt = g.data, master = g.ds.get(1), rErr = '';
+ 
+ var fun = function(){
+	//dt.removeRow('[so_luong] == 0');
+    //pa.appendGrid(0, dt, p.valForm('xprocess') == "2", 'so_luong', 'so_luong');
+	//pa.calcExpressionAll(0, 'so_luong');
+    pa.appendForm(master, 0);
+    p._close();
+  }
+
+  if (rErr.length) {
+    $.question('$VoucherRetrieveLimit', null, p, function(q, v){
+      q._close();
+      if (v) fun();
+    });
+  } else fun();
+  
+
+  //p._close();
+  
+  return false;
+}
+
+         ]]>
+    </text>
+  </js>
+  
+  <script>
+		<request code="ma_kh_request">
+			<text>
+			  <![CDATA[
+			
+					select top 1 a.ma_kh [!ma_kh],a.ma_hang [!ma_hang], a.ma_noi_di [!ma_noi_di], a.ma_noi_den [!ma_noi_den], a.ma_job [!ma_job], a.so_job [!so_job],
+					b.ten_noi_di [!ten_noi_di],c.ten_noi_den [!ten_noi_den],d.ten_kh [!ten_kh],e.ten_hang [!ten_hang], a.dien_giai [!dien_giai], a.so_tk [!so_tk], a.book_no [!book_no]
+				  from s61 a 
+				  left join vdmcangdi b on a.ma_noi_di =b.ma_noi_di 
+				  left join vdmcangden c on a.ma_noi_den =c.ma_noi_den 
+				  left join dmkh d on a.ma_kh =d.ma_kh 
+				  left join vdmhangtau e on a.ma_hang =e.ma_hang 
+				  where a.id = @id
+			]]>
+			</text>
+		</request>
+  </script>
+</dir>

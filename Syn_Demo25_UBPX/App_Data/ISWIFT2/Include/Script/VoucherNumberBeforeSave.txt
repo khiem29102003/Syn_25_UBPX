@@ -1,0 +1,8 @@
+﻿<![CDATA[
+declare @_i_so_ct int, @_so_ct varchar(32), @_exists_so_ct int, @ma_unit nvarchar(256)
+exec ISWIFTStoredCheckVoucherNo @ma_nk, @ngay_ct, '@@voucherCode', @unit_id, @@userId, @@admin, @i_so_ct, @so_ct, '@@table', @id, 1, @_exists_so_ct output, @_i_so_ct output, @_so_ct output
+if @_exists_so_ct = 1 begin
+  select @i_so_ct = @_i_so_ct, @so_ct = case when @ma_nk <> '' then @_so_ct else @so_ct end, @warning = '$VoucherNumberExists'
+end
+select @ma_unit = ma_unit from sysunit where unit_id = @unit_id
+]]>

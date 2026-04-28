@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridNotPrint.xml">
+]>
+
+<dir id="dmkien" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục kiện" e="List of Packages"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid id="0" table="dmkien" fieldKey="ma_kien" order="ma_kien" allowFilter="true" allowOrder="true" >
+      <fields>
+        <field name="ma_kien" fieldType="PK" width="120">
+          <text v="Mã kiện" e="Package Code"></text>
+        </field>
+		<field name="ten_kien" width="250">
+          <text v="Tên kiện" e="Package Name"></text>
+        </field>
+		<field name="ten_kien2" width="250">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+		<field name="ma_kien3" width="120">
+          <text v="Mã cũ" e="Old Case Code"></text>
+        </field>
+		 <field name="ten_kien3" width="250">
+          <text v="Tên cũ" e="Old Case Name"></text>
+        </field>
+        <field name="status" width="120" align="center">
+          <text v="Trạng thái" e="Status"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+	  <script>
+		<query>
+			<text>
+				<![CDATA[
+		declare @strKey nvarchar(3000)
+		exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey , @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+				]]>
+			</text>
+		</query>
+
+		<finding>
+			<text>
+			<![CDATA[
+		declare @strKey nvarchar(3000)
+		set @strKey = @strFinding
+		exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+			]]>	
+			</text>
+		</finding>
+	   </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmkien(f){
+  this.constructor(f);
+}
+grid$dmkien.prototype = new DirEvent();
+grid$dmkien.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

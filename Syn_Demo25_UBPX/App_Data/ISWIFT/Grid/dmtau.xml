@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridNotPrint.xml">
+]>
+
+<dir id="dmtau" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục tàu" e="List of Vessel"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="dmtau" fieldKey="ma_tau" order="ma_tau" allowFilter="true" allowOrder="true">
+      <fields >
+        <field name="ma_tau" fieldType="PK" width="120">
+          <text v="Mã tàu" e="Vessel Code"></text>
+        </field>
+        <field name="ten_tau" width="250">
+          <text v="Tên tàu" e="Vessel Name"></text>
+        </field>
+		<field name="ten_tau2" width="250">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+		<field name="ma_loai" width="120">
+          <text v="Mã loại" e="Type Code"></text>
+        </field>
+		<field name="ma_qg" width="120">
+          <text v="Mã quốc gia" e="Country Code"></text>
+        </field>
+		<field name="so_imo" width="120">
+          <text v="Số imo" e="imo"></text>
+        </field>
+		<field name="hieu_tau" width="120">
+          <text v="Hiệu tàu" e="Ship Sign"></text>
+        </field>
+		<field name="so_dk" width="120">
+          <text v="Số đăng kí" e="Registration Number"></text>
+        </field>
+		<field name="ma_cang" width="120">
+          <text v="Mã cảng" e="Port Code"></text>
+        </field>
+		<field name="ma_hang" width="120">
+          <text v="Mã hãng" e="Brand Code"></text>
+        </field>
+		<field name="status" width="120" align="center">
+          <text v="Trạng thái" e="Status"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+	  <script>
+		<query>
+			<text>
+				<![CDATA[
+		declare @strKey nvarchar(3000)
+		exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey , @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+				]]>
+			</text>
+		</query>
+
+		<finding>
+			<text>
+			<![CDATA[
+		declare @strKey nvarchar(3000)
+		set @strKey = @strFinding
+		exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+			]]>	
+			</text>
+		</finding>
+	   </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmtau(f){
+  this.constructor(f);
+}
+grid$dmtau.prototype = new DirEvent();
+grid$dmtau.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+  
+</dir>

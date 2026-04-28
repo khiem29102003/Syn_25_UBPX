@@ -1,0 +1,22 @@
+﻿<![CDATA[
+IF @action = 'NEW'
+BEGIN
+	DECLARE @max_so_ct_p varchar(32), @so_ct_p_new varchar(32), @prefix varchar(32), @ES int;
+	SET @prefix = LEFT(@so_ct_p, LEN(@so_ct_p) - CHARINDEX('_', REVERSE(@so_ct_p)) + 1);
+	---- Cắt ngắn chuỗi thành ISWL24070001_
+	IF EXISTS (select 1 from @@table where so_ct_p = @so_ct_p and id_dh = @id_dh ) 
+	BEGIN
+		SELECT @max_so_ct_p = MAX(CAST(SUBSTRING(so_ct_p, LEN(@prefix) + 1, LEN(so_ct_p)) AS INT)) FROM @@table WHERE so_ct_p LIKE @so_ct_p + '%' AND id_dh = @id_dh;
+		--SELECT @max_so_ct_p
+		SET @so_ct_p_new = @prefix + RIGHT('0' + CAST(@max_so_ct_p + 1 AS VARCHAR), 2);
+		SET @ES = 1
+	END
+	
+	IF @ES = 1
+	BEGIN
+		SELECT @so_ct_p = @so_ct_p_new , @warning = '$NumberFileExists'
+	END
+		
+
+END
+]]>

@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmbp" table="dmbp" fieldKey="ma_bp" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục bộ phận" e="Department List"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_bp" format="U" label="1" field="1" allowBlank="false" fieldType="PK" >
+          <text v="Mã bộ phận" e="Department code"></text>
+        </field>
+        <field name="ten_bp" label="1" field="2" allowBlank="false" fieldType="PK" >
+          <text v="Tên bộ phận" e="Department name"></text>
+        </field>
+        <field name="ten_bp2" label="1" field="2">
+          <text v="Tên tiếng anh" e="English name"></text>
+        </field>
+        <field name="ghi_chu" label="1" field="-" >
+          <text v="Ghi chú" e="Notes"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmbp(p){
+  this.constructor(p);
+}
+dir$dmbp.prototype = new DirEvent();
+dir$dmbp.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã bộ phận đã tồn tại' else N'Department code is exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã bộ phận đã tồn tại' else N'Department code is exists' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+
+</dir>

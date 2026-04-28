@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmttp" table="dmttp" fieldKey="ma_ttp" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục khu vực" e="List of area"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_ttp" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="5">
+          <text v="Mã khu vực" e="Area code"></text>
+        </field>
+        <field name="ten_ttp" label="1" field="-" allowBlank="false" importable="10">
+          <text v="Tên khu vực" e="Area name"></text>
+        </field>
+		<field name="ten_ttp2" label="1" field="-" allowBlank="false" importable="15">
+          <text v="Tên khu vực 2 (en)" e="English name "></text>
+        </field>
+		<field name="ma_qg" viewType="Lookup" label="1" field="1" clientDefault="true" importable="20">
+          <text v="Quốc gia" e="Country"></text>
+          <viewInfo lookupType="One" lookupId="dmquocgia" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_qg" lookupInfo="dmquocgia|ma_qg|ten_qg" importCheck="@@DF and z.status=1" />
+        </field>
+        <field name="ten_qg" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as " clientDefault="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmttp(p){
+  this.constructor(p);
+}
+dir$dmttp.prototype = new DirEvent();
+dir$dmttp.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid();
+  dir$dmttpDisabledMasterField(p, g);
+}
+function dir$dmttpDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_ttp').trim() != '')
+  {
+    p.setDisabled('ma_ttp', true);
+  }
+  else
+  {
+    p.setDisabled('ma_ttp', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+		<text>
+		  <![CDATA[
+	.control-label.ma_ttp, .control-label.ten_ttp
+	{	
+		//font-weight:bold;	
+		color: #499b98;;
+	}
+		  ]]>
+		</text>
+  </css>
+
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã khu vực đã tổn tại.' else N'Code area already exists.' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã khu vực đã tổn tại.' else N'Code area already exists.' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã khu vực đã tổn tại." e="Code area already exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã khu vực đã tổn tại." e="Code area already exists."/>
+    </message>
+  </messages>
+</dir>

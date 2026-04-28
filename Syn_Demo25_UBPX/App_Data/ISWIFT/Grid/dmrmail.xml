@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridNotPrint.xml">
+]>
+
+<dir id="dmrmail" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách Mail nhận" e="Recipient list"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="dmrmail" fieldKey="ma_rmail" order="ma_rmail" allowFilter="true" allowOrder="true" >
+      <fields>
+	    <field name="ma_rmail" fieldType="PK" width="120">
+          <text v="Mã" e="Code"></text>
+        </field>
+        <field name="r_mail" width="120">
+          <text v="Email" e="Email"></text>
+        </field>
+		<field name="ten_mail" width="250">
+          <text v="Tên mail" e="Full Name"></text>
+        </field>		
+		<field name="ten_mail2" width="250">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+		<field name="lastsentdate" dataType ="D" width="120">
+          <text v="Gửi lần cuối" e="Last Sent Mail"></text>
+        </field>
+		<field name="so_lan_gui" dataType ="N" width="120">
+          <text v="Số lần gửi" e="Total"></text>
+        </field>
+        <field name="status" width="120" align="center">
+          <text v="Trạng thái" e="Status"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+	  <script>
+		<query>
+			<text>
+				<![CDATA[
+		declare @strKey nvarchar(3000)
+		exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey , @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+				]]>
+			</text>
+		</query>
+
+		<finding>
+			<text>
+			<![CDATA[
+		declare @strKey nvarchar(3000)
+		set @strKey = @strFinding
+		exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+			]]>	
+			</text>
+		</finding>
+	   </script>
+	
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmrmail(f){
+  this.constructor(f);
+}
+grid$dmrmail.prototype = new DirEvent();
+grid$dmrmail.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+   <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="qllichtd" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách lịch tiếp dân định kỳ" e="List of Regular Citizen Reception Schedules"></title>
+   <subtitle v="Thêm sửa xóa..." e="Add, Edit, Delete..."></subtitle>
+  <grids>
+    <grid table="qllichtd" fieldKey="ma_lichtd" order="ngay_ct desc" allowFilter="true" allowOrder="true" >
+	  <fields>
+	  	<field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="100" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+		<field name="ngay_ct" dataType="D" width="80" align="center">
+		  <text v="Ngày tạo" e="Issue Date"></text>
+		</field>
+	  	<field name="ma_lichtd" width="120" fieldType="PK">
+		  <text v="Mã lịch tiếp dân" e="Reception Schedule Code"></text>
+		</field>
+		<field name="ma_lhhd" width="120">
+		  <text v="Mã lh hoạt động" e="Activity Type Code"></text>
+		</field>
+		<field name="ten_lhhd" width="200" fieldType="EX">
+          <text v="Loại hình hoạt động" e="Activity Type"></text>
+        </field>
+		<field name="noi_dung" width="300">
+		  <text v="Nội dung tiếp dân" e="Citizen Reception Content"></text>
+		</field>
+		<field name="dk_ngay" width="120">
+          <text v="Thứ trong tuần" e="Participants List"></text>
+        </field>
+		<field name="ma_calv" width="120">
+          <text v="Ca làm việc" e="Chairperson"></text>
+        </field>
+		<field name="dia_chi" width="120">
+			<text v="Địa điểm" e=""></text>
+        </field>
+		<field name="ma_phuongxa" width="120">
+          <text v="Mã phường xã" e="Link Website"></text>
+        </field>
+		<field name="ma_ttp" width="120">
+          <text v="Mã tỉnh thành" e="Link Website"></text>
+        </field>
+
+		<field name="ds_nguoithamgia" width="300">
+          <text v="Danh sách người tham gia" e="Participants List"></text>
+        </field>
+
+
+		<field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_tt, ten_tt%l from dmttsd where status = 1">
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+		
+		&DefaultButton;
+	  
+	  <script>
+
+		<query>
+			<text>
+		 <![CDATA[
+declare @strKey nvarchar(128)
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmlhhd c on a.ma_lhhd = c.ma_lhhd', 'b.ma_unit, c.ten_lhhd', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId    --@@columnFilterKey
+         ]]>
+		  </text>
+		</query>
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = @strFinding;
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', ' left join sysunit b on a.unit_id = b.unit_id left join dmlhhd c on a.ma_lhhd = c.ma_lhhd', 'b.ma_unit, c.ten_lhhd', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId    --@@columnFilterKey
+         ]]>
+          </text>
+        </finding>
+      </script>
+    </grid>
+  </grids>
+  <js>
+    <text>
+      <![CDATA[
+function grid$qllichtd(f){
+  this.constructor(f);
+}
+grid$qllichtd.prototype = new DirEvent();
+grid$qllichtd.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[
+		.tree-form{
+			width: 250px;
+		}
+		.ic-view-dept{
+		  background-position: 0px 0px;
+		}
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 960px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+  <script>
+
+  </script>
+
+</dir>

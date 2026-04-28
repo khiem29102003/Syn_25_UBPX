@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="dmnv" table="" height="" fieldKey="ma_nv" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Điều kiện lọc" e="Filter Condition"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,240,120"  >
+      <fields>
+		<field name="ma_nv" label="1" field="-" operation="ma_nv like N'%%s%'" >
+			<text v="Mã nhân sự" e="Staff Code"></text>
+		</field>
+		<field name="ten_nv" label="1" field="-" operation="ten_nv like N'%%s%'">
+			<text v="Tên nhân sự" e="Staff Name"></text>
+		</field>
+		<field name="ma_pb" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Phòng ban" e="Department"></text>
+			<viewInfo lookupType="One" lookupId="dmpb" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_pb" lookupInfo="dmpb|ma_pb|ten_pb"/>
+        </field>
+        <field name="ten_pb" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		<field name="ma_bp" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Nhóm/Tổ" e="Team"></text>
+			<viewInfo lookupType="One" lookupId="dmbp" lookupKey="status=1 and ma_pb = ![ma_pb]!" lookupCheck="1=1" lookupRef="ten_bp" lookupInfo="dmbp|ma_bp|ten_bp"/>
+        </field>
+        <field name="ten_bp" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		<field name="ma_cv" viewType="Lookup" label="1" field="1" operation="like">
+           <text v="Bậc quản lý" e="Position"></text>
+           <viewInfo lookupType="One" lookupId="dmchucvu" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_cv" lookupInfo="dmchucvu|ma_cv|ten_cv" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_cv" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>	
+		<field name="ma_vtcv" viewType="Lookup" label="1" field="1" operation="like">
+           <text v="Vị trí công việc" e="Job Position"></text>
+           <viewInfo lookupType="One" lookupId="dmvtcv" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_vtcv" lookupInfo="dmvtcv|ma_vtcv|ten_vtcv" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_vtcv" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>	
+		<field name="parent_nv" viewType="Lookup" label="1" field="1" operation="like">
+           <text v="Cấp trên" e="Manager"></text>
+           <viewInfo lookupType="One" lookupId="dmnv" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_nv" lookupInfo="dmnv|ma_nv|ten_nv" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_nv" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>	
+		<field name="xstatus" viewType="Combobox" inactivate="true" label="1" field="[150]" operation="=" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="5">
+                <text v="Đang làm việc" e="1 - Use"></text>
+              </option>
+              <option val="7">
+                <text v="Nghỉ thai sản" e="0 - Not use"></text>
+              </option>
+			  <option val="9">
+                <text v="Nghỉ làm" e="1 - Use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$dmnv(p){
+  this.constructor(p);
+}
+filter$dmnv.prototype = new DirEvent();
+filter$dmnv.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+</dir>

@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY ReportFilterItemGroup SYSTEM "..\Include\XML\ReportFilterItemGroup.xml">
+  <!ENTITY ReportFilterCustomerGroup SYSTEM "..\Include\XML\ReportFilterCustomerGroup.xml">
+  <!ENTITY ReportFilterStockType SYSTEM "..\Include\XML\ReportFilterStockType.xml">
+  <!ENTITY ReportJSLoading SYSTEM "..\Include\XML\ReportJSLoading.xml">
+  <!ENTITY ReportFilterUnit SYSTEM "..\Include\XML\ReportFilterUnit.xml">
+  <!ENTITY ReportFiltering SYSTEM "..\Include\XML\ReportFiltering.xml">
+  <!ENTITY ReportDataAnalysisStruct SYSTEM "..\Include\XML\ReportDataAnalysisStruct.xml">
+
+]>
+
+<dir id="bcdcn" table="" height="" fieldKey="id" dirViewType="Dialog" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Bảng cân đối công nợ" e=""></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" dataType="D">
+          <text v="Ngày từ/đến" e="Date From/To"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+        <field name="tk" hidden="true" label="1" field="1" valueDefault="131" operation="like">
+          <text v="Tài khoản" e="Account"></text>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="1" gravity="MiddleLeft" height="0" columns="120,120,120,120,120"  >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="ma_kh" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Mã khách hàng" e="Customer"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_kh" />
+        </field>
+        <field name="ten_kh" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        &ReportFilterCustomerGroup;
+        &ReportFilterUnit;
+        <field name="mau_bc" dataType="I" viewType="Combobox" valueDefault="1" label="1" field="[360]" >
+          <text v="Mẫu báo cáo" e="Report Form"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Mẫu tiền chuẩn" e="Standard Form"></text>
+              </option>
+              <option val="2">
+                <text v="Mẫu ngoại tệ" e="FC Form"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="2" gravity="MiddleLeft" height="0" columns="120,120,120,120,120"  >
+      <text v="Khác" e="Other"></text>
+      <fields>
+        &ReportFiltering;
+        &ReportDataAnalysisStruct;
+      </fields>
+    </form>
+
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$bcdcn(p){
+  this.constructor(p);
+}
+filter$bcdcn.prototype = new DirEvent();
+filter$bcdcn.prototype.afterInit = function(){
+  var p = this._dir, ev = this;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+exec ss_bcdcn @ngay_ct1, @ngay_ct2, @strJoin, @strFinding, @ma_unit, @mau_bc, '@@lan', @@userId, @@admin
+        ]]>
+      </text>
+    </processing>
+    &ReportJSLoading;
+  </script>
+</dir>

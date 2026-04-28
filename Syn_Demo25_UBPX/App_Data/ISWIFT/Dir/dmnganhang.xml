@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmnganhang" table="dmnganhang" fieldKey="ma_nh" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục ngân hàng" e="List of Bank"></title>
+  <title0 v="Thêm mới" e="Create New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_nh" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="5" >
+          <text v="Mã ngân hàng" e="Bank Code"></text>
+        </field>
+        <field name="ten_nh" label="1" field="-" allowBlank="false" importable="10" >
+          <text v="Tên ngân hàng" e="Bank Name"></text>
+        </field>
+		<field name="ma_qg" viewType="Lookup" label="1" field="1" importable="15" >
+           <text v="Mã quốc gia" e="Country Code"></text>
+           <viewInfo lookupType="One" lookupId="dmquocgia" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_qg" lookupInfo="dmquocgia|ma_qg|ten_qg" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_qg" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		<field name="swift" label="1" field="1" importable="20" >
+          <text v="Mã BIC-SWIFT" e="BIC-SWIFT Code"></text>
+        </field>
+		<field name="post_office" label="1" field="1" importable="25" >
+          <text v="Mã bưu điện" e="Post Office Code"></text>
+        </field>
+		<field name="account_no" label="1" field="1" importable="30" >
+          <text v="Số tài khoản" e="Account No"></text>
+        </field>
+		<field name="Branch" label="1" field="-" importable="35" >
+          <text v="Chi nhánh" e="Branch"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" valueDefault="1" label="1" field="2">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmnganhang(p){
+  this.constructor(p);
+}
+dir$dmnganhang.prototype = new DirEvent();
+dir$dmnganhang.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  
+  <css>
+	<text>
+	  <![CDATA[
+		.control-label.ma_nh, .control-label.ten_nh
+		{	
+			//font-weight:bold;	
+			color: #499b98;;
+		}
+	  ]]>
+	</text>
+  </css>
+  
+  <script>
+	<importing>
+      <text>
+        <![CDATA[
+		@@insert
+        ]]>
+      </text>
+    </importing>
+  </script>
+  
+  <messages>
+	<message val="codeExistsNewMsg">
+		<text v="Mã ngân hàng đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The bank code already exists in the directory, please choose a different code."/>
+	</message>
+	<message val="codeExistsEditMsg">
+		<text v="Mã ngân hàng đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The bank code already exists in the directory, please choose a different code."/>
+	</message>
+  </messages>
+</dir>

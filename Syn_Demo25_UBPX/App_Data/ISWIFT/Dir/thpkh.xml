@@ -1,0 +1,517 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+  <!ENTITY VoucherRequiredFields01 SYSTEM "..\Include\XML\VoucherRequiredFields09.xml">
+  <!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid01.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+
+  <!ENTITY VoucherSaleRequest SYSTEM "..\Include\XML\VoucherSaleRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from thpkh where id = @id and status in (5,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+    ">
+]>
+
+
+<dir id="thpkh" table="thpkh" fieldKey="id" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" voucherCode="AS1" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Gán danh sách khách hàng cho nhân viên" e="Assign customer list to staff"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120" >
+      <fields>
+        <field name="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_nv" clientDefault="true" viewType="Lookup" label="1" field="1" allowBlank="true"  setype="1" nextRow="true">
+          <text v="Mã nhân viên" e="Employee Code"></text>
+          <viewInfo lookupType="One" lookupId="vdmnv" lookupKey="xstatus = 5 and status = 1" lookupCheck="1=1" lookupRef="ten_nv" lookupInfo="vdmnv|ma_nv|ten_nv" />
+        </field>
+        <field name="ten_nv" clientDefault="true" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>	
+		<field name="ngay_hl" label="1" field="[120]" valueDefault="new Date()" dataType="D" allowBlank="false" >
+			<text v="Ngày hiệu lực " e="Effective date"></text>
+		</field>
+		<field name="di_ngay" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="" field="1" >
+			<text v="" e=""></text>
+		</field>
+		<field name="ngay_hld" label="[100]" field="[120]" dataType="D" allowBlank="false" nextRow="false" >
+			<text v="Hiệu lực đến" e="Expiry date"></text>
+		</field>
+        <field name="dien_giai" label="1" rows="1" field="-">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+      </fields>
+    </form>
+	
+    <form gravity="TopRight" columns="120,120" >
+      <fields>
+			&VoucherRequiredFields01;
+      </fields>
+    </form>
+    <form tabPageIndex="1" gravity="MiddleLeft" height="400" columns="120,120,240" >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="thpkhct" allowBlank="false" label="" field="-" viewType="Grid">
+          <text v="Chi tiết" e="Detail"></text>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="7" gravity="MiddleLeft" height="0" columns="120,120,360" >
+      <text v="Đính kèm" e="Attach Files"></text>
+      <fields>
+        <field name="xfile" label="1" field="2" viewType="File" fieldType="EXParam">
+          <text v="Chọn files" e="Attach Files"></text>
+          <viewInfo fileFieldId0="id" fileGroup="AS1" fileExtension="*" maxFileSize="10240" maxFileCount="10"></viewInfo>
+        </field>
+      </fields>
+    </form>
+    <form gravity="BottomLeft" columns="120,120,120,120" >
+      <fields>
+		<field name="t_chon_yn" nextRow="true" label="1" field="1" disabled="true" dataType="N" format="Amount" >
+           <text v="Tổng số lượng" e="Total Amount"></text> 
+        </field> 
+      </fields>
+    </form>
+  </forms>
+
+  <grids>
+    <grid id="thpkhct" table="thpkhct" fieldKey="id, line" order="line" allowFilter="true" readOnly="false" allowOrder="true">
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+        <field name="ma_kh" width="120" allowBlank="false" viewType="Lookup" readOnly="false" importable="1" disabled="false">
+          <text v="Mã số thuế" e="Tax Code"></text>
+          <viewInfo lookupType="One" lookupId="dmkh0" lookupKey="status=1" lookupCheck="1=1" lookupRef="" lookupInfo="dmkh0|ma_kh|ten_kh" />
+        </field>
+        <field name="ten_kh" width="200" fieldType="EX" inactivate="true" readOnly="true" aliasName="b" join = "left join #dmkh0full b on a.ma_kh = b.ma_kh ">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+        <field name="dia_chi" width="200" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+		<field name="home_page" width="100" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Website" e="Website"></text>
+        </field>
+		<field name="ten_ttp" width="120" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Tỉnh thành phố" e="Province/City"></text>
+        </field>
+		<field name="rgname" width="120" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Khu vực" e="Region"></text>
+        </field>
+		<field name="ten_cv" width="120" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Chức vụ" e="Position"></text>
+        </field>
+		<field name="e_mail" width="120" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Email" e="Email"></text>
+        </field>
+		<field name="dien_thoai" width="120" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Điện thoại" e="Province/City"></text>
+        </field>
+		<field name="ten_nh_kh1" width="120" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Tên nhóm kh 1" e="Province/City"></text>
+        </field>
+		<field name="ten_nh_kh2" width="120" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Tên nhóm kh 2" e="Province/City"></text>
+        </field>
+		<field name="ten_nh_kh3" width="120" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Tên nhóm kh 3" e="Province/City"></text>
+        </field>
+		<field name="chon_yn" dataType="N" format="Amount" width="0" valueDefault="1" inactivate="true" readOnly="true" hidden="true">
+          <text v="Chonyn" e="Total Bill"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="paste">
+          <text v="$PasteToolbar" e="$PasteToolbar"></text>
+        </button>
+        <button id="moveup">
+          <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+        </button>
+        <button id="movedown">
+          <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+        </button>
+		<button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="retrieve">
+          <text v="$RetrieveToolbar" e="$RetrieveToolbar"></text>
+          <items>
+            <button id="10">
+              <text v="Nhận dữ liệu danh sách khách hàng"  e="Retrieve customer data/list"/>
+            </button>
+            <button id="80">
+              <text v="-"  e="-"/>
+            </button>
+          </items>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+set nocount on
+
+SELECT 
+    a.ma_kh, a.ten_kh, a.ten_kh2, a.dia_chi, a.home_page, a.ma_ttp, a.rg_code, 
+    a.nguoi_lh, a.ma_cv, a.e_mail, a.dien_thoai, a.nh_kh1, a.nh_kh2, a.nh_kh3, a.ghi_chu,
+    b.ten_nh AS ten_nh_kh1, c.ten_nh AS ten_nh_kh2, d.ten_nh AS ten_nh_kh3,
+    e.ten_ttp, f.rgname, g.ten_cv into #dmkh0full
+FROM 
+    dmkh0 a
+LEFT JOIN dmnh b ON a.nh_kh1 = b.ma_nh AND b.ma_loai_nh = 'KH1'
+LEFT JOIN dmnh c ON a.nh_kh2 = c.ma_nh AND c.ma_loai_nh = 'KH2'
+LEFT JOIN dmnh d ON a.nh_kh3 = d.ma_nh AND d.ma_loai_nh = 'KH3'
+LEFT JOIN dmttp e ON a.ma_ttp = e.ma_ttp
+LEFT JOIN sysregioninfo f ON a.rg_code = f.rg_code
+LEFT JOIN dmchucvu g ON a.ma_cv = g.ma_cv
+
+select @@fields into #t from thpkhct a @@join
+where @@key order by line
+select * from #t order by line
+drop table #t, #dmkh0full
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$thpkh(p){
+  this.constructor(p);
+    document._dir = p;
+}
+dir$thpkh.prototype = new DirEvent();
+dir$thpkh.prototype.beforeInit = function(renderType){
+  this._dir.options._files = null;
+}
+
+dir$thpkh.prototype.afterInit = function(renderType){
+  var p = this._dir, g = p.grid()
+  var exp = {
+	 
+    t_chon_yn: ['@t_chon_yn', '[chon_yn]'],
+
+  }
+  p.applyExpression(exp, g, false);
+  
+  g.FomulaApplied = {
+    "chon_yn":["t_chon_yn"],
+	"ma_kh":["chon_yn","t_chon_yn"]
+  }
+
+  
+  dir$thpkhDisabledMasterField(p, g);
+  dir$thpkhDisabledStatusByAction(p);
+}
+
+dir$thpkh.prototype.beforeButtonDialogClick = function (id) {
+  var p = this._dir, g = p.grid(0), dt = g.data;
+  switch (id) {
+    case 'ok':
+		var d = p.valForm('ngay_hl'),d2 = p.valForm('ngay_hld');
+		var k = $.date(d,"dd/mm/yy"),k2 = $.date(d2,"dd/mm/yy");
+		if (p.valForm('ngay_hld') <= p.valForm('ngay_hl')) { 
+			$.alert(p.msg('noDate')+' ' + k + ' < ' + k2);			
+			return false;
+		}
+    default:
+      break;
+  }
+  return true;
+}
+dir$thpkh.prototype.beforeButtonGridClick = function (id, gindex) {
+  var p = this._dir;
+  switch (id) {
+  	case '10':
+      p.showFilter("thpkhKH0", null, {_ngay_thuchien2: p.valForm('ngay_ct'),_unit_id: p.valForm('unit_id')});	  
+	  return false;
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+
+dir$thpkh.prototype.gridCellValueChange = function (o, g, r, c, v) {
+  var p = this._dir;
+  switch (c){
+      case 'ma_kh':
+		p.grequest(g, 'loadName', '', ['ma_kh'], null, r);
+      break;
+    default:
+      break;
+  }
+}
+dir$thpkh.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+
+    default:
+      break;
+  }
+}
+
+dir$thpkh.prototype.gridDetailActionChange = function(gindex, action, r){
+  var p = this._dir;
+  if (action == 'AfterDeleteRow' || action == 'AfterAppendGrid') dir$thpkhDisabledMasterField(p, p.grid(gindex));
+  return true;
+}
+function dir$thpkhDisabledMasterField(p, g){
+
+}
+
+function dir$thpkhDisabledStatusByAction(p){
+  var o = p.jObject('status');
+  if (p.options.action != 'VIEW') o.find("[value=4],[value=0],[value=5],[value=6],[value=7],[value=9]").remove();
+}
+
+
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+      <![CDATA[
+		.control-label.t_so_luong, .input-field.t_so_luong,
+		{
+			font-weight:bold;
+		}
+		.control-label.ngay_hld
+		{	
+			color: #499b98;
+		}
+		
+		.input-field.status, .input-field.unit_id,.control-label.tt,.control-label.tt2,.control-label.tt3,.input-field.ma_gd
+		{
+			color: #ab6926;
+		}	
+		
+		.ma_kh span {
+		  color: #ab6926;
+		}
+		
+		.grid-input-field.ma_kh
+		{
+			color: #ab6926;	
+		}
+
+      ]]>
+    </text>
+  </css>
+  <script>
+    <request code="LoadName">
+      <text>
+        <![CDATA[
+		
+			SELECT a.ten_kh as #ten_kh, a.dia_chi as #dia_chi, a.home_page as #home_page, a.ma_ttp, CAST('' as nvarchar(256)) as #ten_ttp, a.rg_code, CAST('' as nvarchar(256)) as #rgname, a.ma_cv, CAST('' as nvarchar(256)) as #ten_cv, a.e_mail as #e_mail, a.dien_thoai as #dien_thoai, a.nh_kh1, CAST('' as nvarchar(256)) as #ten_nh_kh1, a.nh_kh2, CAST('' as nvarchar(256)) as #ten_nh_kh2, a.nh_kh3, CAST('' as nvarchar(256)) as #ten_nh_kh3
+			INTO #data
+			FROM dmkh0 a WITH (NOLOCK)
+			WHERE ma_kh = @ma_kh
+			
+			update #data set #ten_ttp = (select isnull(max(ten_ttp), '') from dmttp where ma_ttp = #data.ma_ttp)
+			update #data set #rgname = (select isnull(max(rgname), '') from sysregioninfo where rg_code = #data.rg_code)
+			update #data set #ten_cv = (select isnull(max(ten_cv), '') from dmchucvu where ma_cv = #data.ma_cv)
+			update #data set #ten_nh_kh1 = (select isnull(max(ten_nh), '') from dmnh where ma_nh = #data.nh_kh1 and ma_loai_nh ='KH1')
+			update #data set #ten_nh_kh2 = (select isnull(max(ten_nh), '') from dmnh where ma_nh = #data.nh_kh2 and ma_loai_nh ='KH2')
+			update #data set #ten_nh_kh3 = (select isnull(max(ten_nh), '') from dmnh where ma_nh = #data.nh_kh3 and ma_loai_nh ='KH3')
+			
+			SELECT * FROM #data
+
+			DROP TABLE #data
+
+			
+		]]>
+      </text>
+    </request>
+
+    <query>
+      <text>
+        <![CDATA[
+if @action = 'EDIT' begin
+]]>&CheckUpdatingDeleting;<![CDATA[
+end
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+if @action in ('EDIT', 'VIEW') exec ISWIFTStoreGetListFiles 'xfile', @id, '@@voucherCode', '', @script output
+if @script is null set @script = ''
+
+if @action = 'NEW' begin
+  declare @ma_nk varchar(32), @ten_nk nvarchar(3000), @ngay_ct date, @so_ct varchar(32), @i_so_ct int, @unit_id int
+  select @ngay_ct = getdate(), @unit_id = @@unit
+]]>&VoucherNumberQuery;<![CDATA[
+  if @so_ct is null
+    select '' as [so_ct], 0 as [i_so_ct], @unit_id as [unit_id], '' as ma_nk, '' as ten_nk
+  else
+    select @so_ct as [so_ct], @i_so_ct as [i_so_ct], @unit_id as [unit_id], @ma_nk as ma_nk, @ten_nk as ten_nk
+end
+else select @script as script
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+
+    <declare>
+      <text>
+        <![CDATA[
+declare @warning nvarchar(256), @dOldVoucherDate date, @dVoucherDate date, @nVoucherType tinyint, @strIds varchar(256), @q nvarchar(4000)
+create table #masothue(ma_kh VARCHAR(32))
+set @warning = ''
+         ]]>
+      </text>
+    </declare>
+
+    &VoucherJSLoading;
+
+    <deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct, @dVoucherDate = ngay_ct, @nVoucherType = ma_ngv from thpkh where id = @id
+        ]]>
+      </text>
+    </deleting>
+
+    <deleted>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+
+INSERT INTO #masothue SELECT ma_kh FROM thpkhct WHERE id = @id;
+UPDATE thpkhct set ma_nv = '' FROM thpkhct WHERE ma_kh in (SELECT ma_kh FROM #masothue);
+
+exec ISWIFTStoredDeleteDataWithKey 'thpkhct', @strIds, '', @dVoucherDate
+        ]]>
+      </text>
+    </deleted>
+
+    <updating>
+      <text>
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct from thpkh where id = @id
+INSERT INTO #masothue SELECT ma_kh FROM thpkhct WHERE id = @id;
+        ]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId, i_so_ct = @i_so_ct, so_ct = @so_ct where [%whereFieldKey]
+update dmttin set status = 0 from dmttin where id0 = rtrim(@id) and xgroup = '@@voucherCode'
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+         ]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @ma_ct = '@@voucherCode'
+exec ISWIFTStoredGetIdentityNumber '@@voucherCode', '@@table', @id output
+         ]]>
+      </text>
+    </inserting>
+
+    <inserted>
+      <text>
+        <![CDATA[
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+]]>
+      </text>
+    </inserted>
+    <beforesave>
+      <text>
+	&VoucherNumberBeforeSave;
+        <![CDATA[
+if exists(select 1 from @thpkhct group by ma_kh having count(1) > 1) begin
+  select '$DupciateMST' as message
+  return
+end
+ ]]>
+      </text>
+    </beforesave>
+    <aftersave>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+if @action = 'NEW' set @dOldVoucherDate = @ngay_ct
+update @thpkhct set id = @id, ngay_ct = @ngay_ct, so_ct = @so_ct, status = @status, unit_id = @unit_id, ngay_hl = @ngay_hl, ngay_hld = @ngay_hld
+delete thpkhct where id = @id
+insert thpkhct select * from @thpkhct
+
+insert into #masothue select distinct ma_kh from @thpkhct where ma_kh not in (select ma_kh from #masothue)
+
+UPDATE a SET a.ma_nvbh = @ma_nv FROM dmkh0 a WHERE EXISTS (SELECT 1 FROM #masothue b WHERE a.ma_kh =  b.ma_kh)
+
+IF EXISTS (SELECT 1 FROM #masothue a WHERE NOT EXISTS (SELECT 1 FROM @thpkhct b WHERE b.ma_kh = a.ma_kh))
+BEGIN
+	UPDATE dmkh0 SET ma_nvbh = '' WHERE ma_kh IN (SELECT ma_kh FROM #masothue) AND ma_kh NOT IN (SELECT ma_kh FROM @thpkhct);
+END
+
+exec ISWIFTStoredIncreaseVoucherNo @ma_nk, @ngay_ct, '@@voucherCode', @i_so_ct, @so_ct, '@@table'
+select '' as message, @warning as warning, @id as [#id], @so_ct as [#so_ct], @ma_unit as [#ma_unit]
+
+DROP TABLE #masothue
+]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+    <message val="DupciateMST">
+      <text v="Trùng mã số thuế khách hàng. Vui lòng kiểm tra lại." e="Duplicate tax code. Please check again." />
+    </message>
+  </messages>
+</dir>

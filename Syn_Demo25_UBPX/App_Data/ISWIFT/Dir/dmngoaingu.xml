@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmngoaingu" table="dmngoaingu" fieldKey="ma_nn" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục ngoại ngữ" e="List of Foreign Languages"></title>
+  <title0 v="Thêm mới" e="Create New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_nn" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="5" >
+          <text v="Mã ngoại ngữ" e="Foreign Language Code"></text>
+        </field>
+        <field name="ten_nn" label="1" field="-" allowBlank="false" importable="10" >
+          <text v="Tên ngoại ngữ" e="Foreign Language Name"></text>
+        </field>
+        <field name="ten_nn2" label="1" field="-" importable="15" >
+          <text v="Tên khác" e="Other name"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmngoaingu(p){
+  this.constructor(p);
+}
+dir$dmngoaingu.prototype = new DirEvent();
+dir$dmngoaingu.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmngoaingu.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+dir$dmngoainguDisabledMasterField(p, g);
+
+}
+
+function dir$dmngoainguDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_nn').trim() != '')
+  {
+    p.setDisabled('ma_nn', true);
+  }
+  else
+  {
+    p.setDisabled('ma_nn', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+  
+  <css>
+	<text>
+	  <![CDATA[
+		.control-label.ma_nn, .control-label.ten_nn
+		{	
+			//font-weight:bold;	
+			color: #499b98;;
+		}
+	  ]]>
+	</text>
+  </css>
+  
+  <script>
+	<importing>
+      <text>
+        <![CDATA[
+		@@insert
+        ]]>
+      </text>
+    </importing>
+  </script>
+  
+  <messages>
+	<message val="codeExistsNewMsg">
+		<text v="Mã ngoại ngữ đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The language code already exists in the catalog, please choose a different code."/>
+	</message>
+	<message val="codeExistsEditMsg">
+		<text v="Mã ngoại ngữ đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The language code already exists in the catalog, please choose a different code."/>
+	</message>
+  </messages>
+
+</dir>

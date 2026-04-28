@@ -1,0 +1,193 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="qldctcccd" table="qldctcccd" fieldKey="ma_dancu" transaction="true" tryCatch="true" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+   <title v="Quản lý dân cư theo căn cước công dân" e="Population Management by Citizen ID"></title>
+  <title0 v="Thêm mới - Quản lý dân cư theo căn cước công dân" e="New - Population Management by Citizen ID"></title0>
+  <title1 v="Sửa - Quản lý dân cư theo căn cước công dân" e="Edit - cirulatedPopulation Management by Citizen ID"></title1>
+
+  <forms>
+	<form gravity="TopLeft" columns="120,120,120,120,120" >
+		<fields>
+			<field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_dancu" format="U" label="1" field="2" allowBlank="false" disabled="true" fieldType="PK" importable="5">
+				<text v="Mã cư dân" e="Resident Code"></text>
+			</field>
+			<field name="ten_dancu" allowBlank="false" label="1" field="-" importWidth="250" importable="10">
+				<text v="Tên cư dân" e="Resident Name"></text>
+			</field>
+			<field name="ten_dancu2" label="1" field="-" importWidth="250" importable="15">
+			  <text v="Tên khác" e="Other name"></text>
+			</field>	
+			<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1"> 
+			  <text v="" e=""></text> 
+			</field> 
+      </fields>
+    </form>
+	
+	<form tabPageIndex="1" gravity="MiddleLeft" height="400" columns="120,120,120,120,120" >
+		<text v="Thông tin chi tiết" e="Infor Detail"></text>
+		<fields>
+			<field name="thuongtru_yn" dataType="B" clientDefault="true" label="[80]" field="[20]" valueDefault="0" inactivate="true">
+			  <text v="Thường trú" e="Permanent"></text>
+			</field>
+			<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[40]"> 
+			  <text v="" e=""></text> 
+			</field> 
+			<field name="tamtru_yn" dataType="B" clientDefault="true" label="[80]" field="[20]" valueDefault="0" inactivate="true" nextRow="false">
+			  <text v="Tạm trú" e="Temporary"></text>
+			</field>
+			
+			<field name="ma_ttp" viewType="Lookup" label="1" field="1" allowBlank="false" importable="15">
+			  <text v="Mã tỉnh/thành phố" e="Province/City Code"></text>
+			  <viewInfo lookupType="One" lookupId="dmttp" lookupKey="status=1" lookupRef="ten_ttp" lookupCheck="1=1" lookupInfo="dmttp|ma_ttp|ten_ttp" importCheck="@@DF and z.status=1"/>
+			</field>
+			<field name="ten_ttp" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="" field="[240]" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_phuongxa" viewType="Lookup" label="1" field="1" allowBlank="true" importable="20">
+			  <text v="Mã phường xã" e="Commune Code"></text>
+			  <viewInfo lookupType="One" lookupId="dmphuongxa" lookupKey="status=1 and ma_ttp = ![ma_ttp]!" lookupRef="ten_phuongxa" lookupCheck="1=1" lookupInfo="dmphuongxa|ma_phuongxa|ten_phuongxa" importCheck="@@DF and z.status=1"/>
+			</field>
+			<field name="ten_phuongxa" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="" field="[240]" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_khupho" format="U" viewType="Lookup" label="1" field="1" clientDefault="true" allowBlank="true" importable="95">
+			  <text v="Mã khu phố" e="Neighborhood Code"></text>
+			  <viewInfo lookupType="One" lookupId="dmkhupho" lookupKey="status=1 " lookupCheck="1=1" lookupRef="ten_khupho" lookupInfo="dmkhupho|ma_khupho|ten_khupho" importCheck="@@DF and z.status=1"/>
+			</field>
+			<field name="ten_khupho" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="dia_chi" label="1" field="-" importWidth="250" importable="20" allowBlank="false" >
+			 <text v="Địa chỉ thường trú" e="Permanent Address"></text>
+			</field>
+			<field name="ngay_sinh" label="1" field="1" allowBlank="false" dataType="D" importable="70">
+			  <text v="Ngày sinh" e="Birthday"></text>
+			</field>
+			 <field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1">
+			  <text v="" e=""></text>
+			</field>
+			<field name="gioi_tinh" allowBlank="false" viewType="Combobox" inactivate="false" label="1" field="1" valueDefault="1" nextRow="false" importable="-1">
+			  <text v="Giới tính" e="Sex"></text>
+			  <viewInfo>
+				<options query="select ma_gt, ten_gt%l from dmgioitinh where status = 1 ">
+				</options>
+			  </viewInfo>
+			</field>
+			<field name="so_cccd" allowBlank="false" label="[120]" field="[120]" importable="70">
+			  <text v="Số CCCD/Mã định danh" e="ID Number"></text>
+			</field>
+			 <field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ngay_cap" allowBlank="false" label="1" field="1" dataType="D" nextRow="false" >
+			  <text v="Ngày cấp" e="Date of issue"></text>
+			</field>
+			<field name="dien_thoai" label="1" field="1" allowBlank="false" importable="70">
+			  <text v="Điện thoại" e="Phone"></text>
+			</field>
+			<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1">
+			  <text v="" e=""></text>
+			</field>
+			<field name="dan_toc" allowBlank="false" viewType="Combobox" inactivate="false" label="1" field="1" valueDefault="1" nextRow="false" importable="-1">
+			  <text v="Dân tộc" e="Ethnicity"></text>
+			  <viewInfo>
+				<options query="select ma_dt, ten_dt%l from dmdantoc where status = 1 ">
+				</options>
+			  </viewInfo>
+			</field>
+			<field name="ma_hogiadinh" viewType="Lookup" label="1" field="1" allowBlank="false" importable="15">
+			  <text v="Mã hộ gia đình" e="Type of Residence "></text>
+			  <viewInfo lookupType="One" lookupId="dmhogiadinh" lookupKey="status=1" lookupRef="ma_hogiadinh" lookupCheck="1=1" importCheck="@@DF and z.status=1"/>
+			</field>
+			
+			<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1"> 
+			  <text v="" e=""></text> 
+			</field> 
+			<field name="ma_qhgd" label="1" field="1" viewType="Combobox" inactivate="true" readOnly="false" allowBlank="false" nextRow="false"> 
+				<text v="Quan hệ gia đình" e="Type of Residence "></text> 
+				<viewInfo> 
+					<options query="select ma_qh, ten_qh%l from dmqhgd where status = 1 "> 
+					</options> 
+				</viewInfo> 
+			</field> 
+			<field name="status" viewType="Combobox" inactivate="false" label="1" field="2" valueDefault="1" nextRow="true" importable="-1" >
+			  <text v="Trạng thái" e="Status"></text>
+			  <viewInfo>
+				<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 ">
+				</options>
+			  </viewInfo>
+			</field>
+		</fields>
+	</form>
+	
+	
+	<!-- <form gravity="BottomLeft" columns="120,120,240" > -->
+		<!-- <fields> -->
+			<!-- <field name="ma_hogiadinh" label="1" field="1" viewType="Combobox" inactivate="true" readOnly="false" allowBlank="false">  -->
+				<!-- <text v="Mã hộ gia đình" e="Type of Residence "></text>  -->
+				<!-- <viewInfo>  -->
+					<!-- <options query="select ma_hogiadinh from dmhogiadinh where status = 1 ">  -->
+					<!-- </options>  -->
+				<!-- </viewInfo>  -->
+			<!-- </field>  -->
+			<!-- <field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1">  -->
+			  <!-- <text v="" e=""></text>  -->
+			<!-- </field>  -->
+			<!-- <field name="ma_qhgd" label="1" field="1" viewType="Combobox" inactivate="true" readOnly="false" allowBlank="false" nextRow="false">  -->
+				<!-- <text v="Quan hệ gia đình" e="Type of Residence "></text>  -->
+				<!-- <viewInfo>  -->
+					<!-- <options query="select ma_qh, ten_qh%l from dmqhgd where status = 1 ">  -->
+					<!-- </options>  -->
+				<!-- </viewInfo>  -->
+			<!-- </field>  -->
+		<!-- </fields> -->
+	<!-- </form> -->
+</forms>
+
+&DefaultButton;
+
+<js>
+    <text>
+  <![CDATA[<enc>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</enc>]]>
+    </text>
+  </js>
+	<css>
+		<text>
+			  <![CDATA[<enc>tiEmAFA4kETjnUI1sm9zw9tgf7zmS96CZ63uOeOxbbpOdkA8NvBYguiy0Qfk1AICLKCpNSVfgi04FapCb3Dauomy9y9zMv8qbD9BdwBGvlXfd8pskjSIVl9RhVP/cxsz8joShNLOgiRcZhbm4lpGEvEpQ24B7DxgQyS2DxysCumt4RbbyOFr3cGi+nq9mM4HIx+MdWinZqaz5bk848nNjg==</enc>]]>
+		</text>
+	</css>
+	<script>
+		<query>
+		  <text>
+			<![CDATA[<enc>GJgBVkOd9xy3In+SUACpOOdXdTQbLjDNG098RVYG+mqJrACGNi8MwNsRrtmQkuMIYyR65+M+8FdE2nQkBtdUjjGtkBSGsDqbRbA3vrYN89ZzUnQVJ+W1/9AMkiZ8xTjPYAdSbE6TNHswawXCA3Q7ZKpywgArBHY6CKMo02cq6Ek=</enc>]]>
+		  </text>
+		</query>
+		<updated>
+		  <text>
+			<![CDATA[<enc>sxD5Swu0R4mcxEHdwcy2ynVkJ6IiRfsuHiDzDrC78ELIJg2k4xX5PxEITwgSuDtWSiTOU3sqnIo/Bv0T8e877uKHW6bIEuTFdpbPdQB+xElll2tzxh9iUOpwbot+jXTZNKo5+n5Fy+aXD8VrO81PEw==</enc>]]>
+		  </text>
+		</updated>
+		<inserting>
+		  <text>
+			<![CDATA[<enc>/T/6v4fr7JtuEWROY5bEog4q37AdyKX5y50iwuf8o+kQ/cMLdjO5yBgIja/EXDIb67gjtJCgsvsoKVHnH40ASfHmT/5Pyqyz9fEF+eXazaeFq1QdO25I17j8uqKw4sm7PDDzWS+uYkqIWo1FmMQqY1vwSihUQwhC3DMwYBlMdqW/7I05kvZGgi3lyKQDrJ1gd1u3eDHWrXNvOq+fBosahfSLln2pO8chassI1khVi2Brg84FNLLprzwizWkmE7Kk</enc>]]>
+		  </text>
+		</inserting>
+		<importing>
+			<text>
+			<![CDATA[<enc>sxD5Swu0R4mcxEHdwcy2yi46ZbQRyi0uEDh1tGVfNVOBZJeZZHskWnswm55XGvVMZq7vIrj1gngY5x8IJuKO1pkyFlxS8pifsEwHrhrpEjg=</enc>]]>
+			</text>
+		</importing>
+	</script>
+	<messages>
+		<message val="codeExistsNewMsg">
+		  <text v="Mã văn bản lưu hành đã tồn tại trong danh mục." e="The circulation document code already exists in the list."/>
+		</message>
+	</messages>
+</dir>

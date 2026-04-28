@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="acrecord" table="" height="" fieldKey="ma_so_thue" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Điều kiện lọc" e="Filter"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+		<field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D">
+          <text v="Ngày gọi(từ/đến)" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_so_thue" label="1" field="2" operation="a.ma_so_thue like N'%%s%'">
+          <text v="Mã số thuế" e="Tax Code"></text>
+		</field>
+		<field name="dst" label="1" field="2" operation="a.dst like N'%%s%'" >
+          <text v="Số điện thoại" e="Phone"></text>
+		</field>
+		<field name="src" label="1" field="2" operation="a.src like N'%%s%'" >
+          <text v="Line gọi" e="Line"></text>
+		</field>
+		<field name="ma_donvi" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Đơn vị" e="Unit"></text>
+			<viewInfo lookupType="One" lookupId="dmdonvi" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_dv" lookupInfo="dmdonvi|ma_dv|ten_dv"/>
+        </field>
+        <field name="ten_dv" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		<field name="ma_pb" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Phòng ban" e="Department"></text>
+			<viewInfo lookupType="One" lookupId="dmpb" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_pb" lookupInfo="dmpb|ma_pb|ten_pb"/>
+        </field>
+        <field name="ten_pb" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		<field name="ma_bp" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Bộ phận" e="Division"></text>
+			<viewInfo lookupType="One" lookupId="dmbp" lookupKey="status=1 and ma_pb = ![ma_pb]!" lookupCheck="1=1" lookupRef="ten_bp" lookupInfo="dmbp|ma_bp|ten_bp"/>
+        </field>
+        <field name="ten_bp" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		<field name="accountcode" clientDefault="true" viewType="Lookup" label="1" field="1" allowBlank="true"  setype="1" operation="like">
+		  <text v="Mã người gọi" e="Employee Code"></text>
+		  <viewInfo lookupType="One" lookupId="dmnv" lookupKey="xstatus = 5" lookupCheck="1=1" lookupRef="ten_nv" lookupInfo="dmnv|ma_nv|ten_nv" />
+		</field>
+		<field name="ten_nv" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field>
+
+		<field name="status" viewType="Combobox" inactivate="true" label="1" field="2" valueDefault="1" operation="=" hidden="true"	>
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <!-- <option val="1"> -->
+                <!-- <text v="Chưa bỏ qua" e="Hasn't skip"/> -->
+              <!-- </option> -->
+              <option val="5">
+                <text v="Đã bỏ qua" e="Has skipped"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$acrecord(p){
+  this.constructor(p);
+
+}
+filter$acrecord.prototype = new DirEvent();
+filter$acrecord.prototype.afterInit = function(){
+  var p = this._dir;
+}
+filter$acrecord.prototype.beforeAcceptFilter = function(m2, opt, sub){
+  var p = this._dir;
+  if (opt._status == 1) sub = ['%s', p.msg('approve')]
+  else if (opt._status == 5) sub = ['%s', p.msg('undo')]
+  else sub = ['%s', p.msg('open')]
+  return [m2, opt, sub];
+}
+         ]]>
+    </text>
+  </js>
+<messages>
+<message val="approve">
+  <text v="nghe/bỏ qua" e="Approve/Close"/>
+</message>
+<message val="undo">
+  <text v="nghe/lấy lại" e="Open "/>
+</message>
+<message val="open">
+  <text v="bỏ đóng" e="Open"/>
+</message>
+</messages>
+</dir>

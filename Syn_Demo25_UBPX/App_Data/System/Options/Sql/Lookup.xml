@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<script>
+  <getAutoComplete>
+    <text>
+      <![CDATA[
+--WAITFOR DELAY '00:00:01'
+exec ISWIFTStoreTableAutoComplete '@@table', '@@fieldKey', '@@fieldName', '@@fieldOrder', '', '', '', '', @lookupKey, '', N'@@key', '', @pageIndex, 10, @textFilter, @check, @exact, @@admin, @@userId
+         ]]>
+    </text>
+  </getAutoComplete>
+
+  <query>
+    <text>
+      <![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = @lookupKey + case when @val = '' then '' else ' and (@@fieldKey like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or @@fieldName like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+         ]]>
+    </text>
+  </query>
+
+</script>

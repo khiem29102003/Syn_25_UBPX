@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="m53DH1" table="" height="" fieldKey="id" voucherCode="LX1" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lọc đơn hàng" e="SO Filter"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" allowBlank="false" dataType="D">
+          <text v="Ngày c/từ từ/đến" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" allowBlank="false" inactivate="true" dataType="D" nextRow="false">
+          <text v="Ngày đến" e="Voucher Date"></text>
+        </field>
+        <field name="unit_id" dataType="I" hidden="true" label="1" field="1">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="ma_kh" viewType="Lookup" disabled="true" inactivate="true" label="1" field="1">
+          <text v="Mã khách hàng" e=""></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_kh" />
+        </field>
+        <field name="ten_kh" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="so_ct" label="1" field="1" allowBlank="false" viewType="Lookup">
+          <text v="Số đơn hàng" e="Voucher Number"></text>
+          <viewInfo lookupType="Multi" lookupId="m52" lookupRef="ds_so_ct" lookupKey="ngay_ct between ![ngay_ct1]! and ![ngay_ct2]! and ma_kh = ![ma_kh]! and unit_id = ![unit_id]! and status in (5,6) and ma_ngv = 5" />
+        </field>
+        <field name="ds_so_ct" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$m53DH1(p){
+  this.constructor(p);
+}
+filter$m53DH1.prototype = new DirEvent();
+filter$m53DH1.prototype.afterInit = function(){
+  var p = this._dir;
+  p.valForm(['ngay_ct2', 'ma_kh', 'ten_kh', 'unit_id'], [p.options._ngay_ct2, p.options._ma_kh, p.options._ten_kh, p.options._unit_id]);
+}
+filter$m53DH1.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir;
+  m2.val('id', 'I', p.options.parent.valForm('id'))
+  opt = $.extend({}, opt, {controller: "m53DH1Select", folder: "Filter", dirViewType: "Dialog", parent: p.options.parent, useDataSet: true, memvars: m2});
+  p._close();
+  $.createDir(false, opt);
+  return false;
+}
+         ]]>
+    </text>
+  </js>
+</dir>

@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="cttk" dirViewType="Dialog" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Tính tồn kho tức thời" e="Recalculate Quantity on Hand"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,240,120">
+      <fields>
+        <field name="nam" label="1" field="1" format="-1" maxLength="4" allowBlank="false" dataType="I" valueDefault="(new Date).getFullYear()">
+          <text v="Năm" e="Year"></text>
+        </field>
+        <field name="ma_vt" viewType="Lookup" label="1" field="1">
+          <text v="Mã vật tư" e="Item"></text>
+          <viewInfo lookupType="One" lookupId="dmvt" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_vt" lookupExactValue="1" />
+        </field>
+        <field name="ten_vt" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_kho" viewType="Lookup" label="1" field="1">
+          <text v="Mã kho" e="Site"></text>
+          <viewInfo lookupType="One" lookupId="dmkho" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_kho" lookupExactValue="1" />
+        </field>
+        <field name="ten_kho" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$cttk(p){
+  this.constructor(p);
+}
+filter$cttk.prototype = new DirEvent();
+filter$cttk.prototype.afterInit = function(){
+  var p = this._dir;
+  p.valForm("nam", (new Date()).getFullYear());
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+exec ISWIFTStoredCalcCurrentStock @nam, @ma_vt, @ma_kho
+select '$Processed' as message, 'p._close()' as script
+        ]]>
+      </text>
+    </processing>
+  </script>
+</dir>

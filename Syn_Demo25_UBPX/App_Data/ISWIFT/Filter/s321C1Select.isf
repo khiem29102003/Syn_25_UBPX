@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+]>
+
+<dir id="s331C1Select" table="" height="" fieldKey="id" voucherCode="" dirViewType="Dialog" readOnly="true" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Chi tiết cảng được chọn" e="Port Details Selected"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+       
+        <field name="unit_id" dataType="I" hidden="true" label="1" field="1">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+		
+        <field name="ma_ttp" viewType="Lookup" disabled="true" label="1" field="1">
+			<text v="Khu vực" e="Area "></text>
+			<viewInfo lookupType="One" lookupId="dmttp" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_ttp" />
+		</field>
+		<field name="ten_ttp" allowBlank="true" label="1" disabled="true"  field="-" importWidth="250" importable="10">
+          <text v="Tên khu vực" e="Area Name"></text>
+        </field>
+		<field name="ma_qg" viewType="Lookup" label="1" field="1" operation="like" disabled="true">
+			<text v="Quốc gia" e="Country"></text>
+			<viewInfo lookupType="One" lookupId="dmquocgia" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_qg"  />
+		</field>
+		<field name="ten_qg" allowBlank="true" label="1" disabled="true"  field="-" importWidth="250" importable="10">
+          <text v="Tên quốc gia" e="Country Name"></text>
+        </field>
+		
+		<field name="xprocess" label="1" field="2" valueDefault="2" viewType="Combobox">
+          <text v="Xử lý" e="Process"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Thêm vào chi tiết" e="Append To Detail"></text>
+              </option>
+              <option val="2">
+                <text v="Xóa hết chi tiết và thêm mới" e="Delete All Detail And Append New"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      <field name="id" dataType="N" hidden="true" fieldType="PK" label="1" field="1"  >
+          <text v="ID" e="Code"></text>
+      </field>
+    </fields>
+    </form>
+	
+    <form tabPageIndex="1" gravity="MiddleLeft" height="350" columns="120,120,240" >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="vdmcangap" label="" field="-" viewType="Grid">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+ <grids>
+    <grid id="vdmcangap" table="vdmcangap" fieldKey="ma_cang" order="ma_cang" allowFilter="true" readOnly="true" allowOrder="true">
+      <fields>
+        <field name="chon_yn" dataType="B" width="50" clientDefault="true" hidden="true" inactivate="true" readOnly="false">
+          <text v="Chọn" e="Location"></text>
+        </field>
+        <field name="ma_cang" width="100" allowBlank="false" viewType="Lookup" readOnly="false" >
+          <text v="Mã cảng" e="Port Code"></text>
+          <viewInfo lookupType="One" lookupId="vdmcangap" lookupKey="status=1 and hc_yn = 1 or kkh_yn =1" lookupCheck="1=1" lookupRef="ten_cang" lookupInfo="vdmcangap|ma_cang|ten_cang" />
+        </field>
+        <field name="ten_cang" width="150" fieldType="EX" inactivate="true" readOnly="true">
+          <text v="Tên cảng" e="Port Name"></text>
+        </field>
+		<field name="ma_ttp" width="100" allowBlank="false" viewType="Lookup" readOnly="false" hidden="true">
+          <text v="Mã khu vực" e="Fee Code"></text>
+          <viewInfo lookupType="One" lookupId="vdmcangap" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_ttp" lookupInfo="dmttp|ma_ttp|ten_ttp" />
+        </field>
+        <field name="ten_ttp" width="150" fieldType="EX" inactivate="true" readOnly="true" aliasName="b" join=" left join dmttp b on a.ma_ttp = b.ma_ttp ">
+          <text v="Khu vực" e="Area"></text>
+        </field>
+		<field name="ma_qg" width="100" allowBlank="false" viewType="Lookup" readOnly="false" hidden="true" >
+          <text v="Mã quốc gia" e="Fee Code"></text>
+          <viewInfo lookupType="One" lookupId="vdmcangap" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_qg" lookupInfo="dmquocgia|ma_qg|ten_qg" />
+        </field>
+        <field name="ten_qg" width="150" fieldType="EX" inactivate="true" readOnly="true" aliasName="c" join=" left join dmquocgia c on a.ma_qg = c.ma_qg">
+          <text v="Quốc gia" e="Contry"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[<enc>n+PwgBRQAOJqFVWhO9ChPEF3yzSx1NobMR8yIB2vAQWEfx1zVdARmaVnBVGFZXgQztZGP9TFt1rLXrUeCSe3F9HdBINnvOuCjHgV2luLF2Fbvv5yh8bK6ve4mI2et3MssLCLGi97Ui47XTSV69YmywBb8l7ztXu+4wjIpTqzRuIIr81HLtHj51YcHPj+2meMsGaWjsn5UpRXYk0jXyKxsUkvx0p42ENuKQQv36jF/3aH7qols5piMuyi3A6PIJAkx42NqPRSHvBSPOAuTsZHDVZKYDtt2dV6aG0+dx2AkXTa+sbJV2VIcl74LJEy52jEL+OM4Pu1SzrUvRcrzg/NAGEXIWf3UHS5Tjyij2dvseM=</enc>]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+   
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>46xMFIvW6LnNzmAbVR206vlWD+9g1N+aMwDdWP9TlTHXZ6/PICz5v8YrJzEmcDRtwooqln3GXLhWVArhTIWPRNoOyGaK/dLtlaEvux+wIfIQlJbcXWrSXhHeQintBx0fcePg6orN7v7HutP9/nDBFbih6h+BBveBhZ4Pfer87TURGP3CVIXvlgFB8d+g0pUh6f7U3R/uYOD+41tvVpuuHXqSjTd/JzHVUzYuW51KOgc8c4Jr22jHprvRMQsIhVU0rt+S5V9+1GjZnuX8H0xdZWIAn67FPKkF3DFqZvAJNrKYUvlUZ8gI2gbHMp31NOt4hPpBjpEatCTTpFQTIp8JX+n7XGgeaD/TMPjCoHzpQzvwy7Di5OYZ/TE9ibSP0DJ+V+/BSxD/0nwv66E4p7IQpAcru0lhu2g3hV8EfzDuLPbOSW7E5FKHqer3jfoqvoBXVWGqb3MInf8zZQz10UqSrdkMOfIzO6CTT2EunWWZTI+mrsWfzCXodbOPzu1ZSXslS+ib3qY2PGoGdRsYZJZjb3cUH+ZWfTo/bCGSpRezG4rz7Z9JXtgWUOG9O7rqoqdx5RkKQFu7DoN2uVBEtBNArt9kSrXE6bDe/y/R4EKmXrXziT85bICI8J1vEvdgJr2wbeAjwMtjelMIK6HgvkbIP8N5TxNeRB6fVxjTmJae1x/07PtlD4E6GgUoKxXVV6a1INrqF1hOrnFTMprfaQECgIIf6aHUOMig5BrE/6C62EjS5okkg6HuvFGbI5sMNFngCcyzbHeXzV3DtdlJRRifTdKiFtMBmyl9RsJ9bvJkckAkKTSqNb4um6s/mwr/Wqky+W4Y8QFqiPcF6mT1es8Qo2+CWaoOeypBd6g4X1ai2MA=</enc>]]>
+    </text>
+  </js>
+  
+  <script>
+		<request code="ma_kh_request">
+			<text>
+			  <![CDATA[<enc>FTkFm4igxdrH0JOWCSE3pGHYC1WBe4eYZxuXqK1sQME=</enc>]]>
+			</text>
+		  </request>
+    
+  </script>
+  
+</dir>

@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="dmhangxe" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục hãng xe" e="List of Vehicle Brand"></title>
+  <grids>
+    <grid table="dmhangxe" fieldKey="ma_hang" fieldName="ten_hang" order="ma_hang" allowFilter="true" allowOrder="true" key="" >
+      <fields join="">
+        <field name="ma_hang" fieldType="PK" width="120" filterType="Code" >
+          <text v="Mã hãng" e="Brand Code"></text>
+        </field>
+        <field name="ten_hang" width="250">
+          <text v="Tên hãng" e="Brand Name"></text>
+        </field>
+		<field name="ten_hang2" width="250">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+      </fields>
+	  <script>
+		<query>
+		  <text>
+			<![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = @lookupKey + case when @val = '' then '' else ' and (@@fieldKey like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or @@fieldName like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+			 ]]>
+		  </text>
+		</query>
+	  </script>
+    </grid>
+  </grids>
+</dir>

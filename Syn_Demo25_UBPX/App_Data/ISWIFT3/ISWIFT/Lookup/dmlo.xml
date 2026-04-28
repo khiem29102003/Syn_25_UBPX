@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="dmlo" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục lô" e="Lot Maintenance"></title>
+  <grids>
+    <grid table="dmlo" fieldKey="ma_lo" fieldName="ten_lo" order="ma_lo" allowFilter="true" allowOrder="true" key="" >
+      <fields>
+        <field name="ma_lo" fieldType="PK" width="100" filterType="Code" >
+          <text v="Mã lô" e="Lot"></text>
+        </field>
+        <field name="ten_lo" width="300">
+          <text v="Tên lô" e="Description"></text>
+        </field>
+        <field name="ma_vt" width="100">
+          <text v="Mã vật tư" e="Item"></text>
+        </field>
+        <field name="sl_ton" dataType="N" format="Qty" aliasName="cast (0 as numeric(19,5)) as " width="100">
+          <text v="Tồn" e="Stock"></text>
+        </field>
+      </fields>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = @lookupKey + case when @val = '' then '' else ' and (@@fieldKey like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or @@fieldName like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', N'@@key', @key2, @@filterKey, 'exec ISWIFTStoredGetCurrentStock ''U'', ''#v'', '''', '''', '''', '''', 0, ''ma_vt,ma_lo''', @pageIndex, 10, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+    
+    </grid>
+  </grids>
+</dir>

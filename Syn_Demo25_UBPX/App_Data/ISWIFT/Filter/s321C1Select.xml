@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+]>
+
+<dir id="s331C1Select" table="" height="" fieldKey="id" voucherCode="" dirViewType="Dialog" readOnly="true" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Chi tiết cảng được chọn" e="Port Details Selected"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+       
+        <field name="unit_id" dataType="I" hidden="true" label="1" field="1">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+		
+        <field name="ma_ttp" viewType="Lookup" disabled="true" label="1" field="1">
+			<text v="Khu vực" e="Area "></text>
+			<viewInfo lookupType="One" lookupId="dmttp" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_ttp" />
+		</field>
+		<field name="ten_ttp" allowBlank="true" label="1" disabled="true"  field="-" importWidth="250" importable="10">
+          <text v="Tên khu vực" e="Area Name"></text>
+        </field>
+		<field name="ma_qg" viewType="Lookup" label="1" field="1" operation="like" disabled="true">
+			<text v="Quốc gia" e="Country"></text>
+			<viewInfo lookupType="One" lookupId="dmquocgia" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_qg"  />
+		</field>
+		<field name="ten_qg" allowBlank="true" label="1" disabled="true"  field="-" importWidth="250" importable="10">
+          <text v="Tên quốc gia" e="Country Name"></text>
+        </field>
+		
+		<field name="xprocess" label="1" field="2" valueDefault="2" viewType="Combobox">
+          <text v="Xử lý" e="Process"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Thêm vào chi tiết" e="Append To Detail"></text>
+              </option>
+              <option val="2">
+                <text v="Xóa hết chi tiết và thêm mới" e="Delete All Detail And Append New"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      <field name="id" dataType="N" hidden="true" fieldType="PK" label="1" field="1"  >
+          <text v="ID" e="Code"></text>
+      </field>
+    </fields>
+    </form>
+	
+    <form tabPageIndex="1" gravity="MiddleLeft" height="350" columns="120,120,240" >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="vdmcangap" label="" field="-" viewType="Grid">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+ <grids>
+    <grid id="vdmcangap" table="vdmcangap" fieldKey="ma_cang" order="ma_cang" allowFilter="true" readOnly="true" allowOrder="true">
+      <fields>
+        <field name="chon_yn" dataType="B" width="50" clientDefault="true" hidden="true" inactivate="true" readOnly="false">
+          <text v="Chọn" e="Location"></text>
+        </field>
+        <field name="ma_cang" width="100" allowBlank="false" viewType="Lookup" readOnly="false" >
+          <text v="Mã cảng" e="Port Code"></text>
+          <viewInfo lookupType="One" lookupId="vdmcangap" lookupKey="status=1 and hc_yn = 1 or kkh_yn =1" lookupCheck="1=1" lookupRef="ten_cang" lookupInfo="vdmcangap|ma_cang|ten_cang" />
+        </field>
+        <field name="ten_cang" width="150" fieldType="EX" inactivate="true" readOnly="true">
+          <text v="Tên cảng" e="Port Name"></text>
+        </field>
+		<field name="ma_ttp" width="100" allowBlank="false" viewType="Lookup" readOnly="false" hidden="true">
+          <text v="Mã khu vực" e="Fee Code"></text>
+          <viewInfo lookupType="One" lookupId="vdmcangap" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_ttp" lookupInfo="dmttp|ma_ttp|ten_ttp" />
+        </field>
+        <field name="ten_ttp" width="150" fieldType="EX" inactivate="true" readOnly="true" aliasName="b" join=" left join dmttp b on a.ma_ttp = b.ma_ttp ">
+          <text v="Khu vực" e="Area"></text>
+        </field>
+		<field name="ma_qg" width="100" allowBlank="false" viewType="Lookup" readOnly="false" hidden="true" >
+          <text v="Mã quốc gia" e="Fee Code"></text>
+          <viewInfo lookupType="One" lookupId="vdmcangap" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_qg" lookupInfo="dmquocgia|ma_qg|ten_qg" />
+        </field>
+        <field name="ten_qg" width="150" fieldType="EX" inactivate="true" readOnly="true" aliasName="c" join=" left join dmquocgia c on a.ma_qg = c.ma_qg">
+          <text v="Quốc gia" e="Contry"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+	---select data as id into #id from dbo.ISWIFTFunction$Split(@so_ct, ',')
+	select @@fields into #t from vdmcangap a @@join
+	  where a.ma_ttp like '%'+@ma_ttp+'%' and  a.ma_qg like '%'+@ma_qg+'%' and (a.hc_yn = 1 or a.kkh_yn = 1)
+	  order by ma_cang
+
+	select * from #t order by ma_cang
+
+	select @ma_ttp as ma_ttp , @ma_qg as ma_qg from vdmcangap a 
+	  left join dmttp b on a.ma_ttp =b.ma_ttp left join dmquocgia c on a.ma_qg =c.ma_qg
+	where a.ma_ttp like '%'+@ma_ttp+'%' and  a.ma_qg like '%'+@ma_qg+'%' and (a.hc_yn = 1 or a.kkh_yn = 1)
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+   
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$s331C1Select(p){
+  this.constructor(p);
+}
+filter$s331C1Select.prototype = new DirEvent();
+filter$s331C1Select.prototype.beforeInit = function(){
+  var p = this._dir;
+  
+}
+
+
+filter$s331C1Select.prototype.afterInit = function(){
+  var p = this._dir;
+  p.valForm(['ngay_ct', 'ma_ttp', 'ten_ttp', 'ma_qg', 'ten_qg', 'unit_id'], [p.options._ngay_ct,p.options._chon_yn,p.options._ma_ttp, p.options._ten_ttp,p.options._ma_qg, p.options._ten_qg, p.options._unit_id]);
+
+
+}
+
+function dir$s331C1SetMaster(p) {
+  p.request('ma_kh_request', '', ['id']);
+}
+filter$s331C1Select.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir, pa = p.options.parent, g = p.grid(0), dt = g.data, master = g.ds.get(1), rErr = '';
+ 
+ var fun = function(){
+	 // p.valForm(['ngay_ct1','ngay_ct2','id', 'ma_noi_di', 'ten_noi_di', 'ma_noi_den', 'ten_noi_den', 'ma_nt', 'unit_id'], [p.options._ngay_ct1,p.options._ngay_ct2,p.options._so_ct,p.options._ma_noi_di, p.options._ten_noi_di,p.options._ma_noi_den, p.options._ten_noi_den,  p.options._ma_nt, p.options._unit_id]);
+    dt.removeRow('[chon_yn0] == 0');
+    pa.appendGrid(1, dt, p.valForm('xprocess') == "2", '', '');
+    //pa.calcExpressionAll(1, 'chon_yn');
+    //pa.appendForm(master, 0);
+    p._close();
+	//pa.valForm([ma_noi_den],['ADDD']);
+	// p._close();
+  }
+
+  if (rErr.length) {
+    $.question('$VoucherRetrieveLimit', null, p, function(q, v){
+      q._close();
+      if (v) fun();
+    });
+  } else fun();
+  
+
+  //p._close();
+  
+  return false;
+}
+         ]]>
+    </text>
+  </js>
+  
+  <script>
+		<request code="ma_kh_request">
+			<text>
+			  <![CDATA[
+
+			]]>
+			</text>
+		  </request>
+    
+  </script>
+  
+</dir>

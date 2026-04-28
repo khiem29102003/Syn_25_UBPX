@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="dmpldancu" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục phân loại dân cư" e="Population Classification List"></title>
+  <grids>
+    <grid table="dmpldancu" fieldKey="ma_pl" fieldName="ten_pl" order="ma_pl" allowFilter="true" allowOrder="true">
+      <fields>
+		<field name="ma_pl" width="100">
+          <text v="Mã phân loại dân cư" e="Population Classification Code"></text>
+        </field>
+        <field name="ten_pl" width="300">
+		  <text v="Tên phân loại dân cư" e="Population Classification Name"></text>
+        </field>
+		<field name="ten_pl2" width="300">
+         <text v="Tên English" e="English Name"></text>
+        </field>
+      </fields>
+	<script>
+	<query>
+	  <text>
+		<![CDATA[
+	declare @key2 nvarchar(3000)
+	select @key2 = @lookupKey + case when @val = '' then '' else ' and (@@fieldKey like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or @@fieldName like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+	exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+	 ]]>
+	  </text>
+	</query>
+	</script>
+    </grid>
+  </grids>
+</dir>

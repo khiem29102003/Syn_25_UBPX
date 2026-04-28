@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmjob" table="dmjob" fieldKey="ma_ct" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục Job" e="List of Job"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_ct" format="U" label="1" field="1" allowBlank="false" fieldType="PK" >
+          <text v="Mã job" e="Job code"></text>
+        </field>
+        <field name="ten_ct" label="1" field="-" allowBlank="false" fieldType="PK" >
+          <text v="Tên job" e="Job name"></text>
+        </field>
+        <field name="ten_ct2" label="1" field="-">
+          <text v="Tên khác" e="Other name"></text>
+        </field>
+		<field name="ma_gd" viewType="Lookup" label="1" field="1" allowBlank="true">
+          <text v="Mã giao dịch" e="Trading code"></text>
+          <viewInfo lookupType="One" lookupId="dmgd" lookupKey="status = 1 and ma_ct = 'DM9'" lookupCheck="1=1" lookupRef="ten_gd" lookupInfo="dmgd|ma_gd|ten_gd" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_gd" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>	
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmjob(p){
+  this.constructor(p);
+}
+dir$dmjob.prototype = new DirEvent();
+dir$dmjob.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmjob.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+dir$dmjobDisabledMasterField(p, g);
+
+}
+
+function dir$dmjobDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_ct').trim() != '')
+  {
+    p.setDisabled('ma_ct', true);
+  }
+  else
+  {
+    p.setDisabled('ma_ct', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+   <css>
+		<text>
+		  <![CDATA[
+	.control-label.ma_ct, .control-label.ten_ct
+	{	
+
+		color: #499b98;;
+	}
+		  ]]>
+		</text>
+  </css>
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã job đã tồn tại' else N'Job code is exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã job đã tồn tại' else N'Job code is exists' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+
+</dir>

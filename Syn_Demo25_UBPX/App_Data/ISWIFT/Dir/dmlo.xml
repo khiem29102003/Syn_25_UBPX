@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmlo" table="dmlo" fieldKey="ma_vt, ma_lo" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục lô" e="Lot Maintenance"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_vt" allowBlank="false" viewType="Lookup" readOnly="false" fieldType="PK">
+          <text v="Mã vật tư" e="Item Code"></text>
+          <viewInfo lookupType="One" lookupId="dmvt" lookupKey="status=1 and lo_yn = 1" lookupCheck="1=1" lookupRef="ten_vt" lookupInfo="dmvt|ma_vt|ten_vt" />
+        </field>
+        <field name="ten_vt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+
+        <field name="ma_lo" format="U" label="1" field="1" allowBlank="false" fieldType="PK" >
+          <text v="Mã lô" e="Lot"></text>
+        </field>
+        <field name="ten_lo" label="1" field="-" allowBlank="false" fieldType="PK" >
+          <text v="Tên lô" e="Description"></text>
+        </field>
+        <field name="ten_lo2" label="1" field="-">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+        <field name="ma_vt2" format="U" label="1" field="1">
+          <text v="Mã phụ" e="Part Number"></text>
+        </field>
+
+        <field name="ngay_nhap" label="1" field="1" dataType="D">
+          <text v="Ngày nhập" e="Receipt Date"></text>
+        </field>
+        <field name="ngay_sx" label="1" field="1" dataType="D">
+          <text v="Ngày sản xuất" e="Manufacturing Date"></text>
+        </field>
+        <field name="ngay_hhsd" label="1" field="1" dataType="D">
+          <text v="Hạn sử dụng" e="Expiry Date"></text>
+        </field>
+        <field name="ngay_hhbh" label="1" field="1" dataType="D">
+          <text v="Ngày bảo hành" e="Warranty Date"></text>
+        </field>
+
+        <field name="ghi_chu" rows="3" label="1" field="-" >
+          <text v="Ghi chú" e="Notes"></text>
+        </field>
+
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmlo(p){
+  this.constructor(p);
+}
+dir$dmlo.prototype = new DirEvent();
+dir$dmlo.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã vật tư và lô đã có trong danh mục lô." e="The record consisting of item and lot is already exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã vật tư và lô đã có trong danh mục lô." e="The record consisting of item and lot is already exists."/>
+    </message>
+  </messages>
+
+</dir>

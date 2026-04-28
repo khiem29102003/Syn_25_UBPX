@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridFinding.xml">
+]>
+
+<dir id="cdkh" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Vào đầu kỳ công nợ khách hàng" e="Customer Opening Balance"></title>
+  <subtitle v="Năm {nam}..." e="Year {nam}..."></subtitle>
+  <grids>
+    <grid table="cdkh" fieldKey="nam,unit_id,ma_kh" order="ma_kh" allowFilter="true" allowOrder="true" key="unit_id = @@unit" >
+      <fields>
+        <field name="nam" width="100" fieldType="PK" hidden="true" format="-1" dataType="I">
+          <text v="" e=""></text>
+        </field>
+        <field name="unit_id" width="100" fieldType="PK" hidden="true" format="-1" dataType="I">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_kh" fieldType="PK" width="100">
+          <text v="Mã kh/ncc" e="Code"></text>
+        </field>
+        <field name="ten_kh" width="250" fieldType="EX" aliasName="b">
+          <text v="Tên kh/ncc" e="Description"></text>
+        </field>
+
+        <field name="du_no0" width="120" dataType="N" format="0">
+          <text v="Dư nợ" e="Debit Balance"></text>
+        </field>
+        <field name="du_co0" width="120" dataType="N" format="0">
+          <text v="Dư có" e="Credit Balance"></text>
+        </field>
+        <field name="du_no_nt0" width="120" dataType="N" format="0">
+          <text v="Dư nợ nt" e="FC Dr. Balance"></text>
+        </field>
+        <field name="du_co_nt0"  width="120" dataType="N" format="0">
+          <text v="Dư có nt" e="FC Cr. Balance"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = 'nam = ' + rtrim(@nam)
+exec iswiftStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmkh b on a.ma_kh = b.ma_kh', 'b.ten_kh', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$cdkh(f){
+  this.constructor(f);
+}
+grid$cdkh.prototype = new DirEvent();
+grid$cdkh.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+</dir>

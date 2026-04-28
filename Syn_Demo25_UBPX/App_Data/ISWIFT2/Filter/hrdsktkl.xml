@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY ReportJSLoading SYSTEM "..\Include\XML\ReportJSLoading.xml">
+]>
+
+<dir id="hrdsktkl" table="" height="" fieldKey="id" dirViewType="Dialog" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách khen thưởng kỷ luật" e="Employee List"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_vao_tu" label="1" field="1" clientDefault="true" dataType="D">
+          <text v="Ngày nhận việc từ/đến" e="Date From/To"></text>
+        </field>
+        <field name="ngay_vao_den" label="" field="1" clientDefault="true" valueDefault="new Date()" allowBlank="false" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+        <field name="ngay_ct_tu" label="1" field="1" clientDefault="true" dataType="D">
+          <text v="Ngày chính thức từ/đến" e="Date From/To"></text>
+        </field>
+        <field name="ngay_ct_den" label="" field="1" clientDefault="true" valueDefault="new Date()" allowBlank="false" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_bp" format="U" viewType="Lookup" label="1" field="1" operation="like" clientDefault="true" >
+          <text v="Bộ phận" e="Department"></text>
+          <viewInfo lookupType="One" lookupId="hrdmbp" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_bp" lookupInfo="hrdmbp|ma_bp|ten_bp" />
+        </field>
+        <field name="ten_bp" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_vtr" format="U" viewType="Lookup" label="1" field="1" operation="like" clientDefault="true" >
+          <text v="Vị trí, chức vụ" e="Position"></text>
+          <viewInfo lookupType="One" lookupId="hrdmvtr" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_vtr" lookupInfo="hrdmvtr|ma_vtr|ten_vtr" />
+        </field>
+        <field name="ten_vtr" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="gioi_tinh" viewType="Combobox" inactivate="true" label="1" field="2" operation="=" >
+          <text v="Giới tính" e="Gender"></text>
+          <viewInfo>
+            <options>
+              <option val="">
+                <text v="Tất cả " e="All"></text>
+              </option>
+              <option val="1">
+                <text v="Nam" e="Male"></text>
+              </option>
+              <option val="2">
+                <text v="Nữ" e="Female"></text>
+              </option>
+              <option val="3">
+                <text v="Giới tính khác" e="Other"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="loai" viewType="Combobox" inactivate="true" valueDefault="" operation="=" label="1" field="2" aliasName="b.loai">
+          <text v="Kiểu" e="Type"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Khen thưởng" e=""></text>
+              </option>
+              <option val="2">
+                <text v="Kỷ luật" e=""></text>
+              </option>
+              <option val="">
+                <text v="Cả hai" e=""></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" valueDefault="1" operation="=" label="1" field="2" >
+          <text v="Hiển thị nhân viên đã nghỉ" e=""></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Không hiện" e="Hidden"></text>
+              </option>
+              <option val="">
+                <text v="Có hiện" e="Display"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$hrdsktkl(p){
+  this.constructor(p);
+}
+filter$hrdsktkl.prototype = new DirEvent();
+filter$hrdsktkl.prototype.afterInit = function(){
+  var p = this._dir, ev = this;
+}
+]]>
+    </text>
+  </js>
+
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+exec ss_hrdsktkl @ngay_vao_tu, @ngay_vao_den, @ngay_ct_tu, @ngay_ct_den, @strJoin, @strFinding, '@@lan', @@userId, @@admin
+        ]]>
+      </text>
+    </processing>
+
+    &ReportJSLoading;
+  </script>
+</dir>

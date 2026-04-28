@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="sysinfo" table="" height="" fieldKey="id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title1 v="Khóa số liệu" e="Data closing"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,240,120"  >
+      <fields>
+        <field name="ngay_ks" allowBlank="false"  dataType="D" label="1" field="1">
+          <text v="Ngày khóa số liệu" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$sysinfo(p){
+  this.constructor(p);
+}
+filter$sysinfo.prototype = new DirEvent();
+filter$sysinfo.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <query>
+      <text>
+        <![CDATA[
+select ngay_ks from sysinfo
+        ]]>
+      </text>
+    </query>
+
+    <processing>
+      <text>
+        <![CDATA[
+update sysinfo set ngay_ks = @ngay_ks
+update sysinfo set ngay_tinh_ks = @ngay_ks where ngay_tinh_ks > @ngay_ks
+select '$Processed' as message, 'p._close()' as script
+        ]]>
+      </text>
+    </processing>
+    
+    <loading>
+      <text>
+        <![CDATA[
+select 'p.options.action = ''EDIT''' as script
+        ]]>
+      </text>
+    </loading>
+  </script>
+</dir>

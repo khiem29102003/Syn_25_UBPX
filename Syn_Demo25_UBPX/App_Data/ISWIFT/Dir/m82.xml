@@ -1,0 +1,583 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+  <!ENTITY VoucherRequiredFields01 SYSTEM "..\Include\XML\VoucherRequiredFields05.xml">
+  <!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid01.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+
+  <!ENTITY VoucherPurchaseRequest SYSTEM "..\Include\XML\VoucherPurchaseRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from m82 where id = @id and status in (5,6,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+  if exists(select 1 from d56 with(index(id_hd)) where id_hd = @id) begin
+    select '$DaTraLai' as message
+    return
+  end
+  if exists(select 1 from cthu20 where id_tt = @id and loai_tt = 1) begin
+    select '$DaThanhToan' as message
+    return
+  end
+    ">
+]>
+
+<dir id="m82" table="m82" fieldKey="id" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" voucherCode="PU1" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Phiếu tạm ứng" e="Advance Slip"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120,120,120"  >
+      <fields>
+	  	<field name="tt" nextRow="true" fieldType="EX" readOnly="true" inactivate="true" label="1" field="">
+          <text v="Thông tin đơn hàng: " e="Order Information: "></text>
+        </field>
+		<field name="tt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="1" field="">
+          <text v="&lt;a onclick='getRequest(this);'&gt;(Từ đơn hàng)&lt;/a&gt; " e="&lt;a onclick='getRequest(this);'&gt;(From Order)&lt;/a&gt;"></text>
+        </field>
+		<field name="ma_ngv" viewType="Combobox" valueDefault="" label="1" field="1" hidden="true" >
+          <text v="Loại hóa đơn" e="Inv. Type"></text>
+          <viewInfo>
+            <options query="select ma_ngv, ten_ngv%l from dmngv where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="ma_kh" allowBlank="true" viewType="Lookup" label="1" field="1" importable="5">
+          <text v="Nhân viên" e="Employee Code"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1 and nv_yn = 1" lookupCheck="1=1" lookupRef="ten_kh" lookupInfo="dmkh|ma_kh|ten_kh" />
+        </field>
+        <field name="ten_kh" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+
+		<field name="ma_bp" allowBlank="true" viewType="Lookup" label="1" field="1" importable="5">
+          <text v="Bộ phận" e="Department"></text>
+          <viewInfo lookupType="One" lookupId="dmbp" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_bp" lookupInfo="dmbp|ma_bp|ten_bp" />
+        </field>
+        <field name="ten_bp" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+
+	
+        <field name="ma_pttt" viewType="Lookup" label="1" field="1">
+          <text v="Ph/th thanh toán" e="Payment Methods"></text>
+          <viewInfo lookupType="One" lookupId="dmpttt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_pttt" lookupInfo="dmpttt|ma_pttt|ten_pttt" />
+        </field>
+        <field name="ten_pttt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="dien_giai" label="1" rows="1" field="-">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+		<field name="t_tt" nextRow="false" label="1" field="1" dataType="N" allowBlank ="false" disabled="false" format="Amount" >
+          <text v="Tổng tiền ứng" e="Total Amount"></text>
+        </field>
+		<field name="quy" nextRow="true" label="" field="1" dataType="N" allowBlank ="true"  fieldType="EX" disabled="true" format="Amount" hidden="true">
+          <text v="" e="Total Amount"></text>
+        </field>
+		<field name="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+		  <text v="" e=""></text>
+		</field>
+		<field name="id_dh" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+		  <text v="" e=""></text>
+		</field>
+      </fields>
+    </form>
+
+    <form gravity="TopRight" columns="120,120" >
+      <fields>
+        &VoucherRequiredFields01;
+
+        &VoucherRequiredFields02;
+		<field name="ma_job_ct1" allowBlank="true" fieldType="EX" label="[60]" field="" disabled="true"   hidden="false">
+          <text v="Số c/t đh" e="Job Code"></text>
+        </field>
+		<field name="ma_ct_dh" inactivate="true" fieldType="EX" hidden="false" nextRow="false" field="[60]" label="" disabled="true">
+		  <text v="" e="Number"></text>
+		</field>
+		<field name="so_ct_dh" allowBlank="true" fieldType="EX" field="[120]" label="" disabled="true" nextRow="false" hidden="false">
+          <text v="" e=""></text>
+        </field>
+
+		<field name="ma_job_ct2" allowBlank="true" fieldType="EX" label="[60]" field="" disabled="true"   hidden="false">
+          <text v="Số job dh" e="Số file dh"></text>
+        </field>
+		<field name="ma_job" allowBlank="false" fieldType="EX" nextRow="false" label="" field="[60]"   hidden="false" tabIndex="1" disabled="true">
+          <text v="" e="Job Code"></text>
+        </field>
+		<field name="so_job_dh" format="U" fieldType="EX" copy="false" hidden="false" nextRow="false" align="left" label="" field="[120]" disabled="true">
+		  <text v="" e=""></text>
+		</field>
+		
+      </fields>
+    </form>
+
+    <form tabPageIndex="1" gravity="MiddleLeft" height="200" columns="120,120,360" >
+      <text v="Đính kèm" e="Attach Files"></text>
+      <fields>
+        <field name="xfile" label="1" field="2" viewType="File" fieldType="EXParam">
+          <text v="Chọn files" e="Attach Files"></text>
+          <viewInfo fileFieldId0="id" fileGroup="PU1" fileExtension="*" maxFileSize="10240" maxFileCount="10"></viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$m82(p){
+  this.constructor(p);
+}
+dir$m82.prototype = new DirEvent();
+dir$m82.prototype.beforeInit = function(renderType){
+  this._dir.options._files = null;
+    document._dir = this._dir;
+
+}
+dir$m82.prototype.afterInit = function(renderType){
+  var p = this._dir;
+  
+  dir$m82DisabledMasterField(p);
+  dir$m82HiddenColumnByType(p);
+  dir$m82HiddenColumnByTran(p);
+  dir$m82DisabledStatusByAction(p);
+  dir$m82LoadDataEx(p);
+  //dir$m82LoadDataQuote(p);
+  dir$m82LoadQuy(p);
+  p.find(".control-label.t_so_luong, .control-label.t_tien_nt2, .control-label.t_thue_nt, .control-label.t_tt_nt, .input-field.t_so_luong, .input-field.t_tien_nt2, .input-field.t_tien2, .input-field.t_thue_nt, .input-field.t_thue, .input-field.t_tt_nt, .input-field.t_tt").css("font-weight", "bold");
+}
+dir$m82.prototype.beforeButtonDialogClick = function (id) {
+  var p = this._dir;
+  switch (id) {
+    case 'ok':
+		var t = p.valForm('t_tt'), q = p.valForm('quy');
+		
+		if (p.valForm('t_tt') >= p.valForm('quy')) { 
+			$.alert('Tiền ứng:' + t + ' '+p.msg('noUng'));
+			p.jObject('t_tt').focus(); 			
+			return false;
+			Break;
+		}	  		  
+    default:
+      break;
+  }
+  return true;
+}
+dir$m82.prototype.beforeButtonGridClick = function (id, gindex) {
+  var p = this._dir;
+  switch (id) {
+	case '10':
+	if (p.valForm('id_dh') == 0) {
+		$.showToast(p.msg('EmptyOrder'));
+        return;
+      }
+	 if (p.valForm('id_bg') == 0) {
+		$.showToast(p.msg('HaveIDBG'));
+        return;
+      }
+       p.showFilter("m82BQ1", null, {_ngay_ct2: p.valForm('ngay_ct'),_ma_noi_di: p.valForm('ma_noi_di'), _ten_noi_di: p.valForm('ten_noi_di'), _ma_noi_den: p.valForm('ma_noi_den'), _ten_noi_den: p.valForm('ten_noi_den'), _id_bg: p.valForm('id_bg')});	  
+	  p.setInactive([ 'ma_noi_di','ma_noi_den'], false);
+	  return false;
+      break;
+    case '20':
+        var p = document._dir;
+		if (p.valForm('id_dh') == 0) {
+		$.showToast(p.msg('EmptyOrder'));
+        return;
+		}
+		if (p.valForm('id_bg') != '') {
+			$.showToast(p.msg('NewOrder'));
+			return;
+		}
+	   if (p.valForm('ma_noi_di').trim() == '') {
+        p.jObject('ma_noi_di').focus(); 
+        return;
+      }if (p.valForm('ma_noi_den').trim() == '') {
+        p.jObject('ma_noi_den').focus(); 
+        return;
+      }
+	  if (p.valForm('ds_cong').trim() == '') {
+		$.showToast(p.msg('EmptyContainer'));
+        p.jObject('ds_cong').focus(); 
+        return;
+      }  
+      p.showFilter("s621BN1", null, {_ngay_ct2: p.valForm('ngay_ct'),_unit_id: p.valForm('unit_id'),_id_dh: p.valForm('id_dh'),_ma_noi_di: p.valForm('ma_noi_di'),_ds_cong: p.valForm('ds_cong'), _ten_noi_di: p.valForm('ten_noi_di'), _ma_noi_den: p.valForm('ma_noi_den'), _ten_noi_den: p.valForm('ten_noi_den'),_ma_hang: p.valForm('ma_hang'), _ten_hang: p.valForm('ten_hang')});
+	 return false;
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+
+dir$m82.prototype.gridCellValueChange = function (o, g, r, c, v) {
+  var p = this._dir;
+  switch (c){
+
+	
+]]>&VoucherSaleRequestGrid;<![CDATA[
+    case 'ma_nt':
+		p.grequest(g, 'GetExRateDetail', '', ['ma_nt', '!ngay_ct'], null, r);
+      break;
+    default:
+      break;
+  }
+}
+dir$m82.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+]]>&VoucherExRateValid01;<![CDATA[
+    case 'ma_gd':
+      dir$m82HiddenColumnByTran(p);
+      break;
+    case 'ma_ngv':
+      dir$m82HiddenColumnByType(p);
+      break;
+    case 'ty_gia':
+      p.calcExpressionAll(0, '!ty_gia');
+      break;
+    case 'ma_kh':
+      p.request('Customer', '', ['ma_kh', 'ngay_ct', 'ma_nt']);
+      break;
+    default:
+      break;
+  }
+}
+function getRequest(o) {
+   var p = document._dir;
+   if (p.options.action =="NEW"){
+	  p.showFilter("m82CR1", null, {_ngay_ct2: p.valForm('ngay_ct'),_ma_noi_di: p.valForm('ma_noi_di'), _ten_noi_di: p.valForm('ten_noi_di'), _ma_noi_den: p.valForm('ma_noi_den'), _ten_noi_den: p.valForm('ten_noi_den')});	  
+	}
+	else $.showToast(p.msg('OnLyNew'));
+}
+]]>&VoucherExRateValid02;<![CDATA[
+dir$m82.prototype.gridDetailActionChange = function(gindex, action, r){
+  if(gindex > 0) return true;
+  
+  var p = this._dir;
+  if (action == 'AfterDeleteRow' || action == 'AfterAppendGrid') dir$m82DisabledMasterField(p, p.grid(gindex));
+  return true;
+}
+function dir$m82LoadDataEx(p){
+if(p.options.action != 'NEW')
+  p.request('loadex', '', ['id_dh']);
+}
+function dir$m82LoadQuy(p){
+  p.request('quy', '', '');
+}
+function dir$m82LoadDataQuote(p){
+var pa = p.options.parent;
+	if(p.options.action == 'NEW') {
+		p.request('so_job', '','ngay_ct')
+	}
+	p.setDisabled(['ma_job'], true);
+}
+function dir$m82DisabledMasterField(p, g){
+}
+function dir$m82HiddenColumnByType(p){
+
+}
+function dir$m82HiddenColumnByTran(p){
+  
+}
+function dir$m82DisabledStatusByAction(p){
+  var o = p.jObject('status');
+  if (p.options.action != 'VIEW') o.find("[value=6],[value=7],[value=9],[value=5]").remove();
+}
+         ]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[
+		.control-label.t_tien_nt2, .control-label.t_tien, .control-label.t_so_luong,.control-label.t_tien_nt1,.control-label.t_tl_ln,.control-label.t_tienx2,
+		.input-field.t_tienx2, .input-field.t_tien, .input-field.t_so_luong, .input-field.t_tien2,.input-field.t_tien1,.input-field.t_tien_nt1,.input-field.t_tl_ln
+		{
+			font-weight:bold;
+		}
+		.control-label.ma_kh,.input-field.so_job,.control-label.t_tien_nt2
+		{	
+			color: #499b98;
+		}
+		.input-field.status, .input-field.unit_id,.control-label.tt,.control-label.tt2,.control-label.tt3,.input-field.ma_gd
+		{
+			color: #ab6926;
+		}
+		.input-field.so_job_dh, .input-field.so_ct_dh, .input-field.ma_ct_dh, .input-field.ma_job, .input-field.ma_noi_di,.input-field.ma_noi_den
+		{
+			color: 	#660066;
+		}
+		.ma_phi,.tl_ban span {
+		  color: #ab6926;
+		}
+		.input-field.t_tl_ln
+		{
+			color: #499b98;
+		}
+		
+		.grid-input-field.ma_phi, .grid-input-field.tl_ban 
+		{
+			color: #ab6926;	
+		}
+		
+		.tien_nt1, .gia1, .tien1, .tien_ln span, .gia_nt1
+		{
+			color: #499b98;
+		}
+		
+		.grid-input-field.tien_nt1, .grid-input-field.gia1, .grid-input-field.tien1, .grid-input-field.tien_ln, .grid-input-field.gia_nt1
+		{
+			color: #499b98;
+		}		
+		//.modal-dialog-lg{min-width:960px!important;}
+		.col-fill-100{width:calc(100% - 120px);}
+		
+      ]]>
+    </text>
+  </css>
+  <script>
+
+
+    &VoucherRequest;
+    &VoucherPurchaseRequest;
+
+	<request code="loadex">
+		<text>
+		  <![CDATA[
+				select a.ma_job as [!ma_job], a.ma_ct as [!ma_ct_dh], a.ma_noi_di as [!ma_noi_di], a.ma_noi_den as [!ma_noi_den], a.so_ct as [!so_ct_dh], a.so_job as [!so_job_dh]
+				from s61 a where id = @id_dh
+		]]>
+		</text>
+	  </request>
+	 <request code="GetExRateDetail">
+      <text>
+        <![CDATA[
+			select dbo.sf_GetExRate(@ma_nt, @ngay_ct) as #ty_gia
+        ]]>
+      </text>
+    </request>
+	<request code="so_job">
+		<text>
+		  <![CDATA[
+				exec st_get_voucher_number 'm82',@ngay_ct
+		]]>
+		</text>
+	  </request>
+	  <request code="quy">
+		<text>
+		  <![CDATA[
+				select a.quy as [!quy] from system a
+		]]>
+		</text>
+	  </request>
+    <query>
+      <text>
+        <![CDATA[
+if @action = 'EDIT' begin
+]]>&CheckUpdatingDeleting;<![CDATA[
+end
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+if @action in ('EDIT', 'VIEW') exec ISWIFTStoreGetListFiles 'xfile', @id, '@@voucherCode', '', @script output
+if @script is null set @script = ''
+
+if @action = 'NEW' begin
+  declare @ma_nk varchar(32), @ten_nk nvarchar(3000), @ngay_ct date, @so_ct varchar(32), @i_so_ct int, @unit_id int
+  select @ngay_ct = getdate(), @unit_id = @@unit
+]]>&VoucherNumberQuery;<![CDATA[
+  if @so_ct is null
+    select '' as [so_ct], 0 as [i_so_ct], @unit_id as [unit_id], '' as ma_nk, '' as ten_nk
+  else
+    select @so_ct as [so_ct], @i_so_ct as [i_so_ct], @unit_id as [unit_id], @ma_nk as ma_nk, @ten_nk as ten_nk
+end
+else select @script as script
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+
+    <declare>
+      <text>
+        <![CDATA[
+declare @warning nvarchar(256), @dOldVoucherDate date, @dVoucherDate date, @nVoucherType tinyint, @strIds varchar(256), @q nvarchar(4000)
+set @warning = ''
+create table #idupdatestatusPN(id int); create table #idupdatestatusDH(id int)
+         ]]>
+      </text>
+    </declare>
+
+    &VoucherJSLoading;
+
+    <beforesave>
+      <text>
+        &VoucherNumberBeforeSave;
+      </text>
+    </beforesave>
+
+    <deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct, @dVoucherDate = ngay_ct, @nVoucherType = ma_ngv from m82 where id = @id
+        ]]>
+      </text>
+    </deleting>
+
+    <deleted>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+--insert into #idupdatestatusPN select id_pn from d72 where id = @id and id_pn <> 0 group by id_pn
+--insert into #idupdatestatusDH select id_dh from d72 where id = @id and id_dh <> 0 and id_pn = 0 group by id_dh
+
+]]>&VoucherCurrStockCreateTempTable;<![CDATA[
+exec ISWIFTStoredDeleteDataWithKey 'd72,r70$%Partition,r90$%Partition,r00$%Partition', @strIds, '', @dVoucherDate
+delete cthu20 where id_ct = @id
+]]>&VoucherCurrStockCalc;<![CDATA[
+
+
+drop table #idupdatestatusPN, #idupdatestatusDH
+        ]]>
+      </text>
+    </deleted>
+
+    <updating>
+      <text>
+        <![CDATA[
+--insert into #idupdatestatusPN select id_pn from d72 where id = @id and id_pn <> 0 group by id_pn
+--insert into #idupdatestatusDH select id_dh from d72 where id = @id and id_dh <> 0 and id_pn = 0 group by id_dh
+select @dOldVoucherDate = ngay_ct from m82 where id = @id
+        ]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId, i_so_ct = @i_so_ct, so_ct = @so_ct where [%whereFieldKey]
+update dmttin set status = 0 from dmttin where id0 = rtrim(@id) and xgroup = '@@voucherCode'
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+         ]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @ma_ct = '@@voucherCode'
+exec ISWIFTStoredGetIdentityNumber '@@voucherCode', '@@table', @id output
+         ]]>
+      </text>
+    </inserting>
+
+    <inserted>
+      <text>
+        <![CDATA[
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+]]>
+      </text>
+    </inserted>
+
+    <aftersave>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+if @action = 'NEW' set @dOldVoucherDate = @ngay_ct
+--update @d72 set id = @id, ma_kh = @ma_kh, ngay_ct = @ngay_ct, so_ct = @so_ct, status = @status
+--delete d72 where id = @id
+delete cthu20 where id_ct = @id
+--insert d72 select * from @d72
+--update d72 set ngay_kt = dateadd(day,so_ngay_bh,ngay_bh) where id = @id and convert(char(8),ngay_bh,112) <>''
+
+]]>&VoucherCurrStockCreateTempTable;<![CDATA[
+
+exec ISWIFTStoredDeleteDataWithKey 'r70$%Partition,r90$%Partition,r00$%Partition', @strIds, '', @dOldVoucherDate
+
+exec ISWIFTStoredPostingVoucher 'm82', 'd82', @dOldVoucherDate, @ngay_ct, @id, '@@voucherCode', '', ''
+
+exec ISWIFTStoredPostingInventory @ma_ngv, 'm82', 'd82', @dOldVoucherDate, @ngay_ct, @id, '@@voucherCode', '', ''
+exec ISWIFTStoredPostingARAdvance @ma_ngv, 0, 'm82', 'd82', @dOldVoucherDate, @ngay_ct, @id, '@@voucherCode', '', ''
+exec ISWIFTStoredPostingGL @ma_ngv, 'm82', 'd82', @dOldVoucherDate, @ngay_ct, @id, '@@voucherCode'
+
+]]>&VoucherCurrStockInsertNewTempTable;&VoucherCurrStockCalc;<![CDATA[
+
+--insert into #idupdatestatusPN select id_pn from @d72 where id = @id and id_pn not in (select id from #idupdatestatusPN) and id_pn <> 0 group by id_pn
+--insert into #idupdatestatusDH select id_dh from @d72 where id = @id and id_dh not in (select id from #idupdatestatusDH) and id_dh <> 0 and id_pn = 0 group by id_dh
+
+drop table #idupdatestatusPN, #idupdatestatusDH
+
+exec ISWIFTStoredIncreaseVoucherNo @ma_nk, @ngay_ct, '@@voucherCode', @i_so_ct, @so_ct, '@@table'
+select '' as message, @warning as warning, @id as [#id], @so_ct as [#so_ct], @ma_unit as [#ma_unit]
+]]>
+      </text>
+    </aftersave>
+
+  </script>
+
+  <messages>
+    <message val="invoiceRetrieve">
+      <text v="Chỉ xử lý nghiệp vụ lấy số liệu cho hóa đơn" e="" />
+    </message>
+    <message val="DaThanhToan">
+      <text v="Đã có chứng từ thanh toán cho hóa đơn này, không được sửa/xóa." e=""/>
+    </message>
+    <message val="DaTraLai">
+      <text v="Đã có chứng từ trả lại cho hóa đơn này, không được sửa/xóa." e=""/>
+    </message>
+	  <message val="EmptyContainer">
+      <text v="Vui lòng nhập Container" e="Please Enter Congtainer" />
+    </message>
+	  <message val="EmptyOrder">
+      <text v="Vui lòng chọn đơn hàng" e="Please Enter Congtainer" />
+    </message>
+	 <message val="HaveIDBG">
+      <text v="Chỉ thực hiện khi đơn hàng lấy từ báo giá" e="Only fulfillment when the order has a quotation number" />
+    </message>
+	<message val="HaveIDTG">
+      <text v="Chỉ thực hiện khi đơn hàng lấy từ tự tìm giá" e="Only fulfillment when the order has a quotation number" />
+    </message>
+	<message val="NewOrder">
+      <text v="Vui lòng chọn lấy từ báo giá" e="Only fulfillment when the order has a quotation number" />
+    </message>
+    <message val="physicalRetrieve">
+      <text v="Chỉ xử lý nghiệp vụ sổ sách lấy dữ liệu từ thực tế" e="" />
+    </message>
+	 <message val="noDate">
+      <text v="Ngày hiệu lực đến không hợp lệ." e="Error Expiry Date."/>
+    </message>
+	<message val="noUng">
+      <text v="Số tiền ứng lớn hơn tiền quỹ hiện có." e="Error Expiry Date."/>
+    </message>
+	<message val="notApproveRightEdit">
+      <text v="Không có quyền sửa/xóa đơn hàng đã duyệt ngoài mức được phân quyền" e="" />
+    </message>
+	<message val="notApproveRight">
+      <text v="Không có quyền duyệt đơn hàng" e="" />
+    </message>
+	 <message val="OnLyNew">
+      <text v="Chỉ thực hiện chức này ở trạng thái thêm mới." e="Only perform this function in the newly added state."/>
+    </message>
+  </messages>
+</dir>

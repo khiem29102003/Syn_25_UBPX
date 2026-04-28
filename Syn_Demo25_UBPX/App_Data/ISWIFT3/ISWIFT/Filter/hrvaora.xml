@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="hrvaora$000000" table="" height="" fieldKey="id, thoi_gian" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lấy số liệu chấm công" e="Timekeeping Data Import"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120">
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D">
+          <text v="Từ ngày/đến ngày" e="Date from/Date to"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D" nextRow="false">
+          <text v="Từ ngày/đến ngày" e="Date from/Date to"></text>
+        </field>
+        <field name="ma_nv" viewType="Lookup" label="1" field="1">
+          <text v="Nhân viên" e="Employee ID"></text>
+          <viewInfo lookupType="One" lookupId="hrdmnv" lookupKey="status=1" lookupCheck="1=1" lookupRef="ho_ten_nv" lookupInfo="vhrdmnv|ma_nv|ho_ten_nv"/>
+        </field>
+        <field name="ho_ten_nv" nextRow="false" fieldType="EX" readOnly="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="Tên nhân viên" e="Employee Name"></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$hrvaora$000000(p){
+  this.constructor(p);
+}
+filter$hrvaora$000000.prototype = new DirEvent();
+filter$hrvaora$000000.prototype.afterInit = function(){
+  var p = this._dir;
+
+  var date = new Date();
+  var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+  var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  p.valForm("ngay_ct1", firstDay);
+  p.valForm("ngay_ct2", lastDay);
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+
+  </script>
+</dir>

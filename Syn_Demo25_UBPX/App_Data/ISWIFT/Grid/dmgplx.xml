@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="dmgplx" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Khai báo giấy phép lái xe" e="Declare a driver's license"></title>
+  <grids>
+    <grid table="dmgplx" fieldKey="ma_tx" order="ma_tx" allowFilter="true" allowOrder="true" >
+      <fields >
+        <field name="ma_tx" fieldType="PK" width="120" >
+          <text v="Tài xế" e="Driver Code"></text>
+        </field>
+        <field name="ten_tx" width="250" fieldType="EX" aliasName="b">
+          <text v="Tên tài xế" e="Driver Name"></text>
+        </field>
+	    <field name="so_gplx" width="120" >
+          <text v="Số GPLX" e="Driver's license number"></text>
+        </field>
+        <field name="ngay_thi" fieldType="PK" width="120" dataType="D">
+          <text v="Ngày thi" e="Exam Date"></text>
+        </field>
+		 <field name="ngay_hh" fieldType="PK" width="120" dataType="D">
+          <text v="Ngày hết hạn" e="Date"></text>
+        </field>
+        
+      </fields>
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmnv b on a.ma_tx = b.ma_nv', 'b.ten_nv', '@@key', '', @@filterKey, '', @pageIndex, 50, @@admin, @@userId    --@@columnFilterKey
+         ]]>
+          </text>
+        </query>
+      </script>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmgplx(f){
+  this.constructor(f);
+}
+grid$dmgplx.prototype = new DirEvent();
+grid$dmgplx.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

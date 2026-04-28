@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmloaingaycong" table="dmloaingaycong" fieldKey="ma_loaingaycong" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục loại ngày công" e="Workday Type Category"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_loaingaycong" format="U" label="1" field="1" allowBlank="false" fieldType="PK"  importable="5">
+          <text v="Mã loại" e="Type code"></text>
+        </field>
+        <field name="ten_loaingaycong" label="1" field="-" allowBlank="false" fieldType="PK"  importable="10">
+          <text v="Tên loại" e="Type name"></text>
+        </field>
+        <field name="ten_loaingaycong2" label="1" field="-" allowBlank="true"  importable="15">
+          <text v="Tên tiếng anh" e="English name"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="[150]">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmloaingaycong(p){
+  this.constructor(p);
+}
+dir$dmloaingaycong.prototype = new DirEvent();
+dir$dmloaingaycong.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmloaingaycong.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+dir$dmloaingaycongDisabledMasterField(p, g);
+
+}
+
+function dir$dmloaingaycongDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_loaingaycong').trim() != '')
+  {
+    p.setDisabled('ma_loaingaycong', true);
+  }
+  else
+  {
+    p.setDisabled('ma_loaingaycong', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+		<text>
+		  <![CDATA[
+	.control-label.ma_loaingaycong, .control-label.ten_loaingaycong
+	{	
+		//font-weight:bold;	
+		color: #499b98;;
+	}
+		  ]]>
+		</text>
+  </css>
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã loại đã tồn tại' else N'The type code already exists.' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã loại đã tồn tại' else N'The type code already exists.' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã loại đã tồn tại." e="The type code already exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã loại đã tồn tại." e="The type code already exists."/>
+    </message>
+  </messages>
+</dir>

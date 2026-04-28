@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="syslog" table="" height="" fieldKey="id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Nhật ký hệ thống" e="Filter Order"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D">
+          <text v="Ngày từ/đến" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+        <field name="username" clientDefault="true" viewType="Lookup" label="1" field="1">
+          <text v="Người sử dụng" e="User"></text>
+          <viewInfo lookupType="One" lookupId="sysuserinfo" lookupKey="1=1" lookupCheck="1=1" lookupRef="nickname" lookupExactValue="1"  />
+        </field>
+        <field name="nickname" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$syslog(p){
+  this.constructor(p);
+}
+filter$syslog.prototype = new DirEvent();
+filter$syslog.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+declare @user_id int, @dateto datetime
+if @username <> '' select @user_id = user_id from sysuserinfo where username = @username
+set @dateto = convert(varchar(8), @ngay_ct2, 112) + ' 23:59:59'
+select *, cast('' as nvarchar(256)) as ctext into #log from syslog where datetime0 between @ngay_ct1 and @dateto and (@username = '' or user_id = @user_id) order by datetime0 desc
+update #log set ctext = case when '@@lan' = 'v' then b.text else b.text2 end from #log a join sysmenu b on a.xtype = b.controller
+update #log set ctext = N'<b>'+ ctext + '</b>' where xtype like 'login%'
+select a.ip, a.user_id, a.ctext, a.xtype, b.username, b.nickname, convert(char(19), a.datetime0, 120) as ctime from #log a left join sysuserinfo b on a.user_id = b.user_id
+drop table #log
+        ]]>
+      </text>
+    </processing>
+  </script>
+</dir>

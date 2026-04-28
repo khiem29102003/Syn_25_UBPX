@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY ReportFilterItemGroup SYSTEM "..\Include\XML\ReportFilterItemGroup.xml">
+  <!ENTITY ReportFilterStockType SYSTEM "..\Include\XML\ReportFilterStockType.xml">
+  <!ENTITY ReportJSLoading SYSTEM "..\Include\XML\ReportJSLoading.xml">
+  <!ENTITY ReportFilterUnit SYSTEM "..\Include\XML\ReportFilterUnit.xml">
+  <!ENTITY ReportFiltering SYSTEM "..\Include\XML\ReportFiltering.xml">
+  <!ENTITY ReportDataAnalysisStruct SYSTEM "..\Include\XML\ReportDataAnalysisStruct.xml">
+]>
+
+<dir id="hrbcbccong" table="" height="" fieldKey="id" dirViewType="Dialog" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Bảng chấm công" e="Bảng chấm công" />
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_tu" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" dataType="D">
+          <text v="Từ ngày/đến ngày" e="Date From/To"></text>
+        </field>
+        <field name="ngay_den" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" dataType="D" nextRow="false">
+          <text v="Từ ngày/đến ngày" e="Date From/To"></text>
+        </field>        
+      </fields>
+    </form>
+
+    <form tabPageIndex="1" gravity="MiddleLeft" height="300" columns="120,120,120,120,120"  >
+      <text v="Thông tin chung" e="General"></text>
+      <fields>
+        <field name="ma_bp" format="U" viewType="Lookup" label="1" field="1" clientDefault="true" >
+          <text v="Bộ phận" e="Department"></text>
+          <viewInfo lookupType="One" lookupId="hrdmbp" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_bp" lookupInfo="hrdmbp|ma_bp|ten_bp" />
+        </field>
+        <field name="ten_bp" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_nv" viewType="Lookup" label="1" field="1"  aliasName="b">
+          <text v="Mã nhân viên" e="Employee ID"></text>
+          <viewInfo lookupType="One" lookupId="hrdmnv" lookupKey="status=1" lookupCheck="1=1" lookupRef="ho_ten_nv"/>
+        </field>
+        <field name="ho_ten_nv" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" >
+          <text v="Tên nhân viên" e="Employee Name"></text>
+        </field>
+        <field name="mau_bc" dataType="I" viewType="Combobox" valueDefault="1" label="1" field="[360]" >
+          <text v="Mẫu báo cáo" e="Report Form"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Mẫu chuẩn" e="Default Form"></text>
+              </option>
+              <option val="2">
+                <text v="Mẫu theo khai báo" e=""/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        &ReportFiltering;
+        &ReportDataAnalysisStruct;
+      </fields>
+    </form>
+    <form tabPageIndex="2" gravity="MiddleLeft" height="300" columns="120,120,120,120,120"  >
+      <text v="Khai báo mẫu" e="Report Form Declaration"></text>
+      <fields>
+        <field name="hrmaubccong" allowBlank="false" label="" field="-" viewType="Grid">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+  <grids>
+    <grid id="hrmaubccong" table="hrmaubccong" fieldKey="form, line" key="1=1" order="line" allowFilter="true" allowOrder="true" readOnly="false">
+      <fields>
+        <field name="form" fieldType="PK" hidden="true">
+          <text v="Mẫu" e="Mẫu"></text>
+        </field>
+				<field name="line" dataType="I" fieldType="PK" hidden="true">
+					<text v="Dòng" e="Line"></text>
+				</field>
+        <field name="stt" dataType="I" format="0" width="50" readOnly="false">
+          <text v="Stt" e="No."></text>
+        </field>
+				<field name="chi_tieu" allowBlank="false" width="150" readOnly="false">
+					<text v="Tên cột" e="Name"></text>					
+				</field>
+        <field name="ds_ma_cong" format="U"  width="300" readOnly="false" viewType="Lookup" allowBlank="false">
+          <text v="Danh sách mã công" e="Danh sách mã công"></text>
+          <viewInfo lookupType="Multi" lookupId="hrdmcong" lookupKey="status=1" lookupCheck="1=1"/>
+        </field>
+        <field name="nguon_dl" dataType="I" viewType="Combobox" valueDefault="1" width="120" readOnly="false">
+          <text v="Loại giá trị" e="Report Form"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Số ngày" e="Days"></text>
+              </option>
+              <option val="2">
+                <text v="Số giờ" e="Hours"/>
+              </option>
+              <option val="3">
+                <text v="Số phút" e="Minutes"/>
+              </option>
+              <option val="4">
+                <text v="Đếm ngày" e="Days Count"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="moveup">
+          <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+        </button>
+        <button id="movedown">
+          <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="savegrid">
+          <text v="Lưu mẫu" e="Save Form"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+select @@fields from @@table a @@join where @@key order by a.line
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$hrbcbccong(p){
+  this.constructor(p);
+}
+filter$hrbcbccong.prototype = new DirEvent();
+filter$hrbcbccong.prototype.afterInit = function(){
+  var p = this._dir, ev = this;
+  
+  var oPt = p.jObject('data_analysis_struct');
+  oPt.find("[value='']").remove();
+  p.options.pivotGroupAvailable = 1;
+}
+
+filter$hrbcbccong.prototype.beforeButtonGridClick = function (id, gindex) {
+  var p = this._dir;
+  switch (id) {
+    case 'savegrid':
+      this.checkNotBlank(function(){
+        p.request('SaveGrid', '', [['maubc', 'T', p.grid(gindex).data.sqlval()]], function(p, d, run){
+          $.showToast(p.msg("savedone"))
+        });
+      })
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+      <![CDATA[
+.toolbar-savegrid > div {
+  background-position: -336px -144px !important;
+}
+      ]]>
+    </text>
+  </css>
+  <script>
+    <request code="SaveGrid">
+      <text>
+        <![CDATA[
+declare @i int
+set @i = 0
+update @maubc set form = 'BCC', line = @i, @i = @i + 1
+
+delete hrmaubccong where form = 'BCC'
+insert into hrmaubccong select * from @maubc
+
+select '' as message
+return
+        ]]>
+      </text>
+    </request>
+    <processing>
+      <text>
+        <![CDATA[
+exec ss_hrbcbccong @ngay_tu, @ngay_den, @ma_bp, @ma_nv, @mau_bc, '@@lan', @@userId, @@admin
+        ]]>
+      </text>
+    </processing>
+    &ReportJSLoading;
+  </script>
+
+  <messages>
+    <message val="savedone">
+      <text v="Mẫu báo cáo đã lưu thành công" e=""/>
+    </message>
+  </messages>
+</dir>

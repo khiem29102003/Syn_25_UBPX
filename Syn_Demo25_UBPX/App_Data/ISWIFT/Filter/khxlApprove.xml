@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="khxlApprove" table="" height="" fieldKey="id" voucherCode="KL0" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Điều kiện lọc" e="Filter Condition"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120"  >
+      <fields>
+		<field name="ma_so_thue" label="1" field="1" operation="a.ma_so_thue like N'%%s%'">
+          <text v="Mã số thuế" e="Tax Code"></text>
+        </field>
+		<field name="ten_kh" label="1" field="-" operation="a.ten_kh like N'%%s%'">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+		<field name="ten_kh2" label="1" field="-" operation="a.ten_kh2 like N'%%s%'">
+          <text v="Tên khách hàng 2" e="Other Name"></text>
+        </field>
+        <field name="nh_kh1" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Nhóm 1" e="Group 1"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH1' and status=1" lookupCheck="ma_loai_nh = 'KH1'" lookupRef="ten_nh_kh1" lookupInfo="dmnh|ma_nh|ten_nh" />
+        </field>
+        <field name="ten_nh_kh1" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="nh_kh2" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Nhóm 2" e="Group 2"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH2' and status=1" lookupCheck="ma_loai_nh = 'KH2'" lookupRef="ten_nh_kh2" lookupInfo="dmnh|ma_nh|ten_nh" />
+        </field>
+        <field name="ten_nh_kh2" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="nh_kh3" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Nhóm 3" e="Group 3"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH3' and status=1" lookupCheck="ma_loai_nh = 'KH3'" lookupRef="ten_nh_kh3" lookupInfo="dmnh|ma_nh|ten_nh" />
+        </field>
+        <field name="ten_nh_kh3" nextRow="false" fieldType="EX"  readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+	<form gravity="MiddleLeft" tabPageIndex="1" columns="120,120,120"  >
+      <text v="Lời nhắn cuộc gọi" e=""/>
+      <fields>
+	    <field name="ngay_goi1" label="1" field="1" clientDefault="true" allowBlank="true" dataType="D">
+          <text v="Ngày gọi từ/đến" e="Date call From/To"></text>
+        </field>
+        <field name="ngay_goi2" label="" field="1" clientDefault="true" allowBlank="true" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+
+		 <field name="ma_td" viewType="Lookup" label="1" field="1">
+          <text v="Mã tác động" e="Call Code"></text>
+          <viewInfo lookupType="One" lookupId="vdmtd" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_td" />
+        </field>
+        <field name="ten_td" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>    
+		
+		<field name="ma_plkh" viewType="Lookup" label="1" field="1">
+          <text v="Phân loại khách hàng" e="Customer Classification"></text>
+          <viewInfo lookupType="One" lookupId="dmploaikh" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_plkh" />
+        </field>
+        <field name="ten_plkh" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>    
+
+		
+		<field name="ngay_goi_lai1" label="1" field="1" clientDefault="true" allowBlank="true" dataType="D">
+          <text v="Ngày gọi lại từ/đến" e="Date call From/To"></text>
+        </field>
+        <field name="ngay_goi_lai2" label="" field="1" clientDefault="true" allowBlank="true" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+    
+    <form gravity="BottomLeft" columns="120,120,120,120"  >
+      <fields>
+        <field name="ma_unit" viewType="Lookup" inactivate="true" label="1" field="3" >
+          <text v="Đơn vị" e="Unit"></text>
+          <viewInfo lookupType="Multi" lookupId="sysunit" lookupKey="status = 1 and unit_id in (select unit_id from dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @@admin, ''))" lookupCheck="1 = 1" lookupRef="ten_unit" />
+        </field>
+        <field name="ten_unit" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="3" valueDefault="1" operation="=" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Chờ duyệt (Xử lý Duyệt)" e="Open (Approve)"/>
+              </option>
+              <!-- <option val="5"> -->
+                <!-- <text v="Đã duyệt (Xử lý bỏ duyệt)" e="Approved (Undo)"/> -->
+              <!-- </option> -->
+              <!-- <option val="9"> -->
+                <!-- <text v="Đóng (Xử lý bỏ đóng, duyệt yêu cầu)" e="Close (Open &amp; Approve)"/> -->
+              <!-- </option> -->
+            </options>
+          </viewInfo>
+        </field>
+        <field name="user_id0" viewType="Combobox" inactivate="true" label="1" field="3" operation="a.user_id0 in (select user_id from sysuserinfo where user_ref like '@@userRef%')" >
+          <text v="Lọc theo người sd" e="Filter By User"></text>
+          <viewInfo>
+            <options>
+              <option val="">
+                <text v="Tất cả" e="All"></text>
+              </option>
+              <option val="1">
+                <text v="Lọc theo nhân viên đang quản lý" e=""></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$khxlApprove(p){
+  this.constructor(p);
+}
+filter$khxlApprove.prototype = new DirEvent();
+filter$khxlApprove.prototype.afterInit = function(){
+  var p = this._dir;
+}
+filter$khxlApprove.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir;
+  if (opt._status == 1) sub = ['%s', p.msg('approve')]
+  else if (opt._status == 5) sub = ['%s', p.msg('undo')]
+  else sub = ['%s', p.msg('open')]
+  return [m2, opt, sub];
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+
+  <messages>
+    <message val="approve">
+      <text v="duyệt/hủy" e="Approve/Close"/>
+    </message>
+    <message val="undo">
+      <text v="bỏ duyệt" e="Open "/>
+    </message>
+    <message val="open">
+      <text v="bỏ đóng" e="Open"/>
+    </message>
+  </messages>
+</dir>

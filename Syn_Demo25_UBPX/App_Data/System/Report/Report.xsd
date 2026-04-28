@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xs:schema id="Report" targetNamespace="urn:schemas-iswift:struct-report" elementFormDefault="qualified" xmlns="urn:schemas-iswift:struct-report" xmlns:a="urn:schemas-iswift:struct-report" xmlns:mstns="urn:schemas-iswift:struct-report" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="report" type="reportType">
+    <xs:key name="field">
+      <xs:selector xpath="a:fields/a:field" />
+      <xs:field xpath="@name"/>
+    </xs:key>
+    <xs:key name="report">
+      <xs:selector xpath="a:forms/a:form" />
+      <xs:field xpath="@id" />
+    </xs:key>
+  </xs:element>
+
+  <xs:complexType name="reportType">
+    <xs:all minOccurs="1" maxOccurs="1">
+      <xs:element name="query" minOccurs="0" maxOccurs="1" type="a:queryType" />
+      <xs:element name="forms" minOccurs="1" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="form" minOccurs="1" maxOccurs="unbounded" type="a:formType"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="fields" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="field" minOccurs="0" maxOccurs="unbounded" type="a:fieldType"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+
+  <xs:complexType name="queryType">
+    <xs:sequence>
+      <xs:element name="text" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Defines the command text that corresponds to the query type.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="formType">
+    <xs:sequence>
+      <xs:element name="text" minOccurs="1" maxOccurs="1" type="a:textType"/>
+      <xs:element name="fields" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="field" minOccurs="0" maxOccurs="unbounded" type="a:fieldType"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string"/>
+    <xs:attribute name="fileName" type="xs:string"/>
+    <xs:attribute name="fileType" type="fileType" use="optional" />
+    <xs:attribute name="exportExt" type="exportExtension" use="optional" />
+    <xs:attribute name="image" type="xs:string"/>
+    <xs:attribute name="disabled" type="xs:boolean"/>
+    <xs:attribute name="hiddenKey" type="xs:string"/>
+    <xs:attribute name="fileNameQuery" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="textType">
+    <xs:attribute name="v" type="xs:string"/>
+    <xs:attribute name="e" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:simpleType name="fileType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="pdf"/>
+      <xs:enumeration value="excel"/>
+      <xs:enumeration value="rdlc"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="exportExtension">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="pdf"/>
+      <xs:enumeration value="xlsx"/>
+      <xs:enumeration value="docx"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="columnNameType">
+    <xs:attribute name="id" type="xs:string" use="required"/>
+    <xs:attribute name="columnName" type="xs:string" use="required"/>
+    <xs:attribute name="separator" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="fieldType">
+    <xs:sequence>
+      <xs:element name="text" minOccurs="1" maxOccurs="1" type="a:textType"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="type" type="a:dataType"/>
+  </xs:complexType>
+
+  <xs:simpleType name="dataType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="C"/>
+      <xs:enumeration value="N"/>
+      <xs:enumeration value="D"/>
+      <xs:enumeration value="B"/>
+      <xs:enumeration value="V"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

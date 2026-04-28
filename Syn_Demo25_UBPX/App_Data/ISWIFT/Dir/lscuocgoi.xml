@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+    <!ENTITY CheckUpdatingDeleting "
+	if exists(select 1 from lscuocgoi where uniqueid = @uniqueid) begin
+	select '$NotEditVoucherStatus' as message
+		return
+		end
+	">
+]>
+
+<dir id="lscuocgoi" table="lscuocgoi" fieldKey="uniqueid" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lịch sử cuộc gọi" e="Call History"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+	  	<field name="uniqueid" label="1" field="2" allowBlank="false" fieldType="PK">
+          <text v="Uniqueid" e="Agent Number"></text>
+        </field>
+		<field name="ma_so_thue" format="U" label="1" field="2" allowBlank="false">
+          <text v="Application ID" e="Application ID"></text>
+        </field>
+		<field name="accountcode" label="1" field="1" allowBlank="false">
+          <text v="Client" e="FullName"></text>
+        </field>
+		 <field name="calldate" label="1" field="1" dataType="D" allowBlank="true" >
+          <text v="Call Date" e="Call Date"></text>
+        </field>
+		<field name="dst" label="1" field="1" allowBlank="true">
+          <text v="Điện thoại" e="Destination"></text>
+        </field>
+		<field name="duration" label="1" field="1" allowBlank="true">
+          <text v="Duration" e="Duration"></text>
+        </field>
+		<field name="billsec" label="1" field="1" allowBlank="true">
+          <text v="Billsec" e="Billsec"></text>
+        </field>
+		<field name="disposition" label="1" field="1" allowBlank="true">
+          <text v="Call Status" e="Duration"></text>
+        </field>
+		<field name="hangup"  label="1" field="1" allowBlank="true">
+          <text v="Hangup Cause" e="Hangup Cause"></text>
+        </field>
+
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" hidden="true">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$lscuocgoi(p){
+  this.constructor(p);
+}
+dir$lscuocgoi.prototype = new DirEvent();
+dir$lscuocgoi.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$lscuocgoi.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+dir$lscuocgoiDisabledMasterField(p, g);
+
+}
+
+function dir$lscuocgoiDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_so_thue').trim() != '')
+  {
+    p.setDisabled('ma_so_thue', true);
+  }
+  else
+  {
+    p.setDisabled('ma_so_thue', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+		<text>
+		  <![CDATA[
+	.control-label.ma_so_thue, .control-label.ngay_goi
+	{	
+		//font-weight:bold;	
+		color: #499b98;;
+	}
+		  ]]>
+		</text>
+  </css>
+  <script>
+    <query>
+      <text>
+        <![CDATA[
+if @action = 'EDIT' begin
+]]>&CheckUpdatingDeleting;<![CDATA[
+end
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+select @script = '';
+if @action = 'EDIT'
+  if exists(select 1 from syscodeexists with(nolock, index(code1)) where code1 = @uniqueid and field = 'uniqueid')
+    select @script = @script + 'p.setDisabled(''uniqueid'', true); '
+
+if @action in ('EDIT', 'VIEW') select @script as script
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+	<deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[
+        ]]>
+      </text>
+    </deleting>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã cuộc gọi đã tồn tại' else N'Call code is exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã cuộc gọi đã tồn tại' else N'Call code is exists' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+
+</dir>

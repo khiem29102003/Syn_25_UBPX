@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="bcthhbtl" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo cáo tổng hợp hàng bán trả lại" e="Sales Return Summary"></title>
+  <subtitle v="Từ ngày {ngay_ct1} đến ngày {ngay_ct2}..." e="From {ngay_ct1} To {ngay_ct2}..."></subtitle>
+  <grids>
+    <grid>
+      <fields>
+        <field name="ma_vt" width="100" link="~bkhdtl" operation="=">
+          <text v="Mã vật tư" e="Item Code"></text>
+        </field>
+        <field name="ten_vt" width="250" aliasName="c" join="left join dmvt c on a.ma_vt = c.ma_vt">
+          <text v="Tên vật tư" e="Item Name"></text>
+        </field>
+        <field name="dvt" width="50">
+          <text v="Đvt" e="UOM"></text>
+        </field>
+        <field name="sl_nhap" dataType="N" format="Qty" width="100">
+          <text v="Số lượng" e="Quantity"></text>
+        </field>
+        <field name="gia_nt2" dataType="N" format="FCPrice" width="100">
+          <text v="Giá bán nt" e="FC Price"></text>
+        </field>
+        <field name="tien_nt2" dataType="N" format="FCAmount" width="100">
+          <text v="Trả lại nt" e="FC Return"></text>
+        </field>
+        <field name="thue_nt" dataType="N" format="FCAmount" width="100">
+          <text v="Thuế nt" e="FC Tax Amt."></text>
+        </field>
+        <field name="pt_nt" dataType="N" format="FCAmount" width="100">
+          <text v="Tổng trả lại nt" e="FC Receivable Amt."></text>
+        </field>
+        <field name="gia_nt" dataType="N" format="FCPrice" width="100">
+          <text v="Giá vốn nt" e="FC Cogs"></text>
+        </field>
+        <field name="tien_nt_nhap" dataType="N" format="FCAmount" width="100">
+          <text v="Tiền vốn nt" e="FC Cogs Amt."></text>
+        </field>
+        <field name="tien_lai_nt" dataType="N" format="FCAmount" width="100">
+          <text v="Lãi nt" e="FC Profit."></text>
+        </field>
+        <field name="ma_nt" width="60">
+          <text v="Mã nt" e="FC Code"></text>
+        </field>
+        <field name="ty_gia" dataType="N" format="ExRate" width="100">
+          <text v="Tỷ giá" e="Exchange Rate"></text>
+        </field>
+        <field name="gia2" dataType="N" format="Price" width="100">
+          <text v="Giá bán" e="Price"></text>
+        </field>
+        <field name="tien2" dataType="N" format="Amount" width="100">
+          <text v="Trả lại" e="Return Amt"></text>
+        </field>
+        <field name="thue" dataType="N" format="Amount" width="100">
+          <text v="Thuế" e="Tax Amt."></text>
+        </field>
+        <field name="pt" dataType="N" format="Amount" width="100">
+          <text v="Tổng trả lại" e="Receivable Amt."></text>
+        </field>
+        <field name="gia" dataType="N" format="Price" width="100">
+          <text v="Giá vốn" e="Cogs"></text>
+        </field>
+        <field name="tien_nhap" dataType="N" format="Amount" width="100">
+          <text v="Tiền vốn" e="Cogs Amt."></text>
+        </field>
+        <field name="tien_lai" dataType="N" format="Amount" width="100">
+          <text v="Lãi" e="Profit."></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$bcthhbtl(f){
+  this.constructor(f);
+}
+grid$bcthhbtl.prototype = new DirEvent();
+grid$bcthhbtl.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+grid$bcthhbtl.prototype.beforeInit = function(){
+  var p = this._dir;
+}
+grid$bcthhbtl.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(), dt = g.data;
+
+  if (p.options._mau_bc == 1) p.setColumnHidden(0, ['gia_nt2', 'tien_nt2', 'thue_nt', 'pt_nt', 'gia_nt', 'tien_nt_nhap', 'tien_lai_nt', 'ma_nt', 'ty_gia', 'gia2', 'tien2', 'thue', 'pt', 'gia', 'tien_nhap', 'tien_lai'], true);
+  if (p.options._mau_bc == 2) p.setColumnHidden(0, ['gia_nt2', 'tien_nt2', 'thue_nt', 'pt_nt', 'gia_nt', 'tien_nt_nhap', 'tien_lai_nt', 'ma_nt', 'ty_gia'], true);
+}
+]]>
+    </text>
+  </js>
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+exec ss_bcthhbtl @ngay_ct1, @ngay_ct2, '@@gridJoin', '@@gridFields', @strJoin, @strFinding, @group_by, @loai_du_lieu, @ma_unit, '@@lan', @@userId, @@admin
+        ]]>
+      </text>
+    </processing>
+  </script>
+</dir>

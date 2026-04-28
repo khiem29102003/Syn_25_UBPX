@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="sysuserinfo" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách người sử dụng cho hệ thống" e="List of Users"></title>
+  <grids>
+    <grid id="0" table="sysuserinfo" fieldKey="username" fieldName="nickname" order="username" allowFilter="true" allowOrder="true" key="" >
+      <fields>
+        <field name="username" fieldType="PK" width="100" filterType="Code" >
+          <text v="Tên" e="Name"></text>
+        </field>
+        <field name="nickname" width="300">
+          <text v="Tên đầy đủ" e="Description"></text>
+        </field>
+      </fields>
+	  	   <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = @lookupKey + case when @val = '' then '' else ' and (@@fieldKey like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or @@fieldName like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+    </grid>
+  </grids>
+</dir>

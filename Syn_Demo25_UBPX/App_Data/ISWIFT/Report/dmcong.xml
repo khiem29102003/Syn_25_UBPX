@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<report xmlns="urn:schemas-iswift:struct-report">
+  <query>
+    <text>
+      <![CDATA[
+			select a.ma_cong, a.ten_cong, a.ten_cong2,
+			IIF(a.status = '1', N'Còn sử dụng', N'Không sử dụng') status,
+			b.ten_loai
+			from dmcong a with(nolock)
+				left join dmloaicong b on a.ma_loai = b.ma_loai
+			
+		where ma_cong = @ma_cong
+
+]]>
+    </text>
+  </query>
+
+  <forms>
+    <form id="010" fileName="dmcong_01" fileType="rdlc" exportExt="pdf" image="pdf">
+      <text v="Mẫu chuẩn (.pdf)" e="Standard Templates"></text>
+    </form>
+	
+	<form id="030" fileName="dmcong_01" fileType="rdlc" exportExt="xlsx" image="excel">
+      <text v="Mẫu chuẩn (.xlsx)" e="Standard Templates"></text>
+    </form>	
+  </forms>
+
+  <fields>
+   	<field name="title" type="C">
+      <text v="Thông tin công/thùng hàng " e="Container/Cargo Information"/>
+    </field>
+    <field name="h_ma_cong" type="C">
+      <text v="Mã công:" e="Container Code:"/>
+    </field>
+	<field name="h_ten_cong" type="C">
+      <text v="Tên công:" e="Container Name:"/>
+	</field>
+	<field name="h_ten_cong2" type="C">
+      <text v="Tên khác:" e="Other Name:"/>
+	</field>
+	<field name="h_ma_loai" type="C">
+      <text v="Mã loại:" e="Type Code:"/>
+    </field>
+	<field name="h_status" type="C">
+      <text v="Trạng thái:" e="Status:"/>
+	</field>
+  </fields>
+
+</report>

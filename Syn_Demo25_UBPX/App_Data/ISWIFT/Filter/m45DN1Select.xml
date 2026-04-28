@@ -1,0 +1,330 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+]>
+
+<dir id="m45DN1Select" table="" height="" fieldKey="id" voucherCode="DN1" dirViewType="Dialog" readOnly="true" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Chi tiết đơn hàng được chọn" e="Quotation Entry Detail"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" readOnly="true" aliasName="@DFDFrom" disabled="true" allowBlank="false" dataType="D">
+          <text v="Ngày c/từ từ/đến" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" allowBlank="false" disabled="true" inactivate="true" dataType="D" nextRow="false">
+          <text v="Ngày đến" e="Voucher Date"></text>
+        </field>
+        <field name="ma_nt" hidden="true" label="1" field="1">
+          <text v="Mã ngoại tệ" e="Ex Code"></text>
+        </field>
+        <field name="unit_id" dataType="I" hidden="true" label="1" field="1">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>	
+		<field name="ma_kh" format="U" label="1" disabled="true"  field="1" operation="like" >
+          <text v="Mã khách hàng" e="Code"></text>
+        </field>
+		<field name="ten_kh" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+		 <field name="ma_hang" viewType="Lookup" label="1" disabled="true" field="1" operation="like">
+			<text v="Hãng tàu/ Đại lý" e="Carrier/ Agent Code"></text>
+		</field>
+		<field name="ten_hang" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+		<field name="ds_cong" allowBlank="true" viewType="Lookup" label="1" field="-"  hidden="false" disabled="true">
+			<text v="Container" e="Container List"></text>
+			<viewInfo lookupType="Multi" lookupId="dmcong2" lookupKey="status=1" lookupCheck="status=1" lookupRef="" lookupInfo="dmcong|ma_cong|ten_cong" />
+		</field>
+        <field name="ma_noi_di" viewType="Lookup" label="1" disabled="true" field="1" operation="like">
+			<text v="Nơi đi" e="Origin "></text>
+			<viewInfo lookupType="One" lookupId="vdmcangdi" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_di" />
+		</field>
+		<field name="ten_noi_di" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+		<field name="ma_noi_den" viewType="Lookup" disabled="true" label="1" field="1" operation="like">
+			<text v="Nơi đến" e="Destination"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangden" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_den"  />
+		</field>
+		<field name="ten_noi_den" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field>  
+		<field name="so_ct" label="1" field="1" disabled="true" hidden="true">
+          <text v="Số báo giá" e="Quot. Number"></text>
+        </field>
+		<field name="dien_giai" label="1" rows="1" field="-" disabled="true">
+		  <text v="Diễn giải" e="Explain"></text>
+		</field>
+		<field name="id" dataType="N" hidden="true" fieldType="PK" label="1" field="1"  >
+			 <text v="ID" e="Code"></text>
+		</field>
+		
+      </fields>
+    </form>
+    <form tabPageIndex="1" gravity="MiddleLeft" height="350" columns="120,120,240" >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="v61" label="" field="-" viewType="Grid">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+ <grids>
+    <grid id="v61" table="v61" fieldKey="id, line" order="id, line" allowFilter="true" readOnly="true" allowOrder="true">
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+        <field name="ma_vt" width="100" allowBlank="false" viewType="Lookup" readOnly="false" aliasName="a.ma_phi as " >
+          <text v="Mã phí" e="Item"></text>
+          <viewInfo lookupType="One" lookupId="dmvt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_vt" lookupInfo="dmvt|ma_vt|ten_vt" />
+        </field>
+        <field name="ten_vt" width="250" fieldType="EX" inactivate="true" readOnly="true" join=" left join dmphi b on a.ma_phi = b.ma_phi " aliasName="b.ten_phi as ">
+          <text v="Tên phí" e="Item Name"></text>
+        </field>
+		 <field name="ma_cong" width="100" allowBlank="true" viewType="Lookup" readOnly="false" >
+          <text v="Container" e="Container"></text>
+          <viewInfo lookupType="One" lookupId="dmcong" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_cong" lookupInfo="dmcong|ma_cong|ten_cong" />
+        </field>
+        <field name="ten_cong" width="0" fieldType="EX" inactivate="true" readOnly="true" aliasName="c" join=" left join dmcong c on a.ma_cong = c.ma_cong ">
+          <text v="Container" e="Container Name"></text>
+        </field>
+         <field name="ma_dk_phi" viewType="Combobox" width="130" readOnly="false">
+			<text v="Loại phí" e="Fee type"></text>
+			<viewInfo>
+				<options query="select ma_bgn, ten_bgn%l from dmbgn where ma_ct = 'LPH' and status = 1 order by stt">
+				</options>
+			</viewInfo>
+		</field>
+		<field name="dvt" width="80" allowBlank="true" viewType="Lookup" readOnly="false" >
+          <text v="Đơn vị" e="Unit"></text>
+          <viewInfo lookupType="One" lookupId="dmdvt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_dvt" lookupInfo="dmdvt|dvt|ten_dvt" />
+        </field>
+        <field name="ten_dvt" width="0" fieldType="EX" inactivate="true" readOnly="true" aliasName="x" join=" left join dmdvt x on a.dvt = x.dvt ">
+          <text v="Tên đơn vị" e="Fee Name"></text>
+        </field>		
+        <field name="so_luong" dataType="N" format="Amount" width="100" readOnly="false" >
+          <text v="Số lượng" e="Quantity"></text>
+        </field>
+        <field name="gia_nt2" dataType="N" hidden="false" format="FCPrice" width="100" readOnly="false" >
+          <text v="Giá mua " e=" Cost Price"></text>
+        </field>
+		 <field name="tien_nt2" dataType="N" hidden="false" format="FCAmount" width="100" valueDefault="0" readOnly="false" disabled="true" >
+          <text v="Tiền mua" e="Cost Amount"></text>
+        </field>
+		 <field name="ma_nt" width="70" allowBlank="false" viewType="Lookup" readOnly="false" >
+          <text v="Mã NT" e="Currency"></text>
+          <viewInfo lookupType="One" lookupId="dmnt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_nt" lookupInfo="dmnt|ma_nt|ten_nt" />
+        </field>
+		 <field name="ten_nt" width="0" fieldType="EX" inactivate="true" readOnly="true" aliasName="nt" join=" left join dmnt nt on a.ma_nt = nt.ma_nt ">
+          <text v="Tên phí" e="Fee Name"></text>
+        </field>
+		 <field name="ty_gia" dataType="N" format="Price" width="100" valueDefault="1" hidden="false" readOnly="false" >
+          <text v="Tỷ giá" e="Curr.Rate"></text>
+        </field>
+		<field name="gia2" dataType="N" format="Price" width="100" hidden="true"  valueDefault="0" inactivate="true" readOnly="true">
+          <text v="Giá chuẩn" e="Std.Price"></text>
+        </field>
+		<field name="tien2" dataType="N" format="Amount" width="100" readOnly="false" >
+          <text v="Chi phí" e="Total Cost"></text>
+        </field>
+		<field name="dien_giai" width="200" inactivate="true" readOnly="false">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+        <field name="line_bg" dataType="I" fieldType="PK" hidden="false">
+          <text v="Dòng BG" e="Quot. Line"></text>
+        </field>
+		<field name="id_bg" dataType="I" fieldType="PK" hidden="false">
+          <text v="Id BG" e="Quot. Id"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+	select data as id into #id from dbo.ISWIFTFunction$Split(@so_ct, ',')
+	select top 0 id, line, ma_phi as ma_vt, ma_cong, ma_dk_phi, ma_dvt as dvt,so_luong, gia_nt1 as gia_nt2, tien_nt1 as tien_nt2, ma_nt, ty_gia, gia1 as gia2, tien1 as tien2, line_bg, id_bg into #detail from v61 a
+	DECLARE @q NVARCHAR(4000), @id_yc int, @t_luong numeric(19,5),@t_khoi numeric(19,5),@dl_yn int, @ncc_yn int,@ma_hang varchar(32),@ten_hang nvarchar(255),@ma_dl varchar(32), @id_bg int, @ma_ct_bg varchar(32)
+
+	select * into #master1 from s61 where id in (select top 1 id from #id order by id desc)
+	select  @ma_ct_bg = ma_ct_bg from #master1
+	
+	select * into #masterbq1 from s41 where id in (select id_bg from #master1)
+	DELETE #masterbq1 where ma_ct <> @ma_ct_bg
+	select * into #detailbq1 from v41 where id in (select id from #masterbq1)
+	
+	select * into #masterbq2 from s42 where id in (select id_bg from #master1)
+	DELETE #masterbq2 where ma_ct <> @ma_ct_bg
+	select * into #detailbq2 from v42 where id in (select id from #masterbq2)
+	
+	select * into #masterbq3 from s43 where id in (select id_bg from #master1)
+	DELETE #masterbq3 where ma_ct <> @ma_ct_bg
+	select * into #detailbq3 from v43 where id in (select id from #masterbq3)
+
+	if @ma_ct_bg = 'BQ1'
+	begin
+		Set @q = 'insert into #detail select id,line,ma_phi,ma_cong,ma_dk_phi,ma_dvt,so_luong,gia_nt1,tien_nt1,ma_nt,ty_gia,gia1,tien1,line,id from #detailbq1'
+		exec(@q);
+	end
+	if @ma_ct_bg = 'BQ2'
+	begin
+		Set @q = 'insert into #detail select id,line,ma_phi,ma_cong,ma_dk_phi,ma_dvt,so_luong,gia_nt1,tien_nt1,ma_nt,ty_gia,gia1,tien1,line,id from #detailbq2'
+		exec(@q);
+	end
+	if @ma_ct_bg = 'BQ3'
+	begin
+		Set @q = 'insert into #detail select id,line,ma_phi,ma_cong,ma_dk_phi,ma_dvt,so_luong,gia_nt1,tien_nt1,ma_nt,ty_gia,gia1,tien1,line,id from #detailbq3'
+		exec(@q);
+	end
+
+	select a.* ,b.ten_vt,x.ten_dvt,nt.ten_nt, c.id as id_dh from #detail a
+	left join s61 c on a.id = c.id_bg
+	left join dmvt b on a.ma_vt = b.ma_vt
+	left join dmdvt x on a.dvt = x.dvt 
+	left join dmnt nt on a.ma_nt = nt.ma_nt
+	order by a.line, a.id
+	
+	DECLARE @ds_cong VARCHAR(4000)  
+	SELECT distinct ma_cong into #tt FROM #detail a
+	SELECT @ds_cong = COALESCE(@ds_cong + ', ','') + ltrim(rtrim(ma_cong)) FROM #tt
+	
+
+	if @ma_ct_bg = 'BQ1'
+	begin
+		select @ds_cong ds_cong, a.dien_giai, a.id id_dh, a.so_job so_job_dh, a.id_bg, a.id_tg, a.so_ct so_ct_dh,
+		a.ma_noi_di, a.ma_noi_den, a.ma_hang, a.ma_kh, a.ma_job, a.ma_ct ma_ct_dh ,d.ten_hang, f.ten_kh, b.ten_noi_di, c.ten_noi_den
+		from s61 a 
+		  left join vdmhangtau d on a.ma_hang = d.ma_hang
+		  left join dmkh f on a.ma_kh = f.ma_kh
+		  left join vdmcangdi b on a.ma_noi_di = b.ma_noi_di
+		  left join vdmcangden c on a.ma_noi_den = c.ma_noi_den
+		  left join #masterbq1 m on a.id_bg = m.id
+		where a.id in (select top 1 id from #id order by id desc) 	
+	end
+	if @ma_ct_bg = 'BQ2'
+	begin
+		select m.t_tong_khoi, m.t_tong_trong, a.dien_giai, a.id id_dh, a.so_job so_job_dh, a.id_bg, a.id_tg, a.so_ct so_ct_dh,
+		a.ma_noi_di, a.ma_noi_den, a.ma_hang, a.ma_kh, a.ma_job, a.ma_ct ma_ct_dh ,d.ten_hang, f.ten_kh, b.ten_noi_di, c.ten_noi_den
+		from s61 a 
+		  left join vdmhangtau d on a.ma_hang = d.ma_hang
+		  left join dmkh f on a.ma_kh = f.ma_kh
+		  left join vdmcangdi b on a.ma_noi_di = b.ma_noi_di
+		  left join vdmcangden c on a.ma_noi_den = c.ma_noi_den
+		  left join #masterbq2 m on a.id_bg = m.id
+		  where a.id in (select top 1 id from #id order by id desc) 
+	end
+	if @ma_ct_bg = 'BQ3'
+	begin
+		select m.t_tong_khoi, m.t_tong_trong, a.dien_giai, a.id id_dh, a.so_job so_job_dh, a.id_bg, a.id_tg, a.so_ct so_ct_dh,
+		a.ma_noi_di, a.ma_noi_den, a.ma_hang, a.ma_kh, a.ma_job, a.ma_ct ma_ct_dh ,d.ten_hang, f.ten_kh, b.ten_noi_di, c.ten_noi_den
+		from s61 a 
+		  left join vdmhangtau d on a.ma_hang = d.ma_hang
+		  left join dmkh f on a.ma_kh = f.ma_kh
+		  left join vdmcangdi b on a.ma_noi_di = b.ma_noi_di
+		  left join vdmcangden c on a.ma_noi_den = c.ma_noi_den
+		  left join #masterbq3 m on a.id_bg = m.id
+		  where a.id in (select top 1 id from #id order by id desc) 
+	end
+	
+     drop table #id, #detail, #master1, #masterbq1, #detailbq1,#masterbq2, #detailbq2,#masterbq3, #detailbq3, #tt
+
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+   
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$m45DN1Select(p){
+  this.constructor(p);
+}
+filter$m45DN1Select.prototype = new DirEvent();
+filter$m45DN1Select.prototype.beforeInit = function(){
+  var p = this._dir;
+  
+}
+
+
+filter$m45DN1Select.prototype.afterInit = function(){
+	var p = this._dir,g = p.grid(0),master = g.ds.get(1), rErr = '';
+  p.valForm(['ngay_ct1','ngay_ct2','id', 'ma_noi_di', 'ten_noi_di', 'ma_noi_den', 'ten_noi_den', 'ma_nt', 'unit_id'], [p.options._ngay_ct1,p.options._ngay_ct2,p.options._so_ct,p.options._ma_noi_di, p.options._ten_noi_di,p.options._ma_noi_den, p.options._ten_noi_den,  p.options._ma_nt, p.options._unit_id]);
+	dir$m45DN1SetMaster(p);
+
+}
+
+function dir$m45DN1SetMaster(p) {
+  p.request('ma_kh_request', '', ['id']);
+}
+
+filter$m45DN1Select.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir, pa = p.options.parent, g = p.grid(), dt = g.data, master = g.ds.get(1), rErr = '';
+ 
+ var fun = function(){
+	dt.removeRow('[so_luong] == 0');
+    pa.appendGrid(0, dt, p.valForm('xprocess') == "2", 'so_luong', 'so_luong');
+	pa.calcExpressionAll(0, 'so_luong');
+    pa.appendForm(master, 0);
+    p._close();
+  }
+
+  if (rErr.length) {
+    $.question('$VoucherRetrieveLimit', null, p, function(q, v){
+      q._close();
+      if (v) fun();
+    });
+  } else fun();
+  
+  //p._close();
+  
+  return false;
+}
+         ]]>
+    </text>
+  </js>
+  
+  <script>
+		<request code="ma_kh_request">
+			<text>
+			  <![CDATA[
+			  
+			  		DECLARE @ds_cong VARCHAR(4000)  
+					SELECT distinct ma_cong into #tt FROM v61 a where a.id = @id
+					SELECT @ds_cong = COALESCE(@ds_cong + ', ','') + ltrim(rtrim(ma_cong)) FROM #tt
+					
+					select top 1 a.ma_kh as [!ma_kh],a.ma_hang as [!ma_hang], a.ma_noi_di as [!ma_noi_di], a.ma_noi_den as [!ma_noi_den], 
+					@ds_cong as [!ds_cong],b.ten_noi_di as [!ten_noi_di],c.ten_noi_den as [!ten_noi_den],d.ten_kh as [!ten_kh],e.ten_hang as [!ten_hang], a.dien_giai as [!dien_giai]
+				  from s61 a 
+				  left join vdmcangdi b on a.ma_noi_di =b.ma_noi_di 
+				  left join vdmcangden c on a.ma_noi_den =c.ma_noi_den 
+				  left join dmkh d on a.ma_kh =d.ma_kh 
+				  left join vdmhangtau e on a.ma_hang =e.ma_hang 
+				  where a.id = @id
+			]]>
+			</text>
+		  </request>
+    
+  </script>
+  
+</dir>

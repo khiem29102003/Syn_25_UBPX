@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="bknxk" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Bảng kê nhập/xuất kho" e="Receipt/Issue Transaction List"></title>
+  <subtitle v="Từ ngày {ngay_ct1} đến ngày {ngay_ct2}..." e="From {ngay_ct1} To {ngay_ct2}..."></subtitle>
+  <grids>
+    <grid>
+      <fields>
+        <field name="ma_unit" width="80" aliasName="d" join="left join sysunit d on a.unit_id = d.unit_id" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+        <field name="so_ct" width="100" link="V" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ma_kho" width="100" >
+          <text v="Mã kho" e="Site"></text>
+        </field>
+        <field name="ma_vt" width="100">
+          <text v="Mã hàng hóa" e="Goods Code"></text>
+        </field>
+        <field name="ten_vt" width="250" aliasName="b" join="left join dmvt b on a.ma_vt = b.ma_vt">
+          <text v="Tên hàng hóa" e="Goods Name"></text>
+        </field>
+        <field name="ma_lo" width="100" >
+          <text v="Mã lô" e="Lot"></text>
+        </field>
+        <field name="ma_vi_tri" width="100" >
+          <text v="Mã vị trí" e="Location"></text>
+        </field>
+        <field name="ma_kh" width="100" >
+          <text v="Mã đối tượng" e="Customer"></text>
+        </field>
+
+        <field name="sl_nhap" dataType="N" format="Qty" width="100">
+          <text v="Sl nhập" e="Received Q'ty"></text>
+        </field>
+        <field name="tien_nt_nhap" dataType="N" format="FCAmount" width="100">
+          <text v="Tiền nhập nt" e="FC Receive Amt."></text>
+        </field>
+        <field name="tien_nhap" dataType="N" format="Amount" width="100">
+          <text v="Tiền nhập" e="Receive Amt."></text>
+        </field>
+
+        <field name="sl_xuat" dataType="N" format="Qty" width="100">
+          <text v="Sl xuất" e="Issued Q'ty"></text>
+        </field>
+        <field name="tien_nt_xuat" dataType="N" format="FCAmount" width="100">
+          <text v="Tiền xuất nt" e="FC Issued Amt."></text>
+        </field>
+        <field name="tien_xuat" dataType="N" format="Amount" width="100">
+          <text v="Tiền xuất" e="Issued Amt."></text>
+        </field>
+        <field name="ma_bp" width="100" >
+          <text v="Mã bộ phận" e="Department"></text>
+        </field>
+        <field name="ma_vv" width="100" >
+          <text v="Mã vụ việc" e="Job"></text>
+        </field>
+        <field name="unit_id" dataType="I" hidden="true" width="100" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="id" dataType="I" hidden="true" width="100" >
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="ma_ct" width="100" >
+          <text v="Mã chứng từ" e="VC Code"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$bknxk(f){
+  this.constructor(f);
+}
+grid$bknxk.prototype = new DirEvent();
+grid$bknxk.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+grid$bknxk.prototype.beforeInit = function(){
+  var p = this._dir;
+}
+grid$bknxk.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(), dt = g.data;
+  if (p.options._data_analysis_struct == '') {
+    p.setColumnHidden(0, ['tien_nhap', 'tien_xuat', 'tien_nt_nhap', 'tien_nt_xuat'], false);
+    if (p.options._mau_bc == 1) p.setColumnHidden(0, ['tien_nhap', 'tien_xuat', 'tien_nt_nhap', 'tien_nt_xuat'], true);
+    if (p.options._mau_bc == 2) p.setColumnHidden(0, ['tien_nt_nhap', 'tien_nt_xuat'], true);
+    if (p.options._ct_nxd == '1') p.setColumnHidden(0, ['sl_xuat', 'tien_xuat', 'tien_nt_xuat'], true);
+    if (p.options._ct_nxd == '2') p.setColumnHidden(0, ['sl_nhap', 'tien_nhap', 'tien_nt_nhap'], true);
+  }
+}
+]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+exec ss_bknxk @ngay_ct1, @ngay_ct2, '@@gridJoin', '@@gridFields', @strJoin, @strFinding, @group_by, @loai_du_lieu, @ma_unit, '@@lan', @@userId, @@admin
+        ]]>
+      </text>
+    </processing>
+  </script>
+
+</dir>

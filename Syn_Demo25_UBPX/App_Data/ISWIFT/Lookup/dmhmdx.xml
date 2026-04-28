@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="dmhmdx" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục hạng mục đề xuất" e="List of Target type"></title>
+  <grids>
+    <grid table="dmhmdx" fieldKey="ma_hmdx" fieldName="ten_hmdx" order="ma_hmdx" allowFilter="true" allowOrder="true" key="" >
+      <fields join="">
+        <field name="ma_hmdx" fieldType="PK" width="120" filterType="Code" >
+          <text v="Mã hạng mục " e="Type code"></text>
+        </field>
+        <field name="ten_hmdx" width="200">
+          <text v="Tên hạng mục" e="Type name"></text>
+        </field>
+		 <field name="ten_hmdx2" width="200">
+          <text v="Tên khác" e="Type name"></text>
+        </field>
+		<field name="nguoi_check" width="250">
+          <text v="Người check" e="Type name"></text>
+        </field>
+		<field name="nguoi_duyet" width="250">
+          <text v="Người duyệt" e="Type name"></text>
+        </field>	
+		<field name="nguoi_thuchien" width="250">
+          <text v="Người thực hiện" e="Type name"></text>
+        </field>
+      </fields>
+	  <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = @lookupKey + case when @val = '' then '' else ' and (@@fieldKey like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or @@fieldName like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+    </grid>
+  </grids>
+</dir>

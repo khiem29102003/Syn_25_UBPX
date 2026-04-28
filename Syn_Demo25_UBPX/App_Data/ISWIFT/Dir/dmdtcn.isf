@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY CheckUpdatingDeleting "
+	if exists(select 1 from dmdtcn where dien_thoai = @dien_thoai and status in (0,3)) begin
+	select '$NotEditVoucherStatus' as message
+		return
+		end
+  ">
+]>
+
+<dir id="dmdtcn" table="dmdtcn" fieldKey="ma_so_thue, dien_thoai" transaction="true" tryCatch="true" dirViewType="Dialog" voucherCode="TC1" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục điện thoại cá nhân" e="List of personal phone"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+	<form gravity="TopLeft" columns="120,120,120" >
+		<fields>
+			<field name="tt" nextRow="true" fieldType="EX" readOnly="true" inactivate="true" label="[200]" field="0">
+				<text v="Thông tin điện thoại cá nhân:" e="Personal phone information: "></text>
+			</field>	
+			<field name="ma_so_thue" nextRow="true" label="1" field="2" importable="5" allowBlank="true" disabled="false" fieldType="PK">
+				<text v="Mã số thuế" e="Tax"></text>
+			</field>
+			<!-- <field name="ma_so_thue" viewType="Lookup" nextRow="true" label="1" field="2" importable="5" allowBlank="true" disabled="false"> -->
+				<!-- <text v="CMND/CCCD" e="Citizen ID"></text> -->
+				<!-- <viewInfo lookupType="One" lookupId="dmcccd" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_cccd" lookupInfo="dmcccd|ma_so_thue|ten_cccd" importCheck="@@DF and z.status=1"/> -->
+			<!-- </field> -->
+			<!-- <field name="ten_cccd" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as "> -->
+				<!-- <text v="" e=""></text> -->
+			<!-- </field> -->
+			<field name="dien_thoai" nextRow="true" label="1" field="2" importable="10" disabled="false" align="left" fieldType="PK">
+				<text v="Điện thoại" e="Phone Number"></text>
+			</field>
+			<field name="ghi_chu" nextRow="true" label="1" field="2" importable="20" disabled="false">
+				<text v="Ghi chú 1" e="Note 1"></text>
+			</field>
+			<field name="ghi_chu2" nextRow="true" label="1" field="2" importable="30" disabled="false">
+				<text v="Ghi chú 2" e="Note 2"></text>
+			</field>
+			<field name="status" viewType="Combobox" width ="150" valueDefault="1">
+			  <text v="Trạng thái" e="Status"></text>
+			  <viewInfo>
+				<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 order by ma_tt">
+				</options>
+			  </viewInfo>
+			</field>
+      </fields>
+    </form>
+	
+	<form tabPageIndex="1" gravity="MiddleLeft" height="300" columns="120,120,120,120,120,120,120,120,120,120" >
+		<text v="Chi tiết" e="Information"></text>
+		<fields>		
+        <field name="ten_kh" allowBlank="false" label="1" field="2" fieldType="EX">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+        <field name="ten_kh2" label="1" field="2" fieldType="EX">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+
+        <field name="dia_chi" label="1" field="-" allowBlank="false" fieldType="EX">
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+        <field name="nguoi_lh" label="1" field="1" nextRow="false" fieldType="EX">
+          <text v="Người liên hệ" e="Contact"></text>
+        </field>
+        <field name="fax" label="1" field="1" nextRow="false" fieldType="EX">
+          <text v="Fax" e="Fax"></text>
+        </field>
+		<field name="e_mail" label="1" field="2" fieldType="EX">
+          <text v="Email" e="Email"></text>
+        </field>
+        <field name="nh_kh1" viewType="Lookup" label="1" field="1" fieldType="EX">
+          <text v="Nhóm 1" e="Group 1"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH1' and status=1" lookupCheck="ma_loai_nh = 'KH1'" lookupRef="ten_nh_kh1" lookupInfo="dmnh|ma_nh|ten_nh" importCheck="@@DF and z.ma_loai_nh = 'KH1' and z.status=1"/>
+        </field>
+        <field name="ten_nh_kh1" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="nh_kh2" viewType="Lookup" label="1" field="1" fieldType="EX">
+          <text v="Nhóm 2" e="Group 2"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH2' and status=1" lookupCheck="ma_loai_nh = 'KH2'" lookupRef="ten_nh_kh2" lookupInfo="dmnh|ma_nh|ten_nh" importCheck="@@DF and z.ma_loai_nh = 'KH2' and z.status=1"/>
+        </field>
+        <field name="ten_nh_kh2" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="nh_kh3" viewType="Lookup" label="1" field="1" fieldType="EX">
+          <text v="Nhóm 3" e="Group 3"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH3' and status=1" lookupCheck="ma_loai_nh = 'KH3'" lookupRef="ten_nh_kh3" lookupInfo="dmnh|ma_nh|ten_nh" importCheck="@@DF and z.ma_loai_nh = 'KH3' and z.status=1"/>
+        </field>
+        <field name="ten_nh_kh3" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="so_tk" label="1" field="1" nextRow="false" allowBlank="true" fieldType="EX">
+          <text v="Số tài khoản" e="Account Number"></text>
+        </field>
+		<field name="ma_nh" viewType="Lookup" label="1" field="1" fieldType="EX">
+          <text v="Ngân hàng" e="Bank"></text>
+          <viewInfo lookupType="One" lookupId="dmnganhang" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_nh" lookupInfo="dmnganhang|ma_nh|ten_nh" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_nh" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+	</form>
+  </forms>
+
+	<buttons>
+		<button id="ok" default="true">
+		<text v="$AcceptLabel" e="$AcceptLabel"></text>
+		</button>
+	</buttons>
+
+  <js>
+    <text>
+      <![CDATA[<enc>1T5BOetLz6tssn2mO2GbO8E/YTAefAOM0o+xRr8cCokt5yz4t7RHZqznWH6t3K9o7IqYaoQlND/S3u7n9wDh/iSHJrup9SWU2LzYAJuCUlkoL6S1hnB5gJhafaZj7uYIYMzC/ZU69sb7wgg5GphgcH7x3zRGZ0DrCyS3Oc1VDPA/XsBMaAFncHrnBq8BO+idpSYJyCtm+BsiB4hMS0SgQ8tpw8YC2Yix36cxYYdAtW5bxnyaJdYu6e9PEk65MmnYAzGhSl2ihBDykB0k8rPRtIU3JikLrMRTln2HuCCngN6gNaqUHnigrZBrfU+g3GJEXVz9UYTSoi1qJyJpSOukkga1WZ2+4nE6BX8/vDk+NHJZEWPwZ85WMqWn4nTohDsccv7vQbj4TPOJYQtGIoe7eltD7qsh/xp+z+EO9jTlKLwBcaEaQJgQJDTVdMyz9VnkSx5tFDUK8tP1c+g33GYr40kLjOCSjwOKQz7RMjTvyHS1t6Ys9dO9jJJwB95pU5+l</enc>]]>
+    </text>
+  </js>
+<css>
+	<text>
+		  <![CDATA[<enc>kDmG4eTYrZN9yH/h0CadwA+58rTbpYXEYESSZAtxwe7ceCSwcpHVxIra9mRJFQj5AAuiLaRQr/N7fV4S2risoFJdlfOBNmbiInv5HCnEMp/xMkwrZYf1T/fBMibJGjnMWz8QtbXciSA0UB2+MQ+eeNKaI71paeBLJTImCQRMSrpb09zhd9HCaBCyH1x8sBjACrmCe+LR8C/1d/GaDfSI2w==</enc>]]>
+	</text>
+</css>
+  <script>
+	<request code="info_request">
+		<text>		
+			<![CDATA[<enc>eZQyYi5HidIUDDuzA3DZm0LVdv5QY9M4YD2xXvD6HrL5CniUO1niMaBQFnfE+eJZk0wQSad+ZdXMZigRJaS8yulbEqWswRC+mj3vG4cXQYN6VeZaFNQnbDRUKTBYqVl+KI6S2Z4mK1mULP/JSbPuFctuXvPK0wmzhBHncP4SKzBtv1o7yRAzrEKR9q7Y1q/GxspIqNVNIAEQpjwnNFhipJ2plcTCuhWLUGyRAH/5N4thDFa3x2ZkcMqHZxFNE/K7</enc>]]>
+		</text>
+	</request>
+  <inserting>
+      <text>
+        <![CDATA[<enc>Dglo6ONrrpDIkD75hnbh1PdnbULPJbEsHKXbYxKWFI0vy1AATlaGuTB3u/oPRateRtrSvtXPg53rC2U4UzWMPJvZVoS1Tj9EzWS6OV+vA7cZAKQz8mlWLHp0Btq98RVSfeUmtXlbnoPOVJikVcBW9p8llH+uGVuF8ZkCdJAN9mWb6jqPjjLeLt7LOKo4DcuDeIqpijb16PPdA/NxJFiF1fVXFQqpTb9W4BJM+08lLWTIR6EJCjGOsZUct2rRYhpQddCi8CImL/NtaKvvb5OySA==</enc>]]>
+      </text>
+    </inserting>
+	<importing>
+      <text>
+        <![CDATA[<enc>OJTGoSIy8QCZeoyJMmdxeUd7FCB/9CUKI3D1cWkrCmCczF6fKYxFNFvElWRVu3fA</enc>]]>
+      </text>
+    </importing>
+    <declare>
+      <text>
+        <![CDATA[<enc>XCifUZf8Y2yfvq78OCSkUfULHnSuFzfjX32nD97iR/h/Z8HISLM8N6KJdQGFEXln0yZdMguXQ/ZglxmEF5QQEbNfEyASon0T4KxcvtHwIOplElsOBe6GjijJgf9x+H4KmNmSGZkz8+TFkbGjKNV0K0ptCtsymn1RSTBft6/H+4B2rEGEA0iALKB9i6XWYlN99uKQh/IwheHcjyhvr7JrH9gA41dLensEgQCzE8GwmgA4iwKJCC7UBEHoIbK4C/Bn</enc>]]>
+      </text>
+    </declare>
+  </script>
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Số điện thoại đã tồn tại" e="Phone number is exists"/>
+    </message>
+    <message val="taxtCodeExists">
+      <text v="Số điện thoại đã tồn tại" e="Phone number is exists"/>
+    </message>
+  </messages>
+</dir>

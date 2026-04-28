@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<report xmlns="urn:schemas-iswift:struct-report">
+  <query>
+    <text>
+      <![CDATA[
+			select a.ma_kh, a.ten_kh, a.ten_kh2, a.dia_chi, a.ma_so_thue, a.nguoi_lh, a.ma_nvbh, d.ten_nvbh, a.ma_tt,i.ten_tt, a.gioi_han_no,
+			    a.nh_kh1, f.ten_nh, a.nh_kh2, e.ten_nh as ten_nh1, a.nh_kh3, g.ten_nh as ten_nh2, a.dien_thoai, a.fax, a.e_mail, a.home_page, a.ghi_chu, 
+				a.ma_nh, h.ten_nh ten_nganhang, a.so_tk, a.phong_kd, a.ky_han_no,
+				--replace(a.kh_yn,1,'x') kh_yn, 
+				--replace(a.ncc_yn,1,'x') ncc_yn,
+				--replace(a.dl_yn,1,'x') dl_yn,
+				--replace(a.hk_yn,1,'x') hk_yn,
+				IIF(a.kh_yn = 1, replace(a.kh_yn,1,'x'), '') kh_yn,
+				IIF(a.ncc_yn = 1, replace(a.ncc_yn,1,'x'), '') ncc_yn,
+				IIF(a.dl_yn = 1, replace(a.dl_yn,1,'x'), '') dl_yn,
+				IIF(a.hk_yn = 1, replace(a.hk_yn,1,'x'), '') hk_yn,
+				IIF(a.status = '1', N'Còn sử dụng', N'Không sử dụng') status
+
+			from dmkh0 a with(nolock)
+			left join dmnvbh d on a.ma_nvbh = d.ma_nvbh
+			left join dmnh f on a.nh_kh1 = f.ma_nh
+			left join dmnh e on a.nh_kh2 = e.ma_nh
+			left join dmnh g on a.nh_kh3 = g.ma_nh
+			left join dmnganhang h on a.ma_nh = h.ma_nh
+			left join dmtt i on a.ma_tt = i.ma_tt
+		where ma_kh = @ma_kh
+]]>
+    </text>
+  </query>
+
+  <forms>
+
+	<form id="010" fileName="dmkh0_01" fileType="rdlc" exportExt="pdf" image="pdf">
+      <text v="Mẫu chuẩn" e="Standard Templates"></text>
+    </form>
+	<form id="020" fileName="dmkh0_01" fileType="rdlc" exportExt="xlsx" image="">
+      <text v="Mẫu chuẩn" e="Standard Templates"></text>
+    </form>
+  </forms>
+
+  <fields>
+	<field name="title" type="C">
+      <text v="Thông tin khách hàng" e="Customer Information"/>
+    </field>
+    <field name="h_ma_kh" type="C">
+      <text v="Mã khách hàng: " e="Customer Code: "/>
+    </field>
+	<field name="h_ten_kh" type="C">
+      <text v="Tên khách hàng: " e="Customer Name: "/>
+	</field>
+	<field name="h_ten_kh2" type="C">
+      <text v="Tên khác: " e="Other Name: "/>
+	</field>
+	<field name="h_dia_chi" type="C">
+      <text v="Địa chỉ: " e="Address: "/>
+	</field>
+	<field name="h_ma_so_thue" type="C">
+      <text v="Mã số thuế: " e="Tax Code: "/>
+	</field>
+	<field name="h_nguoi_lh" type="C">
+      <text v="Người liên hệ: " e="Contact: "/>
+	</field>
+	<field name="h_ma_nvbh" type="C">
+      <text v="Nhân viên bán hàng: " e="Employee: "/>
+	</field>
+	<field name="h_ma_tt" type="C">
+      <text v="Mã thanh toán: " e="Payment: "/>	
+	</field>
+	<field name="h_gioi_han_no" type="C">
+      <text v="Giới hạn tiền nợ: " e="Debt Limit: "/>
+	</field>
+	<field name="h_ky_han_no" type="C">
+      <text v="Kỳ hạn nợ: " e="Debt Maturity: "/>
+	</field>
+	<field name="h_ma_nh" type="C">
+      <text v="Ngân hàng " e="Bank: "/>
+	</field>
+	<field name="h_so_tk" type="C">
+      <text v="Số tài khoản " e="Account Number: "/>
+	</field>
+	<field name="h_phong_kd" type="C">
+      <text v="Phòng kinh doanh " e="Sales Department: "/>
+	</field>
+	<field name="h_dien_thoai" type="C">
+      <text v="Điên thoại: " e="Phone: "/>
+	</field>
+	<field name="h_fax" type="C">
+      <text v="Fax: " e="Fax: "/>
+	</field>
+	
+	<field name="h_nh_kh1" type="C">
+      <text v="Nhóm 1: " e="Group 1: "/>
+	</field>
+	<field name="h_nh_kh2" type="C">
+      <text v="Nhóm 2: " e="Group 2: "/>
+	</field>
+	<field name="h_nh_kh3" type="C">
+      <text v="Nhóm 3: " e="Group 3: "/>
+	</field>
+	<field name="h_e_mail" type="C">
+      <text v="Email: " e="Email: "/>
+	</field>
+	<field name="h_home_page" type="C">
+      <text v="Trang chủ: " e="Home Page: "/>
+	</field>
+	<field name="h_ghi_chu" type="C">
+      <text v="Ghi chú: " e="Notes: "/>
+	</field>
+	<field name="h_rg_code" type="C">
+      <text v="Khu vực: " e="Area: "/>
+	</field>
+	
+	
+	<field name="h_kh_yn" type="C">
+      <text v="Khách hàng " e="Customer"/>
+	</field>
+	<field name="h_ncc_yn" type="C">
+      <text v="Hãng tàu " e="Carriers"/>
+	</field>
+	<field name="h_hk_yn" type="C">
+      <text v="Hàng không" e="Airlines"/>
+	</field>
+	<field name="h_dl_yn" type="C">
+      <text v="Đại lý " e="Agent"/>
+	</field>
+	<field name="h_status" type="C">
+      <text v="Trạng thái: " e="Status"/>
+	</field>
+  </fields>
+  
+</report>
+
+
+
+
+

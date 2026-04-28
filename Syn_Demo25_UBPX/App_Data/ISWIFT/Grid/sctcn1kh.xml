@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="bknxk" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Sổ chi tiết công nợ khách hàng" e=""></title>
+  <subtitle v="Từ ngày {ngay_ct1} đến ngày {ngay_ct2}..." e="From {ngay_ct1} To {ngay_ct2}..."></subtitle>
+  <grids>
+    <grid>
+      <fields>
+        <field name="ma_unit" width="80" aliasName="d" join="left join sysunit d on a.unit_id = d.unit_id" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+        <field name="so_ct" width="100" link="V" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="tk" width="100" >
+          <text v="Tài khoản" e="Account"></text>
+        </field>
+        <field name="tk_du" width="100" >
+          <text v="Tk đối ứng" e="Account"></text>
+        </field>
+        <field name="ma_nt" width="50">
+          <text v="Mã nt" e="FC Code"></text>
+        </field>
+        <field name="ty_gia" dataType="N" format="ExRate" width="80">
+          <text v="Tỷ giá" e="Exchange Rate"></text>
+        </field>
+        <field name="dien_giai" width="250" >
+          <text v="Diễn giải" e="Description"></text>
+        </field>
+
+        <field name="ps_no" dataType="N" format="Qty" width="100">
+          <text v="Nợ trong kỳ" e=""></text>
+        </field>
+        <field name="ps_no_nt" dataType="N" format="Amount" width="100">
+          <text v="Nợ trong kỳ nt" e=""></text>
+        </field>
+
+        <field name="ps_co" dataType="N" format="Qty" width="100">
+          <text v="Trả trong kỳ" e=""></text>
+        </field>
+        <field name="ps_co_nt" dataType="N" format="Amount" width="100">
+          <text v="Trả trong kỳ nt" e=""></text>
+        </field>
+
+        <field name="ma_bp" hidden="true" width="100" >
+          <text v="Mã bộ phận" e="Department"></text>
+        </field>
+        <field name="ma_vv" hidden="true" width="100" >
+          <text v="Mã vụ việc" e="Job"></text>
+        </field>
+        <field name="unit_id" dataType="I" hidden="true" width="100" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="id" dataType="I" hidden="true" width="100" >
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="ma_ct" width="100" >
+          <text v="Mã chứng từ" e="VC Code"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$bknxk(f){
+  this.constructor(f);
+}
+grid$bknxk.prototype = new DirEvent();
+grid$bknxk.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+grid$bknxk.prototype.beforeInit = function(){
+  var p = this._dir;
+  p.options.hiddenNotExistsColumn = true;
+}
+grid$bknxk.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(), dt = g.data;
+}
+]]>
+    </text>
+  </js>
+   <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+exec ss_sctcn1kh @ngay_ct1, @ngay_ct2, '@@gridJoin', '@@gridFields', @strJoin, @strFinding, @ma_unit, @mau_bc, '@@lan', @@userId, @@admin
+        ]]>
+      </text>
+    </processing>
+  </script>
+
+</dir>

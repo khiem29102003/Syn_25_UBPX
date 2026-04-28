@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="s623BQ3" fieldKey="id" voucherCode="BQ3" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lọc báo giá" e="Quotation Entry Filter"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" allowBlank="false" dataType="D">
+          <text v="Ngày c/từ từ/đến" e="From Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" allowBlank="false" inactivate="true" dataType="D" nextRow="false">
+          <text v="Ngày đến" e="To Date"></text>
+        </field>
+       
+        <field name="unit_id" dataType="I" hidden="true" label="1" field="1">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+		
+        <field name="ma_noi_di" viewType="Lookup" disabled="true" label="1" field="1" operation="like">
+			<text v="Nơi đi" e="Origin "></text>
+			<viewInfo lookupType="One" lookupId="vdmcangdi" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_di" />
+		</field>
+		<field name="ten_noi_di" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+		<field name="ma_noi_den" viewType="Lookup" label="1" disabled="true" field="1" operation="like">
+			<text v="Nơi đến" e="Destination"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangden" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_den"  />
+		</field>
+		<field name="ten_noi_den" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field>  
+			
+		 <field name="id_bg" label="1" field="1" disabled="true" allowBlank="false">
+          <text v="Số báo giá" e="Get the order number"></text>
+        </field>
+      </fields>
+    </form>
+	
+	
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$s623BQ3(p){
+  this.constructor(p);
+}
+filter$s623BQ3.prototype = new DirEvent();
+
+filter$s623BQ3.prototype.afterInit = function(){
+  var p = this._dir;
+  
+  p.valForm(['id_bg','ngay_ct','ngay_ct1','ngay_ct2', 'ma_noi_di', 'ten_noi_di', 'ma_noi_den', 'ten_noi_den', 'ma_kh', 'ten_kh','ma_so_thue', 'ma_nt', 'unit_id'], [p.options._id_bg,p.options._ngay_ct,p.options._ngay_ct1,p.options._ngay_ct2,p.options._ma_noi_di, p.options._ten_noi_di,p.options._ma_noi_den, p.options._ten_noi_den, p.options._ma_kh, p.options._ten_kh,p.options._ma_so_thue, p.options._ma_nt, p.options._unit_id]);
+}
+filter$s623BQ3.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir;
+ // m2.val('id', 'I', p.options.parent.valForm('id'))
+  opt = $.extend({}, opt, {controller: "s623BQ3Select", folder: "Filter", dirViewType: "Dialog", parent: p.options.parent, useDataSet: true, memvars: m2});
+ // opt = $.extend({}, opt, {controller: "v311", folder: "Lookup", dirViewType: "Dialog", parent: p.options.parent, useDataSet: true, memvars: m2});
+  p._close();
+  $.createDir(false, opt);
+  return false;
+}
+
+         ]]>
+    </text>
+  </js>
+
+  <script>
+
+  </script>
+</dir>

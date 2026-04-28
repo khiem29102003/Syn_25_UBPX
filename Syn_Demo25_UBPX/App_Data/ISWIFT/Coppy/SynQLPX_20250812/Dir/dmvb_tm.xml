@@ -1,0 +1,212 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmvb_tm" table="dmvb" fieldKey="ma_vb" transaction="true" tryCatch="true" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục tài liệu mẫu" e="Template document list"></title>
+  <title0 v="Mới - tài liệu mẫu" e="New - template document"></title0>
+  <title1 v="Sửa - tài liệu mẫu" e="Edit - template document"></title1>
+
+  <forms>
+	<form gravity="TopLeft" columns="120,120,120,120,120,120">
+		<fields>
+			<field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ngay_ct" nextRow="true" dataType="D" valueDefault="new Date()" label="1" field="1" importable="5" >
+				<text v="Ngày phát hành" e="Issue Date"></text>
+			</field>
+			<field name="ma_nvb" label="1" field="1" viewType="Lookup" allowBlank="false" importable="10"> 
+			  <text v="Nhóm tài liệu" e="Document group"></text>
+			  <viewInfo lookupType="One" lookupId="dmnhomvb" lookupKey="status = 1 and ma_loai='TM'" lookupCheck="1=1" lookupRef="ten_nvb" lookupInfo="dmnhomvb|ma_nvb|ten_nvb" />
+			</field>
+			<field name="ten_nvb" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="" field="[360]" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_vb" label="1" field="-" allowBlank="false" fieldType="PK" disabled="true" importable="-1">
+				<text v="Mã tài liệu mẫu" e="Template document code"></text>
+			</field>
+			<field name="ten_vb" label="1" field="-" allowBlank="true" disabled="false" importable="15">
+			  <text v="Tên tài liệu mẫu" e="Template document name"></text>
+			</field>
+			<field name="ten_vb2" label="1" field="-" allowBlank="true" disabled="false"  importable="20">
+			  <text v="Tên tiếng anh" e="Name English"></text>
+			</field>
+			<field name="ma_loai" label="" field="" allowBlank="true" disabled="false" importable="-1">
+			  <text v="Mã loại" e="Type Code"></text>
+			</field>
+			<field name="ky_hieu" label="1" field="1" allowBlank="true" disabled="false" nextRow="true" importable="25" >
+			  <text v="Ký hiệu" e="Symbol"></text>
+			</field>
+			<field name="ma_tg" label="1" field="1" viewType="Lookup" allowBlank="false" importable="30"> 
+			  <text v="Thời hạn lưu trữ" e="Retention period"></text>
+			  <viewInfo lookupType="One" lookupId="dmtgluuvb" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_tg" lookupInfo="dmtgluuvb|ma_tg|ten_tg" />
+			</field>
+			<field name="ten_tg" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="" field="[360]" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="status" viewType="Combobox" inactivate="false" label="1" field="2" valueDefault="1" nextRow="true" importable="-1" >
+			  <text v="Trạng thái" e="Status"></text>
+			  <viewInfo>
+				<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 ">
+				</options>
+			  </viewInfo>
+			</field>
+      </fields>
+    </form>
+	<form tabPageIndex="1" gravity="MiddleLeft" height="300" columns="120,120,360" >
+      <text v="Đính kèm" e="Attach Files"></text>
+      <fields>
+        <field name="xfile" label="1" field="2" viewType="File" fieldType="EXParam">
+          <text v="Chọn files" e="Attach Files"></text>
+          <viewInfo fileFieldId0="ma_vb" fileGroup="dmvb_tm" fileExtension="*" maxFileSize="10240" maxFileCount="10"></viewInfo>
+        </field>
+      </fields>
+    </form>
+</forms>
+
+&DefaultButton;
+
+<js>
+<text>
+  <![CDATA[
+function dir$dmvb_tm(p){
+  this.constructor(p);
+}
+dir$dmvb_tm.prototype = new DirEvent();
+dir$dmvb_tm.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmvb_tm.prototype.afterInit = function(renderType){
+    var p = this._dir,g = p.options.parent;
+
+	dir$dmvb_tmDisabledMasterField(p, g);
+}
+
+function dir$dmvb_tmLoadMaVb(p){
+	var maNvb = p.valForm('ma_nvb');
+
+	if(p.options.action == 'NEW') {
+		if(maNvb == '') {
+			p.valForm('ma_vb', '', true);
+			p.jObject('ma_nvb').focus(); 
+			$.showToast(p.msg('RequireMaNVB'));
+
+			return;
+		}
+		p.request('LoadMavb', '', ['ma_nvb', 'ngay_ct']);
+	}
+}
+
+dir$dmvb_tm.prototype.formFieldValueChange = function(o, cF, v) {
+    var p = this._dir;
+	switch (cF){
+		case 'ngay_ct':
+			dir$dmvb_tmLoadMaVb(p);
+		break;
+		case 'ma_nvb':
+			dir$dmvb_tmLoadMaVb(p);
+		break;
+		default:
+		  break;
+	}
+};
+
+function dir$dmvb_tmDisabledMasterField(p){
+	var maVb = p.valForm('ma_vb');
+	if (maVb !== '') {
+		p.setDisabled('ngay_ct', true);
+		p.setDisabled('ma_nvb', true);
+	}
+	else {
+		p.setDisabled('ngay_ct', false);
+		p.setDisabled('ma_nvb', false);
+	}
+}
+
+         ]]>
+    </text>
+  </js>
+	<css>
+		<text>
+			  <![CDATA[
+.modal-dialog-lg{min-width:960px!important;}
+.control-label.tt {color: #499b98; text-decoration: underline}
+.control-label.ma_pl, .control-label.ma_nvb, .control-label.ngay_ct {color: #499b98;}
+			  ]]>
+		</text>
+	</css>
+	<script>
+		<request code="LoadMavb">
+		<text>		
+			<![CDATA[
+EXEC [dbo].[st_CreateDocumentCode] @ngay_ct, @ma_nvb, 'TM';
+			]]>				
+		</text>
+		</request>
+  		<query>
+		  <text>
+			<![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+if @action in ('EDIT', 'VIEW') exec ISWIFTStoreGetListFiles 'xfile', @ma_vb, 'dmvb_tm', '', @script output
+if @script is null set @script = ''
+
+select @script as script
+drop table #@@table
+			 ]]>
+		  </text>
+		</query>
+		<updated>
+		  <text>
+			<![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId where [%whereFieldKey]
+update dmttin set status = 0 from dmttin where id0 = rtrim(@ma_vb) and xgroup = 'dmvb_tm'
+if @xfile <> '' update dmttin set status = 1, id0 = @ma_vb from dmttin where charindex(id, @xfile) > 0 and xgroup = 'dmvb_tm'
+			 ]]>
+		  </text>
+		</updated>
+		<inserting>
+		  <text>
+			<![CDATA[
+if exists(select 1 from @@table a where [%whereFieldKey]) begin
+  select '$codeExistsNewMsg' as message, '@@firstFieldKey' as field
+  return
+end
+
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @unit_id = @@unit, @ma_loai = 'TM'
+			]]>
+		  </text>
+		</inserting>
+		<inserted>
+		  <text>
+			<![CDATA[
+if @xfile <> '' update dmttin set status = 1, id0 = @ma_vb from dmttin where charindex(id, @xfile) > 0 and xgroup = 'dmvb_tm'
+
+			]]>
+		  </text>
+		</inserted>
+		<importing>
+			<text>
+			<![CDATA[
+update #data set unit_id = @@unit
+update #data set ma_loai = 'TM'
+@@insert
+			]]>
+			</text>
+		</importing>
+	</script>
+  <messages>
+	<message val="RequireMaNVB">
+      <text v="Vui lòng chọn nhóm văn bản để tạo mã văn bản" e="Please select a document group to generate a document code."/>
+    </message>
+	<message val="codeExistsNewMsg">
+	  <text v="Mã văn bản đã tồn tại trong danh mục." e="The document code already exists in the list."/>
+	</message>
+  </messages>
+</dir>

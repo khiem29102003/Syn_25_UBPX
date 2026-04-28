@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmrmail" table="dmrmail" fieldKey="ma_rmail" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục mail" e="List of mail"></title>
+  <title0 v="Thêm mới" e="Create New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+	    <field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_rmail" format="U" label="1" field="1" allowBlank="true" fieldType="PK" importable="-1" >
+          <text v="Mã" e="Code"></text>
+        </field>
+        <field name="r_mail" label="1" field="-" allowBlank="false" importable="5" >
+          <text v="Email" e="Email"></text>
+        </field>
+        <field name="ten_mail" label="1" field="-" allowBlank="false" importable="10" >
+          <text v="Tên mail" e="Full Name"></text>
+        </field>
+        <field name="ten_mail2" label="1" field="-" importable="15">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" valueDefault="1" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+		<field name="so_lan_gui" label="" field="" importable="-1">
+          <text v="Số lần gửi" e="Total"></text>
+        </field>
+		<field name="lastsentdate" label="" field="" importable="-1">
+          <text v="Lần gửi cuối" e="Other Name"></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmrmail(p){
+  this.constructor(p);
+}
+dir$dmrmail.prototype = new DirEvent();
+dir$dmrmail.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmrmail.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid();
+  
+	p.request('request_ma_rmail', '', '' , function(pp, d, run){
+		if (run) {
+			p.setDisabled('ma_rmail', true);
+		}
+	});
+	
+  dir$dmrmailDisabledMasterField(p, g);
+
+}
+
+function dir$dmrmailDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_rmail').trim() != '')
+  {
+    p.setDisabled('ma_rmail', true);
+  }
+  else
+  {
+    p.setDisabled('ma_rmail', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+  
+  <css>
+	<text>
+	  <![CDATA[
+		.control-label.r_mail, .control-label.ten_mail
+		{	
+			//font-weight:bold;	
+			color: #499b98;;
+		}
+	  ]]>
+	</text>
+   </css>
+  
+   <script>
+		<request code="request_ma_rmail">
+			<text> <![CDATA[ 
+						SELECT 
+							CASE 
+								WHEN MAX(ma_rmail) IS NULL THEN 'RM001'
+								ELSE 'RM' + RIGHT('00' + CAST(CAST(SUBSTRING(MAX(ma_rmail), 3, LEN(MAX(ma_rmail))) AS INT) + 1 AS VARCHAR), 3)
+							END AS [!ma_rmail]
+						FROM dmrmail
+									
+			]]> </text>
+		</request>
+	<importing>
+      <text>
+        <![CDATA[
+		SELECT ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS row_num, * INTO #temp_d FROM #data;
+		
+		DECLARE @i int, @ci int, @next_num int;
+		SET @i = 1
+		
+		SELECT @ci = MAX(row_num) FROM #temp_d
+		SELECT @next_num = ISNULL(CAST(SUBSTRING(MAX(ma_rmail), 3, LEN(MAX(ma_rmail))-2) AS INT) + 1, 1) 
+		FROM dmrmail 
+		WHERE ma_rmail LIKE 'RM%';
+		
+		WHILE @i <= @ci
+		BEGIN
+		    DECLARE @current_r_mail varchar(255);
+			SELECT @current_r_mail = r_mail FROM #temp_d WHERE row_num = @i;
+			
+			UPDATE #data 
+			SET ma_rmail = 'RM' + RIGHT('000000' + CAST(@next_num AS VARCHAR(6)), 6)
+			WHERE r_mail = @current_r_mail;
+	
+			SET @i = @i + 1
+			SET @next_num = @next_num + 1;
+		END
+		
+		UPDATE #data set unit_id = 1, so_lan_gui = 0, lastsentdate = null;
+		
+		@@insert
+        ]]>
+      </text>
+    </importing>
+   </script>
+  
+   <messages>
+	<message val="codeExistsNewMsg">
+		<text v="Mã mail đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The mail code already exists in the catalog, please choose a different code."/>
+	</message>
+	<message val="codeExistsEditMsg">
+		<text v="Mã mail đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The mail code already exists in the catalog, please choose a different code."/>
+	</message>
+   </messages>
+
+</dir>

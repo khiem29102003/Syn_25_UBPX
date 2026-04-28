@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<report xmlns="urn:schemas-iswift:struct-report">
+  <query>
+    <text>
+      <![CDATA[
+select q.ma_phi, s.so_luong, s.gia_nt2, s.tien_nt2, s.thue_suat, s.tt , s.ma_nt, x.ten_bgn as ten_dk_phi
+into #v632 from v632 s with(nolock) 
+left join dmphi q on s.ma_phi = q.ma_phi 
+left join dmbgn x on s.ma_dk_phi = x.ma_bgn 
+where s.id = @id and ma_ct = 'LPH' 
+
+declare @t numeric(19, 5)
+
+
+select a.unit_id, a.so_ct, a.ma_noi_di, a.ma_kh, b.ten_kh, b.ten_kh2, b.dia_chi, d.ten_nv, a.dien_giai, a.ma_nt, f.ten_noi_di, g.ten_noi_den, h.ten_kh ten_hang, dbo.iswiftFunctionReadCurrency(a.ma_nt, @t) as t_tt_in_word
+	  , replace(str(day(a.ngay_ct),2),' ','0') day, replace(str(month(a.ngay_ct),2),' ','0') month, cast(year(a.ngay_ct) as char(4)) year, a.ngay_ct,
+	  convert(char(10),a.ngay_hl,103) ngay_hl,e.ten_tt,a.ong_ba, ngay_hld, a.book_no, a.so_tk
+		from s632 a with(nolock)
+		left join dmkh b with(nolock) on a.ma_kh = b.ma_kh
+		left join dmnv d on a.ma_nv = d.ma_nv
+		left join dmtt e on a.ma_tt = e.ma_tt
+		left join vdmcangdi f on a.ma_noi_di = f.ma_noi_di
+		left join vdmcangden g on a.ma_noi_den = g.ma_noi_den
+		left join dmkh h on a.ma_hang = h.ma_kh
+		left join sysunit u on a.unit_id = u.unit_id
+	where a.id = @id 
+select * from #v632
+drop table #v632
+]]>
+    </text>
+  </query>
+
+  <forms>
+    <form id="030" fileName="s632_02" fileType="rdlc" exportExt="pdf" image="pdf">
+      <text v="Phiếu thanh toán (.pdf)" e="Bill (.pdf)"></text>
+    </form>
+	<form id="040" fileName="s632_02" fileType="rdlc" exportExt="docx" image="word">
+      <text v="Phiếu thanh toán (.docx)" e="Bill (.docx)"></text>
+    </form>
+	 <form id="050" fileName="s632_02" fileType="rdlc" exportExt="xlsx" image="xlsx">
+      <text v="Phiếu thanh toán (.xlsx)" e="Bill (.xlsx)"></text>
+    </form>
+  </forms>
+
+	<!-- Master -->
+
+  <fields>
+    <field name="title" type="C">
+      <text v="PHIẾU THANH TOÁN" e="QUOTATION"/>
+    </field>
+    <field name="h_day" type="C">
+      <text v="Ngày" e="Date"/>
+    </field>
+    <field name="h_month" type="C">
+      <text v="tháng" e="Month"/>
+    </field>
+    <field name="h_year" type="C">
+      <text v="năm" e="Year"/>
+    </field>
+    <field name="h_so_ct" type="C">
+      <text v="Số đơn hàng: " e="Order no.: "/>
+    </field>
+    <field name="h_company" type="C">
+      <text v="Kính gửi:" e="Dear:"/>
+    </field>
+    <field name="h_address" type="C">
+      <text v="Địa chỉ:" e="Address:"/>
+    </field>
+    <field name="h_kh" type="C">
+      <text v="Tên đại lý:" e="Agent name:"/>
+    </field>
+    <field name="h_noi_giao" type="C">
+      <text v="Nơi giao:" e="Delivery place:"/>
+    </field>
+	<field name="h_ong_ba" type="C">
+      <text v="Người liên hệ:" e="Contact:"/>
+    </field>
+	<field name="h_ngay_hl" type="C">
+      <text v="Ngày hiệu lực:" e="Effective date:"/>
+    </field>
+	<field name="h_ngay_hld" type="C">
+      <text v="Ngày hiệu lực đến:" e="Expiry date:"/>
+    </field>
+	
+	<field name="h_dien_giai" type="C">
+      <text v="Ghi chú:" e="Note:"/>
+    </field>
+    <field name="h_ma_noi_di" type="C">
+      <text v="Nơi đi: " e="Origin:"/>
+    </field>
+	<field name="h_ma_noi_den" type="C">
+      <text v="Nơi đến: " e="Destination:"/>
+    </field>
+	<field name="h_so_tk" type="C">
+      <text v="Số tờ khai:" e="Schedule days:"/>
+    </field>
+	<field name="h_book_no" type="C">
+      <text v="Book No:" e="Prepaid / Collect:"/>
+    </field>
+	<field name="h_ma_hang" type="C">
+      <text v="Hãng tàu/ Đại lý:" e="Carrier/ Agent:"/>
+    </field>
+
+
+	<!-- Detail-->
+
+	<field name="h_ma_phi" type="C">
+      <text v="Cước / phí " e="Fee"/>
+    </field>
+
+	<field name="h_so_luong" type="C">
+      <text v="Số lượng" e="Quantity"/>
+    </field>
+	<field name="h_gia_nt2" type="C">
+      <text v="Giá" e="Price"/>
+    </field>
+	<field name="h_ma_nt" type="C">
+      <text v="Ngoại tệ" e="Currency"/>
+    </field>
+	<field name="h_tien_nt2" type="C">
+      <text v="Tiền" e="Bill Amount"/>
+    </field>
+	<field name="h_ma_dk_phi" type="C">
+      <text v="Loại phí" e="Fee Type"/>
+    </field>
+
+	<field name="h_thue_suat" type="C">
+      <text v="Thuế" e="Tax"/>
+    </field>
+	<field name="h_t_so_luong" type="C">
+      <text v="Tổng số lượng:" e="Total Quatity :"/>
+    </field>
+	<field name="h_t_tien_nt2" type="C">
+      <text v="Tổng thành tiền:" e="Total :"/>
+    </field>
+	<field name="h_tt" type="C">
+      <text v="Tổng tiền" e="Total Money"/>
+    </field>
+    <field name="h_ma_dk_vc" type="C">
+      <text v="Đi thẳng/Chuyển tải" e="Direct / Transit"/>
+    </field>
+	<field name="h_so_ngay_vc" type="C">
+      <text v="Số ngày vc" e="Transit time"/>
+    </field>
+  </fields>
+  
+</report>

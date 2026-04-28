@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY HreScript SYSTEM "..\Include\XML\HreScript.xml">
+]>
+
+<dir id="hrettgd" table="hrettgd" fieldKey="id, line" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Thông tin gia đình" e="Family Infomation"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120" >
+      <fields>
+        <field name="id" dataType="N" fieldType="PK" label="1" field="1" format="0" hidden="true">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="line" dataType="N" fieldType="PK" label="1" field="1" format="0" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+        <field name="ho_ten" label="1" field="-" allowBlank="false" >
+          <text v="Họ và tên" e="Fullname"></text>
+        </field>
+        <field name="ngay_sinh" label="1" field="1" copy="false" dataType="D">
+          <text v="Ngày sinh" e="Date of Birth"></text>
+        </field>
+        <field name="ma_qh" format="U" viewType="Lookup" label="1" field="1" clientDefault="true" >
+          <text v="Quan hệ" e="Relationship"></text>
+          <viewInfo lookupType="One" lookupId="hrdmqhgd" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_qh" lookupInfo="hrdmqhgd|ma_qh|ten_qh" />
+        </field>
+        <field name="ten_qh" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="cmnd_so"  label="1" field="1">
+          <text v="Số CMND" e=""></text>
+        </field>
+        <field name="ma_so_thue"  label="1" field="1">
+          <text v="Mã số thuế" e=""></text>
+        </field>
+        <field name="dia_chi"  label="1" field="-">
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+
+        <field name="ma_qt" format="U" viewType="Lookup" label="1" field="1" clientDefault="true" >
+          <text v="Quốc tịch" e=""></text>
+          <viewInfo lookupType="One" lookupId="hrdmqt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_qt" lookupInfo="hrdmqt|ma_qt|ten_qt" />
+        </field>
+        <field name="ten_qt" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="gt_gia_canh" dataType="B" label="1" field="1">
+          <text v="Giảm trừ gia cảnh" e=""></text>
+        </field>
+        <field name="ngay_hl_tu" dataType="D" label="1" field="1">
+          <text v="Ngày hl từ" e="From"></text>
+        </field>
+        <field name="ngay_hl_den" dataType="D" label="1" field="1">
+          <text v="Ngày hl đến" e="To"></text>
+        </field>
+        <field name="ghi_chu" rows="3" label="1" field="-" >
+          <text v="Ghi chú" e="Note"></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$hrettgd(p){
+  this.constructor(p);
+}
+dir$hrettgd.prototype = new DirEvent();
+dir$hrettgd.prototype.afterInit = function(){
+  var p = this._dir, pa = p.options.parent;
+  if (p.options.action == 'NEW') p.valForm('id', pa.options._id);
+}
+]]>
+    </text>
+  </js>
+
+  <script>
+    &HreScript;
+  </script>
+</dir>

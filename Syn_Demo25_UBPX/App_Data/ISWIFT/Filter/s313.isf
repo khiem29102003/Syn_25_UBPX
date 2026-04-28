@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="v313" table="" height="" fieldKey="id" voucherCode="BN3" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lọc cước vận chuyển cho hàng AIR" e="Filter Air Freight Rates"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D">
+          <text v="Ngày c/từ (từ/đến)" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+        <field name="so_ct1"  label="1" field="1" operation="a.so_ct &gt;= N'%s'">
+          <text v="Số c/từ (từ/đến)" e="Voucher Number"></text>
+        </field>
+        <field name="so_ct2"  label="" nextRow="false" field="1" operation="a.so_ct &lt;= N'%s'">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_gd" viewType="Combobox" label="1" hidden="true" field="2" operation="=" >
+          <text v="Giao dịch" e="Transaction"></text>
+          <viewInfo>
+            <options query="select ma_gd, ten_gd%l from dmgd where ma_ct = '@@voucherCode' and status = 1 order by stt">
+              <option val="">
+                <text v="Tất cả" e="All"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="ma_kh" viewType="Lookup" label="1" field="1"   operation="like">
+			<text v="Hãng vận chuyển" e="Carrier Code"></text>
+			<viewInfo lookupType="One" lookupId="dmkh" lookupKey="hk_yn = 1 and status = 1" lookupCheck="1=1" lookupRef="ten_hang" />
+		</field>
+			<field name="ten_hang" nextRow="false" fieldType="EX" readOnly="true" disabled="true" label="" field="-">
+			  <text v="" e=""></text>
+			</field>
+		
+		<field name="ma_noi_di" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Nơi đi" e="Origin"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangdi" lookupKey="hk_yn = 1 and status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_di" lookupInfo="vdmcangdi|ma_noi_di|ten_noi_di" />
+		</field>
+		<field name="ten_noi_di" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 	
+			
+		<field name="ma_noi_den" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Nơi đến" e="Destination"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangden" lookupKey="hk_yn = 1 and status = 1" lookupCheck="1=1" lookupRef="ten_noi_den" lookupInfo="vdmcangden|ma_noi_den|ten_noi_den"/>
+		</field>
+		<field name="ten_noi_den" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 	
+		
+        <field name="dien_giai" label="1" field="-" operation="a.dien_giai like N'%%s%'">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+      </fields>
+    </form>
+	
+    <form gravity="MiddleLeft" tabPageIndex="1" columns="120,120,120"  >
+      <text v="Chi tiết" e="Detail"/>
+      <fields> 
+
+		<field name="ma_cuoc" viewType="Lookup" label="1" field="1">
+          <text v="Mã cước vận chuyển" e="Fee code"></text>
+          <viewInfo lookupType="One" lookupId="dmcuocvc" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_cuoc" />
+        </field>
+        <field name="ten_cuoc" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>    		
+      </fields>
+    </form>
+	
+    <form gravity="BottomLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ma_unit" viewType="Lookup" inactivate="true" label="1" field="2" >
+          <text v="Đơn vị" e="Unit"></text>
+          <viewInfo lookupType="Multi" lookupId="sysunit" lookupKey="status = 1 and unit_id in (select unit_id from dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @@admin, ''))" lookupCheck="1 = 1" lookupRef="ten_unit" />
+        </field>
+        <field name="ten_unit" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" operation="=" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+              <option val="">
+                <text v="Tất cả" e="All"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="user_id0" viewType="Combobox" inactivate="true" label="1" field="2" operation="a.user_id0 in (select user_id from sysuserinfo where user_ref like '@@userRef%')" >
+          <text v="Lọc theo người sd" e="Filter By User"></text>
+          <viewInfo>
+            <options>
+              <option val="">
+                <text v="Tất cả" e="All"></text>
+              </option>
+              <option val="1">
+                <text v="Lọc theo người tạo" e="Filter By Create User"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>uw3iZoR/y/5o6FF1x5y/2YFLztx/1O3cqpdf6oi+e0EM98egEcspi+b7ktWQLv9tDq2F4v0AfWXZ3T+yZYnmK9Ptu/YJarMc/7MvS6VrPxyYczDYnszfeQsaSt/c6SOXw1IIQv62gGv/nNRgMN94Y8WfX31DFkbu7j/URPmj+dBosPpjKzKRt5FOVBOHOPtm</enc>]]>
+    </text>
+  </js>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+</dir>

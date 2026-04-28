@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmploaikh" table="dmploaikh" fieldKey="ma_plkh" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục phân loại khách hàng" e="List of Customer Types"></title>
+  <title0 v="Thêm mới" e="Create New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_plkh" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="1" >
+          <text v="Mã phân loại" e="Type Code"></text>
+        </field>
+        <field name="ten_plkh" label="1" field="-" allowBlank="false" fieldType="PK" importable="5" >
+          <text v="Tên phân loại" e="Type Name"></text>
+        </field>
+        <field name="ten_plkh2" label="1" field="-" importable="10" >
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" valueDefault="1" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmploaikh(p){
+  this.constructor(p);
+}
+dir$dmploaikh.prototype = new DirEvent();
+dir$dmploaikh.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmploaikh.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+  dir$dmploaikhDisabledMasterField(p, g);
+
+}
+
+function dir$dmploaikhDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_plkh').trim() != '')
+  {
+    p.setDisabled('ma_plkh', true);
+  }
+  else
+  {
+    p.setDisabled('ma_plkh', false);
+  }
+}
+      ]]>
+    </text>
+  </js>
+  
+  <css>
+	<text>
+	  <![CDATA[
+		.control-label.ma_plkh, .control-label.ten_plkh
+		{	
+			color: #499b98;;
+		}
+	  ]]>
+	</text>
+  </css>
+  
+  <script>
+	<importing>
+      <text>
+        <![CDATA[
+@@insert
+        ]]>
+      </text>
+    </importing>
+  </script>
+  
+  <messages>
+	<message val="codeExistsNewMsg">
+		<text v="Mã phân loại khách hàng đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The customer type code already exists in the catalog, please choose a different code."/>
+	</message>
+	<message val="codeExistsEditMsg">
+		<text v="Mã phân loại khách hàng đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The customer type code already exists in the catalog, please choose a different code."/>
+	</message>
+  </messages>
+</dir>

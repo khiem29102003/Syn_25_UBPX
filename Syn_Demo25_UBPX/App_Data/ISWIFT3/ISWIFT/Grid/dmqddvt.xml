@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="dmqddvt" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục quy đổi đơn vị tính" e="Unit Conversion"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="dmqddvt" fieldKey="ma_vt" order="ma_vt" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="ma_vt" fieldType="PK" width="120">
+          <text v="Mã vật tư" e="Item Code"></text>
+        </field>
+        <field name="ten_vt" width="250" fieldType="EX" aliasName="b">
+          <text v="Tên vật tư" e="Item Name"></text>
+        </field>
+        <field name="dvt" fieldType="PK" width="80">
+          <text v="Đvt" e="UOM"></text>
+        </field>
+        <field name="he_so" width="80" dataType="N">
+          <text v="Hệ số" e="Coefficient"></text>
+        </field>
+      </fields>
+
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmvt b on a.ma_vt = b.ma_vt left join dmdvt c on a.dvt = c.dvt', 'b.ten_vt, c.ten_dvt', '@@key', '', @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmqddvt(f){
+  this.constructor(f);
+}
+grid$dmqddvt.prototype = new DirEvent();
+grid$dmqddvt.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+</dir>

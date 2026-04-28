@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="ss_bcqtvh" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo cáo chi tiết nhật ký" e="Detailed log reports"></title>
+  <subtitle v="Từ ngày {ngay_ct1} đến ngày {ngay_ct2}..." e="From {ngay_ct1} To {ngay_ct2}..."></subtitle>
+  <grids>
+    <grid>
+      <fields>
+		<field name="line" width="150" hidden="true">
+          <text v="Số dòng" e="Line"></text>
+        </field>
+		<field name="ma_donvi" width="120" hidden="false">
+          <text v="ĐƠN VỊ" e="UNIT"></text>
+        </field>
+		<!-- <field name="ma_pb" width="120" hidden="true"> -->
+          <!-- <text v="MÃ PHÒNG BAN" e="Employee Code"></text> -->
+        <!-- </field> -->
+		<field name="ma_nv" width="100" >
+          <text v="CODE NV" e="EMPLOYEE CODE"></text>
+        </field>
+		<field name="ten_nv" width="150">
+          <text v="TÊN NV" e="EMPLOYEE NAME"></text>
+        </field>
+		<field name="ten_parent" width="150">
+          <text v="TÊN TL" e="TEAMLEADER NAME"></text>
+        </field>
+		<!-- <field name="team" width="120" hidden="false"> -->
+          <!-- <text v="TEAM" e="TEAM"></text> -->
+        <!-- </field> -->
+		<field name="ma_bp" width="120" hidden="false">
+          <text v="TEAM" e="TEAM"></text>
+        </field>
+		<field name="ma_so_thue" width="150" >
+          <text v="MÃ SỐ THUẾ" e="TAX"></text>
+        </field>
+		<field name="ho_ten" width="150" >
+          <text v="TÊN KHÁCH HÀNG" e="CUSTOMER NAME"></text>
+        </field>
+		<field name="sdt_vua_goi" width="120" hidden="false" align="right" >
+          <text v="SỐ ĐIỆN THOẠI" e="Phone number"></text>
+        </field>
+		<field name="ma_td" width="120" hidden="false">
+          <text v="MÃ TÁC ĐỘNG" e="ACTION CODE"></text>
+        </field>
+		<field name="ma_plkh" width="120" >
+          <text v="P/LOẠI KHÁCH HÀNG" e="CUSTOMER CLASSIFICATION"></text>
+        </field>
+		<field name="dien_giai" width="150" hidden="false">
+          <text v="GHI CHÚ CALL" e="CALL NOTE"></text>
+        </field>
+		<!-- <field name="ngay_gio_goi" width="120" hidden="false" align="center" > -->
+          <!-- <text v="NGÀY GIỜ GỌI" e="DATETIME CALL"></text> -->
+        <!-- </field> -->
+		<field name="gio_goi" width="120" hidden="false" align="center" >
+          <text v="NGÀY GIỜ GỌI" e="DATETIME CALL"></text>
+        </field>
+		<field name="ngay_goi_lai" width="120" hidden="false" dataType="D" align="center" >
+          <text v="NGÀY GỌI LẠI" e="CALLBACK TATE"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$ss_bcqtvh(f){
+  this.constructor(f);
+}
+grid$ss_bcqtvh.prototype = new DirEvent();
+grid$ss_bcqtvh.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+grid$ss_bcqtvh.prototype.beforeInit = function(){
+  var p = this._dir;
+}
+grid$ss_bcqtvh.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(), dt = g.data;
+}
+]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+exec ss_bcqtvh @ngay_ct1, @ngay_ct2, '', '@@gridFields', '', '', @ma_unit, '@@lan', @@userId, @@admin,'',@ma_donvi,@ma_pb,@ma_bp,@ma_td,@ma_plkh
+        ]]>
+      </text>
+    </processing>
+  </script>
+</dir>

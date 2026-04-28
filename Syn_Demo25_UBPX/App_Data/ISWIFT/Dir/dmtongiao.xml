@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmtongiao" table="dmtongiao" fieldKey="ma_tg" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục tôn giáo" e="List of Religions"></title>
+   <title0 v="Thêm mới" e="Create New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_tg" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="5" >
+          <text v="Mã tôn giáo" e="Religion Code"></text>
+        </field>
+        <field name="ten_tg" label="1" field="-" allowBlank="false" importable="10" >
+          <text v="Tên tôn giáo" e="Religion Name"></text>
+        </field>
+        <field name="ten_tg2" label="1" field="-" importable="15" >
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" valueDefault="1" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmtongiao(p){
+  this.constructor(p);
+}
+dir$dmtongiao.prototype = new DirEvent();
+dir$dmtongiao.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmtongiao.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+dir$dmtongiaoDisabledMasterField(p, g);
+
+}
+
+function dir$dmtongiaoDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_tg').trim() != '')
+  {
+    p.setDisabled('ma_tg', true);
+  }
+  else
+  {
+    p.setDisabled('ma_tg', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+  
+  <css>
+	<text>
+	  <![CDATA[
+		.control-label.ma_tg, .control-label.ten_tg
+		{	
+			//font-weight:bold;	
+			color: #499b98;;
+		}
+	  ]]>
+	</text>
+  </css>
+  
+  <script>
+	<importing>
+      <text>
+        <![CDATA[
+		@@insert
+        ]]>
+      </text>
+    </importing>
+  </script>
+  
+  <messages>
+	<message val="codeExistsNewMsg">
+		<text v="Mã tôn giáo đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The religion code already exists in the catalog, please choose a different code."/>
+	</message>
+	<message val="codeExistsEditMsg">
+		<text v="Mã tôn giáo đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The religion code already exists in the catalog, please choose a different code."/>
+	</message>
+  </messages>
+
+</dir>

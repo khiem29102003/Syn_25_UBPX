@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+   <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="qlhccong" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách đăng ký dịch vụ đang chờ xử lý" e="Pending Service Registration List"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="qlhccong" fieldKey="ma_hccong, stt" order="ma_hccong, stt desc" allowFilter="true" allowOrder="true" key="status = 1" >
+	  <fields>
+	  	<field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="100" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="ma_hccong" width="150" hidden = "false" fieldType="PK">
+          <text v="Mã hành chính công" e="Public Administration Code"></text>
+        </field>
+        <field name="ten_hccong" width="250" fieldType="EX" >
+          <text v="Tên hành chính công" e="Public Administration Name"></text>
+        </field>     
+		<field name="stt" dataType="N" format="0" width="120" fieldType="PK">
+			<text v="Số thứ tự" e="STT"></text>
+		</field>
+		<field name="tg_dukienbd" width="150" align="center">
+			<text v="TG dự kiến bắt đầu" e="Estimated Start Time"></text>
+		</field>
+		<field name="tg_dukienkt" width="150" align="center">
+			<text v="TG dự kiến kết thúc" e="Estimated End Time"></text>
+		</field>
+		<field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = 'HC1' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+		
+	  <buttons>
+		  <button id="view">
+			<text v="$ViewToolbar" e="$ViewToolbar"></text>
+		  </button>
+		  <button id="split">
+			<text v="-" e="-"></text>
+		  </button>
+		  <button id="refresh">
+			<text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+		  </button>
+		  <button id="freeze">
+			<text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+		  </button>
+		  <button id="split">
+			<text v="-" e="-"></text>
+		  </button>
+		  <button id="export">
+			<text v="$ExportToolbar" e="$ExportToolbar"></text>
+		  </button>
+	</buttons>
+	  
+	  
+	<script>
+        <query>
+			<text>
+            <![CDATA[
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmhccong c on a.ma_hccong = c.ma_hccong', 'b.ma_unit, c.ten_hccong', '@@key', '', @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+			]]>
+			</text>
+        </query>
+
+        <finding>
+			<text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = @strFinding
+  
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmhccong c on a.ma_hccong = c.ma_hccong', 'b.ma_unit, c.ten_hccong', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+			</text>
+        </finding>
+      </script>
+    </grid>
+  </grids>
+  <js>
+    <text>
+      <![CDATA[
+function grid$qlhccong(f){
+  this.constructor(f);
+}
+grid$qlhccong.prototype = new DirEvent();
+grid$qlhccong.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[
+		.tree-form{
+			width: 250px;
+		}
+		.ic-view-dept{
+		  background-position: 0px 0px;
+		}
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+  <script>
+
+  </script>
+
+</dir>

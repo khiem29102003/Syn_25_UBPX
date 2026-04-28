@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<report xmlns="urn:schemas-iswift:struct-report">
+  <query>
+    <text>
+      <![CDATA[
+			select a.ma_tau, a.ten_tau, a.ten_tau2, a.ma_loai, a.ma_qg, a.so_imo, a.hieu_tau, a.so_dk, a.ma_cang, a.ma_hang, a.ma_kh,
+			IIF(a.status = '1', N'Còn sử dụng', N'Không sử dụng') status,
+			b.ten_loai,
+			c.ten_qg,
+			d.ten_kh ten_hang,
+			e.ten_kho,
+			f.ten_hang ten_hang2
+			from dmtau a with(nolock)
+				left join dmloaitau b on a.ma_loai = b.ma_loai
+				left join dmquocgia c on a.ma_qg = c.ma_qg
+				left join dmkh d on a.ma_kh = d.ma_kh 
+				left join dmkhobai e on a.ma_cang = e.ma_kho
+				left join dmhangtau f on a.ma_hang = f.ma_hang
+		where ma_tau = @ma_tau
+
+]]>
+    </text>
+  </query>
+
+  <forms>
+    <form id="010" fileName="dmtau_01" fileType="rdlc" exportExt="pdf" image="pdf">
+      <text v="Mẫu chuẩn (.pdf)" e="Standard Templates"></text>
+    </form>
+	
+	<form id="030" fileName="dmtau_01" fileType="rdlc" exportExt="xlsx" image="excel">
+      <text v="Mẫu chuẩn (.xlsx)" e="Standard Templates"></text>
+    </form>	
+  </forms>
+
+  <fields>
+   	<field name="title" type="C">
+      <text v="Thông tin tàu" e="Vessel Information"/>
+    </field>
+    <field name="h_ma_tau" type="C">
+      <text v="Mã tàu:" e="Vessel Code:"/>
+    </field>
+	<field name="h_ten_tau" type="C">
+      <text v="Tên tàu:" e="Vessel Name:"/>
+	</field>
+	<field name="h_ten_tau2" type="C">
+      <text v="Tên khác:" e="Other Name:"/>
+	</field>
+	<field name="h_ma_loai" type="C">
+      <text v="Mã loại:" e="Type Code:"/>
+	</field>
+	<field name="h_ma_qg" type="C">
+      <text v="Mã quốc gia:" e="Country:"/>
+	</field>
+	<field name="h_so_imo" type="C">
+      <text v="Số IMO:" e="IMO Number:"/>
+	</field>
+	<field name="h_hieu_tau" type="C">
+      <text v="Hiệu tàu:" e="Vessel Call Sign:"/>
+	</field>
+	<field name="h_so_dk" type="C">
+      <text v="Số đăng kí:" e="Registration Number:"/>
+	</field>
+	<field name="h_ma_kh" type="C">
+      <text v="Mã hãng:" e="Carrier Code:"/>
+	</field>
+	<field name="h_ma_hang" type="C">
+      <text v="Mã hãng cũ:" e="Carrier Old Code:"/>
+	</field>
+	<field name="h_ma_cang" type="C">
+      <text v="Mã cảng:" e="Port Code:"/>
+	</field>
+	<field name="h_status" type="C">
+      <text v="Trạng thái:" e="Status:"/>
+	</field>
+  </fields>
+
+</report>

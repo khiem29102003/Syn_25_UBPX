@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="chamcong" dirViewType="Grid" dirObjectType="Voucher" voucherCode="CC0" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Chấm công" e="Timekeeping"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="chamcong" fieldKey="id" order="id desc" allowFilter="true" allowOrder="true">
+      <fields >
+        <field name="id" fieldType="PK" hidden="true" width="120">
+          <text v="" e=""></text>
+        </field>
+		<field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="120" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+		<field name="ma_nv" width="120">
+          <text v="Mã nhân viên" e="Staff code"></text>
+        </field>
+		<field name="ten_nv" width="220" fieldType="EX">
+          <text v="Tên nhân viên" e="Staff name"></text>
+        </field>	
+		<field name="ma_cv" width="120">
+          <text v="Mã chức vụ" e="Staff code"></text>
+        </field>	
+		<field name="ma_bp" width="120">
+          <text v="Mã bộ phận" e="Staff code"></text>
+        </field>
+		<field name="tong_ngay_lam" width="120">
+          <text v="Tổng ngày làm" e="Staff name"></text>
+        </field>
+		
+     </fields>
+
+		<buttons>
+		 <button id="add">
+			<text v="$AddToolbar" e="$AddToobar"></text>
+		  </button>
+		  <button id="edit">
+			<text v="$EditToolbar" e="$EditToolbar"></text>
+		  </button>
+		  <button id="delete">
+			<text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+		  </button>
+		  <button id="copy">
+			<text v="$CopyToolbar" e="$CopyToolbar"></text>
+		  </button>
+		  <button id="view">
+			<text v="$ViewToolbar" e="$ViewToolbar"></text>
+		  </button>
+		  <button id="split">
+			<text v="-" e="-"></text>
+		  </button>
+		  <button id="refresh">
+			<text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+		  </button>
+		  <button id="freeze">
+			<text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+		  </button>
+		  <button id="split">
+			<text v="-" e="-"></text>
+		  </button>
+		  <button id="export">
+			<text v="$ExportToolbar" e="$ExportToolbar"></text>
+		  </button>
+		</buttons>
+		
+	<script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey =' ma_ct =  ''CC0'''
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit e on a.unit_id = e.unit_id  left join dmnv b on a.ma_nv = b.ma_nv left join dmchucvu c on a.ma_cv = c.ma_cv left join dmbp d on a.ma_bp = d.ma_bp ',' b.ten_nv, c.ten_cv, d.ten_bp, e.ma_unit', '@@key', '', @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @strDetailKey nvarchar(3000); set @strDetailKey = ''
+set @strKey = 'ngay_ct between ''' + convert(char(8), @ngay_ct1, 112) + ''' and ''' + convert(char(8), @ngay_ct2, 112) + ''' and ' + @strFinding + ' and ' + dbo.ISWIFTFunctionGetUnitIDRightKeys(@@admin, @@userId, @ma_unit, 'a.unit_id') + @strDetailKey
+set @strKey = @strKey +' and ma_ct =  ''CC0'''
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit e on a.unit_id = e.unit_id left join dmnv b on a.ma_nv = b.ma_nv left join dmchucvu c on a.ma_cv = c.ma_cv left join dmbp d on a.ma_bp = d.ma_bp ',' b.ten_nv, c.ten_cv, d.ten_bp, e.ma_unit', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+drop table #unitright
+         ]]>
+          </text>
+        </finding>
+		
+      </script>
+	  
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$chamcong(f){
+  this.constructor(f);
+}
+grid$chamcong.prototype = new DirEvent();
+grid$chamcong.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

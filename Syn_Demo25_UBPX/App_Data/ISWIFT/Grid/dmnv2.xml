@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+ <!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridFinding.xml">
+]>
+
+<dir id="dmnv" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Sơ yếu lý lịch " e="Employee Directory"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="dmnv" fieldKey="ma_nv" order="ma_nv" allowFilter="true" allowOrder="true" >
+      <fields >
+        <field name="ma_nv" fieldType="PK" width="120">
+          <text v="Mã Nhân viên" e="Employee code"></text>
+        </field>
+        <field name="ten_nv" width="250">
+          <text v="Tên Nhân viên" e="Staff's name"></text>
+        </field>
+		<field name="ngay_sinh" width="120" dataType="D">
+          <text v="Ngày sinh" e="Date of birth"></text>
+        </field>
+		<field name="dt_mobil" width="100">
+          <text v="Điện thoại" e="Date of birth"></text>
+        </field>
+		<field name="ma_ttp" width="100">
+          <text v="Quê quán" e="Home town"></text>
+        </field>
+ 		<field name="dia_chi" width="250" >
+          <text v="Địa chỉ tạm trú" e="Date of birth"></text>
+        </field>
+		<field name="dc_tt" width="250">
+          <text v="Địa chỉ thường trú" e="Date of birth"></text>
+        </field>
+
+      </fields>
+
+      &DefaultButton;
+		<script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey ='ma_nv <> '''''	
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmttp c on a.ma_ttp = c.ma_ttp', ' c.ten_ttp', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = @strFinding
+select @filterKey = @filterKey +  'ma_nv <> '''' '
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmttp c on a.ma_ttp = c.ma_ttp', ' c.ten_ttp', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+ 
+         ]]>
+          </text>
+        </finding>
+      </script>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmnv(f){
+  this.constructor(f);
+}
+grid$dmnv.prototype = new DirEvent();
+grid$dmnv.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+</dir>

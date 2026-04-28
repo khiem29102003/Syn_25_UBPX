@@ -1,0 +1,851 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmnv" table="dmnv" fieldKey="ma_nv" dirViewType="Dialog" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục nhân viên" e="List of employee"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120" >
+      <fields>
+
+		<field name="tt" nextRow="true" fieldType="EX" readOnly="true" inactivate="true" label="[160]" field="0">
+			<text v="Thông tin nhân viên" e="Employee Information: "></text>
+		</field>
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[100]">
+           <text v="" e=""></text>
+        </field>
+
+		<field name="xstatus" viewType="Combobox" inactivate="true" label="1" field="[150]" nextRow="false" valueDefault ="5" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+			  <option val="3">
+                <text v="Thử việc" e="Try job"></text>
+              </option>
+              <option val="5">
+                <text v="Đang làm việc" e="Working"></text>
+              </option>
+              <option val="9">
+                <text v="Nghỉ việc" e="Quitting your job"></text>
+              </option>
+			  <option val="7">
+                <text v="Nghỉ chế độ" e="Vacation mode"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+	    <field name="user_id" label="" field="1" dataType="I" hidden="true" fieldType="PK" >
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_dv" viewType="Lookup" label="1" field="1" importable="100" >
+		   <text v="Đơn vị" e="Unit"></text>	
+		   <viewInfo lookupType="One" lookupId="dmdonvi" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_dv" lookupInfo="dmdonvi|ma_dv|ten_dv" importCheck="@@DF and z.status=1"/>
+		</field>
+		<field name="ten_dv" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="3" aliasName="cast('' as nvarchar(4000)) as ">
+		   <text v="" e=""></text>
+		</field>
+	    <field name="ma_nv" format="U" label="1" field="1" allowBlank="false" viewType="AutoIncrease" fieldType="PK" importable="1" >
+          <text v="Mã nhân viên" e="Employee code"></text>
+        </field>
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[20]">
+           <text v="" e=""></text>
+        </field>
+		<field name="ten_nv" label="1" field="2" format="U" nextRow="false" allowBlank="false" importable="5" >
+          <text v="Họ và tên" e="Employee name"></text>
+        </field>
+		<field name="ngay_sinh" dataType="D" label="1" field="1" allowBlank="true" importable="15" >
+          <text v="Ngày sinh" e="Date of birth"></text>
+        </field>
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[20]">
+           <text v="" e=""></text>
+        </field>	
+		<field name="noi_sinh" label="1" field="2" nextRow="false" allowBlank="true" importable="20">
+          <text v="Nơi sinh" e="Place of birth"></text>
+        </field>
+		<field name="gioi_tinh" viewType="Combobox" inactivate="true" label="1" field="1" importable="10" >
+		  <text v="Giới tính" e="Sex"></text>
+		  <viewInfo>
+			<options query="select ma_gt, ten_gt%l from dmgioitinh where status = 1">
+			</options>
+		  </viewInfo>
+		</field>		
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[20]">
+           <text v="" e=""></text>
+        </field>
+		<field name="ma_lgt" viewType="Lookup" label="1" field="1" nextRow="false" importable="38" >
+		  <text v="Loại giấy tờ" e="Type of document"></text>
+		  <viewInfo lookupType="One" lookupId="dmlgt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_lgt" lookupInfo="dmlgt|ma_lgt|ten_lgt" importCheck="@@DF and z.status=1"/>
+		</field>
+		<field name="ten_lgt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as ">
+		   <text v="" e=""></text>
+		</field>
+		<field name="ma_so_thue" label="1" field="1" importable="165" >
+          <text v="Mã số thuế &lt;a onclick='getTax(this);'&gt;(Kiểm tra)&lt;/a&gt;" e="Tax code &lt;a onclick='getTax(this);'&gt;(Test)&lt;/a&gt;"></text>
+        </field>
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[20]">
+           <text v="" e=""></text>
+        </field>
+		<field name="ma_tg" viewType="Lookup" label="1" field="1" nextRow="false" importable="27" >
+		  <text v="Tôn giáo" e="Religion"></text>
+		  <viewInfo lookupType="One" lookupId="dmtongiao" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_tg" lookupInfo="dmtongiao|ma_tg|ten_tg" importCheck="@@DF and z.status=1"/>
+		</field>
+		<field name="ten_tg" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as ">
+		   <text v="" e=""></text>
+		</field>
+		<field name="dien_thoai" label="1" field="1" allowBlank="true" importable="30" >
+          <text v="Điện thoại " e="Mobile phone"></text>
+        </field>
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[20]">
+           <text v="" e=""></text>
+        </field>
+		<field name="ket_hon" viewType="Combobox" inactivate="true" label="1" field="1" nextRow="false" importable="25" >
+		  <text v="Tình trạng hôn nhân" e="Get married"></text>
+		  <viewInfo>
+			<options query="select ma_tthn, ten_tthn%l from dmtthn where status = 1 ">
+			</options>
+		  </viewInfo>
+		</field>
+		<field name="dt_cty" label="1" field="1" importable="140" >
+          <text v="Điện thoại công ty" e="Company phone"></text>
+        </field>
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[20]">
+           <text v="" e=""></text>
+        </field>
+		<field name="email" label="1" field="2" nextRow="false" importable="35" >
+          <text v="Email" e="Email"></text>
+        </field>
+		<field name="email2" label="1" field="2" nextRow="true" importable="135" >
+          <text v="Email VFIN" e="Email VFIN"></text>
+        </field>
+		<field name="nguoi_than" label="1" field="[500]" importable="85" >
+          <text v="Người thân" e=""></text>
+        </field>
+		<field name="dt_nt" label="1" field="1" importable="90" >
+          <text v="ĐT người thân" e=""></text>
+        </field>
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[20]">
+           <text v="" e=""></text>
+        </field>
+		<field name="ma_qh" viewType="Lookup" label="1" field="1" nextRow="false" importable="95" >
+		  <text v="QH gia đình" e=""></text>
+		  <viewInfo lookupType="One" lookupId="dmqhgd" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_qh" lookupInfo="dmqhgd|ma_qh|ten_qh" importCheck="@@DF and z.status=1"/>
+		</field>
+		<field name="ten_qh" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as ">
+		   <text v="" e=""></text>
+		</field>
+		<field name="dc_tt" label="1" field="[500]" allowBlank="true" importable="80" >
+          <text v="Địa chỉ tạm trú" e="Permanent address"></text>
+        </field>	
+		<field name="ma_dv_temp" label="1" field="1" allowBlank="true" importable="80" fieldType="EX" hidden="true">
+          <text v="madvtemp" e="Permanent address"></text>
+        </field>	
+      </fields>
+    </form>
+	<form gravity="TopRight" columns="120,120,120,120" >
+		<fields>
+			<field name="tt" nextRow="true" fieldType="EX" readOnly="true" inactivate="true" label="[150]" field="0">
+				<text v="Thông tin CMND / CCCD " e="Employee Information: "></text>
+			</field>
+			<field name="image_id" label="[100]" field="1" viewType="Image" >
+			  <text v="" e=""></text>
+			  <viewInfo fileFieldId0="user_id" fileGroup="SysUser" fileExtension="jpg,png" maxFileSize="10240" maxFileCount="1"></viewInfo>
+			</field>
+			<field name="cmnd_so" label="1" field="[120]" allowBlank="true" importable="40" >
+			  <text v="Số CMND &lt;a onclick='getCMND(this);'&gt;(Kiểm tra)&lt;/a&gt;" e="Identity card &lt;a onclick='getCMND(this);'&gt;(Check)&lt;/a&gt;"></text>
+			</field>
+			<field name="cmnd_noi_cap" label="1" field="[180]" nextRow="true" allowBlank="true" importable="45" >
+			  <text v="Nơi cấp" e="Place of issue"></text>
+			</field>
+			<field name="cmnd_ngay_cap" dataType="D" label="1" field="1" allowBlank="true" importable="50" >
+			  <text v="Ngày cấp" e="Date of issue"></text>
+			</field>	
+			<field name="cmnd_ngay_hh" dataType="D" label="1" field="1" allowBlank="true" nextRow="true" importable="55" >
+			  <text v="Ngày hết hạn" e="Expiration date"></text>
+			</field>
+			<field name="ma_qg" viewType="Lookup" label="1" field="[120]" allowBlank="true" importable="60" >
+			   <text v="Quốc tịch" e="Nationality"></text>
+			   <viewInfo lookupType="One" lookupId="dmquocgia" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_qg" lookupInfo="dmquocgia|ma_qg|ten_qg" importCheck="@@DF and z.status=1"/>
+			</field>
+			<field name="ten_qg" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+			   <text v="" e=""></text>
+			</field>		
+			<field name="ma_ttp" viewType="Lookup" label="1" field="[120]" importable="70" >
+			   <text v="Quê quán" e="Hometown"></text>
+			   <viewInfo lookupType="One" lookupId="dmttp" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_ttp" lookupInfo="dmttp|ma_ttp|ten_ttp" importCheck="@@DF and z.status=1"/>
+			</field>
+			<field name="ten_ttp" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+			   <text v="" e=""></text>
+			</field>
+			<field name="ma_dt" viewType="Lookup" label="1" field="1" importable="65" >
+			  <text v="Dân tộc" e="Ethnic"></text>
+			  <viewInfo lookupType="One" lookupId="dmdantoc" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_dt" lookupInfo="dmdantoc|ma_dt|ten_dt" importCheck="@@DF and z.status=1"/>
+			</field>
+			<field name="ten_dt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[200]" aliasName="cast('' as nvarchar(4000)) as ">
+			   <text v="" e=""></text>
+			</field>		
+			<field name="dia_chi" label="1" field="-" allowBlank="true" importable="75" >
+			  <text v="Địa chỉ thường trú" e="Adress"></text>
+			</field> 	
+	    </fields>
+    </form>
+	
+
+    <form tabPageIndex="1" gravity="MiddleLeft" height="360" columns="120,120,120,120,120,120,120,120,120,120"  >
+      <text v="Công việc" e="Work"></text>
+      <fields>
+		<field name="hotro_yn" dataType="B" clientDefault="true" label="1" field="[40]" nextRow="true" inactivate="true" importable="215" >
+			<text v="Nhân viên hỗ trợ" e="Support Staff"></text>
+		</field> 
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="[450]" field="[80]">
+           <text v="" e=""></text>
+        </field>
+		<field name="tt" fieldType="EX" readOnly="true" inactivate="true" label="[150]" field="0" nextRow="false" >
+			<text v="Thông tin lương" e="Salary information"></text>
+		</field>				
+		<field name="ma_pb" viewType="Lookup" label="1" field="1" allowBlank="true" importable="105" >
+			<text v="Phòng ban" e="Part"></text>
+			<viewInfo lookupType="One" lookupId="dmpb" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_pb" lookupInfo="dmpb|ma_pb|ten_pb" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_pb" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[450]" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		<field name="luong" label="1" field="1" dataType="N" format="Amount" nextRow="false" allowBlank="true" importable="145" >
+          <text v="Lương cơ bản" e="Basic salary"></text>
+        </field>
+
+
+		<field name="ma_bp" viewType="Lookup" label="1" field="[120]" allowBlank="true" importable="110" >
+		   <text v="Nhóm/Tổ " e="Team"></text>
+        <viewInfo lookupType="One" lookupId="dmbp" lookupKey="status = 1 and ma_pb = ![ma_pb]!" lookupCheck="1=1" lookupRef="ten_bp" lookupInfo="dmbp|ma_bp|ten_bp" />
+        </field>
+        <field name="ten_bp" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[450]" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		<field name="luong_dot1" label="1" field="1" dataType="N" format="Amount" nextRow="false" importable="150" >
+          <text v="Lương nâng đợt 1" e="Salary increase phase 1"></text>
+        </field>
+
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[90]">
+           <text v="" e=""></text>
+        </field>
+
+		<field name="parent_nv" viewType="Lookup" label="1" field="[120]" allowBlank="true" importable="130" >
+		   <text v="Người quản lý" e="Team Leader"></text>
+        <viewInfo lookupType="One" lookupId="dmnv" lookupKey="xstatus = 5" lookupCheck="1=1" lookupRef="parent_name" lookupInfo="dmnv|ma_nv|ten_nv" />
+        </field>
+        <field name="parent_name" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[450]" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		<field name="t_thunhap" label="1" field="1" nextRow="false" dataType="N" format="Amount" importable="160" >
+          <text v="Tổng thu nhập" e="Salary Total"></text>
+        </field>
+		<field name="ma_cv" viewType="Lookup" label="1" field="1" allowBlank="true" importable="115" >
+           <text v="Chức vụ" e="Position"></text>
+           <viewInfo lookupType="One" lookupId="dmchucvu" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_cv" lookupInfo="dmchucvu|ma_cv|ten_cv" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_cv" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label=""  field="[450]" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>	
+		<field name="ngay_ky_luong" dataType="D" label="1" field="1" allowBlank="true" nextRow="false" >
+          <text v="Ngày ký" e=""></text>
+        </field>		
+		<field name="ma_vtcv" viewType="Lookup" label="1" field="[120]" allowBlank="true" importable="120" >
+			<text v="Vị trí công việc" e="Job position"></text>
+			<viewInfo lookupType="One" lookupId="dmvtcv" lookupKey="status = 1 " lookupCheck="1=1" lookupRef="ten_vtcv" lookupInfo="dmvtcv|ma_vtcv|ten_vtcv" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_vtcv" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[450]" aliasName="cast('' as nvarchar(4000)) as ">
+			<text v="" e=""></text>
+        </field>
+		<field name="maso_luong" label="1" field="2" allowBlank="true" nextRow="false" >
+          <text v="Mã số" e=""></text>
+        </field>
+		<field name="ma_ca" viewType="Lookup" label="1" field="[120]" importable="125" >
+			<text v="Thời gian làm việc" e="Working time"></text>
+			<viewInfo lookupType="One" lookupId="dmcalv" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_ca" lookupInfo="dmcalv|ma_ca|ten_ca" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_ca" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[450]" aliasName="cast('' as nvarchar(4000)) as ">
+			<text v="" e=""></text>
+        </field>
+		<field name="sl_pthuoc" dataType="N" label="1" field="1" importable="170" >
+			<text v="SL người phụ thuộc" e="Number of dependents"></text>
+		</field>		
+	 </fields>
+    </form>
+	<form tabPageIndex="2" gravity="MiddleLeft" height="360" columns="120,120,120,120,120,120,120,120,120,120" >
+      <text v="Hợp đồng và bảo hiểm" e="Academic level"></text>
+      <fields>
+		<field name="tt" nextRow="true" fieldType="EX" readOnly="true" inactivate="true" label="[150]" field="0" >
+			<text v="Thông tin hợp đồng" e="Insurance Information"></text>
+		</field>
+	  	<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="3" field="[180]">
+           <text v="" e=""></text>
+        </field>
+	  	<field name="tt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="[150]" field="0" >
+			<text v="Thông tin bảo hiểm" e="Insurance Information"></text>
+		</field>
+		<field name="ma_hd" viewType="Lookup" label="1" field="[120]" importable="175" >
+		   <text v="Hợp đồng lao động" e="Contract"></text>
+        <viewInfo lookupType="One" lookupId="dmhopdong" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_hd" lookupInfo="dmhopdong|ma_hd|ten_hd" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_hd" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[450]" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		<field name="bhxh_yn" dataType="B" clientDefault="true" label="1" field="[40]" nextRow="false" inactivate="true" importable="200" >
+			<text v="Bảo hiểm xã hội" e="BHXH"></text>
+		</field> 
+		<field name="so_bhxh" label="" 	field="1" nextRow="false" importable="205" >
+          <text v="" e=""></text>
+        </field>
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[20]" hidden="true">
+           <text v="" e=""></text>
+        </field>
+		<field name="cd_bhxh" label="[90]" field="[50]" dataType="N" format="Qty" allowBlank="true" nextRow="false" hidden="false" importable="210">
+          <text v="Chế độ BHXH" e="Social insurance regime"></text>
+        </field>
+		<field name="ghichu1" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="[20]" field="" importable="-1" >
+			<text v="%" e="%"></text>
+		</field>	
+		<field name="ngay_ky_hd" dataType="D" label="1" field="1" allowBlank="true" nextRow="true" importable="180">
+		  <text v="Hợp đồng thử việc" e=""></text>
+		</field>
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[20]" hidden="true">
+           <text v="" e=""></text>
+        </field>
+	  	<field name="so_hd" label="1" field="2" allowBlank="true" nextRow="false" importable="185">
+		  <text v="Số hợp đồng" e=""></text>
+		</field> 	
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[70]" hidden="true">
+           <text v="" e=""></text>
+        </field>
+		
+		<field name="bhyt_yn" dataType="B" clientDefault="true" label="1" field="[40]" nextRow="false" inactivate="true" importable="215" >
+			<text v="Bảo hiểm y tế" e="BHYT"></text>
+		</field> 
+		<field name="so_bhyt" label="" field="1" nextRow="false" importable="220">
+          <text v="" e=""></text>
+        </field>
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[20]">
+           <text v="" e=""></text>
+        </field>
+		<field name="cd_bhyt" label="[90]" field="[50]" dataType="N" format="Qty" allowBlank="true" nextRow="false" importable="225">
+          <text v="Chế độ BHYT" e="Health insurance regime"></text>
+        </field>
+		<field name="ghichu2" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="[20]" field="" importable="-1" >
+			<text v="%" e="%"></text>
+		</field>
+		<field name="ngay_ky2_hd" dataType="D" label="1" field="1" allowBlank="true" nextRow="true" importable="190" >
+		  <text v="Ngày ký hợp đồng" e=""></text>
+		</field>
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[20]" hidden="true">
+           <text v="" e=""></text>
+        </field>
+		<field name="so_hd2" label="1" field="2" allowBlank="true" nextRow="false" importable="195" >
+		  <text v="Số hợp đồng" e=""></text>
+		</field> 	
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[70]" hidden="true">
+           <text v="" e=""></text>
+        </field>
+		<field name="bhtn_yn" dataType="B" clientDefault="true" label="1" field="[40]" nextRow="false" inactivate="true" importable="230" >
+			<text v="Bảo hiểm tai nạn" e="BHTN"></text>
+		</field> 
+		<field name="so_bhtn" label="" field="1" nextRow="false" importable="235" >
+          <text v="" e=""></text>
+        </field>
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[20]">
+           <text v="" e=""></text>
+        </field>
+		<field name="cd_bhtn" label="[90]" field="[50]" dataType="N" format="Qty" allowBlank="true" nextRow="false" importable="240" >
+          <text v="Chế độ BHTN" e="Accident insurance"></text>
+        </field>
+		<field name="ghichu3" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="[20]" field="" importable="-1" >
+			<text v="%" e="%"></text>
+		</field>
+		<field name="ngay_bd_hd" dataType="D" label="1" field="1" allowBlank="true" nextRow="true" importable="245" >
+		  <text v="Ngày tham gia" e=""></text>
+		</field>
+		<field name="ngay_kt_hd" dataType="D" label="1" field="1" allowBlank="true" nextRow="true" importable="250" >
+		  <text v="Ngày kết thúc" e=""></text>
+		</field>
+				
+		<field name="ngay_bd_lv" dataType="D" label="1" field="1" allowBlank="true" importable="98" >
+          <text v="Ngày vào công ty" e="Date of entry into the company"></text>
+        </field>
+		
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[20]">
+           <text v="" e=""></text>
+        </field>
+		<field name="ngay_kt_lv" label="1" field="1" dataType="D" nextRow="false" importable="395" >
+			<text v="Ngày nghỉ công ty" e="Quitting your job"></text>
+		</field>
+
+		<field name="ly_do_nghi" label="1" field="[500]" nextRow="true" importable="400" >
+			<text v="Lý do nghỉ" e="Reasons for leaving"></text>
+		</field>
+	  </fields>
+	</form>
+	<form tabPageIndex="3" gravity="MiddleLeft" height="360" columns="120,120,120,120,120,120,120,120,120,120" >
+      <text v="Trình độ học vấn" e="Academic level"></text>
+      <fields>
+	  	<field name="tt" fieldType="EX" readOnly="true" inactivate="true" label="[150]" field="0" >
+			<text v="Học vấn" e="Education"></text>
+		</field>
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="3" field="[180]">
+           <text v="" e=""></text>
+        </field>
+		<field name="tt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="[150]" field="0" >
+			<text v="Ngoại ngữ" e="Languages"></text>
+		</field>
+        <field name="ma_hv" viewType="Lookup" label="1" field="1" importable="255" >
+			<text v="Trình độ học vấn" e="Academic level"></text>
+			<viewInfo lookupType="One" lookupId="dmtdhv" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_hv" lookupInfo="dmtdhv|ma_hv|ten_hv" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_hv" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="3" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[90]">
+           <text v="" e=""></text>
+        </field>
+		<field name="ma_nn" viewType="Lookup" label="1" field="1" nextRow="false" importable="285">
+			<text v="Ngôn ngữ khác" e="Languages other"></text>
+			<viewInfo lookupType="One" lookupId="dmngoaingu" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_nn" lookupInfo="dmngoaingu|ma_nn|ten_nn" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_nn" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[200]" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		
+		<field name="ma_cn" viewType="Lookup" label="1" field="1" importable="260">
+			<text v="Ngành" e="Field of study"></text>
+			<viewInfo lookupType="One" lookupId="dmcn" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_cn" lookupInfo="dmcn|ma_cn|ten_cn" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_cn" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="3" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[90]">
+           <text v="" e=""></text>
+        </field>
+		<field name="ma_cc" viewType="Lookup" label="1" field="1" nextRow="false" importable="290" >
+			<text v="Chứng chỉ" e="Certificate"></text>
+			<viewInfo lookupType="One" lookupId="dmccnn" lookupKey="status=1 and ma_nn = ![ma_nn]!" lookupCheck="1=1" lookupRef="ten_cc" lookupInfo="dmccnn|ma_cc|ten_cc" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_cc" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[200]" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		<field name="chuyen_nganh" label="1" field="[300]" importable="265" >
+          <text v="Chuyên ngành" e="Majors"></text>
+        </field>
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="1" field="[150]">
+           <text v="" e=""></text>
+        </field>
+		<field name="diem_nn" label="1" field="1" dataType="N" format="Qty" nextRow="false" importable="295">
+          <text v="Điểm" e="Point"></text>
+        </field>
+		<field name="truong_dh" label="1" field="[300]" importable="270" >
+          <text v="Trường Đại học" e="University"></text>
+        </field>
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="1" field="[150]">
+           <text v="" e=""></text>
+        </field>
+		<field name="ngay_cap_cc" dataType="D" label="1" field="1" nextRow="false" importable="300" >
+          <text v="Ngày cấp" e="Date of issue"></text>
+        </field>
+		<field name="tu_ngay" dataType="D" label="1" field="1" importable="270" >
+          <text v="Từ ngày" e="From date"></text>
+        </field>
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[20]">
+           <text v="" e=""></text>
+        </field>
+		<field name="den_ngay" dataType="D" label="1" field="1" nextRow="false" importable="275" >
+          <text v="Đến ngày" e="To date"></text>
+        </field>
+
+		<field name="ngay_tn" dataType="D" label="1" field="1" importable="280" >
+          <text v="Ngày tốt nghiệp" e="Graduation Date"></text>
+        </field>
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[20]">
+           <text v="" e=""></text>
+        </field>			
+		<field name="xep_loai" viewType="Lookup" label="1" field="1" nextRow="false" importable="285" >
+		   <text v="Xếp loại" e="Rating"></text>	
+		   <viewInfo lookupType="One" lookupId="dmxeploai" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_xl" lookupInfo="dmxeploai|ma_xl|ten_xl" importCheck="@@DF and z.status=1"/>
+		</field>
+		<field name="ten_xl" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as ">
+		   <text v="" e=""></text>
+		</field>
+		
+		
+      </fields>
+    </form>
+	
+	<form tabPageIndex="4" gravity="MiddleLeft" height="360" columns="120,120,120,120,120,120,120,120,120,120" >
+      <text v="Thông tin ngân hàng" e="Bank information"></text>
+      <fields>
+	   <field name="tt" nextRow="true" fieldType="EX" readOnly="true" inactivate="true" label="[150]" field="0">
+		 <text v="Ngân hàng 1 " e="File: "></text>
+	   </field>
+       <field name="so_tk" label="1" field="[120]" importable="305" >
+         <text v="Số tài khoản" e="Account number"></text>
+        </field>
+		<field name="ma_nh" viewType="Lookup" label="1" field="[120]" importable="310" >
+           <text v="Ngân hàng" e="Bank"></text>	
+           <viewInfo lookupType="One" lookupId="dmnganhang" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_nh" lookupInfo="dmnganhang|ma_nh|ten_nh" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_nh" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>	
+		<field name="chi_nhanh" label="1" field="-" importable="315" >
+          <text v="Chi nhánh" e="Branch"></text>
+        </field>
+		<field name="khoang_cach" fieldType="EX" readOnly="true" inactivate="true" label="" field="[20]">
+           <text v="" e=""></text>
+        </field>
+		<field name="tt" nextRow="true" fieldType="EX" readOnly="true" inactivate="true" label="[150]" field="0">
+		 <text v="Ngân hàng 2 " e="File: "></text>
+	   </field>
+        <field name="so_tk2" label="1" field="[120]" importable="320" >
+         <text v="Số tài khoản 2" e="Account number 2"></text>
+        </field>
+		<field name="ma_nh2" viewType="Lookup" label="1" field="[120]" importable="325" >
+           <text v="Ngân hàng 2" e="Bank 2"></text>	
+           <viewInfo lookupType="One" lookupId="dmnganhang" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_nh2" lookupInfo="dmnganhang|ma_nh|ten_nh" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_nh2" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>	
+		<field name="chi_nhanh2" label="1" field="-" importable="330" >
+          <text v="Chi nhánh 2" e="Branch 2"></text>
+        </field>
+      </fields>
+    </form>
+   
+	<form tabPageIndex="5" gravity="MiddleLeft" height="360" columns="120,120,120,120,120,120,120,120,120,120,120,120" >
+      <text v="Hồ sơ" e="File"></text>
+		<fields>
+			<field name="tt" nextRow="true" fieldType="EX" readOnly="true" inactivate="true" label="[150]" field="0">
+				<text v="Hồ sơ " e="File: "></text>
+			</field>
+			<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="3" field="[180]">
+				<text v="" e=""></text>
+			</field>
+			<field name="tt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="[150]" field="0">
+				<text v="Đồng phục" e="File: "></text>
+			</field>
+			<field name="don_xin_viec_yn" dataType="B" clientDefault="true" label="1" field="[40]" inactivate="true" importable="335" >
+				<text v="Đơn xin việc" e="Job application"></text>
+			</field> 
+			<field name="cccd_yn" dataType="B" clientDefault="true" label="1" field="[40]" inactivate="true" nextRow="false" importable="340" >
+				<text v="CMND / CCCD" e="ID / CCCD"></text>
+			</field> 
+			<field name="anh_yn" dataType="B" clientDefault="true" label="1" field="[40]" inactivate="true" nextRow="false" importable="345" >
+				<text v="Ảnh" e="Image"></text>
+			</field> 
+			<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="[90]" field="1">
+				<text v="" e=""></text>
+			</field>
+			<field name="ngaynhan_dp" dataType="D" label="1" field="1" nextRow="false" importable="385" >
+				<text v="Ngày nhận đồng phục" e=""></text>
+			</field>
+			<field name="gksk_yn" dataType="B" clientDefault="true" label="1" field="[40]" inactivate="true" importable="350" >
+				<text v="Giấy khám sức khoẻ" e="Health certificate"></text>
+			</field> 
+			<field name="syll_yn" dataType="B" clientDefault="true" label="1" field="[40]" inactivate="true" nextRow="false" importable="355" > 
+				<text v="Sơ yếu lý lịch" e="Curriculum vitae"></text>
+			</field> 
+			<field name="bangcap_yn" dataType="B" clientDefault="true" label="1" field="[40]" inactivate="true" nextRow="false" importable="360" >
+				<text v="Bằng cấp" e="Diploma"></text>
+			</field> 
+			<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="[90]" field="1">
+				<text v="" e=""></text>
+			</field>
+			<field name="size" label="1" field="1" nextRow="false" importable="390" >
+				<text v="Size" e="Size"></text>
+			</field>
+			<field name="hokhau_yn" dataType="B" clientDefault="true" label="1" field="[40]" inactivate="true" importable="365" >
+				<text v="Hộ khẩu" e="Hukou"></text>
+			</field> 	
+			<field name="tt" fieldType="EX" readOnly="true" inactivate="true" label="[150]" field="0" nextRow="true">
+				<text v="Đào tạo và kỷ luật" e="Training and discipline: "></text>
+			</field>
+			<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="3" field="[180]">
+				<text v="" e=""></text>
+			</field>
+			<field name="hoc_nghe_yn" dataType="B" clientDefault="true" label="1" field="[40]" inactivate="true" nextRow="true" importable="370" >
+				<text v="Học nghề , đào tạo" e="Apprenticeship and training"></text>
+			</field> 
+			<field name="ky_luat_ld_yn" dataType="B" clientDefault="true" label="1" field="[40]" inactivate="true" nextRow="false" importable="375" >
+				<text v="Kỷ luật lao động" e="Labor discipline"></text>
+			</field>
+			<field name="tai_nan_ld_yn" dataType="B" clientDefault="true" label="1" field="[40]" inactivate="true" nextRow="false" importable="380" >
+				<text v="Tai nạn lao động" e="Occupational accidents"></text>	
+			</field> 	
+
+			<field name="status" viewType="Combobox" inactivate="true" label="1" field="1" hidden="true" valueDefault ="1">
+			  <text v="Trạng thái" e="Status"></text>
+			  <viewInfo>
+				<options>
+				  <option val="1">
+					<text v="1 - Còn sử dụng" e="1 - Use"></text>
+				  </option>
+				  <option val="0">
+					<text v="0 - Không sử dụng" e="0 - Not use"></text>
+				  </option>
+				</options>
+			  </viewInfo>
+			</field>
+		</fields>
+    </form>
+	<form tabPageIndex="6" gravity="MiddleLeft" height="240" columns="120,120,120,120,120,120,120,120,120,120" >
+      <text v="Đính kèm" e="Attach Files"></text>
+      <fields>
+	  	<field name="tt" nextRow="true" fieldType="EX" readOnly="true" inactivate="true" label="3" field="0">
+			<text v="Sử dụng file doc, docx, xls, xlsm, xlsx, xlt,..." e="Use file doc, docx, xls, xlsm, xlsx, xlt,..."></text>
+		</field>
+        <field name="xfile" label="1" field="-" viewType="File" fieldType="EXParam">
+          <text v="Chọn files" e="Attach Files"></text>
+          <viewInfo fileFieldId0="ma_nv" fileGroup="dmnv" fileExtension="*" maxFileSize="10240" maxFileCount="10"></viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+  
+  
+  
+    &DefaultButton;
+  <js>
+    <text>
+     <![CDATA[
+function dir$dmnv(p){
+  this.constructor(p);
+  document._dir = p;
+
+}
+dir$dmnv.prototype = new DirEvent();
+
+dir$dmnv.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+	case 'ma_dv':
+		if(p.options.action == "NEW")
+		{
+			p.request('GetEmployeeCode', '', ['ma_dv']);
+		}
+		break;
+	case 'bhxh_yn':
+		if(p.valForm('bhxh_yn') == 1) { p.setInvisible(['so_bhxh','cd_bhxh','ghichu1'], false) }
+		else { p.setInvisible(['so_bhxh','cd_bhxh','ghichu1'], true) };
+		break;
+	case 'bhyt_yn':
+		if(p.valForm('bhyt_yn') == 1) { p.setInvisible(['so_bhyt','cd_bhyt','ghichu2'], false) }
+		else { p.setInvisible(['so_bhyt','cd_bhyt','ghichu2'], true) };
+		break;
+	case 'bhtn_yn':
+		if(p.valForm('bhtn_yn') == 1) { p.setInvisible(['so_bhtn','cd_bhtn','ghichu3'], false) }
+		else { p.setInvisible(['so_bhtn','cd_bhtn','ghichu3'], true) };
+		break;
+    default:
+      break;
+  }
+}
+function getDV() {
+var madv = 'where ma_dv = '+localStorage.getItem('madv');
+
+if (madv == 'BD') {
+document.querySelector("input.ma_dv_temp").setAttribute('value', madv);
+}
+
+console.log(madv)
+}
+function getTax(o) {
+  var p = document._dir;
+  var tax = p.valForm('ma_so_thue');
+  if (tax.length != 10 && tax.length != 13) {
+    $.showToast('Thông tin mã số thuế không đúng.');
+    return;
+  }
+  
+  $.invoke('GetTax', { taxCode: tax }, this, 30000
+    , function (result) {
+      if (result) {
+        var obj = JSON.parse(result);
+        p.valForm('ten_nv', obj.Name, true);
+        p.valForm('dia_chi', obj.Address, true);
+		p.valForm('ten_nv2', obj.Other, true);
+		p.valForm('nguoi_lh', obj.Contact, true);
+		p.valForm('dien_thoai', obj.Telephone, true);
+		
+      }
+    }, function (event) {} );
+	
+}
+
+
+
+function getCMND(o) {
+  var p = document._dir;
+  var cmnd = p.valForm('cmnd_so');
+  if (cmnd.length != 9 && cmnd.length != 12) {
+    $.showToast('Thông tin CMT/CCCD không đúng.');
+    return;
+  }
+  
+  $.invoke('GetTax', { taxCode: cmnd }, this, 30000
+    , function (result) {
+      if (result) {
+        var obj = JSON.parse(result);
+        p.valForm('ten_nv', obj.Name, true);
+        p.valForm('dia_chi', obj.Address, true);
+		p.valForm('ten_nv2', obj.Other, true);
+		p.valForm('nguoi_lh', obj.Contact, true);
+		p.valForm('ma_so_thue', obj.TaxCode, true);
+		p.valForm('dien_thoai', obj.Telephone, true);
+		
+      }
+    }, function (event) {} );
+	
+}
+
+
+dir$dmnv.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+ 
+
+	
+  dir$dmnvDisabledMasterField(p, g);
+  dir$dmnvInvisibleMasterField(p, g)
+  
+  document._dir = p;
+  //getDV();
+}
+
+function dir$dmnvDisabledMasterField(p, g){
+	if(p.valForm('ma_nv').trim() != '')
+  {
+    p.setDisabled('ma_nv', true);
+  }
+  else
+  {
+    p.setDisabled('ma_nv', false);
+  }
+}
+function dir$dmnvInvisibleMasterField(p, g){
+
+	if (p.valForm('bhxh_yn') == 0) p.setInvisible(['so_bhxh','cd_bhxh','ghichu1'], true);
+	if (p.valForm('bhyt_yn') == 0) p.setInvisible(['so_bhyt','cd_bhyt','ghichu2'], true);
+	if (p.valForm('bhtn_yn') == 0) p.setInvisible(['so_bhtn','cd_bhtn','ghichu3'], true);
+	
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+		<text>
+		  <![CDATA[
+			.control-label.tt2, .control-label.tt {color: #499b98; text-decoration: underline}
+			.modal-dialog-lg{min-width:1200px!important;}
+			.css4control-image_id{
+			  position: absolute;
+			  right: 0px;
+			  top: 5px;
+			}
+
+		  ]]>
+		</text>
+  </css>
+  <script>
+ <request code="GetEmployeeCode">
+	<text>
+		<![CDATA[
+			exec st_GetEmployeeCode 'dmnv', @ma_dv
+		]]>
+	  </text>
+</request>
+  <query>
+      <text>
+        <![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+if @action in ('EDIT', 'VIEW') 
+BEGIN 
+exec ISWIFTStoreGetListFiles 'image_id', @ma_nv, 'Item', '', @script output 
+exec ISWIFTStoreGetListFiles 'xfile', @ma_nv, 'dmnv', '', @script output 
+END
+if @script is null set @script = ''
+
+if @action = 'EDIT'
+  if exists(select 1 from syscodeexists with(nolock, index(code1)) where code1 = @ma_nv and field = 'ma_nv')
+    select @script = @script + 'p.setDisabled(''ma_nv'', true); '
+
+if @action in ('EDIT', 'VIEW') select @script as script
+drop table #@@table
+        ]]>
+      </text>
+    </query>
+
+	<updated>
+		  <text>
+			<![CDATA[
+	update dmttin set status = 0 from dmttin where id0 = @ma_nv and xgroup = 'Item'
+	if @image_id <> '' update dmttin set status = 1, id0 = @ma_nv from dmttin where charindex(id, @image_id) > 0 and xgroup = 'Item'
+	if @xfile <> '' update dmttin set status = 1, id0 = @ma_nv from dmttin where charindex(id, @xfile) > 0 and xgroup = 'dmnv'
+			 ]]>
+      </text>
+    </updated>
+	
+	<inserting>
+      <text>
+        <![CDATA[
+if exists(select 1 from @@table a where [%whereFieldKey]) begin
+  select '$codeExistsNewMsg' as message, '@@firstFieldKey' as field
+  return
+end
+
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId
+]]>
+      </text>
+    </inserting>
+	
+     <inserted>
+      <text>
+        <![CDATA[
+if @image_id <> '' update dmttin set status = 1, id0 = @ma_nv from dmttin where charindex(id, @image_id) > 0 and xgroup = 'Item'
+if @xfile <> '' update dmttin set status = 1, id0 = @ma_nv from dmttin where charindex(id, @xfile) > 0 and xgroup = 'dmnv'
+]]>
+      </text>
+    </inserted>
+	
+	<importing>
+      <text>
+        <![CDATA[
+---update #data set unit_id = @@unit
+@@insert
+        ]]>
+      </text>
+    </importing>
+	
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã nhân viên đã tồn tại' else N'Employee code already exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã nhân viên đã tồn tại' else N'Employee code already exists' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã nhân viên đã tồn tại" e="Employee code already exists"/>
+    </message>
+    <message val="taxtCodeExists">
+      <text v="Mã số thuế đã tồn tại trong danh mục, &lt;span class='Highlight'&gt;Lưu ý:&lt;/span&gt; hệ thống vẫn lưu dữ liệu vừa cập nhật." e="The tax code is already exists, &lt;span class='Highlight'&gt;Warning:&lt;/span&gt; Updated data has been saved."/>
+    </message>
+  </messages>
+</dir>

@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY ReportFilterItemGroup SYSTEM "..\Include\XML\ReportFilterItemGroup.xml">
+  <!ENTITY ReportFilterStockType SYSTEM "..\Include\XML\ReportFilterStockType.xml">
+  <!ENTITY ReportFilterUnit SYSTEM "..\Include\XML\ReportFilterUnit.xml">
+  <!ENTITY ReportJSLoading SYSTEM "..\Include\XML\ReportJSLoading.xml">
+  <!ENTITY ReportFiltering SYSTEM "..\Include\XML\ReportFiltering.xml">
+  <!ENTITY ReportDataAnalysisStruct SYSTEM "..\Include\XML\ReportDataAnalysisStruct.xml">
+]>
+
+<dir id="bcvttk2" table="" height="" fieldKey="id" dirViewType="Dialog" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo cáo tồn vật tư thực tế" e="Stock" />
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" dataType="D">
+          <text v="Đến ngày" e="Date From/To"></text>
+        </field>
+        <field name="ma_kho" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Mã kho" e="Site"></text>
+          <viewInfo lookupType="One" lookupId="dmkho" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_kho" />
+        </field>
+        <field name="ten_kho" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="1" gravity="MiddleLeft" height="0" columns="120,120,120,120,120"  >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="ma_vt" viewType="Lookup" operation="like" label="1" field="1">
+          <text v="Mã vật tư" e="Item"></text>
+          <viewInfo lookupType="One" lookupId="dmvt" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_vt" />
+        </field>
+        <field name="ten_vt" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_lo" viewType="Lookup" operation="like" label="1" field="1" hidden="true">
+          <text v="Mã lô" e="Lot"></text>
+          <viewInfo lookupType="One" lookupId="dmlo2" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_lo" />
+        </field>
+        <field name="ten_lo" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_vi_tri" viewType="Lookup" operation="like" label="1" field="1" hidden="true">
+          <text v="Mã vị trí" e="Position"></text>
+          <viewInfo lookupType="One" lookupId="dmvitri" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_vi_tri" hidden="true" />
+        </field>
+        <field name="ten_vi_tri" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        
+        &ReportFilterItemGroup;
+        &ReportFilterUnit;
+       <field name="loai_du_lieu" dataType="I" viewType="Combobox" valueDefault="1" label="1" field="[360]" hidden="true">
+		  <text v="Loại dữ liệu" e="Stock Type"></text>
+		  <viewInfo>
+			<options>
+			  <option val="1">
+				<text v="Dữ liệu sổ sách" e="Stock"></text>
+			  </option>
+			  <option val="2">
+				<text v="Dữ liệu thực tế" e="Physical Stock"></text>
+			  </option>
+			</options>
+		  </viewInfo>
+		</field>
+        <field name="mau_bc" dataType="I" viewType="Combobox" valueDefault="2" label="1" field="[360]" hidden="true">
+          <text v="Mẫu báo cáo" e="Report Form"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Mẫu số lượng" e="Quantity Form"></text>
+              </option>
+              <option val="2">
+                <text v="Mẫu in số lượng và giá trị" e="Quantity and Values Form"/>
+              </option>
+              <option val="3">
+                <text v="Mẫu in số lượng và giá trị ngoại tệ" e="Quantity and FC Values Form"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+
+    
+    
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>0HOoYmuDV0IH6Pe67HsUbVHkSFo480xVxm9Lfi6eT1+86m1lKP/pS1epqVl8f0keuUe5ER0kuKZynt9x352udiv1P8YObES2pp6sBIYf/VnNVAm10yuSviFi76oTUtYVwdmWx1JQPWBAwBr4v09hkjKXS/Bu6j3GP47fgStOhoKyE6RdYzAsJJiGSRhQi7kpHw0FjQmZyJppgHcpc+/96fl357GSt1+BHxYNYTXTeLuAUlOjtasZgPehuczZC0eAJ01cyil4rWl1pbPEr2jh0AFkNlGrKGviGPMcKQ59QImtJGp+ikdSs1ZHVlWfA7yF2GugmvaqhIkKdAl5NxSBAB4sPmHRxJ4gnGeRPy2SsUlFMhvzW9nmcoYViw7VSASgftvHU/59mn5XLZ+F9Y23/UaF3G0aJNJMIlaGc+lT1HeY1CK5vNI6gLFVNsw0915oy60osVIwCJLzO34bXiWet23i6r1SxG1X+xDIDvCUqGWA7Y2h8/nkN5MQam146pCdGERocu7Zd1vsJVfLyigDAGN61VqbLL2nmSPnLGkIAg9m6BIDDBOIHDr4zdm9/+Kx0Tli1u0opBr63LmdiUNdxXjTIAFUlPv+QVDKLO6a45b6GlGquNiqTtN41rOxTr/2</enc>]]>
+    </text>
+  </js>
+
+  <script>
+    <processing>
+      <text>
+        <![CDATA[<enc>g+KZ+QKBlC+LdD0jHhpbmcJo1BrBHXIWbv9UhJn+xE5Dd6y5cZd5eXv5fKrU8JjJFLrp+CwIqNNcGz3ll4pLBEbfD27gtMLqeYmS5RXvGx3DI5z9sx/fbyx3/ixlL1DnPpQoSSkI1+amnKNUcnvZ/A==</enc>]]>
+      </text>
+    </processing>
+
+    &ReportJSLoading;
+  </script>
+</dir>

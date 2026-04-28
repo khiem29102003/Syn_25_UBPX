@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="cdlo2" table="cdlo2" fieldKey="nam, ma_vt, ma_kho, ma_vi_tri, ma_lo" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Vào tồn kho đầu kỳ thực tế" e="Physical Stock Opening Balance"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+          <text v="" e=""></text>
+        </field>
+        <field name="nam" label="1" field="[60]" format="-1" maxLength="4" allowBlank="false" disabled="true" fieldType="PK" dataType="I" importable="5">
+          <text v="Năm" e="Year"></text>
+        </field>
+        <field name="ma_vt" fieldType="PK" format="U" label="1" field="1" viewType="Lookup" allowBlank="false" importable="10">
+          <text v="Mã vật tư" e="Item"></text>
+          <viewInfo lookupType="One" lookupId="dmvt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_vt" lookupInfo="dmvt|ma_vt|ten_vt" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_vt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as " importable="11" importWidth="250">
+          <text v="Tên vật tư" e="Tên vật tư"></text>
+        </field>
+        <field name="ma_kho" fieldType="PK" format="U" label="1" field="1" viewType="Lookup" allowBlank="false" importable="25">
+          <text v="Mã kho" e="Site"></text>
+          <viewInfo lookupType="One" lookupId="dmkho" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_kho" lookupInfo="dmkho|ma_kho|ten_kho" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_kho" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_vi_tri" fieldType="PK" format="U" label="1" field="1" viewType="Lookup" importable="30">
+          <text v="Mã vị trí" e="Location"></text>
+          <viewInfo lookupType="One" lookupId="dmvitri" lookupKey="status=1 and ma_kho = ![ma_kho]!" lookupCheck="ma_kho = ![ma_kho]!" lookupRef="ten_vi_tri" lookupInfo="dmvitri|ma_vi_tri|ten_vi_tri" importCheck="@@DF and z.status=1 and a.ma_kho = z.ma_kho"/>
+        </field>
+        <field name="ten_vi_tri" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_lo" fieldType="PK" format="U" label="1" field="1" viewType="Lookup" importable="35">
+          <text v="Mã lô" e="Lot"></text>
+          <viewInfo lookupType="One" lookupId="dmlo" lookupKey="status=1 and ma_vt = ![ma_vt]!" lookupCheck="1=1" lookupRef="ten_lo" lookupInfo="dmlo|ma_lo|ten_lo" importCheck="@@DF and z.status=1 and a.ma_vt = z.ma_vt" />
+        </field>
+        <field name="ten_lo" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+
+        <field name="ton00" label="1" field="1" allowBlank="true" format="Qty" dataType="N" importable="40">
+          <text v="Tồn đầu" e="Opening Quantity"></text>
+        </field>
+        <field name="du00" label="1" field="1" allowBlank="true" format="Amount" dataType="N" importable="45">
+          <text v="Dư đầu" e="Opening Balance"></text>
+        </field>
+        <field name="du_nt00" label="1" field="1" allowBlank="true" format="FCAmount" dataType="N" importable="50">
+          <text v="Dư đầu ngoại tệ" e="FC Opening Balance"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" hidden="true" valueDefault="1" importable="-1">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>xXJtfOC9o2d2NjXYHfeu49pbro5ntvblZ6CUYUCaJrexi7CnL79xruZ5XjsIyJcoG9AwIsJQ13PKpWcKpWtNDyZnD18GMyfEO/KAtEBDIDMkx+BWutAHIN8Iz89gQ/i9EYg6aFVq1webKbv0hWrGBZsSweLfHSNIFhL1tZp4sodTcGw42vFidNKLmrzbigP2CaH85C8H8347SprVXiIlFBLXp1yWmaFcvaUVS4QsV7Fx0t1Mphv1cYmt8Jy5xH7Q+TL4Hq+7yYJLiYF67dZe/hguTD/FSZ4sA9PJF4xGBFonw5zzutT2LJ9aIxHo1CK7i0DvspkTRF4GtuwmcfAmHb5eoMvulLVoUZjiGKfipOUHp5o4XgC3QkCJ5WV3zBNqc6JNlf6DgyERZCDI/45igw==</enc>]]>
+    </text>
+  </js>
+  <script>
+    <beforesave>
+      <text>
+        <![CDATA[<enc>NQkn6p9VvQu4ngmOvNVtzHZYBv+v/uACs6iFnhrYU6kA59cen846NXFnr8N8WaPyHRqlpFStKjSd08VetRUaiOxUIegC1tBSAe4tXWlL8vuAwDgn6q0xZ8H/MvyfuipFqNPl/DbmzKKw3cF5WoXykTrrTPTv2xm7p+EwtbGeeyE=</enc>]]>
+      </text>
+    </beforesave>
+    <aftersave>
+      <text>
+<![CDATA[<enc>CbrfCCs7QXdp37LZ78/z85uNbs1sp4h+9bdBkEivoTo40D4AH/Kx/Fd67QVixTg1CiHYeYFhwpf49+22S6G0FRLOxrORr26gGa0KvfVOj6lbIzASFDNErY7z1664Qlp1M5OWQLd+j8E8CuhQrBMDCCmoU3+C9SxVquFxUmQmmG/fLenkWPep3I9+cM98pn8v</enc>]]>
+      </text>
+    </aftersave>
+
+    <importing>
+      <text>
+        <![CDATA[<enc>LXFxajWNnfd6eFCv40/QoigeyCM387ciPW2fCRp6Z17d59nprUcL70DdIBE9TDc7c3jLxp2942kt7hIyx9K1RVKLgR8vzBMEJkibqVe0Saox/soVbuzcZkSswueVDHj1SNpI9n6laSGXVg8iVMGtGT/ck+s82M8kXbo9jV+fKLDalaf/PogHY5c+Ef+wFwPTYSVjPTJy5uK7ezuJ0MEq+2RKUMFa4lYxtzy3K/IucMc=</enc>]]>
+      </text>
+    </importing>
+  </script>
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Thông tin tồn kho đầu kỳ đã được khai báo trong danh mục." e="This item already exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Thông tin tồn kho đầu kỳ đã được khai báo trong danh mục." e="This item already exists."/>
+    </message>
+    <message val="dbLockDate">
+      <text v="Đã khóa số liệu, kiểm tra lại ngày khóa sổ." e="Data is locked, you must modify system locked date."/>
+    </message>
+  </messages>
+
+</dir>

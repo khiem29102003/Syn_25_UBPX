@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="dmkh" table="" height="" fieldKey="ma_nh" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Điều kiện lọc" e="Filter"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,240,120"  >
+      <fields>
+        <field name="ma_nvbh" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Mã nhân viên" e="Sale"></text>
+          <viewInfo lookupType="One" lookupId="dmnvbh" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_nvbh" lookupInfo="dmnvbh|ma_nvbh|ten_nvbh" />
+        </field>
+        <field name="ten_nvbh" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="nh_kh1" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Nhóm 1" e="Group 1"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH1' and status=1" lookupCheck="ma_loai_nh = 'KH1'" lookupRef="ten_nh_kh1" lookupInfo="dmnh|ma_nh|ten_nh" />
+        </field>
+        <field name="ten_nh_kh1" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="nh_kh2" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Nhóm 2" e="Group 2"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH2' and status=1" lookupCheck="ma_loai_nh = 'KH2'" lookupRef="ten_nh_kh2" lookupInfo="dmnh|ma_nh|ten_nh" />
+        </field>
+        <field name="ten_nh_kh2" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="nh_kh3" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Nhóm 3" e="Group 3"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH3' and status=1" lookupCheck="ma_loai_nh = 'KH3'" lookupRef="ten_nh_kh3" lookupInfo="dmnh|ma_nh|ten_nh" />
+        </field>
+        <field name="ten_nh_kh3" nextRow="false" fieldType="EX"  readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="rg_code" viewType="Lookup" label="1" field="1" >
+          <text v="Vùng, khu vực" e=""></text>
+          <viewInfo lookupType="One" lookupId="sysregioninfo" lookupKey="status=1" lookupCheck="1=1" lookupRef="rgname"/>
+        </field>
+        <field name="rgname" nextRow="false" readOnly="true" inactivate="true" fieldType="EX" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$dmkh(p){
+  this.constructor(p);
+}
+filter$dmkh.prototype = new DirEvent();
+filter$dmkh.prototype.afterInit = function(){
+  var p = this._dir;
+}
+filter$dmkh.prototype.beforeAcceptFilter = function(m2, opt, sub){
+  sub[1] = (sub[1] == '')?$.msg.get('AllLabel'):sub[1];
+  return true;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <query>
+      <text>
+        <![CDATA[
+select '' as [$]        
+select ma_nvbh = ma_nvbh, ten_nvbh = ten_nvbh from dmnvbh where user_id = @@userId
+        ]]>
+      </text>
+    </query>
+  </script>
+</dir>

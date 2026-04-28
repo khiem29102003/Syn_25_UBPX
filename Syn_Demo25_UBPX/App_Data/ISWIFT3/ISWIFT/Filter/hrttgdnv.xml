@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY ReportJSLoading SYSTEM "..\Include\XML\ReportJSLoading.xml">
+]>
+
+<dir id="hrttgdnv" table="" height="" fieldKey="id" dirViewType="Dialog" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Thông tin gia đình nhân viên" e="Employee List"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_vao_tu" label="1" field="1" clientDefault="true" dataType="D">
+          <text v="Ngày nhận việc từ/đến" e="Date From/To"></text>
+        </field>
+        <field name="ngay_vao_den" label="" field="1" clientDefault="true" valueDefault="new Date()" allowBlank="false" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_bp" format="U" viewType="Lookup" label="1" field="1" operation="like" clientDefault="true" >
+          <text v="Bộ phận" e="Department"></text>
+          <viewInfo lookupType="One" lookupId="hrdmbp" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_bp" lookupInfo="hrdmbp|ma_bp|ten_bp" />
+        </field>
+        <field name="ten_bp" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_vtr" format="U" viewType="Lookup" label="1" field="1" operation="like" clientDefault="true" >
+          <text v="Vị trí, chức vụ" e="Position"></text>
+          <viewInfo lookupType="One" lookupId="hrdmvtr" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_vtr" lookupInfo="hrdmvtr|ma_vtr|ten_vtr" />
+        </field>
+        <field name="ten_vtr" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="gioi_tinh" viewType="Combobox" inactivate="true" label="1" field="2" operation="=" >
+          <text v="Giới tính" e="Gender"></text>
+          <viewInfo>
+            <options>
+              <option val="">
+                <text v="Tất cả " e="All"></text>
+              </option>
+              <option val="1">
+                <text v="Nam" e="Male"></text>
+              </option>
+              <option val="2">
+                <text v="Nữ" e="Female"></text>
+              </option>
+              <option val="3">
+                <text v="Giới tính khác" e="Other"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="ma_qh" format="U" viewType="Lookup" label="1" field="2" clientDefault="true">
+          <text v="Quan hệ" e="Relationship"></text>
+          <viewInfo lookupType="Multi" lookupId="hrdmqhgd" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_qh" lookupInfo="hrdmqhgd|ma_qh|ten_qh" />
+        </field>
+        <field name="ten_qh" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ngay_sinh_tu" label="1" field="1" clientDefault="true" dataType="D">
+          <text v="Ngày sinh từ/đến" e="Date From/To"></text>
+        </field>
+        <field name="ngay_sinh_den" label="" field="1" clientDefault="true" valueDefault="new Date()" allowBlank="false" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+        <field name="gt_gia_canh" viewType="Combobox" inactivate="true" label="1" field="2" operation="=" aliasName="b.gt_gia_canh">
+          <text v="Phụ thuộc" e=""></text>
+          <viewInfo>
+            <options>
+              <option val="">
+                <text v="Tất cả " e="All"></text>
+              </option>
+              <option val="1">
+                <text v="Chỉ người phụ thuộc" e=""></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$hrttgdnv(p){
+  this.constructor(p);
+}
+filter$hrttgdnv.prototype = new DirEvent();
+filter$hrttgdnv.prototype.afterInit = function(){
+  var p = this._dir, ev = this;
+}
+]]>
+    </text>
+  </js>
+
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+exec ss_hrttgdnv @ngay_vao_tu, @ngay_vao_den, @ngay_sinh_tu, @ngay_sinh_den, @ma_qh, @strJoin, @strFinding, '@@lan', @@userId, @@admin
+        ]]>
+      </text>
+    </processing>
+
+    &ReportJSLoading;
+  </script>
+</dir>

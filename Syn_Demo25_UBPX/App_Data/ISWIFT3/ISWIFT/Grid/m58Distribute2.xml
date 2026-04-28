@@ -1,0 +1,271 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="m58Distribute2" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Chi tiết hóa đơn" e="Allocation to Invoices"></title>
+  <subtitle v="Phiếu thu số %s1 ngày %s2 phân bổ: &lt;b&gt;%s3&lt;/b&gt;, còn lại: &lt;b&gt;%s4&lt;/b&gt;" e="%s"></subtitle>
+
+  <grids>
+    <grid table="cttt20" fieldKey="id" order="ngay_ct, so_ct, id" allowFilter="true" readOnly="false" allowOrder="true" key="loai_tt = 0">
+      <fields>
+        <field name="tag" dataType="B" fieldType="EX" format="0" width="40" readOnly="false">
+          <text v="..." e="..."></text>
+        </field>
+        <field name="stt" dataType="I" fieldType="EX" format="0" width="40">
+          <text v="Stt" e="Order"></text>
+        </field>
+        <field name="so_ct" width="100" link="V" >
+          <text v="Số hóa đơn" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày hóa đơn" e="Voucher Date"></text>
+        </field>
+        <field name="ma_kh" hidden="true" width="120" >
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+        <field name="ma_nt" width="50" hidden="true" >
+          <text v="Ngoại tệ" e="FC"></text>
+        </field>
+        <field name="t_tt_nt" dataType="N" format="FCAmount" width="100">
+          <text v="Tổng tiền" e=""></text>
+        </field>
+        <field name="da_pb_nt" dataType="N" format="FCAmount" width="100" aliasName="0*t_tt_nt as ">
+          <text v="Đã phân bổ" e=""></text>
+        </field>
+        <field name="da_pb_ct_nt" dataType="N" format="FCAmount" width="100" aliasName="0*t_tt_nt as ">
+          <text v="P/bổ trên pthu" e=""></text>
+        </field>
+        <field name="tt_nt" dataType="N" format="FCAmount" width="100" aliasName="0*t_tt_nt as " readOnly="false">
+          <text v="Phân bổ" e=""></text>
+        </field>
+        <field name="cl_nt" dataType="N" format="FCAmount" width="100" aliasName="0*t_tt_nt as " >
+          <text v="Còn lại" e=""></text>
+        </field>
+        <field name="tt_yn" dataType="B" width="80" >
+          <text v="Tất toán" e=""></text>
+        </field>
+        <field name="unit_id" hidden="true" dataType="I" width="80" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_ct" width="80" >
+          <text v="Chứng từ" e="Voucher"></text>
+        </field>
+        <field name="id" dataType="N" fieldType="PK" format="0" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="save">
+          <text v="Lưu phân bổ" e="Save"></text>
+        </button>
+        <button id="delete">
+          <text v="Xóa phân bổ" e="Delete"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @q nvarchar(4000)
+set @strKey = 'a.ma_kh = ''' + dbo.ISWIFTFunctionReplaceSQLValue(@ma_kh) + ''' and a.ma_nt = ''' + dbo.ISWIFTFunctionReplaceSQLValue(@ma_nt) + ''' and a.unit_id = ' + rtrim(@unit_id)
+set @q = '
+select id_tt, sum(tt_nt) as da_pb_nt, sum(case when id = ' + rtrim(@id) + ' then tt_nt else 0 end) as da_pb_ct_nt into #datt from cttt20 a where ' + @strKey + ' and loai_tt = 1 and id_tt in (select id from #v) group by id_tt
+update #v set da_pb_nt = b.da_pb_nt - b.da_pb_ct_nt, da_pb_ct_nt = b.da_pb_ct_nt, tt_nt = b.da_pb_ct_nt from #v a join #datt b on a.id = b.id_tt'
+if @xu_ly = 1 begin --Phan bo tu dong
+	set @q = @q + char(13) + 'declare @i int, @phai_tt numeric(19,5), @tien_nt numeric(19,5)
+	select @i = min(stt), @tien_nt = ' + rtrim(@tien_nt) + ' from #v where da_pb_ct_nt = 0
+	select @tien_nt = @tien_nt - isnull(sum(da_pb_ct_nt), 0) from #datt
+	while @i is not null and @tien_nt > 0 begin
+		select @phai_tt = t_tt_nt - da_pb_nt from #v where stt = @i
+		if @phai_tt > @tien_nt 
+			select @phai_tt = @tien_nt, @tien_nt = 0
+		else
+			select @tien_nt = @tien_nt - @phai_tt
+		update #v set tt_nt = @phai_tt where stt = @i
+		select @i = min(stt) from #v where stt > @i and da_pb_ct_nt = 0
+	end
+	update #v set tag = 1 where da_pb_ct_nt = 0 and tt_nt > 0 --tt_nt = t_tt_nt - da_pb_nt'
+end
+set @q = @q + char(13) + 'drop table #datt
+update #v set cl_nt = t_tt_nt - da_pb_nt - tt_nt'
+
+set @strKey = @strKey + ' and (tt_yn = 0 or exists(select 1 from cttt20 x where x.loai_tt = 1 and a.id = x.id_tt and x.id = ' + rtrim(@id) + '))'
+
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '0 as tag, row_number() over(order by ngay_ct, so_ct, id) as stt', '@@key', @strKey, @@filterKey, @q, 0, 0, @@admin, @@userId
+]]>
+          </text>
+        </query>
+      </script>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$m58Distribute2(f){
+  this.constructor(f);
+}
+grid$m58Distribute2.prototype = new DirEvent();
+grid$m58Distribute2.prototype.beforeInit = function(renderType){
+  var p = this._dir;
+}
+grid$m58Distribute2.prototype.afterInit = function(renderType){
+  var p = this._dir, g = p.grid();
+  
+  var exp = {
+    cl_nt: ['*cl_nt', '[t_tt_nt] - [da_pb_nt] - [tt_nt]']
+  }
+  p.applyExpression(exp, g, false);
+  g.FomulaApplied = {"tt_nt": ["cl_nt"]}
+  
+  this.refreshSub();
+}
+grid$m58Distribute2.prototype.beforeButtonGridClick = function (id, gindex, r) {
+  var p = this._dir, g = p.grid(), time = $.userinfo.val('ProcessTimeout');
+  switch (id) {
+    case 'save':
+      var m = new Memvars(), dsave = g.data.clone(['id', 'so_ct', 'ngay_ct', 'ma_kh', 'ma_nt', 'tt_nt'], '[tt_nt] > 0');
+      if (dsave.count() == 0) {$.showToast('$NoRowsChoice', p); return false;}
+      if (p.options._t_tien_cl_nt < 0)  {$.showToast('$GreaterThanAR', p); return false;}
+      
+      m.push(p.getMemvars()).val('tbl', 'T', dsave.sqlval(), 'cttt20');
+      p.grequest(gindex, 'SaveDistribute', '', m, function(p, d, run){
+        if (run) {
+          var pa = p.options.dirAbove, ga = pa.grid(), ra = ga._currRow||0;
+          pa.valGrid(ra, 'da_pb_nt', 0, p.options._t_da_pb_nt);
+		  pa.valGrid(ra, 'cl_nt', 0, p.options._t_tien_cl_nt);
+          p._refresh();
+        }
+      }, r, time)
+      return false;
+      break;
+    case 'delete':
+      $.question($.msg.get("VoucherDelete"), $.msg.get("DeleteTitle"), p, function (q, v) {
+        if (v) {
+          var m = p.getMemvars();
+          p.grequest(gindex, 'DeleteDistribute', '', m, function(p, d, run){
+            if (run) {
+              var pa = p.options.dirAbove, ga = pa.grid(), ra = ga._currRow||0;
+              pa.valGrid(ra, 'da_pb_nt', 0, 0);
+              p._refresh();
+            }
+          }, r, time)
+        }
+        q._close();
+      });
+      return false;
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+grid$m58Distribute2.prototype.gridCellValueChange = function (o, g, r, c, v) {
+  var p = this._dir, gindex = g.gridIndex, dt = g.data;
+  switch (c){
+    case 'tag':
+      if (!v) p.valGrid(r, 'tt_nt', gindex, 0);
+      else {
+        var v1 = dt.val(r, 't_tt_nt') - dt.val(r, 'da_pb_nt'), v2 = p.options._t_tien_cl_nt;//p.options.memvars.val('tien_nt');
+        p.valGrid(r, 'tt_nt', gindex, Math.min(v1, v2));
+      }
+      this.refreshSub();
+      break;
+    case 'tt_nt':
+      this.refreshSub();
+      break;
+    default:
+      break;
+  }
+}
+grid$m58Distribute2.prototype.refreshSub = function () {
+  var p = this._dir, g = p.grid(), dt = g.data, a = dt.query(['[tt_nt]'], ['SUM'], []), fi = p.field('tt_nt', 0), v = p.options.memvars.val('tien_nt'), pa = p.options.dirAbove, ga = pa.grid(), ra = ga._currRow||0;
+  if (ga.data.count() == 0) {p.setSubtitle(['%s1', 0, '%s2', '_', '%s3', 0, '%s4', 0]); return;}
+  if (dt.count()) {
+    v -= a[0][0]; 
+    p.options._t_da_pb_nt = a[0][0];
+  }else {
+    p.options._t_da_pb_nt = 0;
+  }
+  p.options._t_tien_cl_nt = v;
+  p.setSubtitle(['%s1', pa.valGrid(ra, 'so_ct', 0), '%s2', $.date(pa.valGrid(ra, 'ngay_ct', 0)), '%s3', $.number(p.options._t_da_pb_nt, fi.format, true), '%s4', $.number(v, fi.format, true)]);
+}
+         ]]>
+    </text>
+  </js>
+
+  <css>
+    <text>
+      <![CDATA[
+.tt_nt span {
+  font-weight: 700;
+}
+.tt_nt{
+  font-weight: 600;
+}
+      ]]>
+    </text>
+  </css>
+
+  <script>
+    <request code="SaveDistribute" transaction="true">
+      <text>
+        <![CDATA[
+select * into #pthu from ctthu20 where id = @id and ma_kh = @ma_kh and ma_nt = @ma_nt and unit_id = @unit_id
+update @tbl set ty_gia = b.ty_gia, dien_giai = b.dien_giai, id_tt = a.id, so_ct = b.so_ct, ngay_ct = b.ngay_ct, ma_ct = b.ma_ct, unit_id = b.unit_id, status = b.status from @tbl a join #pthu b on 1 = 1
+update @tbl set tt = tt_nt*ty_gia, id = @id, loai_tt = 1
+select id_tt as id into #wf from cttt20 where id = @id and loai_tt = 1
+
+delete cttt20 where id = @id and loai_tt = 1
+insert into cttt20 select * from @tbl
+
+insert into #wf select id_tt as id from @tbl where id_tt not in (select id from #wf)
+select id, ma_kh into #xwf from ctthu20 where id = @id and ma_kh = @ma_kh 
+exec ss_Calc_WriteOff '#wf', 'cttt20', '#xwf', 'ctthu20'
+
+drop table #pthu, #wf, #xwf
+select '$Processed' as toast
+        ]]>
+      </text>
+    </request>
+
+    <request code="DeleteDistribute" transaction="true">
+      <text>
+        <![CDATA[
+select id_tt as id into #wf from cttt20 where id = @id and ma_kh = @ma_kh and loai_tt = 1
+select id, ma_kh into #xwf from ctthu20 where id = @id and ma_kh = @ma_kh 
+delete cttt20 where id = @id and ma_kh = @ma_kh and loai_tt = 1
+
+exec ss_Calc_WriteOff '#wf', 'cttt20', '#xwf', 'ctthu20'
+
+drop table #wf, #xwf
+select '$Processed' as toast
+        ]]>
+      </text>
+    </request>
+
+    &VoucherJSLoading;
+  </script>
+
+  <messages>
+    <message val="NoRowsChoice">
+      <text v="Không có dòng phân bổ được nhập" e=""/>
+    </message>
+    <message val="GreaterThanAR">
+      <text v="Số tiền phân bổ vượt quá số tiền trên phiếu thu, không thể lưu" e=""/>
+    </message>
+  </messages>
+</dir>

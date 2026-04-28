@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="qldangvien_cb" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Quản lý đảng viên Cán bộ" e="Party Member Management for Officials"></title>
+  <grids>
+    <grid table="qldangvien_cb" fieldKey="ma_dangvien" fieldName="so_the_dang" order="ma_dangvien" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="ma_dangvien" width="120" fieldType="PK" filterType="Code">
+          <text v="Mã đảng viên" e="Party Member Code"></text>
+        </field>
+		<field name="ma_dancu" width="120">
+		  <text v="Mã cư dân" e="Resident code"></text>
+		</field>
+        <field name="ten_dancu" width="200" fieldType="EX">
+		  <text v="Tên cư dân" e="Resident Name"></text>
+        </field>
+		<field name="ma_chibo" width="120">
+		  <text v="Mã chi bộ" e="Party Cell code"></text>
+		</field>
+        <field name="ten_chibo" width="200" fieldType="EX">
+		  <text v="Tên chi bộ" e="Party Cell Name"></text>
+        </field>
+		<field name="so_the_dang" width="120">
+		  <text v="Số thẻ đảng" e="Party card numbe"></text>
+		</field>
+		<field name="ngay_vao_dang" width="120" dataType="D" align="center">
+		  <text v="Ngày vào đảng" e="Party admission"></text>
+		</field>
+		<field name="ngay_chinh_thuc" width="120"  dataType="D" align="center">
+		  <text v="Ngày chính thức" e="Official admission"></text>
+		</field>
+      </fields>
+	<script>
+	<query>
+	  <text>
+		<![CDATA[
+DECLARE @key2 nvarchar(3000)
+SELECT @key2 = (CASE WHEN @lookupKey = '' THEN '1=1' ELSE @lookupKey END) + CASE WHEN @val = '' THEN ''ELSE ' AND (@@fieldKey LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%''' + ' OR @@fieldName LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' END;
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join qldctcccd c on a.ma_dancu = c.ma_dancu', 'c.ten_dancu', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+	 ]]>
+	  </text>
+	</query>
+	</script>
+    </grid>
+  </grids>
+</dir>

@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<report xmlns="urn:schemas-iswift:struct-report">
+  <query>
+    <text>
+      <![CDATA[
+select a.ma_noi_ct, b.ten_kho, b.ten_kho2, a.dvt, a.so_luong, a.gia_nt2 as gia2, a.tien_nt2 as tien2
+  into #v31 from v31 a with(nolock) left join dmkhobai b on a.ma_noi_ct = b.ma_noi_ct where a.id = @id
+
+declare @t numeric(19, 5)
+select @t = sum(tien2) from #v31
+
+select a.unit_id, a.so_ct, a.ma_kh, b.ten_kh, b.ten_kh2, b.dia_chi, d.ten_nvbh, a.dien_giai, a.ma_nt, dbo.iswiftFunctionReadCurrency(a.ma_nt, @t) as t_tt_in_word
+	  , replace(str(day(a.ngay_ct),2),' ','0') day, replace(str(month(a.ngay_ct),2),' ','0') month, cast(year(a.ngay_ct) as char(4)) year, a.ngay_ct,
+	  convert(char(10),a.ngay_hl,103) ngay_hl,e.ten_tt,a.ong_ba
+	from s31 a with(nolock)
+		left join dmkh b with(nolock) on a.ma_kh = b.ma_kh
+		left join dmnvbh d on a.ma_nvbh = d.ma_nvbh
+		left join dmtt e on a.ma_tt = e.ma_tt
+	where a.id = @id
+
+select * from #v31
+]]>
+    </text>
+  </query>
+
+  <forms>
+    <form id="030" fileName="s31_01" fileType="rdlc" exportExt="pdf" image="pdf">
+      <text v="Mẫu chuẩn" e="Standard Form"></text>
+    </form>
+	 <form id="040" fileName="s31_01" fileType="docx" exportExt="docx" image="xlsx">
+      <text v="Mẫu chuẩn" e="Standard Form"></text>
+    </form>
+	 <form id="050" fileName="s31_01" fileType="rdlc" exportExt="xlsx" image="xlsx">
+      <text v="Mẫu chuẩn" e="Standard Form"></text>
+    </form>
+  </forms>
+
+  <fields>
+    <field name="title" type="C">
+      <text v="Yêu cầu báo giá" e="QUOTE"/>
+    </field>
+    <field name="h_day" type="C">
+      <text v="Ngày" e="Date"/>
+    </field>
+    <field name="h_month" type="C">
+      <text v="tháng" e="Month"/>
+    </field>
+    <field name="h_year" type="C">
+      <text v="năm" e="Year"/>
+    </field>
+
+    <field name="h_so_ct" type="C">
+      <text v="Số đơn hàng: " e="Order No.: "/>
+    </field>
+
+    <field name="h_company" type="C">
+      <text v="Đơn vị:" e="Company"/>
+    </field>
+    <field name="h_address" type="C">
+      <text v="Địa chỉ:" e="Address:"/>
+    </field>
+    <field name="h_kh" type="C">
+      <text v="Tên khách hàng:" e="Customer Name:"/>
+    </field>
+    <field name="h_noi_giao" type="C">
+      <text v="Nơi giao:" e="Ship - to"/>
+    </field>
+	<field name="h_ong_ba" type="C">
+      <text v="Người liên hệ:" e="Contact"/>
+    </field>
+	<field name="h_ten_tt" type="C">
+      <text v="Hạn thanh toán:" e="Payment Term:"/>
+    </field>
+	<field name="h_ngay_hl" type="C">
+      <text v="Ngày hiệu lực:" e="Effective Date:"/>
+    </field>
+	<field name="h_dien_giai" type="C">
+      <text v="Ghi chú:" e="Note:"/>
+    </field>
+    <field name="h_cong" type="C">
+      <text v="Vật tư" e="Container"/>
+    </field>
+    <field name="h_dvt" type="C">
+      <text v="Đvt" e="UOM"/>
+    </field>
+    <field name="h_sl" type="C">
+      <text v="Số lượng" e="Quantity"/>
+    </field>
+    <field name="h_gia" type="C">
+      <text v="Giá" e="Price"/>
+    </field>
+    <field name="h_tien" type="C">
+      <text v="Tiền" e="Amount"/>
+    </field>
+    <field name="h_total" type="C">
+      <text v="Tổng cộng tiền hàng" e="Total Amount"/>
+    </field>
+    <field name="h_bang_chu" type="C">
+      <text v="Bằng chữ:" e="In words:"/>
+    </field>
+
+  </fields>
+
+</report>

@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="t311TC0" fieldKey="id" voucherCode="TT1" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lọc đơn hàng" e="Quick Quote Filtering"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D">
+          <text v="Ngày từ/đến" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_chungtu"  viewType="Lookup" label="1" field="1"  hidden="false" operation="like">
+          <text v="Mã chuyến" e="Shipment Code"></text>
+          <viewInfo lookupType="One" lookupId="dmchungtu" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_ct" lookupInfo="dmchungtu|ma_chungtu|ten_ct" />
+        </field>
+        <field name="ten_ct" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_nv" clientDefault="true" viewType="Lookup" label="1" field="1"  setype="1" operation="like">
+          <text v="Mã nhân viên" e="Employee Code"></text>
+          <viewInfo lookupType="One" lookupId="dmnv" lookupKey="status in (5,7,9)" lookupCheck="1=1" lookupRef="ten_nv" lookupInfo="dmnv|ma_nv|ten_nv" />
+        </field>
+        <field name="ten_nv" clientDefault="true" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field> 
+		 <field name="so_ct" label="1" field="1" allowBlank="false" viewType="Lookup">
+          <text v="Lấy số chuyến hàng" e="Get a order number"></text>
+          <viewInfo lookupType="one" lookupId="t21" lookupRef="ds_so_bg" lookupKey="ngay_ct between ![ngay_ct1]! and ![ngay_ct2]! and ma_chungtu like ![ma_chungtu]! +'%' and ma_nv like ![ma_nv]! +'%' and status in (5)" lookupCheck="1=1" />
+        </field>
+        <field name="ds_so_bg" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+	
+	
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$t311TC0(p){
+  this.constructor(p);
+}
+filter$t311TC0.prototype = new DirEvent();
+
+filter$t311TC0.prototype.afterInit = function(){
+  var p = this._dir;
+  
+  p.valForm(['ngay_ct','ngay_ct1','ngay_ct2', 'ma_nt', 'unit_id'], [p.options._ngay_ct,p.options._ngay_ct1,p.options._ngay_ct2, p.options._ma_nt, p.options._unit_id]);
+}
+filter$t311TC0.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir;
+ m2.val('id', 'I', p.options.parent.valForm('id'))
+  opt = $.extend({}, opt, {controller: "t311TC0Select", folder: "Filter", dirViewType: "Dialog", parent: p.options.parent, useDataSet: true, memvars: m2});
+  p._close();
+  $.createDir(false, opt);
+  return false;
+}
+
+         ]]>
+    </text>
+  </js>
+
+  <script>
+
+  </script>
+</dir>

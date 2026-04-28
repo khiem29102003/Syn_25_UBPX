@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmloaibencang" table="dmloaibencang" fieldKey="ma_loai" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục loại bến cảng" e="List of Port Types"></title>
+  <title0 v="Thêm mới" e="Create New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120">
+      <fields>
+        <field name="ma_loai" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="1" >
+          <text v="Mã loại" e="Type Code"></text>
+        </field>
+        <field name="ten_loai" label="1" field="-" allowBlank="false" importable="5" >
+          <text v="Tên loại" e="Type Name"></text>
+        </field>
+		<field name="ten_loai2" label="1" field="-" importable="10" >
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" valueDefault="1" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmloaibencang(p){
+  this.constructor(p);
+}
+dir$dmloaibencang.prototype = new DirEvent();
+dir$dmloaibencang.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmloaibencang.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+  dir$dmloaibencangDisabledMasterField(p, g);
+
+}
+
+function dir$dmloaibencangDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_loai').trim() != '')
+  {
+    p.setDisabled('ma_loai', true);
+  }
+  else
+  {
+    p.setDisabled('ma_loai', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+  
+  <css>
+	<text>
+	  <![CDATA[
+		.control-label.ma_loai, .control-label.ten_loai
+		{	
+			//font-weight:bold;	
+			color: #499b98;;
+		}
+	  ]]>
+	</text>
+  </css>
+  
+  <script>
+	<importing>
+      <text>
+        <![CDATA[
+		@@insert
+        ]]>
+      </text>
+    </importing>
+  </script>
+  
+  <messages>
+	<message val="codeExistsNewMsg">
+		<text v="Mã loại bến cảng đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The port type code already exists in the catalog, please choose a different code."/>
+	</message>
+	<message val="codeExistsEditMsg">
+		<text v="Mã loại bến cảng đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The port type code already exists in the catalog, please choose a different code."/>
+	</message>
+  </messages>
+
+</dir>

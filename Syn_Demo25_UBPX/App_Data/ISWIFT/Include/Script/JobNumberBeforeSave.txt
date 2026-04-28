@@ -1,0 +1,20 @@
+﻿<![CDATA[
+IF @action = 'NEW'
+BEGIN
+	DECLARE @i_so_job varchar(32), @ES int, @m VARCHAR(15), @px varchar(12)
+	SELECT @px = SUBSTRING(REPLACE(CONVERT(VARCHAR, @ngay_ct),'-',''),3,4)
+
+	IF EXISTS (select 1 from @@table where so_job = @so_job and ma_job = @ma_job and LEFT(CONVERT(VARCHAR( 6), ngay_ct, 12),4) = @px ) 
+	BEGIN
+		SELECT @m = MAX(so_job) FROM @@table WHERE so_job LIKE @px + '%' and ma_job = @ma_job and LEFT(CONVERT(VARCHAR( 6), ngay_ct, 12),4) = @px
+		SET @m = REPLACE(@m, @px, '')
+		SELECT @i_so_job = @px + RIGHT('000' + CAST(CAST(@m AS INT) + 1 AS VARCHAR(3)), 4)
+		SET @ES = 1
+	END
+
+	IF @ES = 1 
+	BEGIN
+		SELECT @so_job = @i_so_job , @warning = '$NumberVoucherExists'
+	END
+END
+]]>

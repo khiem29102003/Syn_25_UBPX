@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmdantoc" table="dmdantoc" fieldKey="ma_dt" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục dân tộc" e="List of Ethnicities"></title>
+  <title0 v="Thêm mới" e="Create New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_dt" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="5" >
+          <text v="Mã dân tộc" e="Ethnicity Code"></text>
+        </field>
+        <field name="ten_dt" label="1" field="-" allowBlank="false" importable="10" >
+          <text v="Tên dân tộc" e="Ethnicity Name"></text>
+        </field>
+        <field name="ten_dt2" label="1" field="-" importable="15" >
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" valueDefault="1" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmdantoc(p){
+  this.constructor(p);
+}
+dir$dmdantoc.prototype = new DirEvent();
+dir$dmdantoc.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmdantoc.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+dir$dmdantocDisabledMasterField(p, g);
+
+}
+
+function dir$dmdantocDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_dt').trim() != '')
+  {
+    p.setDisabled('ma_dt', true);
+  }
+  else
+  {
+    p.setDisabled('ma_dt', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+  
+  <css>
+	<text>
+	  <![CDATA[
+		.control-label.ma_dt, .control-label.ten_dt
+		{	
+			//font-weight:bold;	
+			color: #499b98;;
+		}
+	  ]]>
+	</text>
+  </css>
+  
+  <script>
+	<importing>
+      <text>
+        <![CDATA[
+		@@insert
+        ]]>
+      </text>
+    </importing>
+  </script>
+  
+  <messages>
+	<message val="codeExistsNewMsg">
+		<text v="Mã dân tộc đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The ethnicity code already exists in the catalog, please choose a different code."/>
+	</message>
+	<message val="codeExistsEditMsg">
+		<text v="Mã dân tộc đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The ethnicity code already exists in the catalog, please choose a different code."/>
+	</message>
+  </messages>
+
+</dir>

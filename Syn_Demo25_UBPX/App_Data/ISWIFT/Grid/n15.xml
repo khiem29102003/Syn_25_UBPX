@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="n15" dirViewType="Grid" dirObjectType="Voucher" voucherCode="RB1" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Đề nghị nghỉ phép/ chế độ" e="Timekeeping"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="n15" fieldKey="id" order="id desc" allowFilter="true" allowOrder="true">
+      <fields >
+
+		<field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="120" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+		<field name="so_ct" width="120" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct" width="120" dataType="D">
+          <text v="Ngày hiệu lực" e="Voucher Date"></text>
+        </field>
+		<field name="ma_nv" width="250" hidden="true">
+          <text v="Mã nhân viên" e="Origin"></text>
+        </field>
+		<field name="ten_nv" width="120" fieldType="EX">
+		  <text v="Tên nhân viên " e="Origin Name"></text>
+		</field>
+		
+		<field name="ma_loainghi" width="250" hidden="true">
+          <text v="Loại nghỉ" e="Origin"></text>
+        </field>
+		<field name="ten_loainghi" width="250" fieldType="EX">
+		  <text v="Tên loại nghỉ" e="Origin Name"></text>
+		</field>
+
+		<field name="ma_ca" width="250" hidden="true">
+          <text v="Ca" e="Origin"></text>
+        </field>
+		<field name="ten_ca" width="250" fieldType="EX">
+		  <text v="Tên ca" e="Origin Name"></text>
+		</field>
+		
+		<field name="so_gio" width="120" >
+		  <text v="Số giờ" e="Origin Name"></text>
+		</field>
+		
+		<field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+		
+        <field name="id" fieldType="PK" hidden="true" width="120">
+          <text v="" e=""></text>
+        </field>
+		
+     </fields>
+
+	<buttons>
+		 <button id="add">
+			<text v="$AddToolbar" e="$AddToobar"></text>
+		  </button>
+		  <button id="edit">
+			<text v="$EditToolbar" e="$EditToolbar"></text>
+		  </button>
+		  <button id="delete">
+			<text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+		  </button>
+		  <button id="copy">
+			<text v="$CopyToolbar" e="$CopyToolbar"></text>
+		  </button>
+		  <button id="view">
+			<text v="$ViewToolbar" e="$ViewToolbar"></text>
+		  </button>
+		  <button id="split">
+			<text v="-" e="-"></text>
+		  </button>
+		  <button id="refresh">
+			<text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+		  </button>
+		  <button id="freeze">
+			<text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+		  </button>
+		  <button id="split">
+			<text v="-" e="-"></text>
+		  </button>
+		  <button id="export">
+			<text v="$ExportToolbar" e="$ExportToolbar"></text>
+		  </button>
+		</buttons>
+		
+	<script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey =' ma_ct =  ''RB1'''
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmloainghi c on a.ma_loainghi = c.ma_loainghi left join dmcalv d on a.ma_ca = d.ma_ca','b.ma_unit, c.ten_loainghi, d.ten_ca', '@@key', '', @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+drop table #unitright             
+		 ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @strDetailKey nvarchar(3000); set @strDetailKey = ''
+set @strKey = 'ngay_ct between ''' + convert(char(8), @ngay_ct1, 112) + ''' and ''' + convert(char(8), @ngay_ct2, 112) + ''' and ' + @strFinding + ' and ' + dbo.ISWIFTFunctionGetUnitIDRightKeys(@@admin, @@userId, @ma_unit, 'a.unit_id') + @strDetailKey
+set @strKey = @strKey +' and ma_ct =  ''RB1'''
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmloainghi c on a.ma_loainghi = c.ma_loainghi left join dmcalv d on a.ma_ca = d.ma_ca','b.ma_unit, c.ten_loainghi, d.ten_ca', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+drop table #unitright
+         ]]>
+          </text>
+        </finding>
+		
+      </script>
+	  
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$n15(f){
+  this.constructor(f);
+}
+grid$n15.prototype = new DirEvent();
+grid$n15.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

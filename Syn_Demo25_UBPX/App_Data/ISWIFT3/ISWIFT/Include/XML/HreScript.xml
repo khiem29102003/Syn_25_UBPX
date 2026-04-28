@@ -1,0 +1,44 @@
+﻿<updating>
+  <text>
+    <![CDATA[
+         ]]>
+  </text>
+</updating>
+
+<updated>
+  <text>
+    <![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId where [%whereFieldKey]
+         ]]>
+  </text>
+</updated>
+
+<inserting>
+  <text>
+    <![CDATA[
+select @line = max(line) from @@table where id = @id
+set @line = isnull(@line, 0) + 1
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId
+         ]]>
+  </text>
+</inserting>
+
+<inserted>
+  <text>
+    <![CDATA[
+select @line as [#line]
+        ]]>
+  </text>
+</inserted>
+
+<importing>
+  <text>
+      <![CDATA[
+declare @mLine int
+select @mLine = isnull(max(line), 0) from @@table where id = @id
+update #data set id = @id, line = @mLine + xid
+
+@@insert
+          ]]>
+  </text>
+</importing>

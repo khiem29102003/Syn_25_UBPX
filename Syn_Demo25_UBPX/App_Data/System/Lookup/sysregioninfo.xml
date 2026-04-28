@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="sysregioninfo" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục khu vực" e="List of sysregioninfo"></title>
+  <grids>
+    <grid table="sysregioninfo" fieldKey="rg_code" fieldName="rgname" order="stt_ref" allowFilter="true" allowOrder="true" key="" >
+      <fields>
+        <field name="rg_code" fieldType="PK" width="100" filterType="Code" >
+          <text v="Mã khu vực" e="Code"></text>
+        </field>
+        <field name="rgname" hidden="true" width="250">
+          <text v="Tên khu vực" e="Name"></text>
+        </field>
+        <field name="rgnamex" width="250" aliasName="a.rgname as ">
+          <text v="Tên khu vực" e="Name"></text>
+        </field>
+        <field name="rg_ref" width="0" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="stt_ref" width="0" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = @lookupKey + case when @val = '' then '' else ' and (@@fieldKey like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or @@fieldName like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', N'@@key', @key2, @@filterKey, 'update #v set rgnamex = replace(space(len(rg_ref) - 3), '' '', char(160)) + rgnamex', @pageIndex, 10, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+      </script>
+    </grid>
+  </grids>
+</dir>

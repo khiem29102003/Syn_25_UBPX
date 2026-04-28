@@ -1,0 +1,302 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmkh" table="dmkh" fieldKey="ma_kh" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục đại lý" e="List of Agent"></title>
+  <title0 v="Thêm mới" e="Create New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120" >
+      <fields>
+        <field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_kh" format="U" label="1" field="1" viewType="AutoIncrease" allowBlank="false" fieldType="PK" importable="5">
+          <text v="Mã đại lý" e="Agent Code"></text>
+        </field>
+        <field name="ten_kh" allowBlank="false" label="1" field="-" importable="10">
+          <text v="Tên đại lý" e="Agent Name"></text>
+        </field>
+        <field name="ten_kh2" label="1" field="-" importable="15">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+		<field name="kh_yn" dataType="B"  blank="1" clientDefault="true" label="[100]" field="[40]" inactivate="true" importable="20">
+          <text v="Khách hàng" e="Customer"></text>
+        </field>
+		<field name="dl_yn" dataType="B" clientDefault="true" label="[120]" field="[40]" nextRow="false" valueDefault="1" inactivate="true" importable="25">
+          <text v="Đại lý" e="Agent"></text>
+        </field>
+		<field name="nv_yn" dataType="B" nextRow="false" clientDefault="true" label="[100]" field="[40]" inactivate="true" importable="30">
+          <text v="Nội bộ" e="Internal"></text>
+        </field>	
+		<field name="ncc_yn" dataType="B" blank="1" clientDefault="true" label="[100]" field="[40]" inactivate="true" importable="35">
+          <text v="Hãng tàu" e="Carrier"></text>
+        </field>
+		<field name="hk_yn" dataType="B" clientDefault="true" label="[120]" field="[40]" nextRow="false" inactivate="true" importable="40">
+          <text v="Hãng hàng không" e="Airlines"></text>
+        </field>
+		<field name="vc_yn" dataType="B" clientDefault="true" label="[100]" field="[40]" nextRow="false" inactivate="true" importable="43">
+          <text v="Hãng vận tải" e="Trucking Company"></text>
+        </field>
+		<field name="other_yn" dataType="B" blank="1" nextRow="true" clientDefault="true" label="[100]" field="[40]" inactivate="true" importable="45">
+          <text v="Khác" e="Other"></text>
+        </field>	
+		<field name="ghichu" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="[240]" field="" importable="-1" >
+			<text v="(Người gửi/Người nhận/Người thông báo)" e="(Shipper/Consignee/Notify)"></text>
+		</field>
+        <field name="dia_chi" label="1" field="-" importable="50">
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+        <field name="ma_so_thue" label="1" field="2" importable="55">
+          <text v="Mã số thuế &lt;a onclick='getTax(this);'&gt;(Kiểm tra)&lt;/a&gt;" e="Tax code &lt;a onclick='getTax(this);'&gt;(Test)&lt;/a&gt;"></text>
+        </field>
+        <field name="nguoi_lh" label="1" field="-" nextRow="false" importable="60">
+          <text v="Người liên hệ" e="Contact"></text>
+        </field>
+		<field name="dien_thoai" label="1" field="2" allowBlank="false" importable="65">
+          <text v="Điện thoại" e="Phone"></text>
+        </field>
+        <field name="fax" label="1" field="2" nextRow="false" importable="70">
+          <text v="Fax" e="Fax"></text>
+        </field>
+		<field name="e_mail" label="1" field="2" importable="75">
+          <text v="Email" e="Email"></text>
+        </field>
+        <field name="home_page" label="1" field="2" nextRow="false" importable="80">
+          <text v="Trang chủ" e="Home Page"></text>
+        </field>
+		<field name="ghi_chu" label="1" field="-" inactivate="true" importable="85">
+          <text v="Ghi chú" e="Notes"></text>
+        </field>
+        
+        <field name="nh_kh1" viewType="Lookup" label="1" field="1" importable="90">
+          <text v="Nhóm 1" e="Group 1"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH1' and status=1" lookupCheck="ma_loai_nh = 'KH1'" lookupRef="ten_nh_kh1" lookupInfo="dmnh|ma_nh|ten_nh" importCheck="@@DF and z.ma_loai_nh = 'KH1' and z.status=1"/>
+        </field>
+        <field name="ten_nh_kh1" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="nh_kh2" viewType="Lookup" label="1" field="1" importable="95">
+          <text v="Nhóm 2" e="Group 2"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH2' and status=1" lookupCheck="ma_loai_nh = 'KH2'" lookupRef="ten_nh_kh2" lookupInfo="dmnh|ma_nh|ten_nh" importCheck="@@DF and z.ma_loai_nh = 'KH2' and z.status=1"/>
+        </field>
+        <field name="ten_nh_kh2" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="nh_kh3" viewType="Lookup" label="1" field="1" importable="100">
+          <text v="Nhóm 3" e="Group 3"></text>
+          <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'KH3' and status=1" lookupCheck="ma_loai_nh = 'KH3'" lookupRef="ten_nh_kh3" lookupInfo="dmnh|ma_nh|ten_nh" importCheck="@@DF and z.ma_loai_nh = 'KH3' and z.status=1"/>
+        </field>
+        <field name="ten_nh_kh3" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="rg_code" format="U" viewType="Lookup" label="1" field="1" clientDefault="true" importable="105">
+          <text v="Khu vực" e="Area"></text>
+          <viewInfo lookupType="One" lookupId="sysregioninfo" lookupKey="status=1" lookupCheck="1=1" lookupRef="rgname" lookupInfo="sysregioninfo|rg_code|rgname" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="rgname" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_tt" viewType="Lookup" label="1" field="1" importable="110">
+          <text v="Mã thanh toán" e="Payment"></text>
+          <viewInfo lookupType="One" lookupId="dmtt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_tt" lookupInfo="dmtt|ma_tt|ten_tt" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_tt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+
+		<field name="so_tk" label="1" field="1" nextRow="false" allowBlank="true" importable="115">
+          <text v="Số tài khoản" e="Account Number"></text>
+        </field>
+		<field name="ma_nh" viewType="Lookup" label="1" field="1" importable="120">
+          <text v="Ngân hàng" e="Bank"></text>
+          <viewInfo lookupType="One" lookupId="dmnganhang" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_nh" lookupInfo="dmnganhang|ma_nh|ten_nh" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_nh" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		
+		<field name="gioi_han_no" label="1" field="1" dataType="N" format="" importable="125">
+          <text v="Giới hạn tiền nợ" e="Debt Limit"></text>
+        </field>
+		 <field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1">
+          <text v="" e=""></text>
+        </field>
+		<field name="ky_han_no" label="1" field="1" dataType="N" nextRow="false" format="" importable="130">
+          <text v="Kỳ hạn nợ" e="Debt Maturity"></text>
+        </field>
+		
+		<field name="ma_nvbh" viewType="Lookup" label="1" field="1" clientDefault="true" importable="135">
+          <text v="Nhân viên bán hàng" e="Employee"></text>
+          <viewInfo lookupType="One" lookupId="dmnvbh" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_nvbh" lookupInfo="dmnvbh|ma_nvbh|ten_nvbh" importCheck="@@DF and z.status=1" />
+        </field>
+        <field name="ten_nvbh" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as " clientDefault="true">
+          <text v="" e=""></text>
+        </field>
+		<field name="phong_kd" label="1" field="1" nextRow="false" dataType="N" format="" importable="140">
+          <text v="Phòng kinh doanh" e="Sales Department"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" valueDefault="1" importable="-1">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmkh(p){
+  this.constructor(p);
+}
+dir$dmkh.prototype = new DirEvent();
+
+dir$dmkh.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+    default:
+      break;
+  }
+}
+
+function getTax(o) {
+  var p = document._dir;
+  var tax = p.valForm('ma_so_thue');
+  if (tax.length != 10 && tax.length != 13) {
+    $.showToast('Thông tin mã số thuế không đúng.');
+    return;
+  }
+  
+  $.invoke('GetTax', { taxCode: tax }, this, 30000
+    , function (result) {
+      if (result) {
+        var obj = JSON.parse(result);
+        p.valForm('ten_kh', obj.Name, true);
+        p.valForm('dia_chi', obj.Address, true);
+		p.valForm('ten_kh2', obj.Other, true);
+		p.valForm('nguoi_lh', obj.Contact, true);
+		p.valForm('dien_thoai', obj.Telephone, true);
+		
+      }
+    }, function (event) {} );
+	
+}
+
+dir$dmkh.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+  dir$dmkhDisabledMasterField(p, g);
+  var p = this._dir;
+  document._dir = p;
+}
+
+function dir$dmkhDisabledMasterField(p, g){
+	if(p.valForm('ma_kh').trim() != '') {
+		p.setDisabled(['ma_kh','ma_so_thue'], true);
+		p.setDisabled('dl_yn', true);
+	}
+	else {
+		p.setDisabled(['ma_kh','ma_so_thue'], false);
+		p.setDisabled('dl_yn', true)
+	}
+}
+         ]]>
+    </text>
+  </js>
+  
+  <css>
+	<text>
+	  <![CDATA[
+	.control-label.ma_kh, .control-label.ten_kh, .control-label.dien_thoai, .control-label.ghichu {color: #499b98;}
+	.input-field.status {color: #ab6926;}	
+	  ]]>
+	</text>
+  </css>
+
+  <script>  
+    <query>
+      <text>
+        <![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+select @script = '';
+if @action = 'EDIT'
+  if exists(select 1 from syscodeexists with(nolock, index(code1)) where code1 = @ma_kh and field = 'ma_kh')
+    select @script = @script + 'p.setDisabled(''ma_kh'', true); '
+
+if @action in ('EDIT', 'VIEW') select @script as script
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+	
+    <inserting>
+      <text>
+        <![CDATA[
+if exists(select 1 from @@table a where [%whereFieldKey]) begin
+  select '$codeExistsNewMsg' as message, '@@firstFieldKey' as field
+  return
+end
+
+if @ma_so_thue <> '' and @ma_kh <> '' and exists (select 1 from dmkh where ma_so_thue = @ma_so_thue and ma_kh <> @ma_kh) begin
+  select '$taxtCodeExists' as message, 'ma_so_thue' as field
+  return
+end
+
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @unit_id = @@unit
+]]>
+      </text>
+    </inserting>
+	
+    <aftersave>
+      <text>
+        <![CDATA[
+if @ma_so_thue <> '' and exists (select 1 from dmkh where ma_so_thue = @ma_so_thue and ma_kh <> @ma_kh)        
+  select '$taxtCodeExists' as toast
+]]>
+      </text>
+    </aftersave>
+
+    <importing>
+      <text>
+        <![CDATA[
+update #data set unit_id = @@unit
+@@insert
+        ]]>
+      </text>
+    </importing>
+	
+  </script>
+
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã đại lý đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The agent code already exists in the catalog, please choose a different code.."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã đại lý đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The agent code already exists in the catalog, please choose a different code."/>
+    </message>
+    <message val="taxtCodeExists">
+      <text v="&lt;span class='Highlight'&gt;Lưu ý:&lt;/span&gt; Mã số thuế đã tồn tại trong danh mục khách hàng" e="&lt;span class='Highlight'&gt;Warning:&lt;/span&gt; The tax code is already exists"/>
+    </message>
+  </messages>
+</dir>

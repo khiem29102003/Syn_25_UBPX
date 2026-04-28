@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo cáo tồn hàng hóa thực tế" e="Stock" />
+  <subtitle v="Đến ngày {ngay_ct1}..." e="Date To {ngay_ct1}..."></subtitle>
+  <grids>
+    <grid>
+      <fields>
+	  
+        <field name="ma_vt" width="150">
+          <text v="Mã hàng hóa" e="Goods Code"></text>
+        </field>
+        <field name="ten_vt" width="300">
+          <text v="Tên hàng hóa" e="Goods Name"></text>
+        </field>
+
+        <field name="ton_cuoi" dataType="N" format="Qty" width="100">
+          <text v="Tồn cuối" e="Closing Q'ty"></text>
+        </field>
+        
+      </fields>
+
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$bcvttk2(f){
+  this.constructor(f);
+}
+grid$bcvttk2.prototype = new DirEvent();
+grid$bcvttk2.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+grid$bcvttk2.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(), dt = g.data;
+  if (p.options._data_analysis_struct == '') {
+    p.setColumnHidden(0, ['du_cuoi', 'du_cuoi_nt'], false);
+    if (p.options._mau_bc == 1) p.setColumnHidden(0, ['du_cuoi', 'du_cuoi_nt'], true);
+    if (p.options._mau_bc == 2) p.setColumnHidden(0, ['du_cuoi_nt'], true);
+  }
+}
+]]>
+    </text>
+  </js>
+ <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

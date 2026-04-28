@@ -1,0 +1,253 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="sysrightunit" table="sysrightunit3" transaction="true" tryCatch="true" fieldKey="user_id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Phân quyền truy cập theo đơn vị" e="Access Right by Unit"></title>
+  <title0 v="Mới" e="New" />
+  <title1 v="Sửa" e="Edit" />
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="user_id" hidden="true" dataType="I" label="1" field="1" fieldType="PK" >
+          <text v="User id" e="User id"></text>
+        </field>
+        <field name="username" fieldType="EXParam" viewType="Lookup" allowBlank="false" label="1" field="1">
+          <text v="Tên/Nhóm" e="Name/Group"></text>
+          <viewInfo lookupType="One" lookupId="vsysuserinfo" lookupKey="status = 1 and admin = 0" lookupCheck="1=1" lookupRef="nickname" lookupInfo="vsysuserinfo|username|nickname" />
+        </field>
+        <field name="nickname" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="1" gravity="MiddleLeft" height="350" >
+      <text v="Trạng thái" e="Status"></text>
+      <fields>
+        <field name="sysrightunit2" allowBlank="false" label="" field="-" viewType="Grid">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  <grids>
+    <grid id="sysrightunit2" table="sysrightunit2" fieldKey="user_id, line" order="line" readOnly="false">
+      <fields>
+        <field name="user_id" dataType="I" foreignField="user_id" fieldType="PK" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+        <field name="unit_id" readOnly="true" hidden="true" inactivate="true" dataType="I" width="80" >
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_unit" width="100" viewType="Lookup" allowBlank="false" readOnly="false" aliasName="b" >
+          <text v="Đơn vị" e="Status"></text>
+          <viewInfo lookupType="One" lookupId="sysunit" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_unit" />
+        </field>
+        <field name="ten_unit" width="250" readOnly="true" inactivate="true" aliasName="b" fieldType="EX" >
+          <text v="Tên đơn vị" e="Unit Name"></text>
+        </field>
+        <field name="a_view" valueDefault="1" dataType="B" width="80" readOnly="true" inactivate="true" >
+          <text v="Xem" e="View"></text>
+        </field>
+        <field name="a_new" dataType="B" width="80" readOnly="false" >
+          <text v="Mới" e="New"></text>
+        </field>
+        <field name="a_edit" dataType="B" width="80" readOnly="false" >
+          <text v="sửa" e="Edit"></text>
+        </field>
+        <field name="a_del" dataType="B" width="80" readOnly="false" >
+          <text v="Xóa" e="Delete"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="moveup">
+          <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+        </button>
+        <button id="movedown">
+          <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+select @@fields into #t from @@table a left join sysunit b on a.unit_id = b.unit_id where @@key order by line
+select * from #t
+drop table #t
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$sysrightunit(p){
+  this.constructor(p);
+}
+dir$sysrightunit.prototype = new DirEvent();
+dir$sysrightunit.prototype.beforeInit = function(){
+  var p = this._dir;
+  if (p.options.action == 'EDIT') {
+    p.field('username').disabled = true;
+  }
+}
+dir$sysrightunit.prototype.afterInit = function(){
+  var p = this._dir;
+  p.options.dataChanged = true;
+}
+dir$sysrightunit.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+    default:
+      break;
+  }
+}
+dir$sysrightunit.prototype.gridCellValueChange = function (o, g, r, c, v) {
+  var p = this._dir;
+  switch (c){
+    case 'ma_unit':
+      p.grequest(g, 'Unit', '', ['ma_unit'], null, r);
+      break;
+    default:
+      break;
+  }
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <request code="Unit">
+      <text>
+        <![CDATA[
+select isnull(max(unit_id), 0) as [#unit_id] from sysunit where ma_unit = @ma_unit
+        ]]>
+      </text>
+    </request>
+    <query>
+      <text>
+        <![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+drop table #@@table
+if @action <> 'NEW' select username, nickname from vsysuserinfo where user_id = @user_id
+        ]]>
+      </text>
+    </query>
+
+    <beforesave>
+      <text>
+        <![CDATA[
+if exists(select 1 from @sysrightunit2 group by unit_id having count(*) > 1) begin
+  select '$unitDuplicate' as pauseToast
+  return
+end
+select @user_id = user_id, @status = 1 from vsysuserinfo where username = @username
+        ]]>
+      </text>
+    </beforesave>
+
+    <deleted>
+      <text>
+        <![CDATA[
+delete sysrightunit2 where [%whereFieldKey]
+exec ISWIFTStoredUpdateRightUnit @user_id, @@userId, @@admin
+        ]]>
+      </text>
+    </deleted>
+
+    <updating>
+      <text>
+        <![CDATA[
+if exists(select 1 from @@table where [%whereFieldKeyOld]) begin
+  select '$codeExistsNewMsg' as message, 'username' as field
+  return
+end
+         ]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[
+update @@table set user_id = @user_id where user_id = @@old_user_id
+update @@table set datetime2 = getdate(), user_id2 = @@userId where [%whereFieldKey]
+
+delete sysrightunit2 where user_id = @@old_user_id
+         ]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[
+if exists(select 1 from @@table a where [%whereFieldKey]) begin
+  select '$codeExistsNewMsg' as message, 'username' as field
+  return
+end
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId
+         ]]>
+      </text>
+    </inserting>
+
+    <aftersave>
+      <text>
+        <![CDATA[
+if exists(select 1 from @sysrightunit2 where a_view = 1 or a_new = 1 or a_edit = 1 or a_del = 1) begin
+	insert into sysrightunit2 select @user_id, line, unit_id, a_view, a_new, a_edit, a_del from @sysrightunit2 
+end
+exec ISWIFTStoredUpdateRightUnit @user_id, @@userId, @@admin
+select '' as message, is_user as [#is_user], @user_id as [#user_id] from vsysuserinfo where username = @username
+return
+        ]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Tên/nhóm đã tồn tại" e="Name/Group Already Exists"/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Tên/nhóm đã tồn tại" e="Name/Group Already Exists"/>
+    </message>
+    <message val="unitDuplicate">
+      <text v="Mã đơn vị đã bị trùng ở chi tiết" e="Duplicate Unit"/>
+    </message>
+  </messages>
+
+</dir>

@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucherNotPrint.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="s332" dirViewType="Grid" dirObjectType="Voucher" voucherCode="BM2" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Phí Local Charge Cảng Nhập LCL" e="LCL Import Port Local Charge Fee"></title>
+  <subtitle v="Thêm, sửa, xóa..." e="New, Edit, Delete..."></subtitle>
+
+  <grids>
+    <grid table="s332" fieldKey="id" order="id desc" allowFilter="true" allowOrder="true">
+      <fields>
+		<field name="so_ct" width="100" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct" width="120" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+        <field name="ma_kh" width="0" hidden = "false">
+          <text v="Mã hãng tàu / Đại lý" e="Carrier / Agent Code"></text>
+        </field>
+        <field name="ten_kh" width="250" fieldType="EX" >
+          <text v="Tên hãng tàu / Đại lý" e="Carrier / Agent Name"></text>
+        </field> 
+		<field name="ngay_hl" width="120" dataType="D">
+          <text v="Ngày hiệu lực" e="Effective date"></text>
+        </field>
+		<field name="ngay_hld" width="120" dataType="D">
+          <text v="Hiệu lực đến" e="Expiry date"></text>
+        </field>
+		<field name="ma_nt" width="100" >
+          <text v="Ngoại tệ" e="Currency"></text>
+        </field>
+        <field name="t_tt" dataType="N" format="FCAmount" width="100">
+          <text v="Tổng tiền" e="Total Amount"></text>
+        </field>
+		<field name="t_ban" dataType="N" format="FCAmount" width="100">
+          <text v="Tổng bán" e="Total Sales"></text>
+        </field>
+		<field name="dien_giai" width="250">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+		<field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="100" fieldType="EX" >
+          <text v="Đơn vị" e="Customer Name"></text>
+        </field>
+        <field name="id" dataType="N" fieldType="PK" format="0" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+			
+declare @strKey nvarchar(3000)
+set @strKey =' ma_ct =  ''BM2'''
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmkh c on a.ma_kh = c.ma_kh', 'b.ma_unit, c.ten_kh', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @strDetailKey nvarchar(3000); set @strDetailKey = ''
+if @ma_phi <> '' set @strDetailKey = @strDetailKey + ' and x.ma_phi like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@ma_phi) + '%'''
+if @strDetailKey <> '' set @strDetailKey = ' and exists(select 1 from v332 x where a.id = x.id ' + @strDetailKey + ')'
+
+if @ma_cang <> '' set @strDetailKey = @strDetailKey + ' and y.ma_cang like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@ma_cang) + '%'''
+if @strDetailKey <> '' set @strDetailKey = ' and exists(select 1 from v3320 y where a.id = y.id ' + @strDetailKey + ')'
+
+set @strKey = 'ngay_ct between ''' + convert(char(8), @ngay_ct1, 112) + ''' and ''' + convert(char(8), @ngay_ct2, 112) + ''' and ' + @strFinding + ' and ' + dbo.ISWIFTFunctionGetUnitIDRightKeys(@@admin, @@userId, @ma_unit, 'a.unit_id') + @strDetailKey
+set @strKey = @strKey +' and ma_ct =  ''BM2'''
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmkh c on a.ma_kh = c.ma_kh', 'b.ma_unit, c.ten_kh', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+drop table #unitright 
+         ]]>
+          </text>
+        </finding>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+	  
+	  
+
+function grid$s332(f){
+  this.constructor(f);
+}
+grid$s332.prototype = new DirEvent();
+grid$s332.prototype.afterInit = function(renderType){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[
+.table-bottom{
+	left: 0px!important;
+	height: calc(100% - 77px);
+	top: 0px;
+	position: relative;
+	margin-top: 27px;
+	clear: both;
+	border-bottom: 1px solid #ddd;
+}
+#content .dir{
+	position: relative !important;
+	height: 100%;
+}
+
+@media only screen and (max-width: 767px) {
+  .table-bottom{
+    margin-top: 42px;
+    height: calc(100% - 92px);
+  }
+}
+      ]]>
+    </text>
+  </css>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+</dir>

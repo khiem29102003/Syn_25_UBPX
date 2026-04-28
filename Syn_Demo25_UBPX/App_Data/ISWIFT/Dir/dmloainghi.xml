@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmloainghi" table="dmloainghi" fieldKey="ma_loainghi" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục loại nghỉ, vắng mặt" e="List of vacation types"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_loainghi" format="U" label="1" field="1" allowBlank="false" fieldType="PK"  importable="5">
+          <text v="Mã loại" e="Type code"></text>
+        </field>
+        <field name="ten_loainghi" label="1" field="-" allowBlank="false" fieldType="PK"  importable="10">
+          <text v="Tên loại" e="Type name"></text>
+        </field>
+        <field name="ten_loainghi2" label="1" field="-" allowBlank="true"  importable="15">
+          <text v="Tên khác" e="Other name"></text>
+        </field>
+        <field name="kieu_yn" viewType="Combobox" valueDefault="1" inactivate="true" label="1" field="[150]">
+          <text v="Kiểu" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Nghỉ lễ" e="1 - Holiday"></text>
+              </option>
+              <option val="2">
+                <text v="2 - Khác" e="2 - Other"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+		<field name="tbh_yn" viewType="Combobox" inactivate="true" label="1" field="[150]">
+          <text v="Tính bảo hiểm" e="Calculate insurance"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Có" e="1 - Yes"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không" e="0 - No"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+		<field name="tc_yn" viewType="Combobox" inactivate="true" label="1" field="[150]">
+          <text v="Tính chất" e="Nature"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Nghỉ ngắn hạn" e="1 - Short break"></text>
+              </option>
+              <option val="2">
+                <text v="2 - Nghỉ dài hạn" e="2 - Long-term leave"></text>
+              </option>
+			  <option val="3">
+                <text v="3 - Khác" e="2 - Other"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="[150]">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmloainghi(p){
+  this.constructor(p);
+}
+dir$dmloainghi.prototype = new DirEvent();
+dir$dmloainghi.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmloainghi.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+dir$dmloainghiDisabledMasterField(p, g);
+
+}
+
+function dir$dmloainghiDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_loainghi').trim() != '')
+  {
+    p.setDisabled('ma_loainghi', true);
+  }
+  else
+  {
+    p.setDisabled('ma_loainghi', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+		<text>
+		  <![CDATA[
+	.control-label.ma_loainghi, .control-label.ten_loainghi
+	{	
+		//font-weight:bold;	
+		color: #499b98;;
+	}
+		  ]]>
+		</text>
+  </css>
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã loại đã tồn tại' else N'The type code already exists.' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã loại đã tồn tại' else N'The type code already exists.' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã loại đã tồn tại." e="The type code already exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã loại đã tồn tại." e="The type code already exists."/>
+    </message>
+  </messages>
+</dir>

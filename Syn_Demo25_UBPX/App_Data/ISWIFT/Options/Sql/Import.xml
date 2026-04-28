@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<script>
+  <smail>
+    <text>
+      <![CDATA[
+		DECLARE @datetime0 DATETIME, @datetime2 DATETIME, @user_id0 int, @user_id2 int, @unit_id int, @ma_ct char(3), @admin int
+		SELECT @datetime0 = GETDATE(), @datetime2 = GETDATE(), @user_id0 = @@userId, @user_id2 = @@userId, @ma_ct = 'SM1'
+		
+		SELECT @admin = admin FROM sysuserinfo WHERE user_id = @@userId
+		SELECT * INTO #unitright FROM dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @admin, '')
+		
+		SELECT TOP 1 @unit_id = unit_id FROM #unitright
+		
+	  	exec st_Insert_SMail #data, 'smail', @user_id0, @user_id2, @datetime0, @datetime2, @ma_ct, @unit_id
+         ]]>
+    </text>
+  </smail>
+</script>

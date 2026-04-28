@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="dmttp" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục quê quán" e="List of Hometown"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="dmttp" fieldKey="ma_ttp" order="ma_ttp" allowFilter="true" allowOrder="true">
+      <fields >
+        <field name="ma_ttp" fieldType="PK" width="120">
+          <text v="Mã Quê quán" e="Hometown Code"></text>
+        </field>
+        <field name="ten_ttp" width="250">
+          <text v="Tên Quê quán" e="Hometown name "></text>
+        </field>
+		<field name="ten_ttp2" width="250">
+          <text v="Tên Quê quán (en)" e="Hometown name "></text>
+        </field>
+		<field name="full_name" width="250">
+          <text v="Tên đẩy đủ" e="Full name "></text>
+        </field>
+		<field name="ma_qg" width="120" >
+          <text v="Quốc gia" e="Full name "></text>
+        </field>
+		<field name="ten_qg" width="250"  hidden="true" fieldType="EX" >
+          <text v="Quốc gia" e="Full name "></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+	<script>
+		<query>
+		  <text>
+		  <![CDATA[
+	exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmquocgia d on a.ma_qg = d.ma_qg', 'd.ten_qg','@@key', '', @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+			]]>
+		  </text>
+		</query>
+		<finding>	
+			  <text>	
+				<![CDATA[	
+	declare @strKey nvarchar(3000)	
+	set @strKey = @strFinding	
+	if @ma_ttp <> '' set @strKey = @strKey + ' and ma_ttp in (''' + replace(replace(dbo.ISWIFTFunctionReplaceSQLParam(@ma_ttp), ' ', ''), ',', ''',''') + ''')'	
+		
+	exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId	
+			 ]]>	
+			  </text>	
+			</finding>	
+	  </script>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmttp(f){
+  this.constructor(f);
+}
+grid$dmttp.prototype = new DirEvent();
+grid$dmttp.prototype.afterInit = function(){
+  var p = this._dir;
+  
+}
+         ]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+		  position: relative !important;
+		  height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+      ]]>
+    </text>
+</css>
+</dir>

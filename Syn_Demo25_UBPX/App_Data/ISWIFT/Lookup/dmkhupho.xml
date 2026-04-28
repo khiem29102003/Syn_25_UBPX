@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="dmkhupho" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục khu phố" e="Neighborhood List"></title>
+  <grids>
+    <grid table="dmkhupho" fieldKey="ma_khupho" fieldName="ten_khupho" order="ma_khupho" allowFilter="true" allowOrder="true">
+      <fields>
+		<field name="ma_khupho" width="100">
+          <text v="Mã khu phố" e="Neighborhood Code"></text>
+        </field>
+        <field name="ten_khupho" width="300">
+		  <text v="Tên khu phố" e="Neighborhood Name"></text>
+        </field>
+		<field name="ten_khupho2" width="300">
+         <text v="Tên English" e="English Name"></text>
+        </field>
+      </fields>
+	<script>
+	<query>
+	  <text>
+		<![CDATA[
+declare @key2 nvarchar(3000)
+SELECT @key2 = (CASE WHEN @lookupKey = '' THEN '1=1' ELSE @lookupKey END) + CASE WHEN @val = '' THEN ''ELSE ' AND (@@fieldKey LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%''' + ' OR @@fieldName LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' END;
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+	 ]]>
+	  </text>
+	</query>
+	</script>
+    </grid>
+  </grids>
+</dir>

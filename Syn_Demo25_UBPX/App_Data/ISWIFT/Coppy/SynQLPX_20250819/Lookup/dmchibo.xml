@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="dmchibo" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách chi bộ" e="Household List"></title>
+  <grids>
+    <grid table="dmchibo" fieldKey="ma_chibo" fieldName="ten_chibo" order="ma_chibo" allowFilter="true" allowOrder="true">
+      <fields>
+		<field name="ma_chibo" width="120" fieldType="PK" filterType="Code">
+		  <text v="Mã chi bộ" e="Party Cell Code"></text>
+		</field>
+		<field name="ten_chibo" width="120">
+		  <text v="Tên chi bộ" e="Party Cell Name"></text>
+		</field>
+		<field name="ma_ttp" width="120">
+		  <text v="Mã tỉnh thành" e="Province/City Code"></text>
+		</field>
+		<field name="ten_ttp" width="200" fieldType="EX">
+		  <text v="Tên tỉnh thành" e="Province/City Code"></text>
+		</field>
+		<field name="ma_phuongxa" width="120">
+			<text v="Mã phường/xã" e="Ward/Commune Code"></text>
+		</field>
+		<field name="ten_phuongxa" width="200" fieldType="EX">
+			<text v="Tên phường/xã" e="Ward/Commune Name"></text>
+		</field>
+		<field name="ma_khupho" width="120">
+		  <text v="Mã khu phố" e="Neighborhood Code"></text>
+		</field>
+		<field name="ten_khupho" width="200" fieldType="EX">
+		  <text v="Tên khu phố" e="Neighborhood Name"></text>
+		</field>
+      </fields>
+	<script>
+	<query>
+	  <text>
+		<![CDATA[
+declare @key2 nvarchar(3000)
+SELECT @key2 = (CASE WHEN @lookupKey = '' THEN '1=1' ELSE @lookupKey END) + CASE WHEN @val = '' THEN ''ELSE ' AND (@@fieldKey LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%''' + ' OR @@fieldName LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' END;
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmkhupho d on a.ma_khupho = d.ma_khupho and a.ma_phuongxa = d.ma_phuongxa left join dmphuongxa e on a.ma_phuongxa = e.ma_phuongxa left join dmttp f on a.ma_ttp = f.ma_ttp', 'd.ten_khupho, e.ten_phuongxa, f.ten_ttp', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+	 ]]>
+	  </text>
+	</query>
+	</script>
+    </grid>
+  </grids>
+</dir>

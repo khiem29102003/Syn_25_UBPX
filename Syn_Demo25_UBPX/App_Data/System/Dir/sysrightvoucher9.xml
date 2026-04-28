@@ -1,0 +1,299 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="sysrightvoucher" table="sysrightvoucher3" fieldKey="ma_ct,user_id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Giới hạn quyền truy nhập cho các trạng thái của chứng từ" e="Limit Access Right to Voucher Statuses"></title>
+  <title0 v="Mới" e="New" />
+  <title1 v="Sửa" e="Edit" />
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_ct" format="U" label="1" field="1" viewType="Lookup" allowBlank="false" fieldType="PK" >
+          <text v="Mã chứng từ" e="Voucher Code"></text>
+          <viewInfo lookupType="One" lookupId="dmct" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_ct" lookupInfo="dmct|ma_ct|ten_ct" />
+        </field>
+        <field name="ten_ct" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="user_id" hidden="true" dataType="I" label="1" field="1" fieldType="PK" >
+          <text v="User id" e="User id"></text>
+        </field>
+        <field name="username" fieldType="EXParam" viewType="Lookup" allowBlank="false" label="1" field="1">
+          <text v="Tên/Nhóm" e="Name/Group"></text>
+          <viewInfo lookupType="One" lookupId="vsysuserinfo" lookupKey="status = 1 and admin = 0" lookupCheck="1=1" lookupRef="nickname" lookupInfo="vsysuserinfo|username|nickname" />
+        </field>
+        <field name="nickname" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="1" gravity="MiddleLeft" height="350" >
+      <text v="Trạng thái" e="Status"></text>
+      <fields>
+        <field name="sysrightvoucher2" label="" field="-" viewType="Grid">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  <grids>
+    <grid id="sysrightvoucher2" table="sysrightvoucher2" fieldKey="user_id, ma_ct, field" order="field" allowFilter="true" allowOrder="true" readOnly="false">
+      <fields>
+        <field name="user_id" dataType="I" foreignField="user_id" fieldType="PK" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_ct" foreignField="ma_ct" fieldType="PK" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="tab" width="100" hidden="true" fieldType="PK" readOnly="false" >
+          <text v="Tab" e="Tab"></text>
+        </field>
+        <field name="tabtext" width="150" readOnly="true" inactivate="true" fieldType="EX" aliasName="'' as " >
+          <text v="Màn hình" e="Tab"></text>
+        </field>
+        <field name="field" width="100" hidden="true" fieldType="PK" readOnly="false" >
+          <text v="Code" e="Code"></text>
+        </field>
+        <field name="fieldtext" width="250" readOnly="true" inactivate="true" fieldType="EX" aliasName="'' as " >
+          <text v="Thông tin" e="Field Info"></text>
+        </field>
+        <field name="a_hidden" dataType="B" width="80" readOnly="false" >
+          <text v="Ẩn" e="Hidden"></text>
+        </field>
+        <field name="a_readonly" dataType="B" width="80" readOnly="false" >
+          <text v="Chỉ đọc" e="Read Only"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="refresh">
+          <text v="Hiện tất cả" e="Show All"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+select @@fields into #t from @@table a where @@key order by field
+select * from #t
+drop table #t
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$sysrightvoucher(p){
+  this.constructor(p);
+}
+dir$sysrightvoucher.prototype = new DirEvent();
+dir$sysrightvoucher.prototype.beforeInit = function(){
+  var p = this._dir;
+  if (p.options.action == 'EDIT') {
+    p.field('ma_ct').disabled = true;
+    p.field('username').disabled = true;
+  }
+}
+dir$sysrightvoucher.prototype.afterInit = function(){
+  var p = this._dir;
+  if (p.options.action != 'NEW'){
+    dir$sysrightvoucherLoadFieldGrid(p, 1);
+  }
+  p.options.dataChanged = true;
+}
+dir$sysrightvoucher.prototype.beforeButtonDialogClick = function (id) {
+  var p = this._dir;
+  switch (id) {
+    case 'ok':
+      var g = p.grid(0), dt = g.data;
+      if (!dt.findRow('[a_hidden] == 1 || [a_readonly] == 1').length) {
+        $.showToast(p.msg('noChoice'));
+        p.tabActive('1');
+        return false;
+      }
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+dir$sysrightvoucher.prototype.beforeButtonGridClick = function (id, gindex) {
+  var p = this._dir;
+  switch (id) {
+    case 'refresh':
+      dir$sysrightvoucherLoadFieldGrid(p, 0);
+      return false;
+    default:
+      break;
+  }
+  return true;
+}
+dir$sysrightvoucher.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+    case 'ma_ct':
+      dir$sysrightvoucherLoadFieldGrid(p, 0);
+      break;
+    default:
+      break;
+  }
+}
+function dir$sysrightvoucherLoadFieldGrid(p, xtype) {
+  //if (p.options.wait) return;
+  var time = $.userinfo.val('CommandTimeout'), controller = '@' + p.valForm('ma_ct');
+  console.log(time);
+  p.wait(true, controller);
+  var param = { cController: controller, cFolder: "Dir" };
+  console.log(param);
+  $.invoke('GetDirStruct', param, p, time, function (d) {
+    var k, i, item, hi, ro, f, fs, fi, dt = new DataTable(), g = p.grid(0), gdt = g.data, notrights = ['ma_nt', 'ty_gia', 'ngay_ct', 'so_ct', 'ma_nk', 'ten_nk', 'status'], grids = {}, items = {};
+    if (gdt.count() > 0) {
+      k = gdt.count();
+      while(k--){
+        items[gdt.val(k, 'tab') + '#' + gdt.val(k, 'field')] = {a_hidden: gdt.val(k, 'a_hidden'), a_readonly: gdt.val(k, 'a_readonly') }
+		console.log(items);
+      }
+    }
+    dt.addColumn(['C', 'C', 'C', 'C', 'I', 'I'], ['tab', 'tabtext', 'field', 'fieldtext', 'a_hidden', 'a_readonly']);
+    if (d) {
+      f = d.forms.form;
+      for (k = 0; k < f.length; k++) {
+        fs = f[k].fields.field;
+        for (i = 0; i < fs.length; i++) {
+          fi = fs[i];
+          if (fi.viewType == "Grid") 
+            grids[fi.name] = fi.text.lan
+          else if (!fi.hidden && fi.text.lan != '' && notrights.indexOf(fi.name) == -1) {
+            item = items['#' + fi.name]; 
+            if (item) {hi = item.a_hidden; ro = item.a_readonly; }
+            else {hi = 0; ro = 0; }
+            if (xtype == 0 || hi != 0 || ro != 0) dt.addRow(['', p.msg('commonInfo'), fi.name, fi.text.lan, hi, ro]);
+          }
+        }
+      }
+      f = d.grids.grid;
+      for (k = 0; k < f.length; k++) {
+        fs = f[k].fields.field;
+        for (i = 0; i < fs.length; i++) {
+          fi = fs[i];
+          if (!fi.hidden && fi.text.lan != ''){
+            item = items[k + '#' + fi.name];
+            if (item) {hi = item.a_hidden; ro = item.a_readonly; }
+            else {hi = 0; ro = 0; }
+            if (xtype == 0 || hi != 0 || ro != 0) dt.addRow([k.toString(), grids[f[k].id], fi.name, fi.text.lan.replace('%s', p.msg('FCText')), hi, ro]);
+          }
+        }
+      }
+    }
+    
+    p.appendGrid(0, dt, true);
+	console.log(dt)
+    p.wait(false, controller);
+  }, null, function () {
+      p.wait(false, controller);
+  })
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <request code="GetController">
+      <text>
+        <![CDATA[
+select isnull(max(controller), '') as controller from dmct where ma_ct = @ma_ct
+        ]]>
+      </text>
+    </request>
+    <query>
+      <text>
+        <![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+drop table #@@table
+if @action <> 'NEW' select username, nickname from vsysuserinfo where user_id = @user_id
+        ]]>
+      </text>
+    </query>
+
+    <beforesave>
+      <text>
+        <![CDATA[
+select @user_id = user_id, @status = 1 from vsysuserinfo where username = @username
+        ]]>
+      </text>
+    </beforesave>
+
+    <deleted>
+      <text>
+        <![CDATA[
+delete sysrightvoucher2 where [%whereFieldKey]
+exec ISWIFTStoredUpdateRightVoucher @user_id, @ma_ct, @@userId, @@admin
+        ]]>
+      </text>
+    </deleted>
+
+    <updated>
+      <text>
+        <![CDATA[
+update @@table set user_id = @user_id where user_id = @@old_user_id and ma_ct = @@old_ma_ct
+update @@table set datetime2 = getdate(), user_id2 = @@userId where [%whereFieldKey]
+
+delete sysrightvoucher2 where user_id = @@old_user_id and ma_ct = @@old_ma_ct
+         ]]>
+      </text>
+    </updated>
+
+    <aftersave>
+      <text>
+        <![CDATA[
+if exists(select 1 from @sysrightvoucher2 where a_hidden = 1 or a_readonly = 1) begin
+	insert into sysrightvoucher2 select @user_id, @ma_ct, tab, field, a_hidden, a_readonly from @sysrightvoucher2 where a_hidden = 1 or a_readonly = 1
+end
+exec ISWIFTStoredUpdateRightVoucher @user_id, @ma_ct, @@userId, @@admin
+select '' as message, is_user as [#is_user], @user_id as [#user_id] from vsysuserinfo where username = @username
+return
+        ]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã chứng từ - Tên/nhóm đã tồn tại" e="Voucher Code - Name/Group Already Exists"/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã chứng từ - Tên/nhóm đã tồn tại" e="Voucher Code - Name/Group Already Exists"/>
+    </message>
+    <message val="commonInfo">
+      <text v="Thông tin chung" e="Header"/>
+    </message>
+    <message val="FCText">
+      <text v="nt" e="FC"/>
+    </message>
+    <message val="noChoice">
+      <text v="Chưa chọn thông tin giới hạn" e="No Selected Items"/>
+    </message>
+  </messages>
+
+</dir>

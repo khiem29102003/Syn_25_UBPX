@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="vdmdc" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục địa chỉ giao hàng" e="Delivery Address List"></title>
+  <subtitle v="Cập nhật địa chỉ của từng khách hàng..." e="Delivery Address List"></subtitle>
+  <grids>
+    <grid table="vdmdc" fieldKey="ma_kh,ma_dc" order="ma_kh" allowFilter="true" allowOrder="true" >
+      <fields >
+        <field name="ma_kh" fieldType="PK" width="120" >
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="250" >
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+        <field name="ma_dc" fieldType="PK" width="120" >
+          <text v="Địa chỉ" e="Delivery Address Code"></text>
+        </field>
+        <field name="ten_dc" width="250">
+          <text v="Diễn giải" e="Description"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = ''
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmdc(f){
+  this.constructor(f);
+}
+grid$dmdc.prototype = new DirEvent();
+grid$dmdc.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+</dir>

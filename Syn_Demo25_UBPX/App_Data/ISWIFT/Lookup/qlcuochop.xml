@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="qlcuochop" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách cuộc họp" e="List of Meetings"></title>
+  <grids>
+    <grid table="qlcuochop" fieldKey="ma_cuochop" fieldName="ten_cuochop" order="ma_cuochop" allowFilter="true" allowOrder="true">
+		<fields>
+			<field name="ma_cuochop" width="120" fieldType="PK">
+			  <text v="Mã cuộc họp" e="Meeting Code"></text>
+			</field>
+			<field name="ten_cuochop" width="250">
+			  <text v="Tên cuộc họp" e="Meeting Name"></text>
+			</field>
+			<field name="ten_cuochop2" width="0">
+			  <text v="Tên tiếng anh" e="English Name"></text>
+			</field>
+			<field name="ngay_hop" dataType="D" width="120">
+			  <text v="Ngày họp" e="Issue Date"></text>
+			</field>
+			<field name="thoi_gian" width="120" fieldType="EX">
+			  <text v="Thời gian" e="Time"></text>
+			</field>
+			<field name="ma_lcuochop" width="120">
+			  <text v="Mã loại cuộc họp" e="Meeting Type Code"></text>
+			</field>
+			<field name="ten_lcuochop" width="200" fieldType="EX">
+			  <text v="Loại cuộc họp" e="Meeting Type"></text>
+			</field>
+			<field name="dia_chi" width="250">
+				<text v="Địa điểm" e="Location"></text>
+			</field>
+			<field name="linkweb" width="200">
+			  <text v="Link Website" e="Link Website"></text>
+			</field>
+		</fields>
+		<script>
+			<query>
+				<text>
+				<![CDATA[
+declare @key2 nvarchar(3000)
+SELECT @key2 = (CASE WHEN @lookupKey = '' THEN '1=1' ELSE @lookupKey END) + CASE WHEN @val = '' THEN ''ELSE ' AND (@@fieldKey LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%''' + ' OR @@fieldName LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' END;
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+				]]>
+				</text>
+			</query>
+		</script>
+    </grid>
+  </grids>
+</dir>

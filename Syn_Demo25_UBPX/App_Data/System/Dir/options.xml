@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="options" table="options" fieldKey="name" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Khai báo các tham số tùy chọn" e="Optional Parameters"></title>
+  <title0 v="Thêm mới tham số tùy chọn" e="New Parameters"></title0>
+  <title1 v="Sửa tham số tùy chọn" e="Edit Parameters"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120"  >
+      <fields>
+        <field name="name" hidden="true" fieldType="PK" label="1" field="1" checkCode="0">
+          <text v="" e=""></text>
+        </field>
+        <field name="inputmask" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="type"  hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="val" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="val_mask" fieldType="EX" checkCode="0" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        
+        <field name="descript" label="1" field="-" allowBlank="false" disabled="true" >
+          <text v="Tên tham số" e="Parameters Name"></text>
+        </field>
+        
+        <field name="val_num" format="2" dataType="N" fieldType="EX" label="1" field="1">
+          <text v="Giá trị" e="Value"></text>
+        </field>
+        <field name="val_cbo" viewType="Combobox" fieldType="EX" label="1" field="2">
+          <text v="Giá trị" e="Value"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="val_date" fieldType="EX" dataType="D" label="1" field="1" >
+          <text v="Giá trị" e="Value"></text>
+        </field>
+        <field name="val_text" fieldType="EX" label="1" field="-" >
+          <text v="Giá trị" e="Value"></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+&DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$options(p){
+  this.constructor(p);
+}
+dir$options.prototype = new DirEvent();
+dir$options.prototype.afterInit = function(){
+  var p = this._dir, g = p.options.parent;
+  switch(p.valForm("type")) {
+    case "C":
+        p.setHidden("val_text", false);
+        p.setHidden("val_num,  val_cbo , val_date", true);
+        
+        p.valForm("val_text", p.valForm("val"));
+        break;
+    case "N":
+        p.setHidden("val_num", false);
+        p.setHidden("val_text,   val_cbo,  val_date", true);
+        console.log(parseInt(p.valForm("inputmask")));
+        p.jObject("val_num").number({digit: parseInt(p.valForm("inputmask"))});
+        p.valForm("val_num", p.valForm("val"));
+        break;
+    case "O":
+        p.setHidden("val_cbo", false);
+        p.setHidden("val_text, val_num, val_date", true);
+        
+        var xLan = ($.lan == 'v' ? 0 : 1);
+        var arMask = p.valForm("inputmask").split("><")[xLan].split("#");
+        
+        var sHtml = "";
+        for(var i = 0; i < arMask.length; i+=2)
+          sHtml += "<" + "option value='" + arMask[i] + "'" + (p.valForm("val") == arMask[i] ? " selected" : "") + ">" + arMask[i + 1] + "<" + "/option>";
+        p.jObject("val_cbo").html(sHtml);
+        break;
+    case "D":
+        p.setHidden("val_text, val_num, val_cbo", true);
+        p.setHidden("val_date", false);
+        
+        p.valForm("val_date", p.valForm("val"));
+        break;
+  }
+}
+
+dir$options.prototype.beforeButtonDialogClick = function(id){
+  var p = this._dir, g = p.options.parent;
+  if(id == "ok"){
+    switch(p.valForm("type")) {
+      case "C":
+          p.valForm("val", p.valForm("val_text"));
+          p.valForm("val_mask", p.valForm("val_text"));
+          break;
+      case "N":
+          p.valForm("val", p.valForm("val_num"));
+          p.valForm("val_mask", p.valForm("val_num"));
+          break;
+      case "O":
+          p.valForm("val", p.valForm("val_cbo"));
+          p.valForm("val_mask", p.jObject("val_cbo").find('option:selected').text());
+          break;
+      case "D":
+          p.valForm("val", $.date(p.valForm("val_date")));
+          p.valForm("val_mask", p.jObject("val_date").val());
+          break;
+    }
+  }
+  return true;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = ''
+select @codeExistsEditMsg = ''
+         ]]>
+      </text>
+    </declare>
+  </script>
+</dir>

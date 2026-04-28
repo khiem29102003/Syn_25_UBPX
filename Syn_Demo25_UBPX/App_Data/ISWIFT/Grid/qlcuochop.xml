@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+   <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="qlcuochop" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách cuộc họp" e="List of Meetings"></title>
+   <subtitle v="Thêm sửa xóa..." e="Add, Edit, Delete..."></subtitle>
+  <grids>
+    <grid table="qlcuochop" fieldKey="ma_cuochop" order="ngay_hop desc" allowFilter="true" allowOrder="true" >
+	  <fields>
+	  	<field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="100" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+		<field name="ngay_hop" dataType="D" width="120">
+		  <text v="Ngày họp" e="Issue Date"></text>
+		</field>
+		<field name="thoi_gian" width="120" fieldType="EX">
+          <text v="Thời gian" e="Time"></text>
+        </field>
+	  	<field name="ma_cuochop" width="120" fieldType="PK">
+		  <text v="Mã cuộc họp" e="Meeting Code"></text>
+		</field>
+		<field name="ten_cuochop" width="250">
+		  <text v="Tên cuộc họp" e="Meeting Name"></text>
+		</field>
+		<field name="ten_cuochop2" width="0">
+		  <text v="Tên tiếng anh" e="English Name"></text>
+		</field>
+		
+		<field name="ma_lcuochop" width="120">
+		  <text v="Mã loại cuộc họp" e="Meeting Type Code"></text>
+		</field>
+		<field name="ten_lcuochop" width="200" fieldType="EX">
+          <text v="Loại cuộc họp" e="Meeting Type"></text>
+        </field>
+		<field name="dia_chi" width="250">
+			<text v="Địa điểm" e="Location"></text>
+        </field>
+		<field name="linkweb" width="200">
+          <text v="Link Website" e="Link Website"></text>
+        </field>
+		
+		<field name="ds_chutri" width="250">
+          <text v="Chủ trì" e="Chairperson"></text>
+        </field>
+		<field name="ds_nguoithamgia" width="300">
+          <text v="Danh sách người tham gia" e="Participants List"></text>
+        </field>
+		
+		<field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_tt, ten_tt%l from dmttsd where status = 1">
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+		
+		&DefaultButton;
+	  
+	  <script>
+
+		<query>
+			<text>
+		 <![CDATA[
+declare @strKey nvarchar(128)
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmlcuochop c on a.ma_lcuochop = c.ma_lcuochop', 'b.ma_unit, c.ten_lcuochop', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId    --@@columnFilterKey
+         ]]>
+		  </text>
+		</query>
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = @strFinding;
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', ' left join sysunit b on a.unit_id = b.unit_id left join dmlcuochop c on a.ma_lcuochop = c.ma_lcuochop', 'b.ma_unit, c.ten_lcuochop', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId    --@@columnFilterKey
+         ]]>
+          </text>
+        </finding>
+      </script>
+    </grid>
+  </grids>
+  <js>
+    <text>
+      <![CDATA[
+function grid$qlcuochop(f){
+  this.constructor(f);
+}
+grid$qlcuochop.prototype = new DirEvent();
+grid$qlcuochop.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[
+		.tree-form{
+			width: 250px;
+		}
+		.ic-view-dept{
+		  background-position: 0px 0px;
+		}
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 960px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+  <script>
+
+  </script>
+
+</dir>

@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="dataclosingvoucher" table="" height="" fieldKey="id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title1 v="Khóa số liệu" e="Data closing"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,240,120"  >
+      <fields>
+        <field name="ma_ct" disabled="true" label="1" field="1">
+          <text v="Mã chứng từ" e="Voucher Code"></text>
+        </field>
+        <field name="ngay_ks" allowBlank="false"  dataType="D" label="1" field="1">
+          <text v="Ngày khóa số liệu" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$dataclosingvoucher(p){
+  this.constructor(p);
+}
+filter$dataclosingvoucher.prototype = new DirEvent();
+filter$dataclosingvoucher.prototype.afterInit = function(){
+  var p = this._dir;
+  p.valForm('ma_ct', p.options._ma_ct);
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <query>
+      <text>
+        <![CDATA[
+select ngay_ks from dmct where ma_ct = @ma_ct
+        ]]>
+      </text>
+    </query>
+
+    <processing>
+      <text>
+        <![CDATA[
+update dmct set ngay_ks = @ngay_ks where ma_ct = @ma_ct
+select '' as message, 'p._close()' as script
+        ]]>
+      </text>
+    </processing>
+    
+    <loading>
+      <text>
+        <![CDATA[
+select 'p.options.action = ''EDIT''' as script
+        ]]>
+      </text>
+    </loading>
+  </script>
+</dir>

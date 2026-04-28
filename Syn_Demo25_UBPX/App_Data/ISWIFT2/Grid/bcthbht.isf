@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="bcthbht" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo cáo tổng hợp bán hàng thuần" e=""></title>
+  <subtitle v="Từ ngày {ngay_ct1} đến ngày {ngay_ct2}..." e="From {ngay_ct1} To {ngay_ct2}..."></subtitle>
+  <grids>
+    <grid>
+      <fields>
+        <field name="ma_vt" width="100" note="ten_vt,ten_vt2">
+          <text v="Mã vật tư" e="Item Code"></text>
+        </field>
+        <field name="ten_vt" width="250" aliasName="vt" join="left join dmvt vt on a.ma_vt = vt.ma_vt|ma_vt">
+          <text v="Tên vật tư" e="Item Name"></text>
+        </field>
+        <field name="dvt" width="50" aliasName="vt" join="left join dmvt vt on a.ma_vt = vt.ma_vt|ma_vt">
+          <text v="Đvt" e="UOM"></text>
+        </field>
+        <field name="ma_kh" width="100" note="ten_kh,ten_kh2,ma_so_thue" >
+          <text v="Mã khách hàng" e="Customer"></text>
+        </field>
+        <field name="ten_kh" width="250" aliasName="kh" join="left join dmkh kh on a.ma_kh = kh.ma_kh|ma_kh">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+        
+        <field name="sl_xuat" dataType="N" format="Qty" width="100">
+          <text v="Sl bán" e="Issued Q'ty"></text>
+        </field>
+        <field name="tien_ban_nt" dataType="N" format="FCAmount" width="100" aliasName="case when a.ct_nxd = 2 then a.tien_nt2 else 0 end as " join="|ct_nxd|tien_nt2">
+          <text v="Doanh thu nt" e="FC Revenue"></text>
+        </field>
+        <field name="tien_ban" dataType="N" format="FCAmount" width="100" aliasName="case when a.ct_nxd = 2 then a.tien2 else 0 end as " join="|ct_nxd|tien2">
+          <text v="Doanh thu" e="FC Revenue"></text>
+        </field>
+        
+        <field name="sl_nhap" dataType="N" format="Qty" width="100">
+          <text v="Sl trả lại" e="Received Q'ty"></text>
+        </field>
+        <field name="tien_tl_nt" dataType="N" format="FCAmount" width="100" aliasName="case when a.[ct_nxd] = 1 then a.[tien_nt2] else 0 end as " join="|ct_nxd|tien_nt2">
+          <text v="Trả lại nt" e="FC Revenue"></text>
+        </field>
+        <field name="tien_tl" dataType="N" format="FCAmount" width="100" aliasName="case when a.[ct_nxd] = 1 then a.[tien2] else 0 end as " join="|ct_nxd|tien2">
+          <text v="Trả lại" e="FC Revenue"></text>
+        </field>
+        
+        <field name="sl_cl" dataType="N" format="Qty" width="100" aliasName="[sl_xuat] - [sl_nhap] as " join="|||sl_xuat,sl_nhap">
+          <text v="Sl còn lại" e="Received Q'ty"></text>
+        </field>
+        <field name="tien_cl_nt" dataType="N" format="FCAmount" width="100" aliasName="[tien_ban_nt] - [tien_tl_nt] as " join="|||tien_ban_nt,tien_tl_nt">
+          <text v="Dt còn lại nt" e="FC Revenue"></text>
+        </field>
+        <field name="tien_cl" dataType="N" format="FCAmount" width="100" aliasName="[tien_ban] - [tien_tl] as " join="|||tien_ban,tien_tl">
+          <text v="Dt còn lại" e="FC Revenue"></text>
+        </field>
+        
+        <field name="tien_nt2" dataType="N" format="FCAmount" hidden="true" width="100">
+          <text v="Doanh thu nt" e="FC Revenue"></text>
+        </field>
+        <field name="tien2" dataType="N" format="Amount" hidden="true" width="100">
+          <text v="Doanh thu" e="Revenue"></text>
+        </field>
+        <field name="ct_nxd" dataType="I" hidden="true" width="100" >
+          <text v="NXT" e="NXT"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[<enc>91z3v0EuFiAUXL2HckWFtWSTS55DdnX3rYOs78cqrRSxYLGmdLlW96JJ9/S7xAfKNKITGxQAxnXBag+70BIc11l4N9CpACLKq2aptAKHQKf1KaYqBT740pyMWo6oAoHqtTZNpz8siqVuWzQ7jR3jcc3AqYou1GmMNEB7hMpz6xuVOR/DBfJR0UbRiGvQvcLnLKancH2ncSGR+EKNAOfduvbVxawn+h8VMJe5RlMTdy4TBbwa4hJHbKuvOCEvEF/YBOTLeX3/CbMtriyWP3n9CplKAs4eMwnNrXMZeqsyaw6fUKHx6QZC3Bb6xYPFbbt8</enc>]]>
+    </text>
+  </js>
+
+  <script>
+    <processing>
+      <text>
+        <![CDATA[<enc>+4v7VH6zFGsL3uqzwT1HibCNDzZkcrmXT2Lk+p/ti4aa+Kp5bgJ7QrHNbc0raspVtPGB3OWW8hAIqXhSruF0XRHK8HPd6i2ZqNdCrx77KWIDawwqEPGA/6QCCPB9JbFCB2q4+bHYgLcQEXcgrdW/+fzSWag6RkoAXjw9ut4/Nbz2nOI0c2pvMuc5ZsoTtmaKxH6j/TzX7z+HWnR2+f135i76HaBDiiSXAoeUoptArczkNScGBaON+7BWYBLDb+KJs2uCtMj4S9OMWU3xeIFZNii0wCsbHzW1yK7mbgKr8uU=</enc>]]>
+      </text>
+    </processing>
+  </script>
+
+</dir>

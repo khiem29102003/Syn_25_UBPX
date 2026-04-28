@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="qlhccong" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách đăng ký hành chính công" e="Public Administration Registration List"></title>
+  <grids>
+    <grid table="qlhccong" fieldKey="ma_pl" fieldName="ten_pl" order="ma_pl" allowFilter="true" allowOrder="true">
+      <fields>
+		<field name="ma_pl" width="80">
+          <text v="Mã văn bản lưu hành" e="Circulation Document Code"></text>
+        </field>
+        <field name="ten_pl" width="300">
+		  <text v="Tên văn bản lưu hành" e="Circulation Document Name"></text>
+        </field>
+		<field name="ten_pl2" width="300">
+         <text v="Tên English" e="English Name"></text>
+        </field>
+		<field name="tu_so" dataType="N" width="100">
+		  <text v="Ký hiệu từ" e="Word symbol"></text>
+		</field>
+		<field name="den_so" dataType="N" width="100">
+		  <text v="Ký hiệu đến" e="Incoming symbol"></text>
+		</field>
+		<field name="loai_ut" viewType="Combobox" width="100">
+		  <text v="Ưu tiên" e="Priority"></text>
+          <viewInfo>
+            <options>
+				<option val="0">
+					<text v="0 - Không ưu tiên" e="0 - Không ưu tiên"></text>
+				</option>
+				<option val="1">
+					<text v="1 - Ưu tiên" e="1 - Ưu tiên"></text>
+				</option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+	<script>
+	<query>
+	  <text>
+		<![CDATA[
+	declare @key2 nvarchar(3000)
+	select @key2 = @lookupKey + case when @val = '' then '' else ' and (@@fieldKey like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or @@fieldName like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+	exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+	 ]]>
+	  </text>
+	</query>
+	</script>
+    </grid>
+  </grids>
+</dir>

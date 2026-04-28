@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="qldangvien_cb" table="" height="" fieldKey="ma_pl" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Điều kiện lọc" e="Filter Condition"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120"  >
+      <fields>
+		<field name="ma_dangvien" label="1" field="1" operation="a.ma_dangvien like N'%%s%'">
+			<text v="Mã đảng viên" e="Party Member Code"></text>
+		</field>
+		<field name="ma_dancu" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Mã cư dân" e="Resident code"></text>
+		  <viewInfo lookupType="One" lookupId="qldctcccd" lookupKey="ma_dancu not in (select ma_dancu from dmnv where ma_dancu IS NOT NULL AND ma_dancu != '')" lookupRef="ten_dancu" lookupCheck="ma_dancu not in (select ma_dancu from dmnv where ma_dancu IS NOT NULL AND ma_dancu != '')" lookupInfo="qldctcccd|ma_dancu|ten_dancu" importCheck="@@DF and z.status=1"/>
+		</field>
+		<field name="ten_dancu" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+		  <text v="" e=""></text>
+		</field>
+		<field name="so_the_dang" label="1" field="1" importable="15" operation="like">
+			<text v="Số thẻ đảng" e="Party card number"></text>
+		</field>
+		<field name="ngay_vao_dang" label="1" field="1" dataType="D">
+			<text v="Ngày vào đảng" e="Party admission"></text>
+		</field>
+		<field name="ngay_chinh_thuc" label="1" field="1" dataType="D">
+			<text v="Ngày chính thức" e="Official admission"></text>
+		</field>
+		<field name="ma_chibo" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Mã chi bộ" e="Party Cell code"></text>
+		  <viewInfo lookupType="One" lookupId="dmchibo" lookupKey="status=1" lookupRef="ten_chibo" lookupCheck="1=1" lookupInfo="dmchibo|ma_chibo|ten_chibo" importCheck="@@DF and z.status=1"/>
+		</field>
+		<field name="ten_chibo" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+		  <text v="" e=""></text>
+		</field>
+		<field name="status" viewType="Combobox" label="1" field="1" operation="=" >
+          <text v="Trạng thái" e="Status"></text>
+		  <viewInfo>
+			<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 ">
+				<option val="">
+                <text v="Tất cả" e="All"></text>
+              </option>
+			</options>
+		  </viewInfo>
+		</field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$qldangvien_cb(p){
+  this.constructor(p);
+}
+filter$qldangvien_cb.prototype = new DirEvent();
+filter$qldangvien_cb.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+</dir>

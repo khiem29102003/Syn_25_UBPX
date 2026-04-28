@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="dmnv" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục nhân sự" e="List of Employee"></title>
+  <grids>
+    <grid table="dmnv" fieldKey="ma_nv" fieldName="ten_nv" order="ma_nv" allowFilter="true" allowOrder="true" >
+      <fields>
+        <field name="ma_nv" fieldType="PK" width="120" filterType="Code" >
+          <text v="Mã nhân viên" e="Employee Code"></text>
+        </field>
+        <field name="ten_nv" width="250">
+          <text v="Tên nhân viên" e="Employee Name"></text>
+        </field>
+		<field name="ma_pb" width="120">
+          <text v="Mã phòng ban" e="Department Code"></text>
+        </field>
+		<field name="ten_pb" width="120" fieldType="EX">
+          <text v="Phòng ban" e="Department"></text>
+        </field>
+		<field name="ma_bp" width="120">
+          <text v="Bộ phận" e="Division Code"></text>
+        </field>
+		<field name="ten_bp" width="120" fieldType="EX">
+          <text v="Bộ phận" e="Division"></text>
+        </field>
+      </fields>
+	  <script>
+        <query>
+          <text> 	
+            <![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = @lookupKey + case when @val = '' then '' else ' (@@fieldKey like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or @@fieldName like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmpb b on a.ma_pb = b.ma_pb left join dmbp c on a.ma_bp = c.ma_bp and a.ma_pb = c.ma_pb', 'b.ten_pb, c.ten_bp', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+    </grid>
+  </grids>
+</dir>

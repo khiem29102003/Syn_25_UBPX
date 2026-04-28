@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmmst" table="dmmst" fieldKey="ma_so_thue" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục mã số thuế" e="List of customer"></title>
+  <title0 v="Thêm" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120" >
+      <fields>
+	    <field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_so_thue" label="1" field="2"  importable="35" fieldType="PK" allowBlank="false">
+          <text v="Mã số thuế &lt;a onclick='getTax(this);'&gt;(Kiểm tra)&lt;/a&gt;" e="Tax code &lt;a onclick='getTax(this);'&gt;(Test)&lt;/a&gt;"></text>
+        </field>
+        <field name="ten_kh" label="1" field="-" importWidth="250" importable="15">
+          <text v="Tên khách hàng" e="Other name"></text>
+        </field>			
+        <field name="dia_chi" label="1" field="-" importWidth="250" importable="30">
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+		<field name="ngay_sinh" label="1" dataType="D" field="1" nextRow="true" importable="40">
+          <text v="Ngày sinh" e="Contact"></text>
+        </field>
+        <field name="nguoi_lh" label="1" field="-" nextRow="false" importable="40">
+          <text v="Người đại diện" e="Contact"></text>
+        </field>
+        <field name="dien_thoai" label="1" field="2" importable="80">
+          <text v="Điện thoại" e="Phone"></text>
+        </field>
+		<field name="email" label="1" field="2" importable="80">
+          <text v="Email" e="Phone"></text>
+        </field>
+		<field name="ngay_hoat_dong" label="1" dataType="D" field="1" nextRow="false" importable="40">
+          <text v="Ngày hoạt động" e="Contact"></text>
+        </field>
+		<field name="noi_ql" label="1" field="2" importable="80">
+          <text v="Quản lý bởi" e="Phone"></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+<js>
+    <text>
+      <![CDATA[
+function dir$dmmst(p){
+  this.constructor(p);
+}
+dir$dmmst.prototype = new DirEvent();
+
+dir$dmmst.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+    default:
+      break;
+  }
+}
+
+function getTax(o) {
+  var p = document._dir;
+  var tax = p.valForm('ma_so_thue');
+  if (tax.length != 10 && tax.length != 13) {
+    $.showToast('Thông tin mã số thuế không đúng.');
+    return;
+  }
+  
+  $.invoke('GetTax', { taxCode: tax }, this, 30000
+    , function (result) {
+      if (result) {
+        var obj = JSON.parse(result);
+        p.valForm('ten_kh', obj.Name, true);
+        p.valForm('dia_chi', obj.Address, true);
+		p.valForm('nguoi_lh', obj.Contact, true);
+		p.valForm('dien_thoai', obj.Telephone, true);
+		
+      }
+    }, function (event) {} );
+	
+}
+
+dir$dmmst.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+  dir$dmmstDisabledMasterField(p, g);
+  var p = this._dir;
+  document._dir = p;
+}
+
+function dir$dmmstDisabledMasterField(p, g){
+	if(p.valForm('ma_so_thue').trim() != '')
+  {
+    p.setDisabled('ma_so_thue', true);
+  }
+  else
+  {
+    p.setDisabled('ma_so_thue', false);
+  }
+}
+         ]]>
+		
+    </text>
+  </js>
+   <css>
+		<text>
+		  <![CDATA[
+	.control-label.ma_so_thue, .control-label.ten_kh, .control-label.dien_thoai
+	{		
+		color: #499b98;;
+	}
+		  ]]>
+		</text>
+  </css>
+
+  <script>
+    
+    <query>
+      <text>
+        <![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+select @script = '';
+if @action = 'EDIT'
+  if exists(select 1 from syscodeexists with(nolock, index(code1)) where code1 = @ma_so_thue and field = 'ma_so_thue')
+    select @script = @script + 'p.setDisabled(''ma_so_thue'', true); '
+
+if @action in ('EDIT', 'VIEW') select @script as script
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+    <inserting>
+      <text>
+        <![CDATA[
+if exists(select 1 from @@table a where [%whereFieldKey]) begin
+  select '$codeExistsNewMsg' as message, '@@firstFieldKey' as field
+  return
+end
+
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @unit_id = @@unit
+]]>
+      </text>
+    </inserting>
+    <aftersave>
+      <text>
+        <![CDATA[
+if @ma_so_thue <> '' and exists (select 1 from dmmst where ma_so_thue = @ma_so_thue and ma_so_thue <> @ma_so_thue)        
+  select '$taxtCodeExists' as toast
+  
+
+for (var i = 0; i < ma_so_thue.length; i++) {
+
+$.invoke('GetTax', { taxCode: tax }, this, 30000
+    , function (i) {
+      if (i) {
+        var obj = JSON.parse(i);
+        p.valForm('ten_kh', obj.Name, true);
+        p.valForm('dia_chi', obj.Address, true);
+		p.valForm('nguoi_lh', obj.Contact, true);
+		p.valForm('dien_thoai', obj.Telephone, true);
+		
+      }
+    }, function (event) {} );
+
+}
+
+]]>
+      </text>
+    </aftersave>
+
+
+    <importing>
+      <text>
+        <![CDATA[
+update #data set unit_id = @@unit
+@@insert
+        ]]>
+      </text>
+
+    </importing>
+  </script>
+
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã khách hàng đã tồn tại trong danh mục khách hàng." e="The record already exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã khách hàng đã tồn tại trong danh mục khách hàng." e="The record already exists."/>
+    </message>
+    <message val="taxtCodeExists">
+      <text v="Mã số thuế đã tồn tại trong danh mục, &lt;span class='Highlight'&gt;Lưu ý:&lt;/span&gt; hệ thống vẫn lưu dữ liệu vừa cập nhật." e="The tax code is already exists, &lt;span class='Highlight'&gt;Warning:&lt;/span&gt; Updated data has been saved."/>
+    </message>
+  </messages>
+</dir>

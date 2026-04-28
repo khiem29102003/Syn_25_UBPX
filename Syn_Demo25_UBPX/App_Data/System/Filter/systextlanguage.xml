@@ -1,0 +1,281 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+
+<dir id="systextlanguage" dirViewType="Dialog" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Thay đổi ngôn ngữ màn hình" e=""></title>
+  <title0 v="Mới" e="New" />
+  <title1 v="Sửa" e="Edit" />
+
+  <forms>
+    <form gravity="TopLeft" columns="120,360" >
+      <fields>
+        <field name="controller_filter" inactivate="true" label="1" field="1"  >
+          <text v="Lọc controller" e="Controller Filter"></text>
+        </field>
+        <field name="file_controller" label="1" field="1" viewType="Combobox" >
+          <text v="Chọn màn hình" e="Screen"></text>
+        </field>
+        <field name="cmd_restore" label="" nextRow="false" invisible="true" field="[120]" viewType="Command" >
+          <text v="Mặc định" e="Reset"></text>
+        </field>
+        <field name="cmd_saveroot" label="" nextRow="false" invisible="true" field="[120]" viewType="Command" >
+          <text v="Lưu thành bản gốc" e="Save To Root"></text>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="1" gravity="MiddleLeft" height="350" >
+      <text v="Trạng thái" e="Status"></text>
+      <fields>
+        <field name="systextlanguage2" label="" field="-" viewType="Grid">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  <grids>
+    <grid id="systextlanguage2" allowFilter="true" allowOrder="true" readOnly="false">
+      <fields>
+        <field name="val" width="200" >
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="v" width="290" readOnly="false" >
+          <text v="Tiếng Việt" e="Vietnamese"></text>
+        </field>
+        <field name="e" width="290" readOnly="false" >
+          <text v="Tiếng Anh" e="English"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="refresh">
+          <text v="$Refresh" e="$Refresh"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+
+    </grid>
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$systextlanguage(p){
+  this.constructor(p);
+}
+filter$systextlanguage.prototype = new DirEvent();
+filter$systextlanguage.prototype.afterInit = function(){
+  var p = this._dir;
+  p.valForm('controller_filter', p.options._controller);
+  this.formFieldValueChange(p.jObject('controller_filter'), 'controller_filter', p.options._controller);
+}
+filter$systextlanguage.prototype.beforeButtonDialogClick = function (id) {
+  var p = this._dir;
+  switch (id) {
+    case 'filterOk':
+      filter$systextlanguageSave('Save', p);
+      return false;
+    default:
+      break;
+  }
+  return true;
+}
+filter$systextlanguage.prototype.commandActionClick = function (action, id, po) {
+  var p = this._dir;
+  switch (id) {
+    case 'cmd_restore':
+      filter$systextlanguageSave('Restore', p);
+      break;
+    case 'cmd_saveroot':
+      filter$systextlanguageSave('OverwriteRoot', p);
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+filter$systextlanguage.prototype.beforeButtonGridClick = function (id, gindex) {
+  var p = this._dir;
+  switch (id) {
+    case 'refresh':
+      filter$systextlanguageLoad(p);
+      return false
+    default:
+      break;
+  }
+  return true;
+}
+filter$systextlanguage.prototype.gridCellValueChange = function (o, g, r, c, v) {
+  var p = this._dir;
+  switch (c){
+    case 'v':
+    case 'e':
+      g.data.val(r, 'tag', 1);
+      o.closest('tr').addClass('row-bold');
+    default:
+      break;
+  }
+}
+filter$systextlanguage.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir, pa = p.options.parent;
+  switch (cF){
+    case 'file_controller':
+      filter$systextlanguageLoad(p);
+      break;
+    case 'controller_filter':
+      if (v.trim() == '') {
+        p.jObject('file_controller').html(''); 
+        p.clearGrid(0);
+        return; 
+      }
+      var time = $.userinfo.val('CommandTimeout'), field = p.field('file_controller');
+      p.wait(true, cF);
+      var param = { cController: v, cFolder: pa.options.folder};
+      $.invoke('GetControllerFiles', param, p, time, function (d) {
+        var i, o = p.jObject('file_controller').html('');
+        d = new DataTable(d);
+        p.options._files = d;
+        field.viewInfo.options.option = [];
+        for (i = 0; i < d.count(); i++) {
+          field.viewInfo.options.option.push({ val: d.val(i, 'val'), text: { lan: d.val(i, 'title') } })
+          $('<' + 'option>').attr('value', d.val(i, 'val')).html(d.val(i, 'title')).appendTo(o);
+        }
+        filter$systextlanguageLoad(p) 
+        p.wait(false, cF);
+      }, null, function () {
+          p.wait(false, cF);
+      })
+    default:
+      break;
+  }
+}
+function filter$systextlanguageSave(action, p) {
+  var time = $.userinfo.val('CommandTimeout'), id = p.options.controller + action, df = p.options._files, ifile = p.jObject('file_controller').find(":selected").index(), g = p.grid(0), dt = g.data.clone(['val', 'v', 'e', 'v0', 'e0', 'iline', 'ext'], '[tag] == 1'), m = null;
+  if (action == 'Save' && dt.count() == 0) {
+    $.showToast('$noChange', p);
+    return false;
+  }
+  p.wait(true, id);
+  if (action == 'Save') {
+    m = new Memvars();
+    m.val('customize', "T", dt.sqlval());
+    m = m.val();
+  }
+  var param = { cAction: action, cController: df.val(ifile, 'filename'), cFolder: df.val(ifile, 'folder'),  oMemvars: m};
+  $.invoke('RunTextLanguage', param, p, time, function (d) {
+    if (d == "1") {
+      $.clearClientCache();
+      $.showToast('$Processed', p);
+      filter$systextlanguageLoad(p);
+    }
+    p.wait(false, id);
+  }, null, function () {
+    p.wait(false, id);
+  });
+}
+
+function filter$systextlanguageLoad(p) {
+  if (!p.valForm('controller_filter') || !p.valForm('file_controller')) {
+    p.clearGrid(0);
+    return;
+  }
+  var time = $.userinfo.val('CommandTimeout'), id = p.options.controller, df = p.options._files, ifile = p.jObject('file_controller').find(":selected").index();
+  p.wait(true, id);
+  var param = { cController: df.val(ifile, 'filename'), cFolder: df.val(ifile, 'folder') };
+  $.invoke('GetTextLanguage', param, p, time, function (d) {
+    d = new DataTable(d);
+    p.appendGrid(0, d, true);
+    if (d.count() > 0) {
+      p.setInvisible('cmd_restore', d.val(0, 'config') == 0)
+      p.setInvisible('cmd_saveroot', d.val(0, 'config') == 0)
+    }
+    p.wait(false, id);
+  }, null, function () {
+    p.wait(false, id);
+  });
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <request code="GetController">
+      <text>
+        <![CDATA[
+select isnull(max(controller), '') as controller from dmct where file_controller = @file_controller
+        ]]>
+      </text>
+    </request>
+
+    <beforesave>
+      <text>
+        <![CDATA[
+select @user_id = user_id, @status = 1 from vsysuserinfo where username = @username
+        ]]>
+      </text>
+    </beforesave>
+
+    <deleted>
+      <text>
+        <![CDATA[
+delete systextlanguage2 where [%whereFieldKey]
+exec ISWIFTStoredUpdateRightVoucher @user_id, @file_controller, @@userId, @@admin
+        ]]>
+      </text>
+    </deleted>
+
+    <updated>
+      <text>
+        <![CDATA[
+update @@table set user_id = @user_id where user_id = @@old_user_id and file_controller = @@old_file_controller
+update @@table set datetime2 = getdate(), user_id2 = @@userId where [%whereFieldKey]
+
+delete systextlanguage2 where user_id = @@old_user_id and file_controller = @@old_file_controller
+         ]]>
+      </text>
+    </updated>
+
+    <aftersave>
+      <text>
+        <![CDATA[
+if exists(select 1 from @systextlanguage2 where a_hidden = 1 or a_readonly = 1) begin
+	insert into systextlanguage2 select @user_id, @file_controller, tab, field, a_hidden, a_readonly from @systextlanguage2 where a_hidden = 1 or a_readonly = 1
+end
+exec ISWIFTStoredUpdateRightVoucher @user_id, @file_controller, @@userId, @@admin
+select '' as message, is_user as [#is_user], @user_id as [#user_id] from vsysuserinfo where username = @username
+return
+        ]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã chứng từ - Tên/nhóm đã tồn tại" e="Voucher Code - Name/Group Already Exists"/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã chứng từ - Tên/nhóm đã tồn tại" e="Voucher Code - Name/Group Already Exists"/>
+    </message>
+    <message val="commonInfo">
+      <text v="Thông tin chung" e="Header"/>
+    </message>
+    <message val="FCText">
+      <text v="nt" e="FC"/>
+    </message>
+    <message val="noChange">
+      <text v="Chưa thay đổi thông tin" e="No Item Changed"/>
+    </message>
+  </messages>
+
+</dir>

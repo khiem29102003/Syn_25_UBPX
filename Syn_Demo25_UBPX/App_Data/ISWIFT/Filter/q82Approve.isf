@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="q82Approve" table="" height="" fieldKey="id" voucherCode="NQ1" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lọc nhập quỹ (Duyệt)" e="Filter Advance (Approve)"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D">
+          <text v="Ngày c/từ (từ/đến)" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+        <field name="so_ct1"  label="1" field="1" operation="a.so_ct &gt;= N'%s'">
+          <text v="Số c/từ (từ/đến)" e="Voucher Number"></text>
+        </field>
+        <field name="so_ct2"  label="" nextRow="false" field="1" operation="a.so_ct &lt;= N'%s'">
+          <text v="" e=""></text>
+        </field>
+
+		
+        <field name="ma_kh" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Mã nhân viên" e="Employee Code"></text>
+          <viewInfo lookupType="One" lookupId="vdmnvbh" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_nv" />
+        </field>
+        <field name="ten_nv" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+		
+        <field name="dien_giai" label="1" field="-" operation="a.dien_giai like N'%%s%'">
+          <text v="Diễn giải" e="Voucher Number"></text>
+        </field>
+      </fields>
+    </form>
+    
+    
+    <form gravity="BottomLeft" columns="120,120,120,120"  >
+      <fields>
+        <field name="ma_unit" viewType="Lookup" inactivate="true" label="1" field="3" >
+          <text v="Đơn vị" e="Unit"></text>
+          <viewInfo lookupType="Multi" lookupId="sysunit" lookupKey="status = 1 and unit_id in (select unit_id from dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @@admin, ''))" lookupCheck="1 = 1" lookupRef="ten_unit" />
+        </field>
+        <field name="ten_unit" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="3" valueDefault="1" operation="=" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Chờ duyệt (Xử lý Duyệt/Hủy nhập quỹ)" e="Open (Approve)"/>
+              </option>
+              <option val="5">
+                <text v="Đã duyệt (Xử lý bỏ duyệt)" e="Approved (Undo)"/>
+              </option>
+              <option val="9">
+                <text v="Đóng (Xử lý bỏ đóng, duyệt nhập quỹ)" e="Close (Open &amp; Approve)"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="user_id0" viewType="Combobox" inactivate="true" label="1" field="3" operation="a.user_id0 in (select user_id from sysuserinfo where user_ref like '@@userRef%')" >
+          <text v="Lọc theo người sd" e="Filter By User"></text>
+          <viewInfo>
+            <options>
+              <option val="">
+                <text v="Tất cả" e="All"></text>
+              </option>
+              <option val="1">
+                <text v="Lọc theo nhân viên đang quản lý" e=""></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>SQULEleiRrQS0Jgr2uDyp5dQw387c/ZzYe/OnCoIi7z61o+vvTI/DnTSQIQXH535bMqcGBG5lfRvU5UfhB3qsv7xu4baMIiR0XFx17Hgab6bTnUbGjgGRBSpFJKfe7van8J8U1O0kMUy3Ra1SqtBWZ9P3Fza1JmmAoXMIYGNyULQcV3zZlJCNCqolKsIfZ4t3dZf8LIjMHP+/ps/KiAVaRDFtrG99WACWzqYcB+iOg38mIbmuCmtZk/sUeRvH0nfDtQb9+Ydav8ke6Ceqya7uIyWtUXyPq9kmEHETffd1qBouQxhn8m6hUob2/MyCwBlHKTdAMXxwF3ukfFbRFA0+A==</enc>]]>
+    </text>
+  </js>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+
+  <messages>
+    <message val="approve">
+      <text v="duyệt/hủy" e="Approve/Close"/>
+    </message>
+    <message val="undo">
+      <text v="bỏ duyệt" e="Open "/>
+    </message>
+    <message val="open">
+      <text v="bỏ đóng" e="Open"/>
+    </message>
+  </messages>
+</dir>

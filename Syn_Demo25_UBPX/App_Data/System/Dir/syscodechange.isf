@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from @@table where id = @id and status in (7)) begin
+    select '$notEditStatus' as message
+    return
+  end
+    ">
+]>
+
+<dir id="syscodechange" table="syscodechange" fieldKey="id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Đổi/gộp mã" e="Change/Merge Code"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,240,120"  >
+      <fields>
+        <field name="id" hidden="true" dataType="I" fieldType="PK">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="code_type" disabled="true" allowBlank="false" viewType="Combobox" label="1" field="2">
+          <text v="Loại mã" e=""></text>
+          <viewInfo>
+            <options query="select code, name%l from syslistchangecode where status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="old_value" format="U" label="1" field="1" allowBlank="false" >
+          <text v="Mã cũ" e="Old Code"></text>
+        </field>
+        <field name="old_label" nextRow="false" cellCss="color: red;" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="new_value" format="U" label="1" field="1" allowBlank="false" >
+          <text v="Mã mới" e="New Code"></text>
+        </field>
+        <field name="new_label" nextRow="false" cellCss="color: red;" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="ghi_chu" label="1" field="2" >
+          <text v="Ghi chú" e="Note"></text>
+        </field>
+        <field name="xtype" dataType="I" viewType="Combobox" disabled="true" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="0">
+                <text v="Đổi mã" e="Change Code"></text>
+              </option>
+              <option val="1">
+                <text v="Gộp mã" e="Merge Code"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="status" dataType="I" disabled="true" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="5">
+                <text v="Chờ thực hiện" e="Pedding"></text>
+              </option>
+              <option val="7">
+                <text v="Hoàn thành" e="Hoàn thành"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+&DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>XKqmwgBYJvW7JBPVGfFDsg3xdK/ZCmzQoEhvUgQWmsHqgc9dGvitZE8OhVAL5o30fb33RbiYBUQk4Ni0lNHrQt79R6Recluvovt3I28wQCiHe5288HEB4PUQt2J6uYh7Qf9P/hkz4pm5e7q+edVSlRoWNHlh3hcJ8KpNr+FMitmuhyQbTXwcDyR4wFO0tq5va1+QYOXFUh8+m7mqu4rUxHYSGbPyQy0zXOdSjaX0Qxmyj6K8KrW3MACSg1sfo+7VZnv6k5huZG4V3pJrZuUoENwRmsHKIpgUmXRQpK662rvmwhKQ4zeWhutEdTScrPRHB7dY8jpZBYJhL6gYkiLnu9UTaPDvOBI3mD3eY89OVrDAyefWViojr1csvgtAYMPZyLSQwY5xNBf4e12LqQb7q7sl8sIEejD1G6J9sXHfrH/mJcCljo0SKzmWfYW964a7UW14ncfdF3+vgIagWMMcxmTmuTVH9VlzoMaScD8WAicSF3jfjA2BWwunuj22isewHpwgTrSojZ0832sE6LUp5WUUZxDu3EErdtf5uSUcg6qcqH6Ak4gZyOTf3k14RyImg+lNAsRK0dMuP2BSKn20bCVCbXW3RqikkGTZjHGGLoCT8lnQDewevpsLA9hEnbKVtEqlqG2T17S0A9B2Uq5uQzC/IwIJW+OtsUuVJ/Nv6gg=</enc>]]>
+    </text>
+  </js>
+
+  <script>
+    <request code="checkOldCode">
+      <text>
+        <![CDATA[<enc>eVp1WNZIGTsyBZec3HUT6panprpzOgtdljuHTmgPXsvuJLxvM5nEkDGAJlFFP0qRBXPfETEqGvQCAzxP3l8v69k+hR+QcuL6IQo+cwUpdcY2hhAcJK0MpBGRJRKcXjNIeeusJZjjHHpMObEPd5QG1yARatTIpRgqwjTxUgb08J0+MIgAXOx01eOWGlYqoI43hJ/EJ+6ddTfuRu+jHKQWdNntXScB3XFVzQpbCAUZoIPBk7r7mhf2AtXVpGgBxmR7Zs1xfHIiDXHzJW3KoQNSqJ9z7B/p3uHD4mJZnmuf1fj0Sy0dK2mDNXcTEwEAMd7t</enc>]]>
+      </text>
+    </request>
+
+    <request code="checkNewCode">
+      <text>
+        <![CDATA[<enc>m4E34sc9sXsgM6yTmxWFuWPrKgPg6UtkyXikumF9ycFjzkgR3ts8nl3pXKvtdhHDoOwfH2cHntgUFfw8m1IPp71F3MNBZZFekurGzZF8df+l/Ryu2/t4bnoubuoBOm1o6WrZmuSLjvwJCIxQiYLSYr9Ucua080uRp383yqE9w+oWf1bVe1Boz35Jp9HvcULjnVZJf8FqY/FsFxJICTx/xIFYWcXqFodprV/eYy3zA5MbCsldk8kkFHgIb0O2L1L6qWpBoCdrDh8+kwnIj+/X9+bKkUhk49mMoljNPWBXLKOoWAyxNvs2PCJlTi7E15r2wdRL4Y8aTmdeAGBC5HPFWA==</enc>]]>
+      </text>
+    </request>
+    
+    <query>
+      <text>
+        <![CDATA[<enc>r07gHy2a1YsWBN5sJQoNxYa1sI4hSbyxaZPELeOK4RcruMCpSWfc9UthMqmOvYHTE2MipIQ+y/ONHqRuYxwMTw==</enc>]]>&CheckUpdatingDeleting;<![CDATA[<enc>cnXlg0sHUJpCrTAGH3RVsqxdgyxBUc4C+2ri1HI9bpWVnCuZT85qXb9kmudZ9TahGPq107n1bRxHi/tKlxFNweTGYlRcZcA5Fo/q8LHX2on47WQM3RLSmLzWhKBLIlDqbz8h4oQSCNhWvI82Hqj/qXqXuYN0ftLfoLQXjsBW3jHVf8ro+1UDtzg7AErHQ0aOOFoCACeLc6cy+dfafoA0xrWrnvEQFImpJ69OtnekJAspejMusnJc8XqH9+ewKucvxv/UUIAOYcM80rNojt/JRjnirTo8OAAEWUHBhtSSYlAs73XOllnPkNHjtd96clDaStIHxgJbCg9Lvja6WIKD/w==</enc>]]>
+      </text>
+    </query>
+    
+    <deleting>
+      <text>
+        &CheckUpdatingDeleting;
+      </text>
+    </deleting>
+    
+    <updating>
+      <text>
+        <![CDATA[<enc>gUvd4wZ35UlOSsGh5TkGLBadUrdIb55X2eZao0obdCc=</enc>]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[<enc>sxD5Swu0R4mcxEHdwcy2ynVkJ6IiRfsuHiDzDrC78ELIJg2k4xX5PxEITwgSuDtWSiTOU3sqnIo/Bv0T8e877uKHW6bIEuTFdpbPdQB+xEnTHRLcmkCigAyZNoREfWPsJ6/iE9yYF08G3aJgcxKEzg==</enc>]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOEyWKNEprI7IWHpBOcSCFKw4RSCiQl/+hdwP1BF6+GkU6Tu8F/pRNCpgGNWNEL+5lVEn9gfjurRByBwy2TwHySf586OTKWZGkNEv8I7X5KLdNDWn8e4uD9fcWWIrPOBrP+FLx7AWnNgzrAZnNWJsZWo=</enc>]]>
+      </text>
+    </inserting>
+
+    <aftersave>
+      <text>
+        <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOOhZZSA3lGzDhwhJgBPbaLwTIWNnH2/zz5Y3Q3lhZvn4y4FL+7QcAhq/Hjb+ShDT5g==</enc>]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+    <message val="notExistsOldCode">
+      <text v="Mã đã nhập không tồn tại" e=""/>
+    </message>
+    <message val="existsNewCode">
+      <text v="Mã mới đã tồn tại. Sẽ gộp mã cũ theo mã đã tồn tại" e=""/>
+    </message>
+  </messages>
+</dir>

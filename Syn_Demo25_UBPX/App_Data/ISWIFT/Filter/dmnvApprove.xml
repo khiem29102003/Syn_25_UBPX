@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir ma_nv="dmnvApprove" table="" height="" fieldKey="ma_nv" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lọc" e="Filter"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D">
+          <text v="Ngày c/từ (từ/đến)" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+
+		<field name="ma_pb" viewType="Lookup" inactivate="true" label="1" field="1" >
+          <text v="Phòng ban" e="Unit"></text>
+          <viewInfo lookupType="One" lookupma_nv="dmpb" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_pb" />
+        </field>
+        <field name="ten_pb" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_bp" viewType="Lookup" inactivate="true" label="1" field="1" >
+          <text v="Đơn vị" e="Unit"></text>
+          <viewInfo lookupType="One" lookupma_nv="dmbp" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_bp" />
+        </field>
+        <field name="ten_bp" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+		
+		<field name="ma_nv" viewType="Lookup" label="1" field="1">
+          <text v="Mã nhân viên" e="Employee Code"></text>
+          <viewInfo lookupType="One" lookupma_nv="dmnv" lookupKey="xstatus = 5" lookupCheck="1 = 1" lookupRef="ten_nv" />
+        </field>
+        <field name="ten_nv" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>    
+      </fields>
+    </form>
+	
+    
+    <!-- <form gravity="Mma_nvdleLeft" tabPageIndex="1" columns="120,120,120"  > -->
+      <!-- <text v="Chi tiết" e="Detail"/> -->
+      <!-- <fields> -->
+        
+     
+      <!-- </fields> -->
+    <!-- </form> -->
+    
+    <form gravity="BottomLeft" columns="120,120,120,120"  >
+      <fields>
+        <field name="xstatus" viewType="Combobox" inactivate="true" label="1" field="2" valueDefault="5" operation="=" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+			  <option val="3">
+                <text v="Thử việc" e="Approved (Undo)"/>
+              </option>
+              <option val="5">
+                <text v="Đang làm việc" e="Approved (Undo)"/>
+              </option>
+			  <option val="7">
+                <text v="Nghỉ thai sản" e="Open (Approve)"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="user_ma_nv0" viewType="Combobox" inactivate="true" label="1" field="3" hidden="true" operation="a.user_ma_nv0 in (select user_ma_nv from sysuserinfo where user_ref like '@@userRef%')" >
+          <text v="Lọc theo người sd" e="Filter By User"></text>
+          <viewInfo>
+            <options>
+              <option val="">
+                <text v="Tất cả" e="All"></text>
+              </option>
+              <option val="1">
+                <text v="Lọc theo nhân viên đang quản lý" e=""></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$dmnvApprove(p){
+  this.constructor(p);
+}
+filter$dmnvApprove.prototype = new DirEvent();
+filter$dmnvApprove.prototype.afterInit = function(){
+  var p = this._dir;
+}
+filter$dmnvApprove.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir;
+  if (opt._xstatus == 3 || opt._xstatus == 5 || opt._xstatus == 7 ) sub = ['%s', p.msg('approve')]
+  else if (opt._xstatus == 9) sub = ['%s', p.msg('undo')]
+  else sub = ['%s', p.msg('open')]
+  return [m2, opt, sub];
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+
+  <messages>
+    <message val="approve">
+      <text v="duyệt nghỉ việc" e="Approve/Close"/>
+    </message>
+    <message val="undo">
+      <text v="bỏ duyệt" e="Open "/>
+    </message>
+    <message val="open">
+      <text v="bỏ đóng" e="Open"/>
+    </message>
+  </messages>
+</dir>

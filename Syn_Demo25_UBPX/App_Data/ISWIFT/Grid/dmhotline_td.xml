@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridFinding.xml">
+]>
+
+<dir id="dmhotline_td" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách số điện thoại tiếp nhận tiếp dân" e="List of Citizen Reception Contact Numbers"></title>
+  <subtitle v="Xem, sửa dữ liệu..." e="View, update data..."></subtitle>
+  <grids>
+    <grid table="dmhotline" fieldKey="ma_hl" order="ma_hl" allowFilter="true" allowOrder="true" key="ma_loai = ''TIEPDAN''">
+      <fields>
+	    <field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="100" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+		<field name="ma_hl" width="120" fieldType="PK">
+          <text v="Mã hotline" e="Hotline Code"></text>
+        </field>
+		<field name="hl_name" width="200">
+          <text v="Tên hiển thị" e="Employee Code"></text>
+        </field>
+		<field name="hl_lienhe" width="120">
+          <text v="Người liên hệ" e="Department Code"></text>
+        </field>
+		<field name="dien_thoai" width="150" align="right" fieldType="PK">
+          <text v="Điện thoại" e="Phone"></text>
+        </field>
+		<field name="ma_loai" viewType="Combobox" width ="150">
+          <text v="Mã loại" e="Type Code"></text>
+          <viewInfo>
+			<options query="select ma_loai, ten_loai%l from dmloaiphone where status = 1 and ma_loai = 'TIEPDAN' order by ma_loai">
+            </options>
+          </viewInfo>
+        </field>
+		<field name="ma_ttp" width="120">
+          <text v="Mã tỉnh thành" e="Province/City Code"></text>
+        </field>
+		<field name="ten_ttp" width="200" fieldType="EX">
+          <text v="Tỉnh thành" e="Province/City"></text>
+        </field>
+		<field name="ma_phuongxa" width="120">
+          <text v="Mã phường xã" e="Ward/Commune Code"></text>
+        </field>
+		<field name="ten_phuongxa" width="200" fieldType="EX">
+          <text v="Tỉnh thành" e="Province/City"></text>
+        </field>
+		<field name="ghi_chu" width="150" align="right">
+          <text v="Ghi chú" e="Note"></text>
+        </field>
+		<field name="status" viewType="Combobox" width ="150" valueDefault="1">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_tt, ten_tt%l from dmttsd where status = 1 order by ma_tt">
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+	  
+&DefaultButton;
+	<script>
+        <query>
+          <text>
+            <![CDATA[
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmttp c on a.ma_ttp = c.ma_ttp left join dmphuongxa d on a.ma_phuongxa = d.ma_phuongxa', 'b.ma_unit, c.ten_ttp, d.ten_phuongxa', '@@key', '', @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = @strFinding
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmttp c on a.ma_ttp = c.ma_ttp left join dmphuongxa d on a.ma_phuongxa = d.ma_phuongxa', 'b.ma_unit, c.ten_ttp, d.ten_phuongxa', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </finding>
+      </script>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+	<![CDATA[
+function grid$dmhotline_td(f){
+	this.constructor(f);
+}
+grid$dmhotline_td.prototype = new DirEvent();
+grid$dmhotline_td.prototype.afterInit = function(){
+
+}
+	]]>
+    </text>
+  </js>
+
+<css>
+    <text>
+      <![CDATA[
+.table-bottom{
+	left: 0px!important;
+	height: calc(100% - 77px);
+	top: 0px;
+	position: relative;
+	margin-top: 27px;
+	clear: both;
+	border-bottom: 1px solid #ddd;
+}
+#content .dir{
+	position: relative !important;
+	height: 100%;
+}
+
+@media only screen and (max-width: 767px) {
+  .table-bottom{
+	margin-top: 42px;
+	height: calc(100% - 92px);
+  }
+}
+		]]>
+    </text>
+  </css>
+  <script>
+
+  </script>
+
+</dir>

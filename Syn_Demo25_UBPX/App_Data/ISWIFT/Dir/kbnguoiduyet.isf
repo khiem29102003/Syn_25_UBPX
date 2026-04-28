@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="kbnguoiduyet" table="kbnguoiduyet" fieldKey="id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Khai báo người duyệt" e="Approving Officers List"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="id" label="1" field="1" format="-1" hidden="true" fieldType="PK" dataType="N">
+          <text v="" e=""></text>
+        </field>
+
+        <field name="loai" viewType="Combobox" fieldType="PK" inactivate="true" label="1" field="2" >
+          <text v="Loại duyệt" e="Type"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Đơn hàng" e="Sales Orders"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+
+        <field name="user_id" label="1" field="1" format="-1" hidden="true" dataType="N" fieldType="PK">
+          <text v="" e=""></text>
+        </field>
+        <field name="username" viewType="Lookup" allowBlank="false" label="1" field="1" operation="like" fieldType="EXParam">
+          <text v="Nhân viên" e="Sale"></text>
+          <viewInfo lookupType="One" lookupId="sysuserinfo" lookupKey="@@admin = 1 or user_ref like '@@userRef%'" lookupCheck="1=1" lookupRef="nickname" lookupInfo="sysuserinfo|username|nickname" />
+        </field>
+        <field name="nickname" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+
+        <field name="ma_nt" format="U" label="1" field="1" viewType="Lookup" clientDefault="true" allowBlank="false" fieldType="PK" >
+          <text v="Mã ngoại tệ" e="Saleman Code"></text>
+          <viewInfo lookupType="One" lookupId="dmnt" lookupKey="status = 1" lookupCheck="1=1"  lookupRef="ten_nt" lookupInfo="dmnt|ma_nt|ten_nt" />
+        </field>
+        <field name="ten_nt" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="tien" label="1" field="1" format="Amount" dataType="N">
+          <text v="Giới hạn duyệt" e="Amount Limit"></text>
+        </field>
+        <field name="footer_tien" label="[240]" field="" nextRow="false" fieldType="EX">
+          <text v="(0 - Được duyệt tất cả số tiền)" e="(0 - Allow no limit)"></text>
+        </field>
+
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>gjV3rCI/bNUFTHYsROWUJ9s7Kvv3/rdNM1U+vTISEnufa8S4dEuLsJFgyzdkgkIeJTTIOnyvhTd6PaI5LfDUm9pWiRJcymU8WWY3Pj56O66T2oLxzf5ZtebIU23kKky+wAYy6lXbJQV+laUhApdNwchdWybHAlr+7vRgk5K8CkKNwarcHxP4CYaE80zmuGCw</enc>]]>
+    </text>
+  </js>
+
+  <script>
+    <query>
+      <text>
+        <![CDATA[<enc>eMMXRVPbqUUWgKKdd9/5BRoLIZW7PKq3pCIzV6RB4J9/M0CzCNGQBpLQrdrya+31X64TVeRReMmu0IJWkYKIBMaeMcGnK1jUWFqrXYhwJFwqR53edg831dNHA6W162GqNHo38urj9Wo/26l9iaiLIzrgOPqzK+UgIwCr4z6w8VtwWLN3E5Wnt+eKn3pxDMuKnoTUazXex+L22X8rN8qA/Wqvi9xyTGtV+EAZWbtFupYFsWRHSBIru6cvJPgpnpEj</enc>]]>
+      </text>
+    </query>
+
+    <beforesave>
+      <text>
+        <![CDATA[<enc>TxufIfY7K5MS/tLGt44xHQLybC9mQlzIUf4DotblCWLNX5gyLyiKdQremvoVMG8pmb63DI8e5iPv6nV+nqvgGxAZhD0eBltsYbkx6TDDXFDxept4K05GL9HnRmp5lPdR+qIZTh0qAEe0bHHjN1jTmmAHxnuU1sRdKXgGzi05tWPVbM8sNoCdCYX/phIJhnQkyPoBPbvG6gBvmh20UD40NgYF9O2fQzCHGptG4aHuZOfKs3bJtfYDgMFWYcQuE0GgXow/P4RvGmjChgJg2HO87qncEaUad7gJbpRKG7gLaZmF0kuELe1CBRtE63IaitcN8mgyMHULKDje19ihMQJDrbp0HmP9qCws5KtVyHVTrLeUI1HTaMwryWrd7j+yGEOo</enc>]]>
+      </text>
+    </beforesave>
+
+    <aftersave>
+      <text>
+        <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOOhZZSA3lGzDhwhJgBPbaLws8pIreMcW5bFXmm4YP4zuUfpJY7QlOHqaiGhH3l2J4LDU3Vm/xx/ykjG6lP3lVt4=</enc>]]>
+      </text>
+    </aftersave>
+
+  </script>
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Khai báo người duyệt đã tồn tại." e="The record already exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Khai báo người duyệt đã tồn tại." e="The record already exists."/>
+    </message>
+  </messages>
+
+</dir>

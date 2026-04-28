@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmttbm" table="dmttbm" fieldKey="ma_ttbm" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục trạng thái nhấc máy" e="List of Pick-up state"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_ttbm" format="U" label="1" field="1" allowBlank="false" fieldType="PK" >
+          <text v="Mã trạng thái nhấc máy" e="Pick-up state code"></text>
+        </field>
+        <field name="ten_ttbm" label="1" field="-" allowBlank="false" fieldType="PK" >
+          <text v="Tên trạng thái nhấc máy" e="Pick-up state name"></text>
+        </field>
+        <field name="ten_ttbm2" label="1" field="-">
+          <text v="Tên khác" e="Other name"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmttbm(p){
+  this.constructor(p);
+}
+dir$dmttbm.prototype = new DirEvent();
+dir$dmttbm.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmttbm.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+dir$dmttbmDisabledMasterField(p, g);
+
+}
+
+function dir$dmttbmDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_ttbm').trim() != '')
+  {
+    p.setDisabled('ma_ttbm', true);
+  }
+  else
+  {
+    p.setDisabled('ma_ttbm', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+   <css>
+		<text>
+		  <![CDATA[
+	.control-label.ma_ttbm, .control-label.ten_ttbm
+	{	
+
+		color: #499b98;;
+	}
+		  ]]>
+		</text>
+  </css>
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã trạng thái nhấc máy đã tồn tại.' else N'Pick-up state code already exists.' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã trạng thái nhấc máy đã tồn tại.' else N'Pick-up state code already exists.' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã trạng thái nhấc máy đã tồn tại." e="Pick-up state code already exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã trạng thái nhấc máy đã tồn tại." e="Pick-up state code already exists."/>
+    </message>
+  </messages>
+</dir>

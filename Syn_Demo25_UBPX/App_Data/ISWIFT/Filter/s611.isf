@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="v61" table="" height="" fieldKey="id" voucherCode="FCL" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lọc đơn hàng" e="Filter Orders FCL"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D">
+          <text v="Ngày c/từ (từ/đến)" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_job" clientDefault="true" viewType="Lookup" label="1" field="1" allowBlank="true"  setype="1" operation="like">
+          <text v="Mã" e="Code"></text>
+          <viewInfo lookupType="One" lookupId="vdmjob" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_job" lookupInfo="vdmjob|ma_job|ten_job" />
+        </field>
+        <field name="ten_job" clientDefault="true" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="so_job"  label="1" field="1" operation="a.so_job &gt;= N'%s'" nextRow="true">
+          <text v="Số" e="Number"></text>
+        </field>
+        <field name="ma_ngv" viewType="Combobox" label="1" field="1" operation="=">
+          <text v="Loại hóa đơn" e="Inv. Type"></text>
+          <viewInfo>
+            <options query="select ma_ngv, ten_ngv%l from dmngv where ma_ct = '@@voucherCode' and status = 1 order by stt">
+              <option val="">
+                <text v="Tất cả" e="All"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+		<!-- <field name="ma_nv" clientDefault="true" viewType="Lookup" label="1" field="1" allowBlank="true"  setype="1" operation="like"> -->
+          <!-- <text v="Mã nhân viên" e="Employee Code"></text> -->
+          <!-- <viewInfo lookupType="One" lookupId="dmnv" lookupKey="status in (5,7,9)" lookupCheck="1=1" lookupRef="ten_nv" lookupInfo="dmnv|ma_nv|ten_nv" /> -->
+        <!-- </field> -->
+        <!-- <field name="ten_nv" clientDefault="true" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as "> -->
+          <!-- <text v="" e=""></text> -->
+        <!-- </field>	 -->
+		<field name="ma_kh" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Khách hàng" e="Customer Code"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1 and kh_yn = 1" lookupCheck="1=1" lookupRef="ten_kh" lookupInfo="dmkh|ma_kh|ten_kh" />
+        </field>
+        <field name="ten_kh" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		
+		<field name="ma_kh_g" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Người nhận" e="Consignee"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1 and other_yn = 1" lookupCheck="1=1" lookupRef="ten_kh_g" lookupInfo="dmkh|ma_kh|ten_kh" />
+        </field>
+		
+		<field name="ten_kh_g" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		
+		<field name="ma_kh_s" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Người gửi" e="Shipper"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1 and other_yn = 1" lookupCheck="1=1" lookupRef="ten_kh_s" lookupInfo="dmkh|ma_kh|ten_kh" />
+        </field>
+        <field name="ten_kh_s" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		
+		<field name="ma_dl" viewType="Lookup" label="1" field="1"  hidden="false" operation="like">
+		  <text v="Đại lý" e="Agent"></text>
+		  <viewInfo lookupType="One" lookupId="vdmdaily" lookupKey="status = 1 and dl_yn =1" lookupCheck="1=1" lookupRef="ten_dl" lookupInfo="vdmdaily|ma_dl|ten_dl" />
+		</field>
+		<field name="ten_dl" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="" field="-" aliasName="cast('' as nvarchar(200)) as ">
+		  <text v="" e=""></text>
+		</field>
+		<field name="so_tk" label="1" field="1" allowBlank="true" nextRow="true" operation="a.so_tk like N'%%s%'">
+			<text v="Số tờ khai" e="Declaration No"></text>
+		</field>
+		<field name="khoang_cach" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1">
+          <text v="" e=""></text>
+        </field>
+		<field name="cont_no" label="1" field="1" allowBlank="true" nextRow="false">
+          <text v="Cont No." e="Cont No."></text>
+		</field>
+		<field name="book_no" label="1" field="1" allowBlank="true" nextRow="true" operation="a.book_no like N'%%s%'">
+          <text v="Book No." e="Book No."></text>
+		</field>
+		<field name="khoang_cach1" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1">
+          <text v="" e=""></text>
+        </field>
+		<field name="seal_no" label="1" field="1" allowBlank="true" nextRow="false">
+          <text v="Seal No." e="Seal No."></text>
+		</field>
+		<field name="mbl_no" label="1" field="1" allowBlank="true" nextRow="true" operation="a.mbl_no like N'%%s%'">
+			<text v="Số MBL" e="MBL No."></text>
+		</field>
+		<field name="hbl_no" label="1" field="1" allowBlank="true" nextRow="true" operation="a.hbl_no like N'%%s%'">
+			<text v="Số B/L" e="B/L No"></text>
+		</field>
+		<!-- <field name="ma_noi_di" viewType="Lookup" label="1" field="1" operation="like"> -->
+			<!-- <text v="Nơi đi" e="Origin"></text> -->
+			<!-- <viewInfo lookupType="One" lookupId="vdmcangdi" lookupKey="(kkh_yn = 1 or hc_yn = 1) and status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_di"  /> -->
+		<!-- </field> -->
+		<!-- <field name="ten_noi_di" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-"> -->
+			<!-- <text v="" e=""></text> -->
+		<!-- </field> 	 -->
+			
+		<!-- <field name="ma_noi_den" viewType="Lookup" label="1" field="1" operation="like"> -->
+			<!-- <text v="Nơi đến" e="Destination"></text> -->
+			<!-- <viewInfo lookupType="One" lookupId="vdmcangden" lookupKey="(kkh_yn = 1 or hc_yn = 1) and status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_den" /> -->
+		<!-- </field> -->
+		<!-- <field name="ten_noi_den" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-"> -->
+			<!-- <text v="" e=""></text> -->
+		<!-- </field> 	 -->
+		<!-- <field name="ma_hang" allowBlank="true" viewType="Lookup" label="1" field="1"  hidden="false"> -->
+		  <!-- <text v="Hãng tàu/ Đại lý" e="Carrier/ Agent Code"></text> -->
+		  <!-- <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1 and (ncc_yn =1 or dl_yn = 1)" lookupCheck="1=1" lookupRef="ten_hang" lookupInfo="dmkh|ma_kh|ten_kh" /> -->
+		<!-- </field> -->
+		<!-- <field name="ten_hang" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="" field="-" aliasName="cast('' as nvarchar(200)) as "> -->
+		  <!-- <text v="" e=""></text> -->
+		<!-- </field> -->
+        <field name="dien_giai" label="1" field="-" operation="a.dien_giai like N'%%s%'">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+      </fields>
+    </form>
+    
+    <form gravity="BottomLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ma_unit" viewType="Lookup" inactivate="true" label="1" field="2" >
+          <text v="Đơn vị" e="Unit"></text>
+          <viewInfo lookupType="Multi" lookupId="sysunit" lookupKey="status = 1 and unit_id in (select unit_id from dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @@admin, ''))" lookupCheck="1 = 1" lookupRef="ten_unit" />
+        </field>
+        <field name="ten_unit" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" operation="=" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+              <option val="">
+                <text v="Tất cả" e="All"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="user_id0" viewType="Combobox" inactivate="true" label="1" field="2" operation="a.user_id0 in (select user_id from sysuserinfo where user_ref like '@@userRef%')" >
+          <text v="Lọc theo người sd" e="Filter By User"></text>
+          <viewInfo>
+            <options>
+              <option val="">
+                <text v="Tất cả" e="All"></text>
+              </option>
+              <option val="1">
+                <text v="Lọc theo người tạo" e="Filter By Create User"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>uw3iZoR/y/5o6FF1x5y/2VsX6r6XnBCSVl7SuH/DplDh3gu+Ery1F3bgaQiPy8gg10J01I99bJRebaVOZsrE9w1MPQJUKZKlRVaKua9xcdUw8jT8AB2DwCvaYiHzV436mzJr1n+cP+6G6bm/9pyFP6YdkninGWNGWq8/Wkul7gQbRuUlZB3CJn9bWy+8dr37</enc>]]>
+    </text>
+  </js>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+</dir>

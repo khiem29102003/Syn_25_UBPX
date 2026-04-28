@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="s614" dirViewType="Grid" dirObjectType="Voucher" voucherCode="OTH" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Đơn hàng khác" e="Other Orders"></title>
+  <subtitle v="Thêm, sửa, xóa..." e="New, Edit, Delete..."></subtitle>
+
+  <grids>
+    <grid table="s61" fieldKey="id" order="so_job desc" allowFilter="true" allowOrder="true">
+      <fields>
+		<field name="ma_ct" width="80">
+          <text v="Mã c/từ" e="Voucher Code"></text>
+        </field>
+        <field name="so_ct" width="80" link="V" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+		<field name="ma_job" width="100" hidden = "false" link="V" >
+          <text v="Mã job" e="Job Code"></text>
+        </field>
+		<field name="so_job" width="100" link="V" >
+          <text v="Số job" e="Job Number"></text>
+        </field>
+		<field name="ma_ngv" viewType="Combobox" inactivate="true" width="120">
+          <text v="Loại hóa đơn" e="Inv. Type"></text>
+          <viewInfo>
+            <options query="select ma_ngv, ten_ngv%l from dmngv where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+		<field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="ma_kh" width="120" hidden = "false">
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="250" fieldType="EX" >
+          <text v="Khách hàng" e="Customer"></text>
+        </field>		
+		<field name="ma_noi_di" width="0" hidden="false">
+          <text v="Nơi đi" e="Origin"></text>
+        </field>
+		<field name="ten_noi_di" width="250" fieldType="EX">
+		  <text v="Nơi đi " e="Origin"></text>
+		</field>
+		<field name="ma_noi_den" width="0" hidden="false" >
+          <text v="Nơi đến" e="Destination"></text>
+        </field>	
+		<field name="ten_noi_den" width="250" fieldType="EX" >
+		  <text v="Nơi đến " e="Destination"></text>
+		</field>
+		<field name="hbl_no" width="120">
+          <text v="Số HBL" e="HBL No"></text>
+        </field>
+		<field name="mbl_no" width="120">
+          <text v="Số MBL" e="MBL No"></text>
+        </field>
+		<field name="so_tk" width="120">
+          <text v="Số tờ khai" e="Declaration No"></text>
+        </field>
+		<field name="book_no" width="120">
+          <text v="Book No." e="Book_No"></text>
+        </field>
+		<field name="tien_mua" dataType="N" format="FCAmount" width="120" fieldType="EX">
+          <text v="Tiền mua" e="Total Purchase Amount"></text>
+        </field>
+		<field name="tien_ch" dataType="N" format="FCAmount" width="120" fieldType="EX">
+          <text v="Tiền chi hộ" e="Total Purchase Amount"></text>
+        </field>
+		<field name="tien_ban" dataType="N" format="FCAmount" width="120" fieldType="EX">
+          <text v="Tiền bán" e="Total Purchase Amount"></text>
+        </field>
+		<field name="tien_th" dataType="N" format="FCAmount" width="120" fieldType="EX">
+          <text v="Tiền thu hộ" e="Total Purchase Amount"></text>
+        </field>
+		<field name="dien_giai" width="200">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+
+        <field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="120" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="id" dataType="N" fieldType="PK" format="0" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey =' ma_ct =  ''OTH'''
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 
+'left join sysunit b on a.unit_id = b.unit_id 
+left join dmkh c on a.ma_kh = c.ma_kh 
+left join vdmcangdi d on a.ma_noi_di = d.ma_noi_di 
+left join vdmcangden f on a.ma_noi_den = f.ma_noi_den', 
+'b.ma_unit, c.ten_kh, d.ten_noi_di, f.ten_noi_den, cast(0 as numeric(19, 2)) tien_mua, cast(0 as numeric(19, 2)) tien_ch, cast(0 as numeric(19, 2)) tien_ban, cast(0 as numeric(19, 2)) as tien_th', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId,
+'select id_dh, SUM(ISNULL(t_tieny2,0)) tien_mua,  SUM(ISNULL(t_tienx2,0)) tien_ch into #m72 from m72 where ma_ct= ''PN1'' GROUP BY id_dh;
+update #v set tien_mua = b.tien_mua, tien_ch = b.tien_ch from #v a join #m72 b on a.id = b.id_dh;
+select id_dh, SUM(ISNULL(t_tieny2,0)) tien_ban,  SUM(ISNULL(t_tienx2,0)) tien_th into #m54 from m54 where ma_ct= ''PX3'' GROUP BY id_dh;
+update #v set tien_ban = b.tien_ban, tien_th = b.tien_th from #v a join #m54 b on a.id = b.id_dh;'
+drop table #unitright
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @strDetailKey nvarchar(3000); set @strDetailKey = ''
+if @cont_no <> '' set @strDetailKey = @strDetailKey + ' and x.cont_no like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@cont_no) + '%'''
+if @seal_no <> '' set @strDetailKey = @strDetailKey + ' and x.seal_no like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@seal_no) + '%'''
+
+if @strDetailKey <> '' set @strDetailKey = ' and exists(select 1 from v61 x where a.id = x.id ' + @strDetailKey + ')'
+
+set @strKey = 'ngay_ct between ''' + convert(char(8), @ngay_ct1, 112) + ''' and ''' + convert(char(8), @ngay_ct2, 112) + ''' and ' + @strFinding + ' and ' + dbo.ISWIFTFunctionGetUnitIDRightKeys(@@admin, @@userId, @ma_unit, 'a.unit_id') + @strDetailKey
+set @strKey = @strKey +' and ma_ct =  ''OTH'''
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 
+'left join sysunit b on a.unit_id = b.unit_id 
+left join dmkh c on a.ma_kh = c.ma_kh 
+left join vdmcangdi d on a.ma_noi_di = d.ma_noi_di 
+left join vdmcangden f on a.ma_noi_den = f.ma_noi_den', 
+'b.ma_unit, c.ten_kh, d.ten_noi_di, f.ten_noi_den, cast(0 as numeric(19, 2)) tien_mua, cast(0 as numeric(19, 2)) tien_ch, cast(0 as numeric(19, 2)) tien_ban, cast(0 as numeric(19, 2)) as tien_th', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId,
+'select id_dh, SUM(ISNULL(t_tieny2,0)) tien_mua,  SUM(ISNULL(t_tienx2,0)) tien_ch into #m72 from m72 where ma_ct= ''PN1'' GROUP BY id_dh;
+update #v set tien_mua = b.tien_mua, tien_ch = b.tien_ch from #v a join #m72 b on a.id = b.id_dh;
+select id_dh, SUM(ISNULL(t_tieny2,0)) tien_ban,  SUM(ISNULL(t_tienx2,0)) tien_th into #m54 from m54 where ma_ct= ''PX3'' GROUP BY id_dh;
+update #v set tien_ban = b.tien_ban, tien_th = b.tien_th from #v a join #m54 b on a.id = b.id_dh;'
+drop table #unitright
+         ]]>
+          </text>
+        </finding>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+	  
+	  
+
+function grid$s614(f){
+  this.constructor(f);
+}
+grid$s614.prototype = new DirEvent();
+grid$s614.prototype.afterInit = function(renderType){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+</dir>

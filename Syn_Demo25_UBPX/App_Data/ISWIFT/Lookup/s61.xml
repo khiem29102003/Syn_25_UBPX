@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+]>
+
+<dir id="s61" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách tổng hợp đơn hàng" e="Order summary list"></title>
+
+  <grids>
+    <grid table="s61" fieldKey="id" fieldName="(ma_job+so_job) so_ct_dh" order="id" allowFilter="true" allowOrder="true">
+      <fields>
+		<field name="id" dataType="N" fieldType="PK" width="50" format="0" filterType="Code">
+          <text v="ID" e="ID"></text>
+        </field>
+		<field name="so_ct_dh" width="100" aliasName=" so_ct as " >
+          <text v="Số c/từ" e="Voucher number"></text>
+        </field>
+		<field name="ma_ct" width="100" >
+          <text v="Mã c/từ" e="Voucher Code"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày c/từ" e="Voucher date"></text>
+        </field>
+        <field name="so_ct" width="0" fieldType="RF" >
+          <text v="Số c/từ" e="Voucher number"></text>
+        </field>
+		<!-- <field name="ma_log" width="100"> -->
+          <!-- <text v="Mã log" e="Voucher number"></text> -->
+        <!-- </field> -->
+		<field name="ma_job" width="0" hidden = "false">
+          <text v="Mã job" e="Job Code"></text>
+        </field>
+		<field name="so_job" width="0" >
+          <text v="Số job" e="Job Number"></text>
+        </field>
+		<field name="ma_gd" width="0" >
+          <text v="Giao dịch" e="Voucher number"></text>
+        </field>
+		<field name="ma_ngv" width="0" >
+          <text v="Loại hóa đơn" e="Voucher number"></text>
+        </field>
+
+        <field name="ma_kh" width="120" >
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="250" fieldType="EX" >
+          <text v="Tên khách hàng" e="Customer name"></text>
+        </field>
+		<field name="ma_hang" width="120" >
+          <text v="Mã hãng tàu" e="Carrier Code"></text>
+        </field>
+        <field name="ten_hang" width="250" fieldType="EX" >
+          <text v="Tên khách hàng" e="Carrier name"></text>
+        </field>
+        <field name="ten_noi_di" width="250" fieldType="EX">
+		  <text v="Nơi đi " e="Origin "></text>
+		</field>
+		<field name="ten_noi_den" width="250" fieldType="EX">
+		  <text v="Nơi đến " e="Destination"></text>
+		</field>		
+		<field name="ma_noi_di" width="100" hidden="false">
+          <text v="Nơi đi" e="Origin"></text>
+        </field>
+		<field name="ma_noi_den" width="100" hidden="false">
+          <text v="Nơi đến" e="Destination"></text>
+        </field>
+		<field name="ngay_hl" width="120" dataType="D" >
+			<text v="Ngày hiệu lực" e="Effective date"></text>
+		</field>	
+		<field name="ngay_hld" width="120" dataType="D">
+			<text v="Hiệu lực đến" e="Expiry date"></text>
+		</field>
+      </fields>
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @key2 nvarchar(3000), @Update nvarchar(4000)
+select @key2 = @lookupKey + case when @val = '' then '' else ' and (@@fieldKey like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or (ma_job+so_job) like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+set @Update = 'update #v set so_ct_dh = (ma_job + so_job) from #v'
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmkh b on a.ma_kh = b.ma_kh left join dmkh c on a.ma_hang = c.ma_kh', 'b.ten_kh, c.ten_kh ten_hang', N'@@key', @key2, @@filterKey, @Update, @pageIndex, 10, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+</dir>

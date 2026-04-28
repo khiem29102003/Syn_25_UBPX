@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="s641" dirViewType="Grid" dirObjectType="Voucher" voucherCode="TU1" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Phiếu hoàn ứng hàng biển FCL" e="FCL Marine Orders"></title>
+  <subtitle v="Thêm, sửa, xóa..." e="New, Edit, Delete..."></subtitle>
+  <grids>
+    <grid table="s641" fieldKey="id" order="id desc" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="so_ct" width="100" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct" width="120" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+        <field name="ma_nv" width="0" hidden = "false">
+          <text v="Mã nhân viên" e="Employee Code"></text>
+        </field>
+        <field name="ten_nv" width="250" fieldType="EX" >
+          <text v="Tên nhân viên" e="Employee Name"></text>
+        </field> 		
+		<field name="ngay_hl" width="120" dataType="D">
+          <text v="Ngày hiệu lực" e="Effective  date"></text>
+        </field>
+		<field name="ngay_hld" width="120" dataType="D">
+          <text v="Ngày hiệu lực đến" e="Expiry  date"></text>
+        </field>
+		<field name="ma_nt" width="0" >
+          <text v="Ngoại tệ" e="Currency"></text>
+        </field>
+		<field name="dien_giai" width="250">
+          <text v="Ghi chú" e="Note"></text>
+        </field>
+        <field name="t_tien_tu" dataType="N" format="FCAmount" width="120">
+          <text v="Tiền ứng" e="Total amount"></text>
+        </field>
+		<field name="t_tien" dataType="N" format="FCAmount" width="120">
+          <text v="Tiền hoàn ứng" e="Total amount"></text>
+        </field>
+		<field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="120" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="id" dataType="N" fieldType="PK" format="0" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+
+<buttons>
+  <button id="edit">
+    <text v="$EditToolbar" e="$EditToolbar"></text>
+  </button>
+  <button id="view">
+    <text v="$ViewToolbar" e="$ViewToolbar"></text>
+  </button>
+  <button id="split">
+    <text v="-" e="-"></text>
+  </button>
+  <button id="find">
+    <text v="$FindToolbar" e="$FindToolbar"></text>
+  </button>
+  <button id="split">
+    <text v="-" e="-"></text>
+  </button>
+  <button id="refresh">
+    <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+  </button>
+  <button id="freeze">
+    <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+  </button>
+  <button id="split">
+    <text v="-" e="-"></text>
+  </button>
+  <button id="print">
+    <text v="$PrintToolbar" e="$PrintToolbar"></text>
+  </button>
+  <button id="export">
+    <text v="$ExportToolbar" e="$ExportToolbar"></text>
+  </button>
+</buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey =' ma_ct =  ''TU1'''
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmnv c on a.ma_nv = c.ma_nv', 'b.ma_unit, c.ten_nv', '@@key', '', @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @strDetailKey nvarchar(3000); set @strDetailKey = ''
+set @strKey = 'ngay_ct between ''' + convert(char(8), @ngay_ct1, 112) + ''' and ''' + convert(char(8), @ngay_ct2, 112) + ''' and ' + @strFinding + ' and ' + dbo.ISWIFTFunctionGetUnitIDRightKeys(@@admin, @@userId, @ma_unit, 'a.unit_id') + @strDetailKey
+set @strKey = @strKey +' and ma_ct =  ''TU1'''
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmnv c on a.ma_nv = c.ma_nv', 'b.ma_unit, c.ten_nv', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+drop table #unitright
+         ]]>
+          </text>
+        </finding>
+      </script>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+	  
+	  
+
+function grid$s641(f){
+  this.constructor(f);
+}
+grid$s641.prototype = new DirEvent();
+grid$s641.prototype.afterInit = function(renderType){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+</dir>

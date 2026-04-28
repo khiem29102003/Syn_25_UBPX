@@ -1,0 +1,289 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+  <!ENTITY VoucherRequiredFields01 SYSTEM "..\Include\XML\VoucherRequiredFields09.xml">
+  <!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid01.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+
+  <!ENTITY VoucherSaleRequest SYSTEM "..\Include\XML\VoucherSaleRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from thpkh where id = @id and status in (5,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+    ">
+]>
+
+
+<dir id="thpkh" table="thpkh" fieldKey="id" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" voucherCode="AS1" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Gán danh sách khách hàng cho nhân viên" e="Assign customer list to staff"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120" >
+      <fields>
+        <field name="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_nv" clientDefault="true" viewType="Lookup" label="1" field="1" allowBlank="true"  setype="1" nextRow="true">
+          <text v="Mã nhân viên" e="Employee Code"></text>
+          <viewInfo lookupType="One" lookupId="vdmnv" lookupKey="xstatus = 5 and status = 1" lookupCheck="1=1" lookupRef="ten_nv" lookupInfo="vdmnv|ma_nv|ten_nv" />
+        </field>
+        <field name="ten_nv" clientDefault="true" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>	
+		<field name="ngay_hl" label="1" field="[120]" valueDefault="new Date()" dataType="D" allowBlank="false" >
+			<text v="Ngày hiệu lực " e="Effective date"></text>
+		</field>
+		<field name="di_ngay" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="" field="1" >
+			<text v="" e=""></text>
+		</field>
+		<field name="ngay_hld" label="[100]" field="[120]" dataType="D" allowBlank="false" nextRow="false" >
+			<text v="Hiệu lực đến" e="Expiry date"></text>
+		</field>
+        <field name="dien_giai" label="1" rows="1" field="-">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+      </fields>
+    </form>
+	
+    <form gravity="TopRight" columns="120,120" >
+      <fields>
+			&VoucherRequiredFields01;
+      </fields>
+    </form>
+    <form tabPageIndex="1" gravity="MiddleLeft" height="400" columns="120,120,240" >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="thpkhct" allowBlank="false" label="" field="-" viewType="Grid">
+          <text v="Chi tiết" e="Detail"></text>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="7" gravity="MiddleLeft" height="0" columns="120,120,360" >
+      <text v="Đính kèm" e="Attach Files"></text>
+      <fields>
+        <field name="xfile" label="1" field="2" viewType="File" fieldType="EXParam">
+          <text v="Chọn files" e="Attach Files"></text>
+          <viewInfo fileFieldId0="id" fileGroup="AS1" fileExtension="*" maxFileSize="10240" maxFileCount="10"></viewInfo>
+        </field>
+      </fields>
+    </form>
+    <form gravity="BottomLeft" columns="120,120,120,120" >
+      <fields>
+		<field name="t_chon_yn" nextRow="true" label="1" field="1" disabled="true" dataType="N" format="Amount" >
+           <text v="Tổng số lượng" e="Total Amount"></text> 
+        </field> 
+      </fields>
+    </form>
+  </forms>
+
+  <grids>
+    <grid id="thpkhct" table="thpkhct" fieldKey="id, line" order="line" allowFilter="true" readOnly="false" allowOrder="true">
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+        <field name="ma_kh" width="120" allowBlank="false" viewType="Lookup" readOnly="false" importable="1" disabled="false">
+          <text v="Mã số thuế" e="Tax Code"></text>
+          <viewInfo lookupType="One" lookupId="dmkh0" lookupKey="status=1" lookupCheck="1=1" lookupRef="" lookupInfo="dmkh0|ma_kh|ten_kh" />
+        </field>
+        <field name="ten_kh" width="200" fieldType="EX" inactivate="true" readOnly="true" aliasName="b" join = "left join #dmkh0full b on a.ma_kh = b.ma_kh ">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+        <field name="dia_chi" width="200" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+		<field name="home_page" width="100" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Website" e="Website"></text>
+        </field>
+		<field name="ten_ttp" width="120" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Tỉnh thành phố" e="Province/City"></text>
+        </field>
+		<field name="rgname" width="120" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Khu vực" e="Region"></text>
+        </field>
+		<field name="ten_cv" width="120" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Chức vụ" e="Position"></text>
+        </field>
+		<field name="e_mail" width="120" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Email" e="Email"></text>
+        </field>
+		<field name="dien_thoai" width="120" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Điện thoại" e="Province/City"></text>
+        </field>
+		<field name="ten_nh_kh1" width="120" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Tên nhóm kh 1" e="Province/City"></text>
+        </field>
+		<field name="ten_nh_kh2" width="120" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Tên nhóm kh 2" e="Province/City"></text>
+        </field>
+		<field name="ten_nh_kh3" width="120" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Tên nhóm kh 3" e="Province/City"></text>
+        </field>
+		<field name="chon_yn" dataType="N" format="Amount" width="0" valueDefault="1" inactivate="true" readOnly="true" hidden="true">
+          <text v="Chonyn" e="Total Bill"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="paste">
+          <text v="$PasteToolbar" e="$PasteToolbar"></text>
+        </button>
+        <button id="moveup">
+          <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+        </button>
+        <button id="movedown">
+          <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+        </button>
+		<button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="retrieve">
+          <text v="$RetrieveToolbar" e="$RetrieveToolbar"></text>
+          <items>
+            <button id="10">
+              <text v="Nhận dữ liệu danh sách khách hàng"  e="Retrieve customer data/list"/>
+            </button>
+            <button id="80">
+              <text v="-"  e="-"/>
+            </button>
+          </items>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[<enc>NcKw2UX8QUpdV/Hfi/BmIeqBB1kgWiFuUR/KH+GWhkW4IPCI2XSxkZdjVDr2tD7wtol75UNp4mOar6OAoxUcYEHt+H0mDykENuvwXg0gSDn1LcQPu1EPl+q63j4Ez/+Qe6A1D5enutOgGSGi3XGTSGQbnK5dkmGXZPQFi3mB2aZhMhigiqZdqQUjfNtAX41IK/Bjc0Yh7LsNOk1D5ExMiBEOTBlnS0foos4HT1uhtploawQlCh880feZg8tNM0Kp3NeETxzfKuO0w8wNaiBgbc1HAX+ICbFc9JxFeAIm3UxtayNfCur1BNk1tWt4l4/VPOrkrfaWPSUplmusy37c0a+mZa92kdQ5o3Y2ssVsq+tgvK0bpyYXZ+5tNoGVQCOg1mueVL/5LNkcwrHCJfSIxswZ4oDs5kWFjtpE7cnHdD1mrG0+wBFPAWhwA0G/g1JvjTkrvfJWmRLWPJOGVyAtwrGbxHX3z/m2dDTBMHGYiRM3EEKl49ktUlM95X82m+pLFWL6w6dDM4+tRERStN2Eng==</enc>]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>x+cNWYXkUeYDBjZiUMYqvr/TcS4mZ+wUFkjdk3ZqgEiyJ0Pbo9P29e0DA48CcraX5gbZYlE1tVPHKWTITAMRrhjm0Rd9lyQKfWMBYacRGH0QpMWvliQJ4VRYvp+U7v5ECVXMsSDfyQroL0A2PE+BdnocIdHKiX+acLe3F5HIHPicSyJOfa7M0ApKkKFCVdL3VKKzN67V2MaSoefssby3Mw0aeDj8FrTmiq7SbGQ2n4xrfYofg16yDDOiUwinEwzy2eNZiBxa8UCbI5Pv60NPaCxbmRc9DfaeQ3/C1YSK5mNSPJvDCYgqK7kKHZUILH6m/SUVDvgovpMDIuxLM7vu8L31CIjpUup60xo5vR/7L87IK3q5TKdlqpVbLynddRlfTbbs3qx058kAzUYeXmjFn3QEGVsi1GSh354ODQ+sRJUGYoBmiMNyvZrOCRf+2uXqj6ZW9VOgVxRZKgM84RrEAcVWUYAYze7f3mL4DNLwPPiiv7Plqu18itG1iKHgEIyW38EeOMO229K/gP1f89nZvywkdyadywWwO0AsraotNhOsB/TJti0X8/c54KKrqslR/bCqXlY1deParlSzxiE0MyvxNZ/5USfsN9i5faDkaZHYQ46bv8wFyEz+PrwASR6fkNKM0NYOQeD6zGs9kmuXKmiWO2uM/l3vrDiu7YZbYUu4gVR+ZSOcnMA5+vBW1Ne2LGDVFSBebcQkC9TYpqCa/oMWa6pZHLkVwx9Cx26fjRxRqqhYyjZt16hwhlteV7g11FIJP+Gr41zQCh7AdNIhreV/lDJb0TiI9nKiiSSsY+AmPP12wfbzrTkAzRoYyZrxsdZsWIhfwmMP1QJbXfm/qY5cmno7TdsKf2tBgeHZ1nBJmXnZiLNsdCuQbYmCNWXnc2ZIC8lCEhTqmmBLzPJLeV964TXLwagfRLXS5OYxQN7dBkN2SY2hSxAwlx8cEjfztGCeANYvst8S6lTI6ChUCGbu6U/Mo+qUJl6RBK5qiD7D8ae2/A9bMFwQy2OT1u/NSUDlIJ/8C02MrmAlOJYtN2yLHJs+ldD/x+syvvTDPPxQVwif1Q0TwcgmwKKtkRn61aBfOXe9aau20sZbWj9wnFv2KGqytmcqhEKtuAaN65zg3cizykEfvdjh92R+brjEVlx8HkHjxaugGvxeDeQkrQ==</enc>]]>
+    </text>
+  </js>
+  <css>
+    <text>
+      <![CDATA[<enc>dNcDen+3J7G99FWmAqQKNu38r2RDm6dmCaE9/FARw8gO6v60AjgCI1opxwb7xhrpQkErpVUCmMCliiJlefnm2Y+qcUE9siKag5lu6qu5+mxxSHAKo1UFKce3gEbxGdqkJfxVchLhrntf4IHcqhvDPaL+Q/0x+1Jg2EXSQhe7XW+7YQ0hVc8aAUwcvdtQ/r1LgimUgGs6hO/vfb2MH6RFTfDQADCc230LAhHKiqWZptXwio56EyyZFiI+1VJohouPBgeuBUyIxA+mjO9cl6bWpw==</enc>]]>
+    </text>
+  </css>
+  <script>
+    <request code="LoadName">
+      <text>
+        <![CDATA[<enc>Q5I46tZ4TfMqiKE29vFp70KjQ4Xlgpa9exnwGq75WFdPebVUCvtxlNCaGOYeSTO0w0tHvIqYLyZVJHxH5XhAUCZK6qBnWiliouhnqOVw5ErR0gBSVhmP531zm167hyrLfjwE72mnfeZlOqk5Xty0NCHbTFWs2PrAPhz6ID+wDRgOXte/RronmKAARCARd3ITcVLpITZy1R0pbSQyzvXBnGvqhUJagX3nehbjfaWSvvZlWI267vlhykLXnWcNDJP7wX13eI5ctd2m+UzG1NB0PYRUTEfcfH3zRGUEQUEa5TMufbLEScdUE52ww/zfZQ2yuBFlVdH0w9KHazbkZ2AhvK89ujOQjZUQ2ZGR1XYsVvQJb/uGdaumjTjuF8I7s2NSyssFSgU1KWZm6sZkwkNuzK1Ht3XZQZKmesUUobuORfxzEydZx3OBM6cCZ5t27AY4gviJz+jhECUUZn3ebtC2qhqy5YC1m9Gj2ANZreD47Jl6i9eSnxDqg9OqUkSKtNZZnlCHr6ypKQAbQgmFYNTAwI59SMyOJeYbQyA7g4A7koQIsShOm4aE4maEWjRdjlvO</enc>]]>
+      </text>
+    </request>
+
+    <query>
+      <text>
+        <![CDATA[<enc>r07gHy2a1YsWBN5sJQoNxYa1sI4hSbyxaZPELeOK4RcruMCpSWfc9UthMqmOvYHTE2MipIQ+y/ONHqRuYxwMTw==</enc>]]>&CheckUpdatingDeleting;<![CDATA[<enc>t2Qblm/iKiSKIZpFhUih9XP26HzIDDPeD6n3eA8By4pgl/oQvea7dizviX+gPen/iMrWjB06aP3ThXTEZlPTmGtxz6kQFApWEX8tSwEknDGwPKEUmjVzWymrmA58sQ6PqkNqHx6xzc1OTx3W/zKk7bmN4iiyubmljMkdvNxOiyAvtbyv8Ajpsfq4HtioTPpD8cR0dn90Qb8E9nOmye6pcenRl09EfpkkVKb1XTI26xrsvLGuPMQ1dkrnd6zfYGEIaknyJMgLes1HmOqKMC4y/JGpioxrntDwxihQTxIkwl4YiDDz77sU7q4fG/gosWWVl/KtR6LncV1AqsM4lShaXjUojuPSNOiXpgpM6cJJWF8Pgs83gnX8wmiL1Pm4gPpgFTJJXDGVKCi6iGTKNhv7c/UhUtQLOtSyhQYHpgYc3Bo=</enc>]]>&VoucherNumberQuery;<![CDATA[<enc>+5mLMTNJcvZTJbBjCjbo+cIrPcfaGX7+KR00EEE3U1NtiuNYcGSxxXIYWnaNUSuqHkYOyALhgjz8xbZu31/xojKCwemqRN+7rjKu7hFd4/Gpa8QBU9zmlOs6VN38KPx5+FyWr1pRh/+Lyfh0vREcLHq0HaAUPRkRMwxlJ9Xij9fpvCChlIKX3ELUNoGN04PhBBZ8NcpdIM1rl3tBXL9r6w==</enc>]]>
+      </text>
+    </query>
+
+    <declare>
+      <text>
+        <![CDATA[<enc>hxQPm/hYhpvPifcenBxj7h7oN0snZYZljPmd/kTMe5whTFFwkDsDfoO5JwiPltwxLjPx0ikYFWniqwhGnBg2yIKR1GXkzLJhZhasObH3kRsMi+yMMT3AHG3z2B+SI1eC37QwVPJkmSCFZFYWuGwd9Nn+S+b8nzTXh+Htv51v9OXTofM6gJzuPr6F9T6obU9Zi2zK0WnH85CLV0x3ubOWkMhGvyzo/XVpzd97yWbQUS8=</enc>]]>
+      </text>
+    </declare>
+
+    &VoucherJSLoading;
+
+    <deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOHo2m/I5r6vL/VnI32yTLjZo3g4lV17JTn1w4Idh5UQXELGRDhj3lfaPmenquxV6LG5TFI/Q6k28tQ9OriE1pPGKVeteTmiTRzBUHiTKotwmWx2zklvedRd2seJ+7owskg==</enc>]]>
+      </text>
+    </deleting>
+
+    <deleted>
+      <text>
+        <![CDATA[<enc>dJDvh1j08T18JreEmGCmnQ3goG2lvDutPdgxTvQE+cq27Rq58z2C/EYuidiYwDvI2OjTn59O6cjVAm9Dbt0RaujeF6NEaDq5ieavaV/7Vby5f9pPvzOuVhq2MV1iOZJk3clFT7iIdj+LSIwm8zxhb/MVVqMb152CI59MZznE9k3qrvMl0PaBJlbMeKG2fcjR//22G9mNIsXlucK4zFWJBTFZMrA+jZxsy2G45StDGetBo8+m6pW7weLazHzCqPAaSo2wQAlutFDo2eGIN3smGw==</enc>]]>
+      </text>
+    </deleted>
+
+    <updating>
+      <text>
+        <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOHo2m/I5r6vL/VnI32yTLjY8ejKRS/cnXnUMMtEqL1MMEotrUrbOPnazZEDI+u5UNMx4FP5obZYCFGVl0SDoEvpT9hPddY10OGQ1zfXQQygRCOd6q2t4ucCRpG94oks5t5qk4dmnl16nNmdk4Eu2t1tfIawRUZW0trO3aMp80YO1</enc>]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[<enc>ArurPA4yt4an7w7h9QL0RmqL9Zj9oRpzGQf0F/cns3IvpolVKnuljyreH4wA8QSzWnoIFOCR/WNftHaMvdd1aWHjeKKc38LCvp4LMQzdbhrfHV5vMwHoNRMTypn4J2euyYYS/IrT7apos8oIisCF2Qz8967stH8AXTPc6vUdBLywTWBOSlkKKO1DKTR1SlOMGXfIp7Hl5cW6dzCPajxVHByW+h7cLUjRsWexeeKaFN+znFvvN+lSTmGhrpFND+e9eMx1EQ/kmg+rbYNjlSixJlk2hAd6cgw7UjvNGppOibY=</enc>]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[<enc>z1s4NkrNk+40z3uOtt5qcgjBOPYOzc+u7EaQcyfDObcxnFyoQqy6mMZGCZarMI4LSWp2P3/8eRlbzAG73r5Kulnr3XU9FzoZaiSs6K4ommATqb6GbtHXoTTeK790QdTK52hhuJpcl9ZGjbJ6cuMdEDyrFWidTTfvqUJkn5qDmFqdfxxjRdTWlVTCSLVUBLU5/J3K0kf53EvwOF/dPnLByA==</enc>]]>
+      </text>
+    </inserting>
+
+    <inserted>
+      <text>
+        <![CDATA[<enc>/wI7uhHcwMgy02w9veCLUfS+ddg3PPmAEH1Xys3qbjp8bwl1gb2/BZU9XnpyIc6pgaejHYIY7jjZkYku6aUwSE0HtohD7wRmdjulnsf1lozKidoTdS+p3CsPgZ8RERRrseqcR0L/4HOIf6CawGK9K2lsRwitjNEyitmMf3ZbHMg=</enc>]]>
+      </text>
+    </inserted>
+    <beforesave>
+      <text>
+	&VoucherNumberBeforeSave;
+        <![CDATA[<enc>q+GuY1naozJG2emkdj/NW7Et+T4w6T1lIkHaTqfkct5QF01KwUTCqnFGcj9hzvyh1tkuuEC3p93RyoTKfCb8NMhvauPwMroJWzBcVM2IYXzdLNBfqY7LZGu+c+Bixzt3sNYAmRj23p3Gg02SctVfnZIfK+ng4sYnJryvZ0TUEZH8ewO7IEyAi+5H7Kor/7kx</enc>]]>
+      </text>
+    </beforesave>
+    <aftersave>
+      <text>
+        <![CDATA[<enc>4lFB7nfmETZV3YRmH5HoQTQfs5BUaJmEdtA+OOcu6O6+dG+OzMsB8Gh3pyj/6/9QYCY6FGU4lfCCUwPgOCpaq26qilPu2KEFfKy8+JW4pGvAQfcZBcksbZVcb+bxU6jJimyq7S6BFQPBK088L0YKCILyhiQeEk9OLsePXJCH7zPnf1lfUr0VlWwfTPj1O6JdSSu5aNSJrSEZSEGdjlHT5d+PZczRPJ+pFl/9cNPunA8qP/fNG/qLdcvpaZSiHM98sM7o0d4YSFhMEkT+B8PnQiQNDxKKtrfSHnRwFDeadKWhrgjPMlDIJ5QNhIliDrdJXDtoCp80quyRwfrgHP/S442PLv23ljx6aZwQx/EHq78CCn83oH8Bv9Bg8e8o9kDhchItBHquVwcCHQKUun2RSSa5KeJLf+Pb41AGAHl7f3kgLGj3tuazt+OIAc795+h8yri/hkTQQSMwdm4ssDrE2QR/AOS2V0F+xPOW9diTz+AI1gz+K4W0a7Fnh2QNjJ81GdeUrn9jTm2Qw+EAWkhKx3YtyIUUDbogftCu0AmkANNRqW7Rvbpu95aDk2R/dTiixkjbClrdUKyI4k9YLYMWDnmpRjzv1sEJWc9MqZO08Tnhg7BB3K5Wce+mSe7BrsxCRbwYMY1ToPClMdx1MjiyRw==</enc>]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+    <message val="DupciateMST">
+      <text v="Trùng mã số thuế khách hàng. Vui lòng kiểm tra lại." e="Duplicate tax code. Please check again." />
+    </message>
+  </messages>
+</dir>

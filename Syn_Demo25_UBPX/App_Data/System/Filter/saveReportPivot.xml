@@ -1,0 +1,716 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="saveReportPivot" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lưu mới mẫu phân tích" e="Save New Data Analysis Form"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120" >
+      <fields>
+        <field name="name" label="1" field="[500]" >
+          <text v="Nhập tên mẫu mới" e="Name"></text>
+        </field>
+        <field name="name2" label="1" field="[500]" >
+          <text v="Tên 2" e="Name 2"></text>
+        </field>
+      </fields>
+    </form>
+    <form tabPageIndex="1" gravity="MiddleLeft" height="520" columns="100,100,100" >
+      <text v="Mẫu phân tích" e=""></text>
+      <fields>
+        <field name="data_struct_label" label="3" field="">
+          <text v="Cột phân tích" e="Column"></text>
+        </field>
+        <field name="data_struct" cellCss="height: 420px;" label="" field="[270]" viewType="List">
+          <text v="Danh sách" e="List"></text>
+          <viewInfo listType="Multi"></viewInfo>
+        </field>
+      </fields>
+    </form>
+    <form tabPageIndex="1" gravity="MiddleRight" columns="100, 50, 50, 50, 50, 50, 100" >
+      <fields>
+        <field name="data_rows_label" blank="[220]" label="2" field="">
+          <text v="Dữ liệu dòng" e="Dữ liệu dòng"></text>
+        </field>
+
+        <field name="btn_remove_rows" label="" field="[50]" viewType="Command">
+          <text v="Xóa" e="Xóa"></text>
+        </field>
+        <field name="btn_add_rows"  nextRow="false"  label="" field="[90]" viewType="Command">
+          <text v="Thêm" e="Thêm"></text>
+        </field>
+
+        <field name="btn_moveup_rows" nextRow="false" label="" field="[40]" viewType="Command">
+          <text v="Lên" e="Up"></text>
+        </field>
+        <field name="btn_movedown_rows" nextRow="false" label="" field="[40]" viewType="Command">
+          <text v="Xuống" e="Down"></text>
+        </field>
+
+        <field name="data_rows" nextRow="false" label="" field="[220]" viewType="List" cellCss="height:229px;">
+          <text v="Danh sách" e="List"></text>
+          <viewInfo listType="Multi">
+          </viewInfo>
+        </field>
+
+        <field name="data_columns_label" label="[220]" field="">
+          <text v="Dữ liệu cột" e="Dữ liệu cột"></text>
+        </field>
+        <field name="data_pivot_label" label="[220]" field="" nextRow="false">
+          <text v="Giá trị" e="Giá trị xoay"></text>
+        </field>
+
+        <field name="data_columns" label="" field="[220]" viewType="List" cellCss="height:150px;">
+          <text v="Danh sách" e="List"></text>
+          <viewInfo listType="Multi">
+          </viewInfo>
+        </field>
+        <field name="data_pivot" label="" field="[220]" viewType="List" cellCss="height:150px;"  nextRow="false">
+          <text v="Danh sách" e="List"></text>
+          <viewInfo listType="Multi">
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  <buttons>
+    <button id="filterOk" default="true">
+      <text v="$AcceptLabel" e="$AcceptLabel"></text>
+    </button>
+    <button id="filterCancel">
+      <text v="$CancelLabel" e="$CancelLabel"></text>
+    </button>
+  </buttons>
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$saveReportPivot(p){
+  this.constructor(p);
+}
+filter$saveReportPivot.prototype = new DirEvent();
+filter$saveReportPivot.prototype.beforeInit = function(){
+  var p = this._dir;
+  var k, i, fs, d = p.options._fields, fiPivot = p.field('data_struct'), fs = d.grids.grid[0].fields.field
+  p.options.fis = {}; p.options.fs = fs;
+  for (i = 0; i < fs.length; i++) {
+      fiPivot.viewInfo.options.option.push({ val: fs[i].name, text: { lan: fs[i].text.lan } })
+      fs[i].index = i
+      p.options.fis[fs[i].name] = fs[i];
+  }
+  p.options.pivotGroups = [];
+}
+filter$saveReportPivot.prototype.afterInit = function(){
+  var i, p = this._dir, o = p.options.parent.jObject('data_analysis_struct'), lst = p.jObject('data_struct').list('instance'), lstRows = p.jObject('data_rows').list('instance'), lstColumns = p.jObject('data_columns').list('instance'), lstPivot = p.jObject('data_pivot').list('instance');
+  
+  p.find('.btn_add_rows, .btn_remove_rows, .btn_moveup_rows, .btn_movedown_rows').html("<div></div>");
+  p.find('.btn_remove_rows').insertAfter(p.find('.btn_add_rows'));
+  p.find('.btn_moveup_rows').insertAfter(p.find('.btn_remove_rows'));
+  p.find('.btn_movedown_rows').insertAfter(p.find('.btn_moveup_rows'));
+  
+  p.find('.data_struct_label, .data_rows_label, .data_columns_label, .data_pivot_label').prepend("<div></div>");
+  p.find('.data_struct_label').insertBefore(p.find('.data_struct'));
+  p.find('.data_rows_label').insertBefore(p.find('.data_rows'));
+  p.find('.data_columns_label').insertBefore(p.find('.data_columns'));
+  p.find('.data_pivot_label').insertBefore(p.find('.data_pivot'));
+  
+  lst.options.focus = lstRows.options.focus = lstColumns.options.focus = lstPivot.options.focus = function (pl) {
+    p.options.listFocus = pl;
+  }
+  lstColumns.options.textHtml = "<div class='list-icon-left'></div><div class='list-text'>[%s]</div><div class='list-icon-right'><span></span></div>";
+  if (p.options._filterAction == 'EDIT'){
+    filter$saveReportPivot$LoadPivot(p, p.options._pivotInfo);
+    /*
+    p.request('GetInfo', '', [['controller', 'C', p.options._controller], ['id', 'C', p.options._pivotID]], function(pp, d, run){
+      d = new DataRow(d);
+      p.options._pivotInfo = d.val('pivotinfo');
+      if (run) filter$saveReportPivot$LoadPivot(p, p.options._pivotInfo);
+    });*/
+  }
+  p.find("#saveReportPivot_1").listdrag({
+    "box": ".data_struct,.data_rows,.data_columns,.data_pivot", "boxFixed": ".data_struct"
+    , beforeMousedown: function (ld, curLiMove) {
+      var v = curLiMove.attr('value');
+      if (curLiMove.attr('group') == '#') return false;
+      if (curLiMove.closest(".List").fieldName() == 'data_struct' && lstColumns.element.find("li[view='" + v + "']").length) return false;
+    }
+    , beforeOver: function (ld, sourceList, destList, curLiMove) {
+      var v = curLiMove.attr('value'), deF = destList.fieldName();
+      switch (deF) {
+        case 'data_pivot':
+          if (p.options.fis[v].dataType != 'N') return false;
+          break;
+        default:
+          break;
+      }
+      return true;
+    }
+    , beforeDrop: function (ld, sourceList, destList, curLiMove, liDrop) {
+      if (sourceList.fieldName() != destList.fieldName()) {
+        var v = curLiMove.attr('value'), deF = destList.fieldName();
+        switch (deF) {
+          case 'data_struct':
+            filter$saveReportPivot$InitRestoreToStruct(p, curLiMove, sourceList);
+            return false;
+            break;
+          case 'data_rows':
+            if (lstRows.jItems().length >= 10) { $.showToast('$limitDataRows', p); return false; }
+            break;
+          case 'data_columns':
+            var x = (lstPivot.jItems().length > 1) ? 1 : 0;
+            if (1 + lstColumns.jItems().length + x > 3) { $.showToast('$limitDataColumns', p); return false; }
+            if (p.options.fis[v].dataType != 'C') { $.showToast('$invalidDataColumns', p); return false; }
+            break;
+          case 'data_pivot':
+            if ((lstColumns.jItems().length >= 3 && lstPivot.jItems().length >= 1) || lstPivot.jItems().length >= 5) { $.showToast('$limitDataColumns', p); return false; }
+            if (p.options.fis[v].dataType != 'N') { $.showToast('$invalidDataPivots', p); return false; }
+            break;
+          default:
+            break;
+        }
+      }
+      return true;
+    }
+    , afterDrop: function (ld, sourceList, destList, curLiMove, liDrop) {
+      if (sourceList.fieldName() != destList.fieldName()) {
+        var v = curLiMove.attr('value');
+        if (sourceList.fieldName() == 'data_rows') filter$saveReportPivot$$RefreshGroupInRow(p)
+
+        curLiMove.setListItemText(p.options.fis[v].text.lan);
+        if (destList.hasClass('data_rows')) {
+          curLiMove.attr('xtype', 0);
+          filter$saveReportPivot$$MenuTextInRow(p, curLiMove);
+        }
+        if (destList.hasClass('data_columns')) {
+          curLiMove.attr('view', v);
+          filter$saveReportPivot$$MenuTextInColumn(p, curLiMove);
+        }
+        if (destList.hasClass('data_pivot'))
+          filter$saveReportPivot$$MenuTextInPivot(p, curLiMove);
+        destList.list("clearSelection");
+        sourceList.list("clearSelection");
+        destList.list("focus");
+      }
+    }
+  });
+}
+filter$saveReportPivot.prototype.beforeButtonDialogClick = function (id) {
+  var p = this._dir, pa = p.options.parent;
+  
+  if(id == "zoom"){
+    var dstr = p.find('.data_struct');
+    var drow = p.find('.data_rows');
+    if (p.options.fullScreen){
+      dstr.css("min-height", "0px");
+      drow.css("min-height", "0px");
+    }
+    else{
+      var modal = p.find('.modal-dialog');
+      var hx =  $(document).height() - modal.height();
+      dstr.css("min-height", dstr.outerHeight() + hx + "px");
+      drow.css("min-height", drow.outerHeight() + hx + "px");
+    }
+  }
+  
+  if (id == 'filterOk') {
+    if (p.valForm('name') == '') {
+      p.jObject('name').focus(); 
+      return false;
+    }
+    var pid = "";
+    if (p.options._filterAction == 'EDIT'){
+      pid = p.options._pivotInfo.split('|')[0]
+    }
+    var v = filter$saveReportPivot$GetPivotValue(p, pid);
+    p.request(p.options._filterAction, '', ['name', 'name2', ['controller', 'C', p.options._controller], ['reportForm', 'C', v]], function(pp, d, run){
+      if (run) p._close();
+    });
+    return false;
+  }
+  return true;
+}
+filter$saveReportPivot.prototype.commandActionClick = function (action, id) {
+  var p = this._dir, pa = p.options.parent, lst = p.jObject('data_struct').list('instance'), lstRows = p.jObject('data_rows').list('instance'), lstColumns = p.jObject('data_columns').list('instance'), lstPivot = p.jObject('data_pivot').list('instance'), a = lst.val(), k = a.length;
+  switch (action) {
+    case "btn_add_rows":
+      var jos = lst.selectedItems();
+      if (jos.length + lstRows.jItems().length > 10) { $.showToast('$limitDataRows', p); return false; }
+      jos = filter$saveReportPivot$$TransferColumns(p, lst, lstRows, false);
+      filter$saveReportPivot$$MenuTextInRow(p, jos);
+      break;
+    case "btn_remove_rows":
+      filter$saveReportPivot$InitRestoreToStruct(p, lstRows.selectedItems());
+      filter$saveReportPivot$$RefreshGroupInRow(p);
+      break;
+    case "btn_moveup_rows":
+      filter$saveReportPivot$$MoveUp(p.options.listFocus);
+      break;
+    case "btn_movedown_rows":
+      filter$saveReportPivot$$MoveDown(p.options.listFocus);
+      break;
+    case "btn_deleteall_rows":
+      filter$saveReportPivot$InitRestoreToStruct(p, lstRows.jItems())
+      p.options.pivotGroups = [];
+      break;
+    case "btn_deleteall_columns":
+      filter$saveReportPivot$InitRestoreToStruct(p, lstColumns.jItems())
+      break;
+    case "btn_deleteall_pivots":
+      filter$saveReportPivot$InitRestoreToStruct(p, lstPivot.jItems())
+      break;
+    default:
+      break;
+  }
+}
+function filter$saveReportPivot$Saved(p, id){
+  var pa = p.options.parent, o = pa.jObject('data_analysis_struct');
+  if (p.options._filterAction == 'NEW') {
+    o.append("<" + "option value='" + id + "'>" + p.valForm('name') + "</option>");
+    o.fval(id);
+  }
+  else o.find('option:selected').text(p.valForm('name')).attr('value', id);
+}
+
+
+function filter$saveReportPivot$LoadPivot(p, cPivotInfo) {
+  var i, v, fis = p.options.fis, o = p.options.parent.jObject('data_analysis_struct'), lst = p.jObject('data_struct').list('instance'), lstRows = p.jObject('data_rows').list('instance'), lstColumns = p.jObject('data_columns').list('instance'), lstPivot = p.jObject('data_pivot').list('instance')
+    , ap = cPivotInfo.split('|'), rows = ap[1].split(','), cols = ap[2].split(','), vals = ap[3].split(','), opr = [], headers = ap[4].split(',');
+  if (ap[5] == "")
+    p.options.pivotGroups = [];
+  else
+    p.options.pivotGroups = ap[5].split(',');
+  var k = vals.length;
+  while (k--) {
+    opr[k] = vals[k].substr(1, vals[k].indexOf("-") - 1);
+    vals[k] = vals[k].substr(vals[k].indexOf("-") + 1);
+  }
+  for (i = 0; i < rows.length; i++) {
+    lst.val([rows[i]]);
+    filter$saveReportPivot$$TransferColumns(p, lst, lstRows, false);
+  }
+
+  for (i = 0; i < headers.length; i++) {
+    v = cols[i];
+    lst.val([v]);
+    filter$saveReportPivot$$TransferColumns(p, lst, lstColumns, false);
+    lstColumns.items(v).attr('view', headers[i]);
+    if (headers[i] != v) {
+      lstColumns.items(v).setListItemText(fis[v].text.lan + ' (' + fis[headers[i]].text.lan + ')', lstColumns);
+    }
+  }
+
+  for (i = 0; i < vals.length; i++) {
+    v = vals[i];
+    lst.val([v]);
+    filter$saveReportPivot$$TransferColumns(p, lst, lstPivot, false);
+    lstPivot.items(v).attr("xtype", opr[i]);
+  }
+  p.valForm('name', o.find('option:selected').text());
+  filter$saveReportPivot$$MenuTextInRow(p, lstRows.jItems());
+  filter$saveReportPivot$$MenuTextInColumn(p, lstColumns.jItems());
+  filter$saveReportPivot$$MenuTextInPivot(p, lstPivot.jItems());
+  filter$saveReportPivot$$RefreshGroupInRow(p);
+}
+function filter$saveReportPivot$GetPivotValue(p, pid) {
+  var pa = p.options.parent, rows = p.jObject('data_rows').list('items'), jCols = p.jObject('data_columns').list('items', {}), jPvs = p.jObject('data_pivot').list('items', {}), pvs = [], cols = [], headers = [];
+  if (!rows.length || (jCols.length && !jPvs.length)) {
+    $.showToast('$invalidColumns', p);
+    p.tabActive("1");
+    return "";
+  }
+  $.each(jCols, function () {
+    if ($(this).attr('value')) {
+      cols.push($(this).attr('value'));
+      headers.push($(this).attr('view'));
+    }
+  })
+  $.each(jPvs, function () {
+    var xtype = $(this).attr('xtype') || 'SUM';
+    pvs.push('$' + xtype + '-' + $(this).attr('value'))
+  })
+  return pid + '|' + rows.join(',') + '|' + cols.join(',') + '|' + pvs.join(',') + '|' + headers.join(',') + '|' + p.options.pivotGroups.join(',') + '|' + ((pa.options.pivotGroupAvailable == '1') ? "1" : "0");
+}
+function filter$saveReportPivot$InitRestoreToStruct(p, jo, sourceList) {
+  var lst = p.jObject('data_struct').list('instance'), fs = p.options.fs, fis = p.options.fis;
+  jo.each(function () {
+    var o = $(this), v = o.attr('value'), xg = o.attr('group'), k = p.options.fis[v].index + 1, xnear;
+    if (xg) o.css("display", (lst.items(xg).attr('expand') == 1) ? "" : "none")
+    while (k--) {
+      xnear = lst.items(fs[k].name)
+      if (xnear.length) { o.insertAfter(xnear); break; }
+      else if (k == 0) o.insertBefore(lst.items(0));
+    }
+    o.attr('xtype', 0).attr('view', v).setListItemText(p.options.fis[v].text.lan, lst);
+    if (sourceList) {
+      sourceList.find('li').removeClass("list-item-selected");
+      o.addClass("list-item-selected");
+    }
+  });
+  filter$saveReportPivot$$RefreshGroupInRow(p);
+}
+function filter$saveReportPivot$$TransferColumns(p, l1, l2, remove) {
+  var jos = l1.selectedItems();
+  jos.show();
+  l2.push(jos, false); //false: not duplicate
+  jos.each(function () {
+    var o = $(this);
+    o.setListItemText(p.options.fis[o.attr('value')].text.lan, l2);
+  });
+  l2.clearSelection();
+  l1.clearSelection();
+  return jos;
+}
+function filter$saveReportPivot$$MoveUp(l) {
+  if (!l || l.element.fieldName() == 'data_struct') return;
+  var a = l.selectedItems(), i = a.eq(0).index(), e = l.element;
+  if (i == 0 || !a.length)
+    l.clearSelection();
+  else {
+    var up = l.jItems().eq(i - 1);
+    a.insertBefore(up);
+  }
+}
+function filter$saveReportPivot$$MoveDown(l) {
+  if (!l || l.element.fieldName() == 'data_struct') return;
+  var a = l.selectedItems(), i = a.eq(a.length - 1).index(), e = l.element;
+  var down = l.jItems().eq(i + 1);
+  if (!a.length || !down.length)
+    l.clearSelection();
+  else
+    a.insertAfter(down);
+}
+function filter$saveReportPivot$$RefreshGroupInRow(p) {
+  var i, k, o, xgrouptext = p.msg('ReportPivotGroupLabel').split(',')[0], a = p.options.pivotGroups, lst = p.jObject('data_struct').list('instance'), lstRows = p.jObject('data_rows').list('instance'), items = lstRows.items({}), fis = p.options.fis;
+  i = items.length;
+  while (i--) {
+    o = items[i];
+    o.find('.list-text').text(fis[o.attr('value')].text.lan);
+  }
+  i = a.length;
+  while (i--) if (!lstRows.items(a[i]).length) $.removeItem(p.options.pivotGroups, a[i])
+  i = a.length; k = a.length
+  while (i--) {
+    o = lstRows.items(a[i]);
+    o.attr('xtype', 1);
+    o.find('.list-text').html(fis[a[i]].text.lan + " <b>[" + xgrouptext.replace('%s', (k--)) + "]</b>", lstRows)
+  }
+}
+function filter$saveReportPivot$$MenuTextInColumn(p, jo) {
+  var fis = p.options.fis, fs = p.options.fs;
+  jo.find('.list-icon-right').menu({
+    id: "analysisSalesData_Columns_Name", type: "click", parent: p
+      , createData: function (po) {
+        var i, o = po.element.closest('li'), v = o.attr('value'), items = [];
+        if (v) {
+          items.push([v, fis[v].text.lan]);
+          items.push(['-', '-']);
+
+          for (i = 0; i < fs.length; i++) {
+            if (fs[i].dataType == 'C' && fs[i].name != v) items.push([fs[i].name, fs[i].text.lan]);
+          }
+        }
+        return items;
+      }
+      , click: function (po, xid, index) {
+        var o = po.element.closest('li'), v = o.attr('value'), lstRows = p.jObject('data_rows').list('instance'), lstColumns = p.jObject('data_columns').list('instance');
+        if (v == xid || (lstColumns.items(xid).length == 0 && lstRows.items(xid).length == 0)) {
+          o.attr('view', xid);
+          o.find('.list-text').html(fis[v].text.lan + ((v != xid) ? " (" + fis[xid].text.lan + ")" : ""));
+        }
+        po.hide();
+      }
+      , refresh: function () {
+        return false;
+      }
+  });
+}
+function filter$saveReportPivot$$MenuTextInRow(p, jo) {
+  
+}
+function filter$saveReportPivot$$MenuTextInPivot(p, jo) {
+ 
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+      <![CDATA[
+.btn_add_rows, .btn_remove_rows, .btn_moveup_rows, .btn_movedown_rows{
+  margin-left: 40px;
+  margin-top: 5px;
+  height: 40px;
+}
+.btn_add_rows > div, .btn_remove_rows > div, .btn_moveup_rows > div, .btn_movedown_rows > div{
+  background: url(../Images/all_icon_1.png);
+  width: 16px;
+  height: 16px;
+  margin-top: 7px;
+  margin-left: 13px;
+}
+.data_struct_label > div, .data_rows_label > div, .data_columns_label > div, .data_pivot_label > div{
+  background: url(../Images/all_icon_1.png);
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
+.btn_add_rows > div{
+  background-position: -144px -464px !important;
+}
+.btn_remove_rows > div{
+  background-position: -112px -464px !important;
+}
+.btn_moveup_rows > div{
+  background-position: -160px -464px !important;
+}
+.btn_movedown_rows > div{
+  background-position: -128px -464px !important;
+}
+.data_struct_label > div{
+  background-position: -128px -464px !important;
+}
+.data_struct_label > div{
+  background-position: -448px -448px !important;
+}
+.data_rows_label > div{
+  background-position: -16px -464px !important;
+}
+.data_columns_label > div{
+  background-position: -96px -464px !important;
+}
+.data_pivot_label > div{
+  background-position: -32px -464px !important;
+}
+
+.btn_add_rows{
+  margin-top: 50px;
+}
+.btn_moveup_rows{
+  margin-top: 30px;
+}
+
+.data_struct_label, .data_rows_label, .data_columns_label, .data_pivot_label{
+  width: 100%;
+  height: 30px;
+  border: 1px solid #ddd;
+  border-bottom: none;
+  margin-top: 10px;
+  background: #f6f6f9;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  color: #549bd0 !important;
+  display: block;
+}
+#DIR_saveReportPivot_Filter .data_struct, .data_rows, .data_columns, .data_pivot{
+  margin-bottom: 0px;
+} 
+
+
+.item-drag-view{
+	height: 25px;
+	position: fixed;
+	z-index: 9999;
+	background: #f5f299;
+	opacity: 0.9;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	cursor: default;
+	display: inline-flex;
+  visibility: hidden;
+	color: #549bd0;
+}
+.item-drag-view-icon{
+	width: 0px;
+	height: 0px;
+	display: initial;
+  background: url(../Images/all_icon_1.png);
+}
+.icon-drag-view-disable{
+	width: 16px;
+	height: 16px;
+	background-position: -176px -464px;
+}
+.item-drag-view-text{
+	display: inline;
+	top: -1px;
+  position: relative;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.item-drop-view{
+	background: #4684e2 !important;
+  border: none !important;
+  padding: 1px !important;
+}
+.item-drop-mask{
+	background: transparent !important;
+  border: none !important;
+	height: 10px;
+}
+.item-hidden{
+  visibility: hidden;
+}
+
+.list-icon-left{
+  width: 16px;
+  height: 16px;
+  float: left;
+  margin-right: 5px;
+  display: none;
+  pointer-events: none;
+}
+.list-icon-right{
+  width: 20px;
+  height: 20px;
+  float: right; 
+  cursor: pointer;
+  margin-top: -18px;
+  margin-right: -4px;
+  border: 1px solid transparent;
+  display: none;
+}
+
+.list-icon-right > span{
+  border: solid black;
+  border-width: 0 1px 1px 0;
+  padding: 3px;
+  margin-top: 5px;
+  margin-right: 6px;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  display: inline-block;
+  float: right;
+}
+.list-icon-right:hover span {
+  border: solid #549bd0;
+  border-width: 0 1px 1px 0;
+}
+.list-icon-right:hover {
+  border: 1px solid #549bd0;
+}
+
+.list-item-group{
+  border: none !important;
+  padding-left: 2px !important;
+}
+.list-item-group[expand="0"] > .list-icon-left { 
+  display: block;  
+  margin-top: 2px;
+  width: 2px; 
+  height: 10px; 
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 6px solid #549bd0;
+}
+.list-item-group[expand="1"] > .list-icon-left { 
+  display: block;  
+  margin-top: 6px;
+  width: 2px; 
+  height: 10px; 
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #549bd0;
+}
+.data_struct > li:not([group="#"]) > .list-icon-left { 
+  display: block;  
+  width: 3px;
+  height: 3px;
+  background: #549bd0;
+  border-radius: 100%;
+  margin-top: 7px;
+}
+.data_struct > li[group=""] > .list-icon-left, .list-group > li[group="#"] > .list-icon-right{ 
+  display: none;
+}
+
+.list-item-group:hover{
+  background: none !important;
+  color: #549bd0;
+  cursor: pointer;
+}
+.list-group .list-text{
+  pointer-events: none;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  margin-right: 20px;
+}
+
+.list-group:focus{
+  box-shadow: 3px 3px 10px #888888;
+}
+
+.list-group > li > .list-icon-right{
+  display: block;
+}
+         ]]>
+    </text>
+  </css>
+  <script>
+    <request code="GetInfo">
+      <text>
+        <![CDATA[
+select pivotinfo from sysreportpivot where controller = @controller and id = @id
+       ]]>
+      </text>
+    </request>
+
+    <request code="NEW">
+      <text>
+        <![CDATA[
+declare @id int
+select @id = isnull(max(id), 0) + 1 from sysreportpivot where controller = @controller --user_id = @@userId and 
+set @reportForm = rtrim(@id) + @reportForm
+insert into sysreportpivot select @@userId, @id, @controller, 0, @name, @name2, @reportForm, 1, getdate(), getdate(), @@userId, @@userId
+select '' as message, 'filter$saveReportPivot$Saved(p, ''' + rtrim(@reportForm) + ''')' as script
+       ]]>
+      </text>
+    </request>
+
+    <request code="EDIT">
+      <text>
+        <![CDATA[
+declare @pid int; set @pid = dbo.sf_GetWordNum(replace(@reportForm, '|', ','), 1)
+if not exists(select 1 from sysreportpivot where id = @pid and user_id = @@userId and controller = @controller) begin
+  select '$ReportPivotNotEdit' as message, 'name' as field
+  return
+end
+update sysreportpivot set pivotinfo = @reportForm, formname = @name, formname2 = @name2 where id = @pid and user_id = @@userId and controller = @controller
+select '' as message, 'filter$saveReportPivot$Saved(p, ''' + rtrim(@reportForm) + ''')' as script
+       ]]>
+      </text>
+    </request>
+  </script>
+
+  <messages>
+    <message val="inputNewName">
+      <text v="Nhập tên mẫu mới" e="Input New Name"/>
+    </message>
+    <message val="formName">
+      <text v="Tên mẫu mới" e="New Name"/>
+    </message>
+    <message val="invalidColumns">
+      <text v="Chưa thêm cột dữ liệu hoặc danh sách các cột hiện tại không hợp lệ" e="Invalid Columns"/>
+    </message>
+    <message val="invalidDataColumns">
+      <text v="Chỉ thêm các cột kiểu chuỗi vào vùng dữ liệu cột" e="Invalid Value Columns"/>
+    </message>
+    <message val="invalidDataPivots">
+      <text v="Chỉ thêm các cột kiểu số vào vùng giá trị" e="Invalid Value Columns"/>
+    </message>
+    <message val="limitDataRows">
+      <text v="Số lượng [Dữ liệu dòng] bị giới hạn" e="Limit Row Columns"/>
+    </message>
+    <message val="limitDataColumns">
+      <text v="Số lượng cột phân tích bị giới hạn" e="Limit Pivot Columns"/>
+    </message>
+  </messages>
+</dir>

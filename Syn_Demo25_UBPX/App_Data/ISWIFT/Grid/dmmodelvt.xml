@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="dmmodelvt" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Quản lý sản phẩm theo S/N" e="Department List"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="dmmodelvt" fieldKey="ma_vt,ma_model" order="ma_vt" allowFilter="true" allowOrder="true">
+      <fields >
+        <field name="ma_vt" fieldType="PK" width="120">
+          <text v="Mã hàng hóa" e="Department Code"></text>
+        </field>
+        <field name="ten_vt" width="250" fieldType="EX">
+          <text v="Tên hàng hóa" e="Description"></text>
+        </field>
+		<field name="ma_model" fieldType="PK" width="250">
+          <text v="Mã S/N" e="Model Code"></text>
+        </field>
+		<field name="ma_kho" width="0">
+          <text v="Mã kho" e="Warehouse Code"></text>
+        </field>
+        <field name="ten_kho" width="250" fieldType="EX">
+          <text v="Tên kho" e="Warehouse"></text>
+        </field>
+		
+		
+		<field name="xstatus" viewType="Combobox" inactivate="true" width="120">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Tồn trong kho" e="1 - In Stock"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Đã bán" e="0 - Sold"></text>
+              </option>
+			  <option val="5">
+                <text v="5 - Lập chứng từ" e="5 - Vouchers"></text>
+              </option>
+			  <option val="7">
+                <text v="7 - Chuyển kho" e="1 - In Stock"></text>
+              </option>
+			  <option val="9">
+                <text v="9 - Hoàn trả" e="9 - Returned Product"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+		
+      </fields>
+	  
+	  <buttons>
+		  <button id="add">
+	        <text v="$AddToolbar" e="$AddToobar"></text>
+		  </button>
+		  <button id="edit">
+			<text v="$EditToolbar" e="$EditToolbar"></text>
+		  </button>
+		  <button id="delete">
+			<text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+		  </button>
+		  <button id="copy">
+			<text v="$CopyToolbar" e="$CopyToolbar"></text>
+		  </button>
+		  <button id="view">
+			<text v="$ViewToolbar" e="$ViewToolbar"></text>
+		  </button>
+		  <button id="split">
+			<text v="-" e="-"></text>
+		  </button>
+		  <button id="find">
+			<text v="$FindToolbar" e="$FindToolbar"></text>
+		  </button>
+		  <button id="refresh">
+			<text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+		  </button>
+		  <button id="freeze">
+			<text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+		  </button>
+		  <button id="split">
+			<text v="-" e="-"></text>
+		  </button>
+		   <button id="print">
+			<text v="$PrintToolbar" e="$PrintToolbar"></text>
+		  </button>
+		  <button id="export">
+			<text v="$ExportToolbar" e="$ExportToolbar"></text>
+		  </button>
+	      <button id="downtemplate">
+			<text v="Tải mẫu Excel" e="Down import template"></text>
+		  </button>
+	      <button id="import">
+			<text v="Lấy dữ liệu từ tập tin" e="Import data"></text>
+		  </button>
+	 </buttons>
+	 <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmvt b on a.ma_vt = b.ma_vt left join dmkho c on a.ma_kho = c.ma_kho', 'b.ten_vt, c.ten_kho', '@@key', @strKey , @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = @strFinding  
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmvt b on a.ma_vt = b.ma_vt left join dmkho c on a.ma_kho = c.ma_kho', 'b.ten_vt, c.ten_kho', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </finding>
+      </script>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmmodelvt(f){
+  this.constructor(f);
+}
+grid$dmmodelvt.prototype = new DirEvent();
+grid$dmmodelvt.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  
+  <css>
+    <text>
+      <![CDATA[
+.tree-form{
+    width: 250px;
+}
+.ic-view-dept{
+  background-position: 0px 0px;
+}
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

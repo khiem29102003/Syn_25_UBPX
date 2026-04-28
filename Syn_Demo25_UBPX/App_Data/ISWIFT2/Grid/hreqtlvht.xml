@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="hreqtlvht" width="Large" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Quá trình làm việc tại công ty &lt;b&gt;[%s]&lt;/b&gt;" e="&lt;b&gt;[%s]&lt;/b&gt;"></title>
+  <subtitle v="Thêm, sửa, xóa..." e="Add, Edit, Delete..."></subtitle>
+  <grids>
+    <grid table="hreqtlvht" fieldKey="id, line" order="id, line" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="id" dataType="N" fieldType="PK" width="100" format="0" hidden="true">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="line" dataType="N" fieldType="PK" width="100" format="0" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+        <field name="loai" width="150" viewType="Combobox">
+          <text v="Loại" e=""></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Công việc hiện tại" e=""></text>
+              </option>
+              <option val="2">
+                <text v="Công việc trước đây" e=""></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="tinh_chat" viewType="Combobox" width="150">
+          <text v="Tính chất" e=""></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Công việc chính" e=""></text>
+              </option>
+              <option val="2">
+                <text v="Kiêm nhiệm" e=""></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="loai_thay_doi" viewType="Combobox" width="150" >
+          <text v="Loại thay đổi" e="Type"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Tăng mới" e=""></text>
+              </option>
+              <option val="2">
+                <text v="Điều chuyển bộ phận" e=""></text>
+              </option>
+              <option val="3">
+                <text v="Điều chuyển vị trí công việc" e=""></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="ma_bp" width="100">
+          <text v="Bộ phận" e="Department"></text>
+        </field>
+        <field name="ten_bp" fieldType="EX" width="250" aliasName="b" join="left join hrdmbp b on a.ma_bp = b.ma_bp" >
+          <text v="Tên bộ phận" e="Deparment Name"></text>
+        </field>
+        <field name="ma_vtr" hidden="true" width="100">
+          <text v="" e=""></text>
+        </field>
+        <field name="ten_vtr" fieldType="EX" width="250" aliasName="c" join="left join hrdmvtr c on a.ma_vtr = c.ma_vtr" >
+          <text v="Vị trí" e="Position"></text>
+        </field>
+        <field name="ngay_tu" width="100" dataType="D">
+          <text v="Ngày bắt đầu" e=""></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = 'id = ' + rtrim(@id)
+exec iswiftStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '@@join', 'b.ten_bp, c.ten_vtr', '@@key', @key2, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$hreqtlvht(f){
+  this.constructor(f);
+}
+grid$hreqtlvht.prototype = new DirEvent();
+grid$hreqtlvht.prototype.afterInit = function(){
+  var p = this._dir;
+}
+]]>
+    </text>
+  </js>
+</dir>

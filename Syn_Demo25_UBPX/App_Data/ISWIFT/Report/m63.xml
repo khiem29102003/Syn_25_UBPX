@@ -1,0 +1,270 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<report xmlns="urn:schemas-iswift:struct-report">
+  <query>
+    <text>
+      <![CDATA[
+declare @t numeric(19, 5)
+select a.unit_id, isnull(u.ma_so_thue, '') as ms_thue, a.so_ct, a.so_ct2 as ky_hieu, a.ma_kh, a.ong_ba as nguoi_mua_hang, b.ten_kh as ten_kh, B.dia_chi, b.ma_so_thue, b.dien_thoai,
+		isnull(c.ten_tt, '') as ten_tt, a.ma_tt, a.dien_giai, isnull(d.ten_pttt, '') as ten_pttt, cast(a.status as char(1)) as status, a.ma_nt, 
+		dbo.iswiftFunctionReadCurrency(a.ma_nt, a.t_tt) as t_tt_in_word,
+	    replace(str(day(a.ngay_ct),2),' ','0') day, replace(str(month(a.ngay_ct),2),' ','0') month, cast(year(a.ngay_ct) as char(4)) year,
+		a.ngay_ct, a.t_phi, a.t_tien_nt2, a.t_tt_nt, a.so_job, e.ten_bp, f.so_tk, f.book_no, f.mbl_no , f.hbl_no, f.dien_giai dien_giais, g.ten_kh ten_kh_s61 , h.ten_kh ten_nv, u.ten_unit
+		into #m63 from m63 a with(nolock)
+		left join dmkh b with(nolock) on a.ma_kh = b.ma_kh
+		left join dmtt c on a.ma_tt = c.ma_tt
+		left join dmpttt d on a.ma_pttt = d.ma_pttt
+		left join dmbp e on a.ma_bp = e.ma_bp
+		left join s61 f on a.id_dh = f.id
+		left join dmkh g on f.ma_kh = g.ma_kh 
+		left join dmkh h on f.ma_nv = h.ma_kh
+		left join sysunit u on a.unit_id = u.unit_id
+		where a.id = @id
+		select * from #m63
+select line as stt, a.ma_vt, b.ten_vt, b.ten_vt2, a.tien2, a.ma_nt , a.tt, a.thue_suat, a.dvt
+		into #d63 from d63 a with(nolock) 
+		left join dmvt b with(nolock) on a.ma_vt = b.ma_vt
+		where a.id = @id
+		select * from #d63
+
+--select a.unit_id, isnull(u.ma_so_thue, '') as ms_thue, a.so_ct, a.so_ct2 as ky_hieu, a.ma_kh, a.ong_ba as nguoi_mua_hang, b.ten_kh as ten_kh, B.dia_chi, b.ma_so_thue, b.dien_thoai, isnull(c.ten_tt, '') as ten_tt, a.ma_tt, a.dien_giai,
+--		isnull(d.ten_pttt, '') as ten_pttt, cast(a.status as char(1)) as status, a.ma_nt, dbo.iswiftFunctionReadCurrency(a.ma_nt, a.t_tt_nt+a.t_phi) as t_tt_in_word
+--	  , replace(str(day(a.ngay_ct),2),' ','0') day, replace(str(month(a.ngay_ct),2),' ','0') month, cast(year(a.ngay_ct) as char(4)) year, a.ngay_ct,a.t_phi,a.t_tien_nt2,a.t_tt_nt,u.ten_unit
+--		from m82 a with(nolock)
+		drop table #m63, #d63
+
+
+]]>
+    </text>
+  </query>
+
+  <forms>
+	 <form id="010" fileName="m63_02" fileType="rdlc" exportExt="pdf" image="pdf">
+      <text v="Phiếu chi hộ (.pdf)" e="Pay on behalf"></text>
+    </form>
+    <form id="020" fileName="m63_02" fileType="rdlc" exportExt="docx" image="word">
+      <text v="Phiếu chi hộ (.docx)" e="Pay on behalf"></text>
+    </form>
+	 <form id="030" fileName="m63_02" fileType="rdlc" exportExt="xlsx" image="excel">
+      <text v="Phiếu chi hộ (.xlsx)" e="Pay on behalf"></text>
+    </form>	
+  
+	
+  </forms>
+
+  <fields>
+
+    <field name="title" type="C">
+      <text v="PHIẾU CHI HỘ" e="PAY ON BEHALF"/>
+    </field>
+    <field name="h_day" type="C">
+      <text v="Ngày" e="Date"/>
+    </field>
+	
+    <field name="h_month" type="C">
+      <text v="tháng" e="Month"/>
+    </field>
+    <field name="h_year" type="C">
+      <text v="năm" e="Year"/>
+    </field>
+
+    <field name="h_so_seri" type="C">
+      <text v="Ký hiệu" e="Serial No."/>
+    </field>
+    <field name="h_so_ct" type="C">
+      <text v="Số" e="Invoice No."/>
+    </field>
+
+    <field name="h_don_vi_ban" type="C">
+      <text v="Đơn vị chi hộ:" e="Seller:"/>
+    </field>
+
+    <field name="h_nguoi_mua" type="C">
+      <text v="Họ tên người chi hộ:" e="Buyer:"/>
+    </field>
+    <field name="h_don_vi_mua" type="C">
+      <text v="Tên đơn vị:" e="Company:"/>
+    </field>
+    <field name="h_ma_so_thue" type="C">
+      <text v="Mã số thuế:" e="Tax Code:"/>
+    </field>
+    <field name="h_dia_chi" type="C">
+      <text v="Địa chỉ:" e="Address:"/>
+    </field>
+
+    <field name="h_company" type="C">
+      <text v="Đơn vị" e="Company"/>
+    </field>
+    <field name="h_address" type="C">
+      <text v="Địa chỉ:" e="Address:"/>
+    </field>
+    <field name="h_kh" type="C">
+      <text v="Tên nhà cung cấp:" e="Customer Name:"/>
+    </field>
+    <field name="h_noi_giao" type="C">
+      <text v="Nơi giao" e="Ship - to"/>
+    </field>
+	<field name="h_STT" type="C">
+      <text v="STT" e="No."/>
+    </field>
+	<field name="h_ten_vt" type="C">
+      <text v="Tên phí" e="Fee Name"/>
+    </field>
+    <field name="h_vt" type="C">
+      <text v="phí" e="Fee"/>
+    </field>
+	 <field name="h_dien_giai" type="C">
+      <text v="Diễn giải" e="Note"/>
+    </field>
+    <field name="h_dvt" type="C">
+      <text v="Đvt" e="UOM"/>
+    </field>
+    <field name="h_sl" type="C">
+      <text v="Số lượng" e="Quantity"/>
+    </field>
+    <field name="h_gia" type="C">
+      <text v="Giá" e="Price"/>
+    </field>
+    <field name="h_tien2" type="C">
+      <text v="Tiền" e="Amount"/>
+    </field>
+    <field name="h_total" type="C">
+      <text v="Cộng tiền chi hộ hóa, dịch vụ:" e="Total Amount:"/>
+    </field>
+    <field name="h_bang_chu" type="C">
+      <text v="Bằng chữ:" e="In words:"/>
+    </field>
+    <field name="h_kiem_tra" type="C">
+      <text v="(Cần kiểm tra, đối chiếu khi lập, giao, nhận hóa đơn)" e="(Please do check, compare when issuing, delivering and receiving invoice)"/>
+    </field>
+    <field name="h_nguoi_mua_hang" type="C">
+      <text v="Người chi hộ" e="Buyer"/>
+    </field>
+    <field name="h_nguoi_ban_hang" type="C">
+      <text v="Người chi hộ" e="Seller"/>
+    </field>
+	<field name="h_tt" type="C">
+      <text v="Tổng tiền" e="Total"/>
+    </field>
+	<field name="h_thue" type="C">
+      <text v="Thuế (%)" e="Tax (%)"/>
+    </field>
+	<field name="h_thue_suat" type="C">
+      <text v="Thuế (%)" e="Tax (%)"/>
+    </field>
+	<field name="h_ck" type="C">
+      <text v="C.Khấu (%)" e="Discount (%)"/>
+    </field>
+	<field name="h_con_lai" type="C">
+      <text v="Tổng tiền" e="Total"/>
+    </field>
+	<field name="h_chi_phi" type="C">
+      <text v="Tổng chi phí:" e="Total Cost:"/>
+    </field>
+	<field name="h_tong_cong" type="C">
+      <text v="Tổng cộng:" e="Total All Amount:"/>
+    </field>
+	<field name="h_ly_do" type="C">
+      <text v="Lý do xuất kho:" e="Note"/>
+    </field>
+	<field name="h_kho" type="C">
+      <text v="Kho" e="Warehouse"/>
+    </field>
+	<field name="h_so_luong" type="C">
+      <text v="Số lượng" e="Warehouse"/>
+    </field>
+
+
+
+<!--Phiếu yêu cầu thanh toán-->
+<!--Master-->
+	<field name="title2" type="C">
+      <text v="PHIẾU ĐỀ NGHỊ THANH TOÁN" e="PAYMENT OFFER FORM"/>
+    </field>
+	<field name="h_so_job_2" type="C">
+      <text v="Số Job:" e="Job No:"/>
+    </field>
+	<field name="h_ma_kh_2" type="C">
+      <text v="Người đề nghị:" e="Proposer:"/>
+    </field>
+	<field name="h_ma_bp_2" type="C">
+      <text v="Bộ phận:" e="Department:"/>
+    </field>
+	<field name="h_ma_kh_lamhang_2" type="C">
+      <text v="Làm hàng cho:" e="Make goods for:"/>
+    </field>
+	<field name="h_dien_giai_1" type="C">
+      <text v="Lý do:" e="Reason:"/>
+    </field>
+	<field name="h_so_tk_2" type="C">
+      <text v="Số tờ khai:" e="Declaration number:"/>
+    </field>
+	<field name="h_mbl_no_2" type="C">
+      <text v="MBL No:" e="MBL No:"/>
+    </field>
+	<field name="h_dien_giai_2" type="C">
+      <text v="Ghi chú:" e="Note:"/>
+    </field>
+	
+	<field name="h_ma_nv_2" type="C">
+      <text v="Nhân viên:" e="Employee:"/>
+    </field>
+	<field name="h_book_no_2" type="C">
+      <text v="Booking:" e="Booking:"/>
+    </field>
+	<field name="h_hbl_no_2" type="C">
+      <text v="B/L No:" e="B/L No:"/>
+    </field>
+<!--Detail 1-->
+	<field name="h_loai_phi_2" type="C">
+      <text v="Loại phí" e="Fee Type"/>
+    </field>
+	<field name="h_so_hd_2" type="C">
+      <text v="Số HĐ" e="Fee Type"/>
+    </field>
+	<field name="h_tien2_2" type="C">
+      <text v="Số tiền" e="Money"/>
+    </field>
+	<field name="h_ma_nt_2" type="C">
+      <text v="Ngoại tệ" e="Foreign Currency"/>
+    </field>
+	<field name="h_tt_2" type="C">
+      <text v="Tổng tiền" e="Total"/>
+    </field>
+	<field name="h_dien_giai_dt2" type="C">
+      <text v="Diễn giải" e="Explain"/>
+    </field>
+	<field name="h_thue_suat_2" type="C">
+      <text v="Thuế" e="Tax"/>
+    </field>
+	
+	<field name="h_tong_cong_2" type="C">
+      <text v="Tổng cộng" e="Total"/>
+    </field>
+	<field name="h_t_nv_ung_2" type="C">
+      <text v="Số tiền nhân viên ứng trước (nếu có)" e="Advance amount (if any)"/>
+    </field>
+	<field name="h_t_tt_2" type="C">
+      <text v="Số tiền thanh toán" e="Payment Amount"/>
+    </field>
+<!--Detail 2-->
+	<field name="h_ma_nv_dt2_2" type="C">
+      <text v="Mã nhân viên" e="Employee Code"/>
+    </field>
+	<field name="h_so_job_dt2" type="C">
+      <text v="Số Job" e="Job No"/>
+    </field>
+	<field name="h_ngay_duyet_2" type="C">
+      <text v="Ngày duyệt" e="Date of Approval"/>
+    </field>
+	<field name="h_ngay_ung_2" type="C">
+      <text v="Ngày ứng" e="Application Date"/>
+    </field>
+	<field name="h_t_tt_dt2_2" type="C">
+      <text v="Tiền" e="Total"/>
+    </field>
+	<field name="h_dien_giai_dt2_2" type="C">
+      <text v="Ghi chú" e="Note"/>
+    </field>
+  </fields>
+</report>

@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="h41" table="" height="" fieldKey="id" voucherCode="CL0" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Điều kiện lọc" e="Filter"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D">
+          <text v="Ngày từ/đến" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_team" viewType="Lookup" label="1" field="1" operation="like" allowBlank="false">
+           <text v="Nhóm" e="Team"></text>
+           <viewInfo lookupType="One" lookupId="dmteam" lookupKey="status = 1 and unit_id = @@unit" lookupCheck="1=1" lookupRef="ten_team" lookupInfo="dmteam|ma_team|ten_team"/>
+        </field>
+        <field name="ten_team" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>	
+		<field name="status" viewType="Combobox" inactivate="true" label="1" field="[150]" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="5">
+                <text v="Đang làm việc" e="1 - Use"></text>
+              </option>
+              <option val="7">
+                <text v="Nghỉ thai sản" e="0 - Not use"></text>
+              </option>
+			  <option val="9">
+                <text v="Nghỉ làm" e="1 - Use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+		<field name="ma_unit" viewType="Lookup" inactivate="true" label="1" field="2" hidden="true" >
+          <text v="Đơn vị" e="Unit"></text>
+          <viewInfo lookupType="Multi" lookupId="sysunit" lookupKey="status = 1 and unit_id in (select unit_id from dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @@admin, ''))" lookupCheck="1 = 1" lookupRef="ten_unit" />
+        </field>
+        <field name="ten_unit" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+		<field name="user_id0" viewType="Combobox" inactivate="true" hidden="true" label="1" field="2" operation="a.user_id0 in (select user_id from sysuserinfo where user_ref like '@@userRef%')" >
+          <text v="Lọc theo người sd" e="Filter By User"></text>
+          <viewInfo>
+            <options>
+              <option val="">
+                <text v="Tất cả" e="All"></text>
+              </option>
+              <option val="1">
+                <text v="Lọc theo người tạo" e="Filter By Create User"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$n41(p){
+  this.constructor(p);
+}
+filter$n41.prototype = new DirEvent();
+filter$n41.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+</dir>

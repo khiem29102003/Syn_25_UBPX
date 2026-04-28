@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+]>
+
+<dir id="m48_1Select" table="" height="" fieldKey="id" voucherCode="BQ1" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Chi tiết phiếu được chọn" e="Quotation Entry Detail"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+		<field name="ngay_ct1" label="1" field="1" readOnly="true" aliasName="@DFDFrom" disabled="true" allowBlank="false" dataType="D">
+          <text v="Ngày c/từ từ/đến" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" allowBlank="false" disabled="true" inactivate="true" dataType="D" nextRow="false">
+          <text v="Ngày đến" e="Voucher Date"></text>
+        </field>
+        <field name="ma_nt" hidden="true" label="1" field="1">
+          <text v="Mã ngoại tệ" e="Ex Code"></text>
+        </field>
+        <field name="unit_id" dataType="I" hidden="true" label="1" field="1">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+
+		<field name="ma_kh" label="1" disabled="true"  field="1" >
+          <text v="Mã nhà cung cấp" e="Customer Code"></text>
+        </field>
+		<field name="ten_kh" allowBlank="true" label="1" disabled="true"  field="-" importWidth="250" importable="10">
+          <text v="Tên nhà cung cấp" e="CustomerName"></text>
+        </field>
+		
+        <field name="xprocess" label="1" field="2" valueDefault="2" viewType="Combobox">
+          <text v="Xử lý" e="Process"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Thêm vào chi tiết" e="Append To Detail"></text>
+              </option>
+              <option val="2">
+                <text v="Xóa hết chi tiết và thêm mới" e="Delete All Detail And Append New"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+		<field name="id" dataType="N" hidden="true" fieldType="PK" label="1" field="1"  >
+			<text v="ID" e="Code"></text>
+		</field>
+      </fields>
+    </form>
+	
+    <form tabPageIndex="1" gravity="MiddleLeft" height="350" columns="120,120,240" >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="ctct20" label="" field="-" viewType="Grid">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+ <grids>
+    <grid id="ctct20" table="ctct20" fieldKey="id, line" order="id, line" allowFilter="true" readOnly="false" allowOrder="true">
+      <fields>
+		<field name="chon_yn" dataType="B" width="80" valueDefault="1" readOnly="false" >
+          <text v="Chọn" e="Check"></text>
+        </field>
+        <field name="id" dataType="N" width="50" format="0" >
+          <text v="ID" e="ID"></text>
+        </field>
+		<field name="so_ct" width="80" fieldType="RF" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+		<field name="ma_ct" width="80" >
+          <text v="Mã c/từ" e="Voucher Code"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+		<field name="ma_kh" width="100" >
+          <text v="Mã nhà cung cấp" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="200" fieldType="EX" >
+          <text v="Tên nhà cung cấp" e="Customer name"></text>
+        </field>
+        <field name="t_tt" dataType="N" format="FCAmount" width="120">
+          <text v="Tiền trên hóa đơn" e="Invoice amount"></text>
+        </field>
+        <field name="da_tt_nt" dataType="N" format="FCAmount" width="120" aliasName="t_tt*0 as ">
+          <text v="Đã thanh toán" e="Received"></text>
+        </field>
+        <field name="cl_nt" dataType="N" format="FCAmount" width="120" aliasName="t_tt*0 as ">
+          <text v="Còn phải thanh toán" e="Receivable"></text>
+        </field>
+        <field name="tien_nt" dataType="N" allowBlank="false" format="FCAmount" width="120" readOnly="false" aliasName="t_tt*0 as ">
+          <text v="Tiền phải thanh toán" e="Money payable"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+			declare @chon_yn int, @q varchar(4000)
+			declare @ma_ct TABLE(ma_ct varchar(32))
+			set @chon_yn = 1
+			
+			select @chon_yn chon_yn,a.id,a.so_ct,a.ma_ct,a.ngay_ct,a.ma_nt,a.ty_gia,a.ma_kh,b.ten_kh,a.t_tt,t_tt*0 as da_tt_nt,t_tt*0 as cl_nt ,t_tt*0 as tien_nt into #v
+			from ctct20 a 
+			left join dmkh b  on a.ma_kh = b.ma_kh
+			where a.ma_kh = @ma_kh and a.unit_id = @unit_id and ngay_ct between @ngay_ct1 and @ngay_ct2 and a.loai_tt = 0 and (tt_yn = 0 or (id in (select id_tt from ctct20 where id = 0 and loai_tt = 1)))
+
+			set @q = '
+			  update #v set da_tt_nt = b.tt from #v a join (select id_tt, sum(tt) as tt from ctct20 x1 where x1.loai_tt = 1 and id <> ' + rtrim(@id) + ' and exists (select 1 from #v x2 where x1.id_tt = x2.id) group by id_tt) b on a.id = b.id_tt
+			  update #v set cl_nt = t_tt - da_tt_nt
+			  update #v set tien_nt = cl_nt'
+			exec (@q)
+			
+			select a.*, a.id as id_hd, a.so_ct as so_ct_hd, a.ma_ct as ma_ct_hd,a.ngay_ct as ngay_ct_hd, a.ma_nt as ma_nt_hd, a.ty_gia as ty_gia_hd, a.t_tt as tien_hd_nt,  da_tt_nt as da_pb_nt from #v a 
+
+
+			drop table #v
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+   
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$m48_1Select(p){
+  this.constructor(p);
+}
+filter$m48_1Select.prototype = new DirEvent();
+filter$m48_1Select.prototype.beforeInit = function(){
+  var p = this._dir;
+  
+}
+
+
+filter$m48_1Select.prototype.afterInit = function(){
+  var p = this._dir,g = p.grid(0),master = g.ds.get(1), rErr = '';
+	p.valForm(['ngay_ct1','ngay_ct2','id', 'ma_kh', 'ten_kh', 'unit_id'], [p.options._ngay_ct1,p.options._ngay_ct2,p.options._so_ct,p.options._ma_kh, p.options._ten_kh, p.options._unit_id]);
+	//var ima_kh = master.val(0, 'ma_kh');
+	//var iten_kh = master.val(0, 'ten_kh');
+	  
+	  //p.valForm(['ma_kh','ten_kh'],[ima_kh,iten_kh]);
+
+	//dir$s611BQ1SetMaster(p);
+
+}
+
+function dir$s611BQ1SetMaster(p) {
+  p.request('ma_kh_request', '', ['id']);
+}
+
+filter$m48_1Select.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir, pa = p.options.parent, g = p.grid(0), dt = g.data, master = g.ds.get(1), rErr = dt.findRow("[so_luong0] > [sl_cl]");
+  
+  var fun = function(){
+    dt.removeRow('[chon_yn] == 0'); 
+    pa.appendGrid(0, dt, p.valForm('xprocess') == "2", 'chon_yn', 'chon_yn');
+    //pa.calcExpressionAll(0, 'chon_yn');
+	//p.request('ma_kh_request', '', ['id']);
+    //pa.appendForm(master, 0);
+	p._close();
+  }
+  
+  if (rErr.length) {
+    $.question('$VoucherRetrieveLimit', null, p, function(q, v){
+      q._close();
+      if (v) fun();
+    });
+  } else fun();
+  
+    return false;
+}
+
+         ]]>
+    </text>
+  </js>
+  
+  <script>
+		<request code="ma_kh_request">
+			<text>
+			  <![CDATA[
+
+			]]>
+			</text>
+		</request>
+  </script>
+</dir>

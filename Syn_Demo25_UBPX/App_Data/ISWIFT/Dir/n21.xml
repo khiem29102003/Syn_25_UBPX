@@ -1,0 +1,480 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+	<!ENTITY VoucherRequiredFields03 SYSTEM "..\Include\XML\VoucherRequiredFields03.xml">
+	<!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid01.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+
+  <!ENTITY VoucherSaleRequest SYSTEM "..\Include\XML\VoucherSaleRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from n21 where id = @id and status in (6,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+    ">
+]>
+
+
+
+<dir id="n21" table="n21" fieldKey="id" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" voucherCode="PF1" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Phiếu đề xuất" e="Timekeeping"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120" >
+      <fields>
+		<field name="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+		  <text v="" e=""></text>
+		</field>
+		
+
+		<!-- <field name="ma_dv" allowBlank="true" label="[80]" field="[80]"  hidden="false" tabIndex="1" disabled="true"> -->
+          <!-- <text v="Đơn vị" e="Employee Staff"></text> -->
+        <!-- </field> -->
+		<!-- <field name="ma_dv" allowBlank="true" viewType="Lookup" label="[80]" field="[80]"  hidden="false" tabIndex="1" disabled="true"> -->
+          <!-- <text v="Đơn vị" e="Employee Staff"></text> -->
+          <!-- <viewInfo lookupType="One" lookupId="dmdonvi" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_dv" lookupInfo="dmdonvi|ma_dv|ten_dv" /> -->
+        <!-- </field> -->
+        <!-- <field name="ten_dv" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="1" aliasName="cast('' as nvarchar(4000)) as "> -->
+          <!-- <text v="" e=""></text> -->
+        <!-- </field> -->
+		<!-- <field name="ma_pb" allowBlank="true" label="[80]" field="[80]"  hidden="false" tabIndex="1" disabled="true" nextRow="false"> -->
+          <!-- <text v="Phòng ban" e="Employee Staff"></text> -->
+        <!-- </field> -->
+		<field name="ma_pb" allowBlank="true" viewType="Lookup" label="[80]" field="[80]"  hidden="false" tabIndex="1" nextRow="false" disabled="true">
+          <text v="Phòng ban" e="Employee Staff"></text>
+          <viewInfo lookupType="One" lookupId="dmpb" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_pb" lookupInfo="dmpb|ma_pb|ten_pb" />
+        </field>
+        <field name="ten_pb" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="1" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		
+		<!-- <field name="ma_bp" allowBlank="true" label="1" field="1"  hidden="false" tabIndex="1" disabled="true" > -->
+          <!-- <text v="Bộ phận" e="Employee Staff"></text> -->
+        <!-- </field> -->
+		<field name="ma_bp" allowBlank="true" label="[80]" field="[80]"  hidden="false" tabIndex="1" disabled="true">
+          <text v="Tổ/Nhóm" e="Team/Group"></text>
+          <viewInfo lookupType="One" lookupId="dmbp" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_bp" lookupInfo="dmbp|ma_bp|ten_bp" />
+        </field>
+        <field name="ten_bp" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="1" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		
+		<field name="ma_nv" allowBlank="true" viewType="Lookup" label="[80]" field="[80]"  hidden="false" tabIndex="1" nextRow="false" disabled="true">
+          <text v="Người đề xuất" e="Employee Staff"></text>
+          <viewInfo lookupType="One" lookupId="dmnv" lookupKey="xstatus = 5" lookupCheck="1=1" lookupRef="ten_nv" lookupInfo="dmnv|ma_nv|ten_nv" />
+        </field>
+        <field name="ten_nv" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="1" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_hmdx" allowBlank="false" viewType="Lookup" label="1" field="1"  hidden="false" tabIndex="1">
+          <text v="Chọn hạng mục" e="Employee Staff"></text>
+          <viewInfo lookupType="One" lookupId="dmhmdx" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_hmdx" lookupInfo="dmhmdx|ma_hmdx|ten_hmdx" />
+        </field>
+        <field name="ten_hmdx" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_loaidx" allowBlank="false" viewType="Lookup" label="1" field="1"  hidden="false" tabIndex="1">
+          <text v="Loại đề xuất" e="Employee Staff"></text>
+          <viewInfo lookupType="One" lookupId="dmloaidx" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_loaidx" lookupInfo="dmloaidx|ma_loaidx|ten_loaidx" />
+        </field>
+        <field name="ten_loaidx" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="nguoi_check" allowBlank="false" viewType="Lookup" label="1" field="-"  hidden="false">
+			<text v="Người check" e="Container List"></text>
+			<viewInfo lookupType="Multi" lookupId="dmnv" lookupKey="xstatus = 5" lookupCheck="xstatus = 5" lookupRef="" lookupInfo="dmnv|ma_nv|ten_nv" />
+		</field>
+		<field name="nguoi_duyet" allowBlank="false" viewType="Lookup" label="1" field="-"  hidden="false">
+			<text v="Người duyệt" e="Container List"></text>
+			<viewInfo lookupType="Multi" lookupId="dmnv" lookupKey="xstatus = 5" lookupCheck="xstatus = 5" lookupRef="" lookupInfo="dmnv|ma_nv|ten_nv" />
+		</field>
+		<!-- <field name="nguoi_thuchien" allowBlank="false" viewType="Lookup" label="1" field="-"  hidden="false"> -->
+			<!-- <text v="Người thực hiện" e="Container List"></text> -->
+			<!-- <viewInfo lookupType="Multi" lookupId="dmnv" lookupKey="xstatus = 5" lookupCheck="xstatus = 5" lookupRef="" lookupInfo="dmnv|ma_nv|ten_nv" /> -->
+		<!-- </field> -->
+		<!-- <field name="ma_loaidx" allowBlank="false" viewType="Lookup" label="1" field="1"  hidden="false" tabIndex="1"> -->
+          <!-- <text v="Mã loại nghỉ" e="Employee Staff"></text> -->
+          <!-- <viewInfo lookupType="One" lookupId="dmloaidx" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_loaidx" lookupInfo="dmloaidx|ma_loaidx|ten_loaidx" /> -->
+        <!-- </field> -->
+        <!-- <field name="ten_loaidx" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as "> -->
+          <!-- <text v="" e=""></text> -->
+        <!-- </field> -->
+
+		
+		<!-- <field name="ma_ca" allowBlank="false" viewType="Lookup" label="1" field="1"  hidden="false" tabIndex="1"> -->
+          <!-- <text v="Mã ca" e="Employee Staff"></text> -->
+          <!-- <viewInfo lookupType="One" lookupId="dmcalv" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_ca" lookupInfo="dmcalv|ma_ca|ten_ca" /> -->
+        <!-- </field> -->
+        <!-- <field name="ten_ca" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as "> -->
+          <!-- <text v="" e=""></text> -->
+        <!-- </field> -->
+		
+		<!-- <field name="so_gio" dataType="N" format="FCAmount" allowBlank="false" label="1" field="1" readOnly="false" > -->
+          <!-- <text v="Số giờ" e="Quantity"></text> -->
+        <!-- </field> -->
+		<field name="tieu_de" label="1" field="-">
+		  <text v="Tiêu đề" e="Note"></text>
+		</field>
+		<field name="noi_dung" rows ="2" label="1" field="-">
+		  <text v="Nội dung" e="Note"></text>
+		</field>
+		<field name="ly_do" rows ="2" label="1" field="-">
+		  <text v="Lý do" e="Note"></text>
+		</field>
+		<field name="id_wf" viewType="Lookup" label="1" field="1" allowBlank="true">
+			<text v="Workflow" e="Workflow"></text>
+			<viewInfo lookupType="One" lookupId="wfdmkh" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ma_wf" lookupInfo="wfdmkh|id|ma_wf"/>
+		</field>
+		<field name="ma_wf" allowBlank="true" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="true" label="" field="[150]" aliasName="cast('' as nvarchar(200)) as ">
+			<text v="" e=""></text>
+		</field>
+      </fields>
+    </form>
+	
+	<form gravity="TopRight" columns="120,120" >
+		<fields>
+        &VoucherRequiredFields03;
+		&VoucherRequiredFields02;
+		</fields>
+    </form>
+	<form tabPageIndex="1" gravity="MiddleLeft" height="300" columns="120,120,120,120,120,120,120,120" >
+	<text v="Tiến độ thực hiện Workflow" e="Workflow progress"></text>
+	<fields>
+		<field name="wf2" allowBlank="false" label="" field="-" viewType="Grid">
+		<text v="Tiến độ thực hiện Workflow" e="Workflow progress"></text>
+		</field>
+	</fields>
+	</form>
+	<form tabPageIndex="2" gravity="MiddleLeft" height="0" columns="120,120,360" >
+      <text v="Đính kèm" e="Attach Files"></text>
+      <fields>
+        <field name="xfile" label="1" field="2" viewType="File" fieldType="EXParam">
+          <text v="Chọn files" e="Attach Files"></text>
+          <viewInfo fileFieldId0="id" fileGroup="PF1" fileExtension="*" maxFileSize="10240" maxFileCount="10"></viewInfo>
+        </field>
+      </fields>
+    </form>
+</forms>
+<grids>
+	<grid id="wf2" table="wf2" fieldKey="id, line" order="line" allowFilter="true" readOnly="false" allowOrder="true">
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+		<field name="chon_yn" width="80" dataType="B" readOnly="false" disabled="true">
+          <text v="..." e="..."></text>
+        </field>
+        <field name="ma_task" width="120" viewType="Lookup" readOnly="false" >
+          <text v="Mã công việc" e="Task Code"></text>
+          <viewInfo lookupType="One" lookupId="dmtask" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_task" lookupInfo="dmtask|ma_task|ten_task" />
+        </field>
+        <field name="ten_task" width="250" fieldType="EX" inactivate="true" readOnly="true" aliasName="b.ten_task " join=" left join dmtask b on a.ma_task = b.ma_task ">
+          <text v="Tên công việc" e="Task"></text>
+        </field>
+		<field name="ma_nv" width="120" viewType="Lookup" readOnly="false" fieldType="EX"  aliasName="c.ma_nv " join=" left join wf1 c on a.id = c.id and a.ma_ntask= c.ma_ntask ">
+          <text v="Mã nhân viên" e="Employee Code"></text>
+          <viewInfo lookupType="One" lookupId="dmnv" lookupKey="status=1 and xstatus = 5" lookupCheck="1=1" lookupRef="ten_nv" lookupInfo="dmnv|ma_nv|ten_nv" />
+        </field>
+        <field name="ten_nv" width="200" fieldType="EX" inactivate="true" readOnly="true" aliasName="d.ten_nv " join=" left join dmnv d on c.ma_nv = d.ma_nv ">
+          <text v="Tên nhân viên" e="Employee Name"></text>
+        </field>
+		<field name="ma_ntask" width="120" viewType="Lookup" readOnly="false" >
+          <text v="Mã nhóm công việc" e="Task Group Code"></text>
+          <viewInfo lookupType="One" lookupId="dmntask" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_ntask" lookupInfo="dmntask|ma_ntask|ten_ntask" />
+        </field>
+        <field name="ten_ntask" width="250" fieldType="EX" inactivate="true" readOnly="true" aliasName="e.ten_ntask " join=" left join dmntask e on a.ma_ntask = e.ma_ntask ">
+          <text v="Tên nhóm công việc" e="Task Group Name"></text>
+        </field>
+      </fields>
+
+      <buttons>
+		<button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+set nocount on
+select @@fields into #t from @@table a @@join
+where a.id = @id and @action != 'NEW'
+select * from #t
+drop table #t
+         ]]>
+          </text>
+        </query>
+      </script>
+    </grid>
+</grids>
+  &DefaultButton;
+  <js>
+    <text>
+      <![CDATA[
+function dir$n21(p){
+  this.constructor(p);
+}
+dir$n21.prototype = new DirEvent();
+dir$n21.prototype.beforeInit = function(){
+  var p = this._dir;
+  if (p.options.action == 'EDIT') {
+	p.field('so_ct').disabled = true;
+  }
+}
+dir$n21.prototype.afterInit = function(renderType){
+   var p = this._dir
+   
+   dir$n21LoadData(p);
+   dir$n21DisabledStatusByAction(p);
+   dir$n21LoadDataLogin(p);
+   dir$n21EditCheck(p);
+}
+dir$n21.prototype.beforeButtonDialogClick = function (id) {
+  var p = this._dir
+  switch (id) {
+    case 'ok':
+	  
+    default:
+      break;
+  }
+  return true;
+}
+dir$n21.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+]]>&VoucherExRateValid01;<![CDATA[
+    case 'ma_hmdx':
+      dir$n21LoadData(p);
+      break;
+    default:
+      break;
+  }
+}
+function dir$n21LoadDataLogin(p){
+	if(p.options.action == 'NEW')
+	{
+		p.valForm('ma_nv', data_manv, true)
+		p.valForm('ma_pb', data_mapb, true)
+		p.valForm('ma_bp', data_mabp, true)
+	}
+}
+function dir$n21LoadData(p){
+
+ var hmdx = p.valForm('ma_hmdx');
+	if(p.options.action == 'NEW') {
+		if (hmdx != "") {
+			p.request('hdmxRequest', '', ['ma_hmdx']);
+			return;
+		}
+		
+		if(hmdx == "" ){
+			p.valForm('nguoi_check', '', true);
+			p.valForm('nguoi_duyet', '', true);
+
+			return;
+		}
+	}
+
+}
+function dir$n21EditCheck(p){
+	if(p.options.action !== 'NEW')
+	{
+	  p.setDisabled(['unit_id','ngay_ct','status','ma_hmdx', 'ma_loaidx' ,'nguoi_check', 'nguoi_duyet'], true);
+
+	}
+
+}
+function dir$n21DisabledStatusByAction(p){
+  var o = p.jObject('status');
+  if (p.options.action != 'VIEW') o.find("[value=2],[value=3],[value=5],[value=9]").remove();
+}
+         ]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[
+
+		.control-label.ma_hmdx,.control-label.ma_loaidx
+		{	
+			color: #499b98;
+		}
+		.input-field.status, .input-field.unit_id
+		{
+			color: #ab6926;
+		}	
+      ]]>
+    </text>
+  </css>
+
+<script>
+	<request code="hdmxRequest">
+		<text>
+		  <![CDATA[
+			select ma_hmdx, nguoi_check [!nguoi_check], nguoi_duyet [!nguoi_duyet] from dmhmdx where ma_hmdx = @ma_hmdx
+		]]>
+		</text>
+	</request>
+    &VoucherRequest;
+    &VoucherSaleRequest;
+
+	<query>
+      <text>
+        <![CDATA[
+if @action = 'EDIT' begin
+]]>&CheckUpdatingDeleting;<![CDATA[
+end
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+if @action in ('EDIT', 'VIEW') exec ISWIFTStoreGetListFiles 'xfile', @id, '@@voucherCode', '', @script output
+if @script is null set @script = ''
+
+if @action = 'NEW' begin
+  declare @ma_nk varchar(32), @ten_nk nvarchar(3000), @ngay_ct date, @so_ct varchar(32), @i_so_ct int, @unit_id int
+  select @ngay_ct = getdate(), @unit_id = @@unit
+  
+  
+]]>&VoucherNumberQuery;<![CDATA[
+  if @so_ct is null
+    select '' as [so_ct], 0 as [i_so_ct], @unit_id as [unit_id], '' as ma_nk, '' as ten_nk
+  else
+    select @so_ct as [so_ct], @i_so_ct as [i_so_ct], @unit_id as [unit_id], @ma_nk as ma_nk, @ten_nk as ten_nk
+end
+else select @script as script
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+	
+	<declare>
+      <text>
+        <![CDATA[
+declare @warning nvarchar(256), @dOldVoucherDate date, @dVoucherDate date, @nVoucherType tinyint, @strIds varchar(256), @q nvarchar(4000)
+set @warning = ''
+         ]]>
+      </text>
+    </declare>
+	
+	&VoucherJSLoading;
+
+    <beforesave>
+      <text>
+        &VoucherNumberBeforeSave;
+		<![CDATA[
+		]]>
+      </text>
+    </beforesave>
+	<deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct, @dVoucherDate = ngay_ct, @nVoucherType = ma_ngv from n21 where id = @id
+        ]]>
+      </text>
+    </deleting>
+
+	 <deleted>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+-- Áp dụng cho dữ liệu lớn
+---exec ISWIFTStoredDeleteDataWithKey 'h15', @strIds, '', @dVoucherDate
+        ]]>
+      </text>
+    </deleted>
+	<updating>
+      <text>
+
+      <![CDATA[
+select @dOldVoucherDate = ngay_ct from n21 where id = @id
+        ]]>
+      </text>
+    </updating>
+	<updated>
+      <text>
+        <![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId, i_so_ct = @i_so_ct, so_ct = @so_ct where [%whereFieldKey]
+update dmttin set status = 0 from dmttin where id0 = rtrim(@id) and xgroup = '@@voucherCode'
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+         ]]>
+      </text>
+    </updated>
+	<inserting>
+      <text>
+        <![CDATA[
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @ma_ct = '@@voucherCode'
+exec ISWIFTStoredGetIdentityNumber '@@voucherCode', '@@table', @id output
+         ]]>
+      </text>
+    </inserting>
+	
+	<inserted>
+      <text>
+    <![CDATA[
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+
+	]]>
+      </text>
+    </inserted>
+    <aftersave>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+if @action = 'NEW' set @dOldVoucherDate = @ngay_ct
+
+EXEC st_insertWFN21 @id, @id_wf, @so_ct, @unit_id, @ma_nt, @status, @ngay_ct
+
+exec ISWIFTStoredIncreaseVoucherNo @ma_nk, @ngay_ct, '@@voucherCode', @i_so_ct, @so_ct, '@@table'
+select '' as message, @warning as warning, @id as [#id], @so_ct as [#so_ct], @ma_unit as [#ma_unit]
+]]>
+      </text>
+    </aftersave>
+  </script>
+ <messages>
+  <message val="EmptyContainer">
+      <text v="Vui lòng nhập Container" e="Please Enter Congtainer" />
+    </message>
+    <message val="physicalRetrieve">
+      <text v="Chỉ xử lý nghiệp vụ sổ sách lấy dữ liệu từ thực tế" e="" />
+    </message>
+	 <message val="noDate">
+      <text v="Ngày hiệu lực đến không hợp lệ." e="Error Expiry Date."/>
+    </message>
+	<message val="notApproveRightEdit">
+      <text v="Không có quyền sửa/xóa đơn hàng đã duyệt ngoài mức được phân quyền" e="" />
+    </message>
+	<message val="notApproveRight">
+      <text v="Không có quyền duyệt đơn hàng" e="" />
+    </message>
+	 <message val="OnLyNew">
+      <text v="Chỉ thực hiện chức này ở trạng thái thêm mới." e="Only perform this function in the newly added state."/>
+    </message>
+  </messages>
+
+</dir>

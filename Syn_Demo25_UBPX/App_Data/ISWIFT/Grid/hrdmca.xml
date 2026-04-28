@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="hrdmca" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục ca làm việc" e="Working Shift List"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit..."></subtitle>
+  <grids>
+    <grid table="hrdmca" fieldKey="ma_ca" order="ma_ca" allowFilter="true" allowOrder="true" >
+      <fields>
+        <field name="ma_ca" fieldType="PK" width="120">
+          <text v="Mã ca" e="Shift Code"></text>
+        </field>
+        <field name="ten_ca" width="300">
+          <text v="Tên ca" e="Description"></text>
+        </field>
+        <field name="nh_ca" width="100">
+          <text v="Nhóm ca" e="Group"></text>
+        </field>
+        <field name="kieu_lt" viewType="Combobox" width="150">
+          <text v="Kiểu làm tròn" e="Rounding Type"></text>
+          <viewInfo>
+            <options>
+              <option val="0">
+                <text v="0 - Không làm tròn" e="1 - Not Round"></text>
+              </option>
+              <option val="1">
+                <text v="1 - Cận trên" e="1 - Ceiling"></text>
+              </option>
+              <option val="2">
+                <text v="2 - Cận dưới" e="2 - Floor"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="status" viewType="Combobox" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+
+      &DefaultButton;
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+exec iswiftStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', '', @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmddspkh(f){
+  this.constructor(f);
+}
+grid$dmddspkh.prototype = new DirEvent();
+grid$dmddspkh.prototype.afterInit = function() {
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+   <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

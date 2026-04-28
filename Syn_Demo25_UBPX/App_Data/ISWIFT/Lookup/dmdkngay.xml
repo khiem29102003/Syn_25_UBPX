@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="dmdkngay" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục ngày trong tuần" e="Days of the Week List"></title>
+  <grids>
+    <grid table="dmdkngay" fieldKey="ma_dkngay" fieldName="ten_dkngay" order="ma_dkngay" allowFilter="true" allowOrder="true">
+      <fields>
+		<field name="ma_dkngay" fieldType="PK" width="120" filterType="Code">
+          <text v="Mã thứ" e="Weekday Code"></text>
+        </field>
+        <field name="ten_dkngay" width="300">
+		  <text v="Tên thứ" e="Weekday Name"></text>
+        </field>
+      </fields>
+	<script>
+	<query>
+	  <text>
+		<![CDATA[
+DECLARE @key2 nvarchar(3000)
+SELECT @key2 = (CASE WHEN @lookupKey = '' THEN '1=1' ELSE @lookupKey END) + CASE WHEN @val = '' THEN ''ELSE ' AND (@@fieldKey LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%''' + ' OR @@fieldName LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' END;
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+	 ]]>
+	  </text>
+	</query>
+	</script>
+    </grid>
+  </grids>
+</dir>

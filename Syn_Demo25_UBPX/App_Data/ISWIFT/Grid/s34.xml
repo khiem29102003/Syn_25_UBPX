@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="s34" dirViewType="Grid" dirObjectType="Voucher" voucherCode="PC1" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Phụ phí Hàng biển FCL (Hàng container) " e="FCL Surcharge "></title>
+  <subtitle v="Thêm, sửa, xóa..." e="New, Edit, Delete..."></subtitle>
+
+  <grids>
+    <grid table="s34" fieldKey="id" order="id desc" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="so_ct" width="120" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+		 <field name="ma_ct" width="0" >
+          <text v="Mã chứng từ" e="Voucher Name"></text>
+        </field>
+        <field name="ngay_ct" width="120" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+		<field name="ma_kh" width="120" hidden = "true">
+          <text v="Mã hãng tàu / đại lý" e="Agent Code"></text>
+        </field>
+        <field name="ten_kh" width="250" fieldType="EX" >
+          <text v="Tên hãng tàu / đại lý" e="Agent Name"></text>
+        </field>     
+		<field name="ma_noi_di" width="120" hidden="true" >
+          <text v="Nơi đi" e="Destination"></text>
+        </field>	
+		<field name="ten_noi_di" width="250" fieldType="EX" >
+		  <text v="Nơi đi " e="Destination Name"></text>
+		</field>	
+		<field name="ma_phi" width="120" hidden="true">
+          <text v="Tên phí" e="Origin"></text>
+        </field>
+		<field name="ten_phi" width="250" fieldType="EX" hidden="true">
+		  <text v="Tên phí" e="Origin Name"></text>
+		</field>
+		
+		
+		<field name="ma_kh" width="0" >
+          <text v="Đại lý" e="Agent"></text>
+        </field>
+		<field name="ngay_hl" width="120" dataType="D">
+          <text v="Ngày hiệu lực" e="Effective  date"></text>
+        </field>
+		<field name="ngay_hld" width="120" dataType="D">
+          <text v="Ngày hiệu lực đến" e="Expiry  date"></text>
+        </field>
+		<field name="ma_nt" width="0" >
+          <text v="Ngoại tệ" e="Currency"></text>
+        </field>
+		<field name="dien_giai" width="250">
+          <text v="Ghi chú" e="Note"></text>
+        </field>
+        <field name="unit_id" hidden="true" dataType="I" width="80" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="id" dataType="N" fieldType="PK" format="0" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey =' ma_ct =  ''PC1'' and ma_noi_di <> '''' and ma_noi_den <> '''' '			
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmkh c on a.ma_kh = c.ma_kh left join dmphi d on a.ma_phi = d.ma_phi left join dmkhobai f on a.ma_noi_di = f.ma_kho', 'b.ma_unit, c.ten_kh, d.ten_phi, f.ten_kho ten_noi_di', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @strDetailKey nvarchar(3000); set @strDetailKey = ''
+if @ma_phi <> '' set @strDetailKey = @strDetailKey + ' and x.ma_phi like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@ma_phi) + '%'''
+if @strDetailKey <> '' set @strDetailKey = ' and exists(select 1 from v34 x where a.id = x.id ' + @strDetailKey + ')'
+
+set @strKey = 'ngay_ct between ''' + convert(char(8), @ngay_ct1, 112) + ''' and ''' + convert(char(8), @ngay_ct2, 112) + ''' and ' + @strFinding + ' and ' + dbo.ISWIFTFunctionGetUnitIDRightKeys(@@admin, @@userId, @ma_unit, 'a.unit_id') + @strDetailKey
+set @strKey = @strKey + ' and ma_ct =  ''PC1'' and ma_noi_di <> '''' and ma_noi_den <> '''' '
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id left join dmkh c on a.ma_kh = c.ma_kh left join dmphi d on a.ma_phi = d.ma_phi', 'b.ma_unit, c.ten_kh, d.ten_phi', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+ 
+         ]]>
+          </text>
+        </finding>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+	  
+	  
+
+function grid$s34(f){
+  this.constructor(f);
+}
+grid$s34.prototype = new DirEvent();
+grid$s34.prototype.afterInit = function(renderType){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[
+.table-bottom{
+	left: 0px!important;
+	height: calc(100% - 77px);
+	top: 0px;
+	position: relative;
+	margin-top: 27px;
+	clear: both;
+	border-bottom: 1px solid #ddd;
+}
+#content .dir{
+	position: relative !important;
+	height: 100%;
+}
+
+@media only screen and (max-width: 767px) {
+  .table-bottom{
+    margin-top: 42px;
+    height: calc(100% - 92px);
+  }
+}
+      ]]>
+    </text>
+  </css>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+</dir>

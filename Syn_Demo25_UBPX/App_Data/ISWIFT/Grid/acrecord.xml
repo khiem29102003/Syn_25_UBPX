@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="acrecord" dirViewType="Grid" selectMultiple="Table" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Record đã xử lý" e="Approve keep cases for employees"></title>
+  <subtitle v="Xử lý &lt;b&gt;%s&lt;/b&gt; phiếu lịch sử cuộc gọi" e="&lt;b&gt;%s&lt;/b&gt; call history form"></subtitle>
+
+  <grids>
+    <grid table="lscuocgoi" fieldKey="referenceId" order="referenceId desc" key="xstatus in (0)" allowFilter="true" allowOrder="true">
+      <fields>
+		<field name="referenceId" fieldType="PK" width="200" hidden="false">
+          <text v="referenceId" e="Status"></text>
+        </field>
+		<field name="ma_so_thue" width="200" hidden="false" fieldType="PK" link = "1">
+          <text v="Mã Số Thuế" e="Tax Code"></text>
+        </field>
+		<field name="listened" width="120" align="right" hidden="false">
+          <text v="Đã nghe (s)" e="Listened (s)"></text>
+        </field>
+		<field name="progressed" width="120" align="right" hidden="false">
+          <text v="Đã nghe (%)" e="Listened (%)"></text>
+        </field>
+		<field name="ma_donvi" width="120" align="right" hidden="false">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+		<field name="ma_pb" width="120" align="right" hidden="false">
+          <text v="Phòng ban" e="Department"></text>
+        </field>
+		<field name="ma_bp" width="120" align="right" hidden="false">
+          <text v="Bộ phận" e="Division"></text>
+        </field>
+		<field name="accountcode" width="150">
+          <text v="Người gọi" e="Client"></text>
+        </field>
+		<field name="src" width="120" align="right" hidden="false">
+          <text v="Source" e="Source"></text>
+        </field>
+		 <field name="calldate" width="120" dataType="D" align="center">
+          <text v="Ngày gọi" e="Call Date"></text>
+        </field>
+		<field name="dst" width="150" align="right" hidden="false">
+          <text v="Gọi đến số" e="Destination"></text>
+        </field>
+		<field name="duration" width="120" align="right">
+          <text v="Thời lượng" e="Duration"></text>
+        </field>
+		<field name="billsec" width="120" align="right">
+          <text v="Thời gian bắt máy" e="Billsec"></text>
+        </field>
+		<field name="disposition" width="120">
+          <text v="Trạng thái" e="Status"></text>
+        </field>
+		<field name="hangup" width="150" hidden="false">
+          <text v="Ai cúp máy trước" e="Hangup Person"></text>
+        </field>
+ 		<!-- <field name="datetime0" width="120" dataType="D" align="center"> -->
+          <!-- <text v="Time Start" e="Agent Number"></text> -->
+        <!-- </field> -->
+		<!-- <field name="datetime2" width="120" dataType="D" align="center"> -->
+          <!-- <text v="Maker Date" e="Agent Number"></text> -->
+        <!-- </field> -->
+		 <field name="ngay_goi" width="120" fieldType="EX"  align="center">
+          <text v="Thời gian bắt đầu" e="Start Date"></text>
+        </field>
+		<field name="ngay_kt" width="120" fieldType="EX" align="center">
+          <text v="Thời gian kết thúc" e="End Date"></text>
+        </field>
+		<!-- <field name="ntext" width="120"> -->
+          <!-- <text v="Mã record" e="Status"></text> -->
+        <!-- </field> -->
+		<field name="dien_giai" width="120">
+          <text v="Diễn giải" e="Status"></text>
+        </field>
+
+		<!--		
+		<field name="status" width="120">
+          <text v="Trạng thái" e="Status"></text>
+        </field>
+		-->
+      </fields>
+
+        <buttons>
+		<button id="approve">
+          <text v="Duyệt" e="Approve"></text>
+        </button>
+		<button id="split">
+          <text v="-" e="-"></text>
+        </button>
+		<button id="edit">
+          <text v="$EditToolbar" e="$EditToolbar"></text>
+        </button>
+        <!-- <button id="view"> -->
+          <!-- <text v="$ViewToolbar" e="$ViewToolbar"></text> -->
+        <!-- </button> -->
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <!-- <button id="find"> -->
+          <!-- <text v="$FindToolbar" e="$FindToolbar"></text> -->
+        <!-- </button> -->
+        <!-- <button id="split"> -->
+          <!-- <text v="-" e="-"></text> -->
+        <!-- </button> -->
+        <!-- <button id="refresh"> -->
+          <!-- <text v="$RefreshToolbar" e="$RefreshToolbar"></text> -->
+        <!-- </button> -->
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+
+      </buttons>
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join (select referenceId, ma_so_thue, CONVERT(VARCHAR(19), datetime0, 120) ngay_goi, CONVERT(VARCHAR(19), datetime2, 120) ngay_kt from lscuocgoi) b on a.referenceId = b.referenceId', 'b.ngay_goi, b.ngay_kt', '@@key', '', @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @strDetailKey nvarchar(3000); set @strDetailKey = ''
+
+set @strKey = 'CONVERT(VARCHAR(32), calldate, 23) between ''' + convert(varchar(32), @ngay_ct1, 23) + ''' and ''' + convert(varchar(32), @ngay_ct2, 23) + ''' and ' + @strFinding
+set @strKey = @strKey + ' and  a.disposition = ''ANS'' '
+
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join (select referenceId, ma_so_thue, CONVERT(VARCHAR(19), datetime0, 120) ngay_goi, CONVERT(VARCHAR(19), datetime2, 120) ngay_kt from lscuocgoi) b on a.referenceId = b.referenceId', 'b.ngay_goi, b.ngay_kt', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </finding>
+      </script>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$acrecord(f){
+  this.constructor(f);
+}
+grid$acrecord.prototype = new DirEvent();
+grid$acrecord.prototype.afterInit = function(renderType){
+  var p = this._dir;
+	p.find(".toolbar-approve").attr('title', p.msg('approve'))
+}
+grid$acrecord.prototype.beforeButtonGridClick = function (id, gindex) {
+
+  var msg, p = this._dir, g = p.grid(gindex), dt = g.data, itemls = p.selectedItems(), xstatus = p.options._status;
+  switch (id) {
+
+    case 'approve':
+      msg = (xstatus ==1)? p.msg('msg1'): (xstatus == 9)? p.msg('msg3'):p.msg('msg2');
+      if (itemls.count() > 0)
+        $.question(msg, $.msg.get("QuestionTitle"), p, function (q, v) {
+          q._close();
+          if (v){
+            p.request('Approve', '', [["tblKeys", "T", itemls.sqlval()], ['xstatus', 'I', xstatus]], function(pp, d, run){
+              if (run) {
+                p._refresh();
+                p.clearSelectedItems();
+              }
+            });
+          }
+        });
+      return false;
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+  <script>
+    <request code="Approve" transaction="true">
+      <text>
+        <![CDATA[
+declare @deststatus int, @uid int, @dduyet date
+set @deststatus = case @xstatus when 1 then 5 when 5 then 1 else 5 end --else 9 - Huy thi tra ve duyet
+set @uid = case when @xstatus = 1 then @@userId else 0 end
+set @dduyet = case when @xstatus = 1 then getdate() else null end
+
+update lscuocgoi set status = @deststatus, user_id_duyet = @uid, ngay_duyet = @dduyet where referenceId in (select referenceId from @tblKeys)
+
+select '' as message, '$Processed' as toast
+        ]]>
+      </text>
+    </request>
+
+
+    &VoucherJSLoading;
+  </script>
+
+  <messages>
+    <message val="msg1">
+      <text v="Bạn có chắc chắn sẽ &lt;b&gt;bỏ qua&lt;/b&gt; các phiếu được chọn không?" e=""/>
+    </message>
+    <message val="msg2">
+      <text v="Bạn có chắc chắn sẽ &lt;b&gt;lấy lại&lt;/b&gt; các phiếu được chọn trở về trạng thái [Chờ duyệt] không?" e=""/>
+    </message>
+    <message val="msg3">
+      <text v="Bạn có chắc chắn sẽ &lt;b&gt;bỏ đóng&lt;/b&gt; các phiếu được chọn trở về trạng thái [Đã duyệt] không?" e=""/>
+    </message>
+    <message val="close">
+      <text v="Hủy/đóng" e="Close"/>
+    </message>
+    <message val="approve">
+      <text v="Hủy keep" e="Approve"/>
+    </message>
+    <message val="undo">
+      <text v="Bỏ duyệt" e="Undo"/>
+    </message>
+    <message val="open">
+      <text v="Bỏ đóng" e="Open &amp; Approve"/>
+    </message>
+      <message val="inputTitle">
+      <text v="Nhập lý do hủy phiếu" e=""/>
+    </message>
+    <message val="reason">
+      <text v="Lý do" e="Reason"/>
+    </message>
+  </messages>
+</dir>

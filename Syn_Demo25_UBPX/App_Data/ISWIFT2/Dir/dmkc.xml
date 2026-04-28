@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmkc" table="dmkc" fieldKey="ma_kc" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục khoảng cách" e="Distance catalog"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120" >
+      <fields>
+       <field name="ma_kc" fieldType="PK" label="1" field="1"  filterType="Code" allowBlank="false">
+          <text v="Mã khoảng cách" e="Distance code"></text>
+        </field>
+        <field name="ten_kc" label="1" field="2"  allowBlank="false">
+          <text v="Tên khoảng cách" e="Distance name"></text>
+        </field>		
+		<field name="ten_kc2" label="1" field="2" >
+          <text v="Tên khoảng cách" e="Other name"></text>
+        </field>
+		<field name="noi_di" label="1" field="2"  allowBlank="false">
+          <text v="Nơi đi" e="Vehicle name"></text>
+        </field>
+		<field name="noi_den" label="1" field="2"  allowBlank="false">
+          <text v="Nơi đến" e="Vehicle name"></text>
+        </field>
+		<field name="chieu_dai" label="1" field="1"  allowBlank="false" dataType="N">
+          <text v="Chiều dài" e="Vehicle name"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmkc(p){
+  this.constructor(p);
+}
+dir$dmkc.prototype = new DirEvent();
+dir$dmkc.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmkc.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+  dir$dmkcDisabledMasterField(p, g);
+
+}
+
+function dir$dmkcDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_kc').trim() != '')
+  {
+    p.setDisabled('ma_kc', true);
+  }
+  else
+  {
+    p.setDisabled('ma_kc', false);
+  }
+}
+
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã khoảng cách đã tồn tại' else N'Distance code already exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã khoảng cách đã tồn tại' else N'Distance code already exists' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+
+</dir>

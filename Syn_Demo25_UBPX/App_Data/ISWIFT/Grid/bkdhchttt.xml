@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="bkdhchttt" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Bảng kê đơn hàng chưa hoàn thành thanh toán" e="Sales Invoice Listing"></title>
+  <subtitle v="Từ ngày {ngay_ct1} đến ngày {ngay_ct2}..." e="From {ngay_ct1} To {ngay_ct2}..."></subtitle>
+  <grids>
+    <grid>
+      <fields>
+		
+		<field name="stt_1" fieldType="EX"  width="50" align="center">
+          <text v="STT" e="STT"></text>
+        </field>
+		<field name="id" width="150" hidden="true">
+          <text v="id" e="Voucher Number"></text>
+        </field>
+		<field name="ngay_ct" width="150" dataType="D" align="center">
+          <text v="Ngày c\từ" e="Customer Code"></text>
+        </field>
+		<field name="so_ct" width="150" hidden ="true">
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+		<field name="ma_ct" width="150" hidden ="true">
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+		<field name="ma_dh" fieldType="EX" width="100" align="center">
+          <text v="Mã đơn hàng" e="Voucher Number"></text>
+        </field>
+		<field name="ma_kh" width="120"  hidden = "true">
+          <text v="" e=""></text>
+        </field>
+		<field name="ten_kh" width="200" aliasName="z" join="left join dmkh z on a.ma_kh = z.ma_kh">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+		<field name="dien_thoai" width="120" aliasName="z">
+          <text v="Điện Thoại" e="Total Amount"></text>
+        </field>
+		<field name="t_tien" width="150" fieldType="EX" dataType="N" format="FCAmount">
+          <text v="Tổng tiền" e="Total Amount"></text>
+        </field>
+		<field name="tien_dtt" width="150" fieldType="EX" dataType="N" format="FCAmount">
+          <text v="Tiền đã thanh toán" e="Total Amount"></text>
+        </field>
+		<field name="dien_giai" width="200" >
+          <text v="Diễn giải" e="Note"></text>
+        </field>
+		
+      </fields>
+
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$bkdhchttt(f){
+  this.constructor(f);
+}
+grid$bkdhchttt.prototype = new DirEvent();
+grid$bkdhchttt.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+grid$bkdhchttt.prototype.beforeInit = function(){
+  var p = this._dir;
+}
+grid$bkdhchttt.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(), dt = g.data;
+}
+]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+exec ss_dhchttt @ngay_ct1, @ngay_ct2, '@@gridJoin', '@@gridFields', @strJoin, @strFinding, @ma_unit, '@@lan', @@userId, @@admin
+        ]]>
+      </text>
+    </processing>
+  </script>
+</dir>

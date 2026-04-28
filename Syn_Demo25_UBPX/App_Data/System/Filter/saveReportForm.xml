@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+
+<dir id="saveReportForm" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir" >
+  <title v="Lưu mới mẫu báo cáo" e="Save New Report Form"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120" >
+      <fields>
+        <field name="name" label="1" field="3" >
+          <text v="Nhập tên mẫu mới" e="Name"></text>
+        </field>
+        <field name="name2" label="1" field="3" >
+          <text v="Tên 2" e="Name 2"></text>
+        </field>
+        <field name="report_filtering" label="1" field="[360]" viewType="Combobox">
+          <text v="Mẫu lọc báo cáo" e="Report Filtering Form"></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$saveReportForm(p){
+  this.constructor(p);
+}
+filter$saveReportForm.prototype = new DirEvent();
+filter$saveReportForm.prototype.afterInit = function(){
+  var p = this._dir;
+  if (p.options._filterAction == "NEW") {
+    p.setHidden('report_filtering', true);
+  }
+  if (p.options._filterAction == "EDIT") {
+    p.setTitle(p.msg('ReportFormTitle1'));
+  }
+}
+filter$saveReportForm.prototype.beforeButtonDialogClick = function (id) {
+  var p = this._dir;
+  if (id == 'filterOk') {
+    if (p.valForm('name') == '') {
+      p.jObject('name').focus(); 
+      return false;
+    }
+    p.request(p.options._filterAction, '', ['name', 'name2', 'report_filtering', ['controller', 'C', p.options._controller], ['reportForm', 'C', p.options.reportForm]], function(pp, d, run){
+      if (run) p._close();
+    });
+    return false;
+  }
+  return true;
+}
+function filter$saveReportForm$Saved(p, id){
+  var pa = p.options.parent, o = pa.jObject('report_filtering');
+  if (p.options._filterAction == 'NEW') o.append("<" + "option value='" + id + "'>" + p.valForm('name') + "</option>");
+  else o.find("[value=" + id + "]").text(p.valForm('name'));
+  o.fval(id);
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <request code="NEW">
+      <text>
+        <![CDATA[
+declare @id int
+select @id = isnull(max(id), 0) + 1 from sysreportform where controller = @controller --user_id = @@userId and 
+insert into sysreportform select @@userId, @id, @controller, @name, @name2, @reportForm, 1, getdate(), getdate(), @@userId, @@userId
+select '' as message, 'filter$saveReportForm$Saved(p, ' + rtrim(@id) + ')' as script
+       ]]>
+      </text>
+    </request>
+
+    <request code="EDIT">
+      <text>
+        <![CDATA[
+if not exists(select 1 from sysreportform where id = @report_filtering and user_id = @@userId and controller = @controller) begin
+  select '$ReportPivotNotEdit' as message, 'name' as field
+  return
+end
+update sysreportform set jsonform = @reportForm, formname = @name, formname2 = @name2 where id = @report_filtering and user_id = @@userId and controller = @controller
+select '' as message, 'filter$saveReportForm$Saved(p, ' + rtrim(@report_filtering) + ')' as script
+       ]]>
+      </text>
+    </request>
+  </script>
+
+</dir>

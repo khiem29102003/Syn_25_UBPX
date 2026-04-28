@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="sysgroupinfo" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Khai báo nhóm người sử dụng và phân quyền truy cập" e="Group Maintenance"></title>
+  <subtitle v="Thêm, sửa, phân quyền nhóm người sử dụng..." e="New, edit group..."></subtitle>
+  <grids>
+    <grid id="0" table="sysgroupinfo" fieldKey="group_id" order="group_id" allowFilter="true" allowOrder="true" key="(@@admin = 1)" >
+      <fields>
+        <field name="group_id" fieldType="PK" dataType="N" align="Right" width="40" filterType="Code" hidden="true">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="groupname" width="100" filterType="Code">
+          <text v="Nhóm" e="Group"></text>
+        </field>
+        <field name="dien_giai" width="300" filterType="Code">
+          <text v="Tên nhóm" e="Description"></text>
+        </field>
+        <field name="ds_username" width="300">
+          <text v="Danh sách người sử dụng" e="Fullname"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="Thêm (Alt + N)" e="Add (Alt + N)"></text>
+        </button>
+        <button id="edit">
+          <text v="Sửa (Ctrl + E, Alt + E)" e="Edit (Ctrl + E, Alt + E)"></text>
+        </button>
+        <button id="delete">
+          <text v="Xóa (Ctrl + D, Alt + D)" e="Delete (Ctrl + D, Alt + D)"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="permission">
+          <text v="Phân quyền" e="Permission"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="Làm tươi" e="Refresh"></text>
+        </button>
+        <button id="freeze">
+          <text v="Gim cột" e="Freeze"></text>
+        </button>
+      </buttons>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$sysgroupinfo(f){
+  this.constructor(f);
+}
+grid$sysgroupinfo.prototype = new DirEvent();
+grid$sysgroupinfo.prototype.afterInit = function(){
+	var p = this._dir;
+}
+grid$sysgroupinfo.prototype.beforeButtonGridClick = function(id){
+  if (id == 'permission') {
+    var p = this._dir;
+    var m = new Memvars();
+    p.grequest(0, 'permission', 'GetRow', 'group_id', funResult);
+    return false;
+  }
+  return true
+}
+function funResult(p, d){
+  d = new DataRow(d);
+  if(d.val('result') == '')
+    $.createDir(false, { controller: 'permissionGroup', backdropclick: false, folder: "Filter", dirViewType: "Dialog", parent: p });   
+  else
+    $.alert($.msg.get(d.val('result')));
+}
+]]>
+    </text>
+  </js>
+
+
+  <script>
+    <request code="permission">
+      <text>
+        <![CDATA[
+declare @r as nvarchar(1000)
+select @r = ''
+if @@admin = 0 select @r = N'AdminAccess'
+select @r as result
+]]>
+      </text>
+    </request>
+  </script>
+
+</dir>

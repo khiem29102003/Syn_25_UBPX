@@ -1,0 +1,1006 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+  <!ENTITY VoucherRequiredFields01 SYSTEM "..\Include\XML\VoucherRequiredFields11.xml">
+  <!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid01.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+  <!ENTITY FileNumberBeforeSave SYSTEM "..\Include\Script\FileNumberBeforeSave.txt">
+
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+
+  <!ENTITY VoucherSaleRequest SYSTEM "..\Include\XML\VoucherSaleRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from m54 where id = @id and status in (6,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+  if exists(select 1 from d56 with(index(id_hd)) where id_hd = @id) begin
+    select '$DaTraLai' as message
+    return
+  end
+  if exists(select 1 from cttt20 where id_tt = @id and loai_tt = 1) begin
+    select '$DaThanhToan' as message
+    return
+  end
+    ">
+]>
+
+<dir id="m54" table="m54" fieldKey="id" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" voucherCode="PX3" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Hóa đơn bán hàng" e="Sales Invoice"></title>
+  <title0 v="Mới - Phiếu bán hàng" e="New"></title0>
+  <title1 v="Sửa - Phiếu bán hàng" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120,120,120"  >
+      <fields>
+	  	<field name="tt" nextRow="true" fieldType="EX" readOnly="true" inactivate="true" label="1" field="">
+          <text v="Thông tin đơn hàng: " e="Order Information: "></text>
+        </field>
+		<field name="tt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="1" field="">
+          <text v="&lt;a onclick='getRequest(this);'&gt;(Từ đơn hàng)&lt;/a&gt; " e="&lt;a onclick='getRequest(this);'&gt;(From Order)&lt;/a&gt;"></text>
+        </field>
+		<field name="ma_ngv" viewType="Combobox" valueDefault="" label="1" field="1" hidden="true">
+          <text v="Loại hóa đơn" e="Inv. Type"></text>
+          <viewInfo>
+            <options query="select ma_ngv, ten_ngv%l from dmngv where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="ma_kh" allowBlank="true" viewType="Lookup" label="1" field="1" importable="5">
+          <text v="Khách hàng" e="Customer Code"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1 and ma_kh not in (select ma_kh from dmkh where nv_yn = 1)" lookupCheck="1=1" lookupRef="ten_kh" lookupInfo="dmkh|ma_kh|ten_kh" />
+        </field>
+        <field name="ten_kh" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_tt" viewType="Lookup" label="1" field="1">
+          <text v="Mã thanh toán" e="Credit Term"></text>
+          <viewInfo lookupType="One" lookupId="dmtt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_tt" lookupInfo="dmtt|ma_tt|ten_tt" />
+        </field>
+        <field name="ten_tt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[200]" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="hbl_no" label="1" field="[120]" allowBlank="true" fieldType="EX" nextRow="false" disabled="true">
+			<text v="Số B/L" e="B/L No"></text>
+		</field>
+        <field name="ma_pttt" viewType="Lookup" label="1" field="1">
+          <text v="Ph/th thanh toán" e="Payment Methods"></text>
+          <viewInfo lookupType="One" lookupId="dmpttt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_pttt" lookupInfo="dmpttt|ma_pttt|ten_pttt" />
+        </field>
+        <field name="ten_pttt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[200]" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+
+
+		<field name="so_tk" label="1" field="[120]" allowBlank="true" fieldType="EX" nextRow="false" disabled="true">
+			<text v="Số tờ khai" e="Declaration No"></text>
+		</field>	
+	
+
+	
+		<field name="ma_hang" allowBlank="true" viewType="Lookup" label="1" field="1"  hidden="false" nextRow="true" fieldType="EX" disabled="false">
+		  <text v="Hãng tàu" e="Carrier"></text>
+		  <viewInfo lookupType="One" lookupId="vdmhangtau" lookupKey="status = 1 and ncc_yn =1 " lookupCheck="1=1" lookupRef="ten_hang" lookupInfo="vdmhangtau|ma_hang|ten_hang" />
+		</field>
+		<field name="ten_hang" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="true" label="" field="[200]" aliasName="cast('' as nvarchar(200)) as ">
+		  <text v="" e=""></text>
+		</field>
+		<field name="t_tong_trong" dataType="N" label="1" field="[120]" format="FCAmount" hidden="false" disabled="false" nextRow="false">
+			<text v="Trọng lượng(KGS)" e="Gross Weight(KGS)"></text>
+		</field>
+		<field name="ds_cong" allowBlank="true" fieldType="EX" viewType="Lookup" label="1" field="1"  hidden="false" disabled="false">
+			<text v="Container" e="Container List"></text>
+			<viewInfo lookupType="Multi" lookupId="dmcong2" lookupKey="status=1" lookupCheck="status=1" lookupRef="" lookupInfo="dmcong|ma_cong|ten_cong" />
+		</field>
+		<field name="tt5" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="[200]" field="">
+          <text v="" e=""></text>
+        </field>
+		<field name="t_tong_khoi" dataType="N" label="1" field="[120]" format="FCAmount" nextRow="false"  hidden="false" disabled="false">
+		  <text v="Volume(CBM)" e="Volume(CBM)"></text>
+		</field>	
+        <field name="dien_giai" label="1" rows="1" field="-">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+		<field name="ma_noi_di" viewType="Lookup" label="1" field="[120]" nextRow="true" allowBlank="true" fieldType="EX" disabled="true" hidden="true">
+			<text v="Cảng đi" e="Origin"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangdi" lookupKey="(kkh_yn = 1 or hc_yn = 1) and status = 1" lookupCheck="1=1" lookupRef="ten_noi_di" lookupInfo="vdmcangdi|ma_noi_di|ten_noi_di" />
+		</field>
+		<field name="ten_noi_di" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field=""  aliasName="cast('' as nvarchar(4000)) as " hidden="true">
+			<text v="" e=""></text>
+		</field>
+		<field name="ma_noi_den" viewType="Lookup" fieldType="EX" label="1" field="[120]" nextRow="true"  allowBlank="true" disabled="true" hidden="true">
+			<text v="Cảng đến" e="Destination"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangden" lookupKey="(kkh_yn = 1 or hc_yn = 1) and status = 1" lookupCheck="1=1" lookupRef="ten_noi_den" lookupInfo="vdmcangden|ma_noi_den|ten_noi_den"/>
+		</field>
+		<field name="ten_noi_den" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="true" label="" field="" aliasName="cast('' as nvarchar(200)) as ">
+			<text v="" e=""></text>
+		</field> 
+		<field name="id" dataType="N" label="" field="1" fieldType="PK" format="0" copy="false" hidden="true">
+		  <text v="ID" e="ID"></text>
+		</field>
+		<field name="id_dh" dataType="N" label="" field="1" format="0" hidden="true">
+		  <text v="ID đơn hàng" e="Order ID"></text>
+		</field>
+		<field name="id_dh_nb" dataType="N" label="" field="1" format="0" hidden="true">
+		  <text v="ID đơn hàng nội bộ" e="Internal Order ID"></text>
+		</field>
+		<field name="id_yc" dataType="N" label="" field="1" format="0" hidden="true">
+		  <text v="ID yêu cầu" e="ID Request"></text>
+		</field>
+		<field name="id_bg" dataType="N" label="" field="1" format="0" hidden="true">
+		  <text v="ID báo giá" e="Quotation ID"></text>
+		</field>
+		<field name="id_tg" dataType="N" label="" field="1" format="0" hidden="true">
+		  <text v="ID đề nghị" e="ID Request"></text>
+		</field>
+      </fields>
+    </form>
+
+    <form gravity="TopRight" columns="120,120" >
+      <fields>
+        &VoucherRequiredFields01;
+
+        &VoucherRequiredFields02;
+		<field name="ma_job_ct1" allowBlank="true" fieldType="EX" label="[60]" field="" disabled="true"   hidden="false">
+          <text v="Số c/t đh" e="Job Code"></text>
+        </field>
+		<field name="ma_ct_dh" inactivate="true" fieldType="EX" hidden="false" nextRow="false" field="[60]" label="" disabled="true">
+		  <text v="" e="Number"></text>
+		</field>
+		<field name="so_ct_dh" allowBlank="true" fieldType="EX" field="[120]" label="" disabled="true" nextRow="false" hidden="false">
+          <text v="" e=""></text>
+        </field>
+
+		<field name="ma_job_ct2" allowBlank="true" fieldType="EX" label="[60]" field="" disabled="true"   hidden="false">
+          <text v="Số job dh" e="Số file dh"></text>
+        </field>
+		<field name="ma_job" allowBlank="false" fieldType="EX" nextRow="false" label="" field="[60]"   hidden="false" tabIndex="1" disabled="true">
+          <text v="" e="Job Code"></text>
+        </field>
+		<field name="so_job_dh" format="U" fieldType="EX" copy="false" hidden="false" nextRow="false" align="left" label="" field="[120]" disabled="true">
+		  <text v="" e=""></text>
+		</field>
+		<field name="xstatus" viewType="Combobox" valueDefault="5" inactivate="true" label="[60]" field="[180]" hidden="true" >
+		  <text v="Trạng thái" e="Status"></text>
+		  <viewInfo>
+			<options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+			</options>
+		  </viewInfo>
+		</field>
+		<field name="ngay_han_tt" dataType="D" label="[120]" field="1" nextRow="true" hidden="false">
+          <text v="Ngày thanh toán" e="Payment Date"></text>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="1" gravity="MiddleLeft" height="300" columns="120,120,240" >
+      <text v="Chi tiết bán" e="Sales Details"></text>
+      <fields>
+        <field name="d54" allowBlank="true" label="" field="-" viewType="Grid">
+          <text v="Chi tiết bán" e="Sales Details"></text>
+        </field>
+      </fields>
+    </form>
+    <form tabPageIndex="2" gravity="MiddleLeft" height="300" columns="120,120,240" >
+      <text v="Thu hộ" e="Detail"></text>
+      <fields>
+        <field name="f54" allowBlank="true" label="" field="-" viewType="Grid">
+          <text v="Thu hộ" e="Detail"></text>
+        </field>
+      </fields>
+    </form>
+    <form tabPageIndex="3" gravity="MiddleLeft" height="0" columns="120,120,120,120,120,120,120" >
+      <text v="Khác" e="Other"></text>
+      <fields>
+	     <field name="so_bk" format="U" label="[120]" field="[120]" >
+          <text v="Số bảng kê" e="List No"></text>
+        </field>
+        <field name="ngay_bk" dataType="D" label="[120]" field="[120]" nextRow="false">
+          <text v="Ngày bảng kê" e="List Date"></text>
+        </field>
+		<field name="kc1" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="[20]" field="">
+          <text v="" e=""></text>
+        </field>
+		 <field name="t_tieny_nt" label="[100]" field="[120]" dataType="N" disabled="true" format="FCAmount" nextRow="false">
+          <text v="Tổng tiền vốn" e="COGS Amount"></text>
+        </field>
+        <field name="t_tieny" nextRow="false" label="" field="[120]" disabled="true" dataType="N" format="Amount" >
+          <text v="" e=""></text>
+        </field>
+	  	<field name="ma_nvbh" clientDefault="true" allowBlank="true" viewType="Lookup" label="1" field="1" setype="1">
+          <text v="Mã nhân viên" e="Sale"></text>
+          <viewInfo lookupType="One" lookupId="dmnvbh" lookupKey="status=1 and nv_yn = 1" lookupCheck="1=1" lookupRef="ten_nvbh" lookupInfo="dmnvbh|ma_nvbh|ten_nvbh" />
+        </field>
+        <field name="ten_nvbh" clientDefault="true" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[240]" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="kc2" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="[20]" field="">
+          <text v="" e=""></text>
+        </field>
+		<field name="t_cky_nt" label="[100]" field="1" dataType="N" disabled="true" format="FCAmount" nextRow="false" >
+          <text v="Tổng chiết khấu" e="Total Tax"></text>
+        </field>
+        <field name="t_cky" label="" field="[120]" nextRow="false" disabled="true" dataType="N" format="Amount" >
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_dc" viewType="Lookup" label="1" field="1">
+          <text v="Địa chỉ" e="Địa chỉ"></text>
+          <viewInfo lookupType="One" lookupId="dmdc" lookupKey="ma_kh in (![ma_kh]!, '') and status = 1" lookupCheck="ma_kh in (![ma_kh]!, '')" lookupRef="ten_dc" lookupInfo="dmdc|ma_dc|ten_dc"/>
+        </field>
+        <field name="ten_dc" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[240]" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="kc3" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="[20]" field="">
+          <text v="" e=""></text>
+        </field>
+		<field name="t_tc_tieny_nt2" label="[100]" field="1" fieldType="EX" dataType="N" disabled="true" format="FCAmount" nextRow="false" >
+          <text v="Tổng tiền hàng" e="Total Tax"></text>
+        </field>
+        <field name="t_tc_tieny2" label="" field="[120]" nextRow="false" disabled="true" fieldType="EX" dataType="N" format="Amount" >
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_so_thue" label="1" field="3">
+          <text v="Mã số thuế" e="Tax Code"></text>
+        </field>
+		<field name="kc4" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="[20]" field="">
+          <text v="" e=""></text>
+        </field>
+		<field name="t_kmy_nt" label="[100]" field="1" fieldType="EX" dataType="N" disabled="true" format="FCAmount" nextRow="false" >
+          <text v="Tổng tiền KM" e="Total Tax"></text>
+        </field>
+        <field name="t_kmy" label="" field="[120]" nextRow="false" disabled="true" fieldType="EX" dataType="N" format="Amount" >
+          <text v="" e=""></text>
+        </field>
+        <field name="dia_chi" label="1" field="-">
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+
+        <field name="ma_gd" viewType="Combobox" valueDefault="" label="1" field="[180]" hidden="true" >
+          <text v="Giao dịch" e="Transaction Code"></text>
+          <viewInfo>
+            <options query="select ma_gd, ten_gd%l from dmgd where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+        <field name="ghi_chu" label="1" rows="1" field="-">
+          <text v="Ghi chú" e="Note"></text>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="7" gravity="MiddleLeft" height="0" columns="120,120,360" >
+      <text v="Đính kèm" e="Attach Files"></text>
+      <fields>
+        <field name="xfile" label="1" field="2" viewType="File" fieldType="EXParam">
+          <text v="Chọn files" e="Attach Files"></text>
+          <viewInfo fileFieldId0="id" fileGroup="PX3" fileExtension="*" maxFileSize="10240" maxFileCount="10"></viewInfo>
+        </field>
+      </fields>
+    </form>
+
+    <form gravity="BottomLeft" columns="100,100,100,100,100,100,120" >
+      <fields>
+        <field name="t_soy_luong" label="1" field="1" dataType="N" disabled="true" format="Amount" >
+          <text v="Tổng phí bán" e="Total Quatity"></text>
+        </field>
+		<field name="t_tieny_nt2" nextRow="false" label="1" field="1" dataType="N" disabled="true" hidden="true" format="ExRate" >
+          <text v="Tổng tiền bán" e="Total Amount"></text>
+        </field>
+		<field name="t_tieny2" nextRow="false" label="" field="1" disabled="true" dataType="N" format="Amount" hidden="false">
+          <text v="Tổng tiền bán" e="Total Amount"></text>
+        </field>
+		<field name="t_thuey" label="" field="1" nextRow="false" disabled="true" dataType="N" format="Amount" hidden="true">
+          <text v="" e="Total Tax"></text>
+        </field>
+		<field name="t_tty" label="" field="1" nextRow="false" disabled="true" hidden="false" dataType="N" format="Amount" >
+          <text v="" e=""></text>
+        </field>
+        <!-- <field name="t_tieny_nt2" nextRow="true" label="1" field="1" dataType="N" disabled="true" hidden="true" format="FCAmount" > -->
+          <!-- <text v="Tổng tiền" e="Total Amount"></text> -->
+        <!-- </field> -->
+        <field name="t_thuey_nt" blank="2" label="1" field="1" dataType="N" disabled="true" format="ExRate" hidden="true" >
+          <text v="Tổng thuế" e="Total Tax"></text>
+        </field>
+        <field name="t_tty_nt" nextRow="false" label="1" field="1" dataType="N" disabled="true" format="ExRate" hidden="true">
+          <text v="Tổng thanh toán" e="Total Amount"></text>
+        </field>
+		<!-- thu hộ -->
+		<field name="t_sox_luong" label="1" field="1" dataType="N" disabled="true" format="Amount" >
+          <text v="Tổng phí thu hộ" e="Total Quatity"></text>
+        </field>
+		<field name="t_tienx2" nextRow="false" label="1" field="1" disabled="true" dataType="N" format="Amount" hidden="false">
+          <text v="Tổng tiền thu hộ" e="Total Amount"></text>
+        </field>
+		<field name="t_thuex" label="" field="1" nextRow="false" disabled="true" dataType="N" format="Amount" hidden="true">
+          <text v="" e="Total Tax"></text>
+        </field>
+		<field name="t_ttx" label="" field="1" nextRow="false" disabled="true" hidden="false" dataType="N" format="Amount" >
+          <text v="" e=""></text>
+        </field>
+		<!--Tổng cộng = x + y -->
+		<field name="khoangcach" label="[80]" field ="" nextRow="false" hidden="false" fieldType="EX">
+		  <text v="" e=""></text>
+		</field>
+		<field name="t_tt" label="[120]" field="[120]" nextRow="false" disabled="true" hidden="false" dataType="N" format="Amount" >
+          <text v="Tổng cộng" e=""></text>
+        </field>
+		<field name="t_tt_nt" nextRow="true" label="1" field="1" dataType="N" disabled="true" format="ExRate" hidden="true">
+          <text v="Tổng cộng nt" e="Total Amount"></text>
+        </field>
+        <field name="t_tienx_nt2" nextRow="true" label="1" field="1" dataType="N" disabled="true" hidden="true" format="ExRate" >
+          <text v="Tổng tiền" e="Total Amount"></text>
+        </field>
+        <field name="t_thuex_nt" blank="2" label="1" field="1" dataType="N" disabled="true" format="ExRate" hidden="true" >
+          <text v="Tổng thuế" e="Total Tax"></text>
+        </field>
+        <field name="t_ttx_nt" nextRow="false" label="1" field="1" dataType="N" disabled="true" format="ExRate" hidden="true">
+          <text v="Tổng thanh toán" e="Total Amount"></text>
+        </field>
+		
+		<field name="t_so_luong" label="1" field="1" dataType="N" disabled="true" format="Amount" hidden="true" >
+          <text v="Tổng " e="Total Quatity"></text>
+        </field>
+		<field name="t_tien_nt2" nextRow="true" label="1" field="1" dataType="N" disabled="true" hidden="true" format="ExRate" >
+          <text v="Tổng tiền mua" e="Total Amount"></text>
+        </field>
+		<field name="t_tien2" nextRow="true" label="" field="1" disabled="true" dataType="N" format="Amount" hidden="true">
+          <text v="Tổng tiền mua" e="Total Amount"></text>
+        </field>
+		<field name="t_thue" label="" field="1" nextRow="true" disabled="true" dataType="N" format="Amount" hidden="true">
+          <text v="" e="Total Tax"></text>
+		</field>
+        <field name="t_thue_nt" blank="2" label="1" field="1" dataType="N" disabled="true" format="ExRate" hidden="true" >
+          <text v="Tổng thuế" e="Total Tax"></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  <grids>
+    <grid id="d54" table="d54" fieldKey="id, line" order="line" readOnly="false">
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+
+        <field name="ma_vt" width="100" allowBlank="true" viewType="Lookup" readOnly="false" >
+          <text v="Mã phí" e="Fee Code"></text>
+          <viewInfo lookupType="One" lookupId="dmvt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_vt" lookupInfo="dmvt|ma_vt|ten_vt" />
+        </field>
+        <field name="ten_vt" width="250" fieldType="EX" inactivate="true" readOnly="true" aliasName="b" join=" left join dmvt b on a.ma_vt = b.ma_vt ">
+          <text v="Tên phí" e="Fee Name"></text>
+        </field>
+
+        <field name="dvt" width="60" readOnly="false" allowBlank="true" viewType="Lookup" aliasName="a">
+          <text v="Đvt" e="UOM"></text>
+          <viewInfo lookupType="One" lookupId="dmdvt" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_dvt" lookupInfo="dmdvt|dvt|ten_dvt" />
+        </field>
+        <field name="ten_dvt" width="120" inactivate="true" readOnly="true" hidden="true" aliasName="c" join=" left join dmdvt c on a.dvt = c.dvt ">
+          <text v="Tên đvt" e="UOM"></text>
+        </field>
+        <field name="ma_kho" width="100" clientDefault="true" allowBlank="true" viewType="Lookup" readOnly="false" hidden="true" >
+          <text v="Mã kho" e="Site"></text>
+          <viewInfo lookupType="One" lookupId="dmkho" lookupKey="unit_id = ![unit_id]! and status=1" lookupCheck="unit_id = ![unit_id]!" lookupRef="ten_kho" lookupInfo="dmkho|ma_kho|ten_kho" />
+        </field>
+        <field name="ten_kho" width="120" clientDefault="true" inactivate="true" hidden="true" aliasName="d" join=" left join dmkho d on a.ma_kho = d.ma_kho " >
+          <text v="Tên kho" e="Site"></text>
+        </field>
+        <field name="ma_lo" width="100" readOnly="false" allowBlank="false" viewType="Lookup" readOnlyCondition="[lo_yn]==0" allowBlankCondition="[lo_yn]==0" >
+          <text v="Mã lô" e="Lot"></text>
+          <viewInfo lookupType="One" lookupId="dmlo" lookupKey="ma_vt = #[ma_vt]# and status=1" lookupCheck="1=1" lookupRef="ten_lo" lookupInfo="dmlo|ma_lo|ten_lo" />
+        </field>
+        <field name="ten_lo" width="120" inactivate="true" readOnly="true" hidden="true" aliasName="e" join=" left join dmlo e on a.ma_vt = e.ma_vt and a.ma_lo = e.ma_lo ">
+          <text v="Tên lô" e="Lot"></text>
+        </field>
+        <field name="lo_yn" dataType="B" width="50" hidden="true" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Td lô" e="Lot"></text>
+        </field>
+        <field name="ma_vi_tri" width="100" readOnly="false" clientDefault="true" allowBlank="false" viewType="Lookup" readOnlyCondition="[vi_tri_yn]==0" allowBlankCondition="[vi_tri_yn]==0" >
+          <text v="Mã vị trí" e="Location"></text>
+          <viewInfo lookupType="One" lookupId="dmvitri" lookupKey="ma_kho = #[ma_kho]# and status=1" lookupCheck="1=1" lookupRef="ten_vi_tri" lookupInfo="dmvitri|ma_vi_tri|ten_vi_tri" />
+        </field>
+        <field name="ten_vi_tri" width="120" inactivate="true" clientDefault="true" readOnly="true" hidden="true" aliasName="f" join=" left join dmvitri f on a.ma_kho = f.ma_kho and a.ma_vi_tri = f.ma_vi_tri ">
+          <text v="Tên vị trí" e="Location Name"></text>
+        </field>
+        <field name="vi_tri_yn" dataType="B" width="50" clientDefault="true" hidden="true" inactivate="true" readOnly="true" aliasName="d">
+          <text v="Td vị trí" e="Location"></text>
+        </field>
+        <field name="he_so" dataType="N" format="Rate" width="50" readOnly="true" inactivate="true" aliasName="a" hidden="true" >
+          <text v="Hệ số" e="Rate"></text>
+        </field>
+        <field name="sl_ton" dataType="N" format="Qty" inactivate="true" width="100" readOnly="true" fieldType="EX" hidden="true" aliasName="0*a.so_luong as " >
+          <text v="Tồn" e="Stock"></text>
+        </field>
+       
+		 <field name="so_luong" dataType="N" format="ExRate" valueDefault="1" readOnly="false" allowBlank="false" width="100">
+          <text v="Số lượng" e="Quantity"></text>
+        </field>
+        <field name="ct_km" width="100" valueDefault="0"  hidden="true" viewType="Combobox" inactivate="true" readOnly="false" >
+          <text v="Loại hàng" e="Item Type"></text>
+          <viewInfo>
+            <options>
+              <option val="0">
+                <text v="Hàng bán" e="Sale"/>
+              </option>
+              <option val="1">
+                <text v="Hàng KM" e="Promotion"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="px_dd" dataType="B" width="100"  hidden="true" readOnly="false" >
+          <text v="Đích danh" e="Specific Cost"></text>
+        </field>
+        <field name="gia_nt" dataType="N" format="FCPrice" width="100" hidden="true" inactivate="true" readOnly="false" readOnlyCondition="[px_dd] == 0" >
+          <text v="Giá tồn %s" e="%s Price"></text>
+        </field>
+        <field name="tien_nt" dataType="N" format="FCAmount" width="100" hidden="true" inactivate="true" readOnly="true" readOnlyCondition="[px_dd] == 0" >
+          <text v="Tiền %s" e="%s Amount"></text>
+        </field>
+        <field name="gia_nt1" dataType="N" inactivate="true" hidden="true" format="FCPrice" width="100" readOnly="false" >
+          <text v="Giá chuẩn %s" e="%s Std.Price"></text>
+        </field>
+        <field name="gia_nt2" dataType="N" format="FCPrice" width="100" readOnly="false" >
+          <text v="Giá bán" e="%s Price"></text>
+        </field>
+        <field name="tien_nt2" dataType="N" format="ExRate" width="100" readOnly="false" disabled="true" hidden="false" >
+          <text v="Thành tiền" e="Amount"></text>
+        </field>
+		
+		 <field name="ma_nt" width="70" allowBlank="false" viewType="Lookup" valueDefault="VND" readOnly="false" >
+          <text v="Mã NT" e="Currency"></text>
+          <viewInfo lookupType="One" lookupId="dmnt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_nt" lookupInfo="dmnt|ma_nt|ten_nt" />
+        </field>
+		 <field name="ten_nt" width="0" fieldType="EX" inactivate="true" readOnly="true" aliasName="nt" join=" left join dmnt nt on a.ma_nt = nt.ma_nt ">
+          <text v="Tên phí" e="Fee Name"></text>
+        </field>
+		 <field name="ty_gia" dataType="N" format="ExRate" width="100" valueDefault="1" hidden="false" readOnly="false" >
+          <text v="Tỷ giá" e="Curr.Rate"></text>
+        </field>
+		
+        <field name="tl_ck" dataType="N" format="Rate" width="100" readOnly="false" hidden="true"  >
+          <text v="Tl ck(%)" e="Dis.Rate"></text>
+        </field>
+        <field name="ck_nt" dataType="N" format="FCAmount" width="100" readOnly="false" clientDefault="true" hidden="true" >
+          <text v="Ch.khấu %s" e="%s Discount"></text>
+        </field>
+
+        <field name="thue_nt" dataType="N" format="ExRate" width="100" readOnly="false" hidden="true">
+          <text v="Thuế %s" e="%s Tax"></text>
+        </field>
+
+        <field name="gia" dataType="N" format="Price"  hidden="true" width="300" inactivate="true" readOnly="false" readOnlyCondition="[px_dd] == 0" >
+          <text v="Giá tồn" e="Price"></text>
+        </field>
+        <field name="tien" dataType="N" format="Amount"  hidden="true" width="300" inactivate="true" readOnly="true" readOnlyCondition="[px_dd] == 0" >
+          <text v="Tiền" e="Amount"></text>
+        </field>
+        <field name="gia1" dataType="N"  hidden="true" format="Price" width="300" inactivate="true" readOnly="true" >
+          <text v="Giá chuẩn" e="Std.Price"></text>
+        </field>
+        <field name="gia2" dataType="N" format="Price" width="100" inactivate="true" readOnly="false" hidden="true">
+          <text v="Giá bán VND" e="Price"></text>
+        </field>
+        <field name="tien2" dataType="N" format="Amount" width="100" inactivate="true" readOnly="false" >
+          <text v="Tiền VND" e="Amount"></text>
+        </field>
+        <field name="ck" dataType="N" format="Amount" width="100" inactivate="true" readOnly="false" hidden="true">
+          <text v="Chiết khấu" e="Discount"></text>
+        </field>
+		<field name="thue_suat" dataType="N" format="Rate" width="100" readOnly="false" clientDefault="true" hidden="false">
+          <text v="Thuế suất(%)" e="Tax"></text>
+        </field>
+        <field name="thue" dataType="N" format="Amount" width="100" inactivate="false" readOnly="false" disable="false">
+          <text v="Thuế" e="Tax"></text>
+        </field>
+		
+		<field name="tt" dataType="N" format="Amount" width="100" hidden="false" valueDefault="0" inactivate="false" readOnly="true" >
+          <text v="Tổng cộng" e="Total"></text>
+        </field>
+		<field name="tt_nt" dataType="N" format="ExRate" width="100" hidden="true" inactivate="false" readOnly="true" >
+          <text v="" e="Total "></text>
+        </field>
+		 <field name="sl_hd" dataType="N" inactivate="true" hidden="true" format="Amount" width="100" copy="false" aliasName="0*so_luong as " >
+          <text v="Sl HĐ" e="Inv. Qty"></text>
+        </field>
+        <field name="id_hd" dataType="N" inactivate="true" hidden="true" format="0" width="80" copy="false">
+          <text v="ID HĐ" e="ID HĐ"></text>
+        </field>
+        <field name="so_ct_hd" width="100" fieldType="EX" hidden="true" copy="false" readOnly="true" inactivate="true" link="m54|id_hd as id" aliasName="cast('' as nvarchar(3000)) as ">
+          <text v="Số hóa đơn" e="Inv. No"></text>
+        </field>
+        <field name="line_hd" dataType="I" width="70" hidden="true" copy="false" inactivate="true">
+          <text v="Dòng HĐ" e="Inv. Line"></text>
+        </field>
+        <field name="id_dh" dataType="N" inactivate="true" hidden="true" format="0" width="80" copy="false">
+          <text v="ID ĐH" e="ID ĐH"></text>
+        </field>
+        <field name="so_ct_dh" width="100" fieldType="EX" hidden="true" copy="false" readOnly="true" inactivate="true" link="s61|id_dh as id" aliasName="cast('' as nvarchar(3000)) as ">
+          <text v="Số đơn hàng" e="SO. No."></text>
+        </field>
+        <field name="line_dh" dataType="I" width="70" hidden="true" copy="false" inactivate="true">
+          <text v="Dòng ĐH" e="SO. Line"></text>
+        </field>
+        <field name="id_lx" dataType="N" inactivate="true" hidden="true" format="0" width="80" copy="false">
+          <text v="ID LX" e="ID LX"></text>
+        </field>
+        <field name="so_ct_lx" width="100" fieldType="EX" hidden="true" copy="false" readOnly="true" inactivate="true" link="m53|id_lx as id" aliasName="cast('' as nvarchar(3000)) as ">
+          <text v="Số lệnh xuất" e="IO. No"></text>
+        </field>
+        <field name="line_lx" dataType="I" width="70" hidden="true" copy="false" inactivate="true">
+          <text v="Dòng LX" e="IO. Line"></text>
+        </field>
+		<field name="line_bg" dataType="I" fieldType="PK" hidden="false">
+          <text v="Dòng BG" e="Quot. Line"></text>
+        </field>
+		<field name="id_bg" dataType="I" fieldType="PK" hidden="false">
+          <text v="Id BG" e="Quot. Id"></text>
+        </field>
+		<field name="so_hd" inactivate="false" hidden="false" width="150" copy="false" disabled="false" readOnly="false">
+          <text v="Số Hóa Đơn" e="Invoice Number"></text>
+        </field>
+		<field name="ngay_hd" width="150" dataType="D" readOnly="false"  >
+			<text v="Ngày Hóa Đơn " e="Effective date"></text>
+		</field>
+		<field name="dien_giai" width="300" inactivate="false" readOnly="false">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="paste">
+          <text v="$PasteToolbar" e="$PasteToolbar"></text>
+        </button>
+        <button id="moveup">
+          <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+        </button>
+        <button id="movedown">
+          <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="retrieve">
+          <text v="$RetrieveToolbar" e="$RetrieveToolbar"></text>
+          <items>
+            <button id="20">
+              <text v="Lấy dữ liệu từ phiếu giá bill"  e="Extract Data from Bill Orders"/>
+            </button>
+            <button id="80">
+              <text v="-"  e="-"/>
+            </button>
+          </items>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[<enc>WtIArxsPXC9CqW406HtaEQ5J4r3pBxEKQG069suyJ7Cft2J41CqEvCZ3P7Z43QWZgDlaLAo5HtY0PadN6bhtr0y0sX6FdX6pvxPVTJHtxYeIFr2Uvra5jE2fp1rLhaN4clW2sSzkHng6tT0NDSBrH9CLIDBpUGEGYsQ0V1RaWGNo85T9UBgNrp2ZuFOwZVHfOe+7XiCtVSAltOqHXeDL4rFo/5irpr/O6lKPSH7Jhw95cnk1HYrsoWV4gu6pa10D0LCN9oaQU5NaINFS0seIIg22Nlz4hf6xn+neRVVBX11ctwoLjcioifDd43nXI6+x0Nsz4NB1mRvujhn5dgcUXYUUMCwGMLtJlz6mkbQWtvstqHP0V97IC6QiFxtg/kOJ7JDppkHVxwL3x5dWHAO6BC9qJd7i5e8s8zfxRoNAafYwZYq4uqkCU3SvQbZQlThkGzT2glFQTn6sne6jqUe/L/7G3VJu+bVPeFQGaBHC8QdBy7L5dfCtzNU9GW+mS/dgbyuxUV9wBI4r6GUYphnMTpBcqsQYPCzd5d11xHatePU=</enc>]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+	<grid id="f54" table="f54" fieldKey="id, line" order="line" readOnly="false">
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+
+        <field name="ma_vt" width="100" allowBlank="false" viewType="Lookup" readOnly="false" >
+          <text v="Mã phí" e="Item"></text>
+          <viewInfo lookupType="One" lookupId="dmvt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_vt" lookupInfo="dmvt|ma_vt|ten_vt" />
+        </field>
+        <field name="ten_vt" width="250" fieldType="EX" inactivate="true" readOnly="true" aliasName="b" join=" left join dmvt b on a.ma_vt = b.ma_vt ">
+          <text v="Tên Mã phí" e="Item Name"></text>
+        </field>
+        <field name="dvt" width="100" readOnly="false" allowBlank="true" viewType="Lookup" aliasName="a">
+          <text v="Đơn vị" e="UOM"></text>
+          <viewInfo lookupType="One" lookupId="dmdvt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_dvt" lookupInfo="dmdvt|ma_dvt|ten_dvt" />
+        </field>
+        <field name="ten_dvt" width="120" inactivate="true" readOnly="true" hidden="true" aliasName="c" join=" left join dmdvt c on a.dvt = c.dvt ">
+          <text v="Tên đvt" e="UOM"></text>
+        </field>
+        <field name="ma_kho" width="100" clientDefault="true" allowBlank="true" viewType="Lookup" readOnly="false" hidden="true" >
+          <text v="Mã kho" e="Site"></text>
+          <viewInfo lookupType="One" lookupId="dmkho" lookupKey="unit_id = ![unit_id]! and status=1" lookupCheck="unit_id = ![unit_id]!" lookupRef="ten_kho" lookupInfo="dmkho|ma_kho|ten_kho" />
+        </field>
+        <field name="ten_kho" width="120" clientDefault="true" inactivate="true" hidden="true" aliasName="d" join=" left join dmkho d on a.ma_kho = d.ma_kho ">
+          <text v="Tên kho" e="Site"></text>
+        </field>
+        <field name="ma_lo" width="100" readOnly="false" allowBlank="false" viewType="Lookup" readOnlyCondition="[lo_yn]==0" allowBlankCondition="[lo_yn]==0" >
+          <text v="Mã lô" e="Lot"></text>
+          <viewInfo lookupType="One" lookupId="dmlo" lookupKey="ma_vt = #[ma_vt]# and status=1" lookupCheck="1=1" lookupRef="ten_lo" lookupInfo="dmlo|ma_lo|ten_lo" />
+        </field>
+        <field name="ten_lo" width="120" inactivate="true" readOnly="true" hidden="true" aliasName="e" join=" left join dmlo e on a.ma_vt = e.ma_vt and a.ma_lo = e.ma_lo ">
+          <text v="Tên lô" e="Lot"></text>
+        </field>
+        <field name="lo_yn" dataType="B" width="50" hidden="true" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Td lô" e="Lot"></text>
+        </field>
+        <field name="ma_vi_tri" width="100" readOnly="false" clientDefault="true" allowBlank="false" viewType="Lookup" readOnlyCondition="[vi_tri_yn]==0" allowBlankCondition="[vi_tri_yn]==0" >
+          <text v="Mã vị trí" e="Location"></text>
+          <viewInfo lookupType="One" lookupId="dmvitri" lookupKey="ma_kho = #[ma_kho]# and status=1" lookupCheck="1=1" lookupRef="ten_vi_tri" lookupInfo="dmvitri|ma_vi_tri|ten_vi_tri" />
+        </field>
+        <field name="ten_vi_tri" width="120" inactivate="true" clientDefault="true" readOnly="true" hidden="true" aliasName="f" join=" left join dmvitri f on a.ma_kho = f.ma_kho and a.ma_vi_tri = f.ma_vi_tri ">
+          <text v="Tên vị trí" e="Location Name"></text>
+        </field>
+        <field name="vi_tri_yn" dataType="B" width="50" clientDefault="true" hidden="true" inactivate="true" readOnly="true" aliasName="d">
+          <text v="Td vị trí" e="Location"></text>
+        </field>
+        <field name="he_so" dataType="N" format="Rate" width="50" readOnly="true" inactivate="true" aliasName="a" hidden="true" >
+          <text v="Hệ số" e="Rate"></text>
+        </field>
+        <field name="sl_ton" dataType="N" format="Qty" inactivate="true" width="100" readOnly="true" fieldType="EX" aliasName="0*a.sox_luong as " hidden="true" >
+          <text v="Tồn" e="Stock"></text>
+        </field>
+        <field name="sox_luong" dataType="N" format="ExRate" allowBlank="false" width="100" valueDefault="1"  readOnly="false" >
+          <text v="Số lượng" e="Quantity"></text>
+        </field>
+
+        <field name="ctx_km" width="100" valueDefault="0"  hidden="true" viewType="Combobox" inactivate="true" readOnly="false" >
+          <text v="Loại hàng" e="Item Type"></text>
+          <viewInfo>
+            <options>
+              <option val="0">
+                <text v="Hàng mua" e="Sale"/>
+              </option>
+              <option val="1">
+                <text v="Hàng KM" e="Promotion"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="px_dd" dataType="B" width="100"  hidden="true" readOnly="false" >
+          <text v="Đích danh" e="Specific Cost"></text>
+        </field>
+        <field name="giax_nt" dataType="N" format="FCPrice" width="0" hidden="true" inactivate="true" readOnly="false" readOnlyCondition="[px_dd] == 0" >
+          <text v="Giá tồn %s" e="%s Price"></text>
+        </field>
+        <field name="tienx_nt" dataType="N" format="FCAmount" width="0" hidden="true" inactivate="true" readOnly="true" readOnlyCondition="[px_dd] == 0" >
+          <text v="Tiền %s" e="%s Amount"></text>
+        </field>
+        <field name="giax_nt1" dataType="N" inactivate="true" hidden="true" format="FCPrice" width="100" readOnly="false" >
+          <text v="Giá chuẩn %s" e="%s Std.Price"></text>
+        </field>
+        <field name="giax_nt2" dataType="N" format="FCPrice" width="100" readOnly="false" >
+          <text v="Giá mua" e="Purchase Price"></text>
+        </field>
+        <field name="tienx_nt2" dataType="N" format="ExRate" width="100" readOnly="false" disabled="true" >
+          <text v="Thành tiền" e="Amount"></text>
+        </field>
+		
+        <field name="tlx_ck" dataType="N" format="Rate" width="100" readOnly="false" hidden="true" >
+          <text v="Tl ck(%)" e="Dis.Rate"></text>
+        </field>
+        <field name="ckx_nt" dataType="N" format="FCAmount" width="100" readOnly="false" clientDefault="true" hidden="true">
+          <text v="Ch.khấu %s" e="%s Discount"></text>
+        </field>
+
+        <field name="thuex_nt" dataType="N" format="ExRate" width="100" readOnly="false" hidden="true">
+          <text v="Thuế %s" e="%s Tax"></text>
+        </field>
+        <field name="ma_imei" width="100"  hidden="true" readOnly="false" >
+          <text v="Mã Imei" e="Imei Code"></text>
+        </field>
+
+	   <field name="so_ngay_bh" dataType="N" hidden="true" width="100" readOnly="false" >
+			<text v="Tg bảo hành (ngày)" e="Guarantee(days)"></text>
+		</field>
+		
+		 <field name="ma_ntx" width="70" allowBlank="false" viewType="Lookup" valueDefault="VND" readOnly="false" >
+          <text v="Mã NT" e="Currency"></text>
+          <viewInfo lookupType="One" lookupId="dmnt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_nt" lookupInfo="dmnt|ma_nt|ten_nt" />
+        </field>
+		 <field name="ten_nt" width="0" fieldType="EX" inactivate="true" readOnly="true" aliasName="nt" join=" left join dmnt nt on a.ma_ntx = nt.ma_nt ">
+          <text v="Tên phí" e="Fee Name"></text>
+        </field>
+		 <field name="ty_giax" dataType="N" format="Price" width="100" valueDefault="1" hidden="false" readOnly="false" >
+          <text v="Tỷ giá" e="Curr.Rate"></text>
+        </field>
+
+		<field name="ma_bh"  width="100" hidden="true" inactivate="true" readOnly="false" >
+          <text v="Mã bảo hành" e="Guarantee Code"></text>
+        </field>
+        <field name="ngay_bh" dataType="D" hidden="true" width="100" readOnly="false" >
+          <text v="Ngày bảo hành" e="Start Date"></text>
+        </field>
+        <field name="ngay_kt" dataType="D" hidden="true" width="100" readOnly="false" >
+          <text v="Ngày kết thúc BH" e="End Date"></text>
+        </field>
+
+        <!-- <field name="gia" dataType="N" format="Price"  hidden="true" width="300" inactivate="true" readOnly="false" readOnlyCondition="[px_dd] == 0" > -->
+          <!-- <text v="Giá tồn" e="Price"></text> -->
+        <!-- </field> -->
+        <!-- <field name="tien" dataType="N" format="Amount"  hidden="true" width="300" inactivate="true" readOnly="true" readOnlyCondition="[px_dd] == 0" > -->
+          <!-- <text v="Tiền" e="Amount"></text> -->
+        <!-- </field> -->
+        <field name="giax1" dataType="N"  hidden="true" format="Price" width="300" inactivate="true" readOnly="true" >
+          <text v="Giá chuẩn" e="Std.Price"></text>
+        </field>
+        <field name="giax2" dataType="N" format="Price" width="100" readOnly="false" disabled="true" hidden="true" >
+          <text v="Giá mua VND" e=" VND Purchase Price"></text>
+        </field>
+        <field name="tienx2" dataType="N" format="Amount" width="100" readOnly="false" disabled="true" >
+          <text v="Tiền VND" e=" VND Amount"></text>
+        </field>
+        <field name="ckx" dataType="N" format="Amount" width="100" inactivate="true" readOnly="false" hidden="true">
+          <text v="Chiết khấu" e="Discount"></text>
+        </field>
+		<field name="thuex_suat" dataType="N" format="Rate" width="100" readOnly="false" clientDefault="true" hidden="false">
+          <text v="Thuế suất(%)" e="Tax"></text>
+        </field>
+        <field name="thuex" dataType="N" format="Amount" width="100" inactivate="false" readOnly="false" disable="false">
+          <text v="Thuế" e="Tax"></text>
+        </field>
+		
+		<field name="ttx" dataType="N" format="Amount" width="100" hidden="false" valueDefault="0" inactivate="true" readOnly="false" disabled="true" >
+          <text v="Tổng cộng" e="Total"></text>
+        </field>
+		
+		<field name="ttx_nt" dataType="N" format="ExRate" width="100" hidden="true" inactivate="false" readOnly="true" >
+          <text v="" e="Total "></text>
+        </field>
+        <field name="sl_pn" dataType="N" inactivate="true"  hidden="true" format="Qty" width="100" copy="false" aliasName="0*sox_luong as " >
+          <text v="Sl đã nhập" e="Pur.Qty"></text>
+        </field>
+        <field name="id_pn" dataType="N" inactivate="true" hidden="true" format="0" width="80" copy="false">
+          <text v="ID PN" e="ID PN"></text>
+        </field>
+        <field name="so_ct_pn" width="100" fieldType="EX"  hidden="true" copy="false" readOnly="true" inactivate="true" link="m72|id_pn as id" aliasName="cast('' as nvarchar(3000)) as ">
+          <text v="Số PN" e="Issue No"></text>
+        </field>
+        <field name="line_pn" dataType="I" width="70"  hidden="true" copy="false" inactivate="true">
+          <text v="Dòng pn" e="Issue Line"></text>
+        </field>
+        <field name="id_dh" dataType="N" inactivate="true" hidden="true" format="0" width="80" copy="false">
+          <text v="ID ĐH" e="ID ĐH"></text>
+        </field>
+        <field name="so_ct_dh" width="100" fieldType="EX" copy="false"  hidden="true" readOnly="true" inactivate="true" link="s61|id_dh as id" aliasName="cast('' as nvarchar(3000)) as ">
+          <text v="Số đơn hàng" e="Order No."></text>
+        </field>
+        <field name="line_dh" dataType="I" width="70"  hidden="true" copy="false" inactivate="true">
+          <text v="Dòng ĐH" e="SO Line"></text>
+        </field>
+		<field name="so_hd" inactivate="false" hidden="false" width="150" copy="false" disabled="false" readOnly="false">
+          <text v="Số Hóa Đơn" e="Invoice Number"></text>
+        </field>
+		<field name="ngay_hd" width="150" dataType="D" readOnly="false"  >
+			<text v="Ngày Hóa Đơn " e="Effective date"></text>
+		</field>
+		<field name="dien_giai" width="300" inactivate="false" readOnly="false">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+		
+      </fields>
+
+      <buttons>
+
+        <button id="moveup">
+          <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+        </button>
+        <button id="movedown">
+          <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="retrieve">
+          <text v="$RetrieveToolbar" e="$RetrieveToolbar"></text>
+          <items>
+            <button id="80">
+              <text v="Nhận dữ liệu từ chi hộ phiếu mua"  e="Receive data from purchase order"/>
+            </button>
+          </items>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[<enc>GftLeFiPJGTY61MR1qOBuPbIxrPVsQ/7pfvnx4f8bnHQ7L//klwRn1Omg+xGp0OyVvimKIP+DTQs6/0RLa1gJFb5yGEfF5RG8V+7x6EWpgoJpdSN+POseJkjDSm45XOT7SpU9mrM5P+3sQICek2dBYNTwVdvdY6DBsAfZ+07rBg=</enc>]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+       <![CDATA[<enc>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</enc>]]>&VoucherSaleRequestGrid;<![CDATA[<enc>nZ5DJjqNdJ83nll4q1TRCzxVx4Atfe3Io4yzGqiIacz0UKZnIROOY/WgpuGYrFzuG0NgaSgvQW1GqGrniw1jCzar7LT3CkH+hVk+BMg3fXa1/lxmRoOTGMNhAdp/yyXFiuJtko5LRKf2NeZKMqhSpAgeYH6WEJXVneWUY98tXPs625t29YkeJ30pDbg7gqEoDPursr29aOjgdQXUsjOW8eqQTL5oOt4l7ORUCPqGcPdpTmT2poR+5DSM3M4/tlvkECzJ2AKURR/72JYPBXa5u/ACk0wQGQj1F2xbOpbQdqDNF7ZQr8tj6bqxkG4jatMq</enc>]]>&VoucherExRateValid01;<![CDATA[<enc>Lkx3ZnqQaHDpKcPaKMbRRJLSl3tzi9ZI1pOxVib5fXmBM39VHVVJDU8IwXrNyXuNBN7sqp3Z1jp4QmuThuewikGE8nbBQIw95OxFCRoN7NKmQMnv2mFMpy8yeJjsO5PD3M1sBHpMmgU9t5d5dTYUC6v/wfkB5E50JOvySUf8EcSRR7u1tBlz99Ii/lDAF+lbg/jiweVoKAItDpOpJcX8T9SmPA/pDWI51i1eDKEVf7xxfZAbOC678AhZHJCM1vMn2h/ZGcY895102gGLP1ODXVhV0g1/MX6ZpCy9OTxr4Sr8zouItI8RqiT9Xi6tWCwBpGlzUrq/DEhKaNGW8WFZNSiNiuFxgEhSATuADfNdgkHB//Wmm1GI6DCGSS4BN5gZmUJArbUaoq5SkPxCFeGg0itzvyke+I5rOozN6HPN+AFNA3GXa0N9ErH0eVatswkvTvaS7aP8CYmZFb6J6PEtZz/JHYRNM/JKw3M2+4FKv/AE8cfczmfRGQn1j2FwUEeSJWDFHYc5Qlgqe1eLOP8CPenzaURWin9qYulpPofHXqI=</enc>]]>&VoucherExRateValid02;<![CDATA[<enc>FwScuS+mOh6EHDgmXqsIbx0HnSTuQv+w0McVabnw2o3ZnfXaakcBLxICi8IWX65hrlEc1i36QyTtual9rFVeX/HlEkjpEA8FjvYmTik8KPa2hJPcKoOTw0egesyrSPqnKYlMCWhkVtFrly23pjoQWwbvzgl+aLHUvUgyKXRu5WTACZQSgP/PlMP+ouJEJj7Hd8s7tPW6rBSf6iVjSMYxWdnRUXOkFKNFr/2svI4MLPHD9/+twOX93ZjwDES9vkM/tmYAueRykohqyFh/yucaEBKixAek48VaILl0HOaUqNcf8yhfS8CbPaaevLJ0y7+7MGpeuG23flWwi9U+jQjnU9aNxt73LktQEHR+csDPRCmeOg6BV03inl3VPI1Q8PIr2V1C/OWPVoxeReCv7y2VDGka1QMmbluEVDS2VhwK32HJhIT6Xcjol4suw/QoeUSqVpkHwoLLFDsecvJHjxUZpbBPlUUwWtEzcCEci4WmU9wzTeMbNb0O9gNuiC8DLl/m4/qSyVJH1A0b59Wq0WbrqR77hdvy7Dv0pC8UXkaQiZxbmuP7MdQXXzZLZIJRE201bGjJW5unAF1ncMONrQoFwLox8/X85dN4nrJZwHU7iUnKLh0wJmY85UrD1ZBu9inhMRuo5jWYVVymqq6n4Ywq5gyJLwNiL01oxQfEkNtlToqEgP8kNdtuAMDgBCU4c+FSRHS/K3LK4TgGyZNZozslWMCqHdARmlbtgNtw/hbkIMHQ7Z+cF90UbGdRO8Ex5Eoa3l/VyvlmJXI8f94mPpNJvZWj96tOqkIfcYPvGwZMGhj2Mp5QWTKeQeNZSggWlstgXJ3mfqIKwavKfwTlSWFUv8gPTUUtQpC44uyKtNSDcSTwpDZPj4Fm7YQR/5hSfY+d</enc>]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[<enc>yWGKOZzxmNZqBZy1IAbEat+apUWmHoa7EojlfL6CgiXRV5sb0xDJrp5IOHMYiHE0uGT3C7JfDoq2CtcT666Tem5YB0X5gc6LsgBpjdFXw3oAcAq7GV6zN6GYU6ldyc6p8Zzt4uCDjHNyoPK7VXTA0GRwv6Ymus4KWkP0xycF9ZgIetUBCX7Jpr+IRBh+l+buJ5/7Ktf2SsyH/yWwxplAN66afIkTDUMrifUV9TK9ft4Kk1epYtA4WFsy3EYzhkw/5RgqxzSwG3drtCG7TiytaDg60NFzfKTB06YukpN1+yJ9IieT8wOIwTlxQQjy1Suauuc6NscvPUduFmCsymUca23TsQBWA+SWCvKO5BMGbw5kbTmxZ1dL+ELllsibA7iEM6KVLwb/QdacpCQyW2HnH8CVFBnru5X4NJM087Bbvb47WIToJCO+1TG7Ssj3htyRkSb8kH/BKAZEy604wod/t773GexE74SBJn1HZEwOsfPTGSsVx08+hHI1kjIbSHz5bxCKHCRuxORPqeB82w7Mhx2fOTZz3i33rmPPvpLzrbU=</enc>]]>
+    </text>
+  </css>
+  <script>
+
+
+    &VoucherRequest;
+    &VoucherSaleRequest;
+	<request code="so_job">
+		<text>
+		  <![CDATA[<enc>fsADTClJH8iBF0GDeR9KGPDGwDq86g/oB7YGAJAUyYtI3FCsVBQqJQrqWRtTc4r0uzzx+ZPrez6L32ofuH4bUToXUfQ81TM2XO70A6wituE=</enc>]]>
+		</text>
+	  </request>
+	<request code="loadex">
+		<text>
+		  <![CDATA[<enc>sizrIgYY81bZIGYBBXfyzYAlje78/sOntJKrm2b+u+ZUNQ5skyDat/xrKmK2nDPvL0WjnFwz6hC1V5IOdXT3fyrxT1VypD2N2nXHx1f/6N0hRfijF4KSttGqyxZdiiazCgu47qI/DsDIJ7yny3NXgWusapy+6sVzdTma1U1GkDw744X7jbtSfnD+Uk3a1vGrFYKVHhsg6JCqUOrnWkXTFTbMHgg1VIgkT+1xNRA6YBGXs0ayzZ9EYt29dLSpJ+mtzHFdGTwOsObtocI8s9tFOyqu9JleioVdoWG0JapgBHoDiAg9ZfJUSV3ZJ9ne3vE557XggbO9UzPatmF4HSR2VUSeuKFF28cGxWwZeFiSqFjQLd0CBTYYpZWLSDq4WKUp</enc>]]>
+		</text>
+	  </request>
+	 <request code="GetExRateDetail">
+      <text>
+        <![CDATA[<enc>gZ7UrPfPQeXpaJ+MX5crPlPOmL45ydfn4q/+FwSzfHMDZAArCOiOK8jOWcYmbRckRDiRiE/PQ9R7PMI4Cw9MH3JumxFxdb6/dinQxWRHf0rzzx2m6FTTWwOaaCxsy0aZ</enc>]]>
+      </text>
+    </request>
+	<request code="GetExRateDetail1">
+      <text>
+        <![CDATA[<enc>gZ7UrPfPQeXpaJ+MX5crPlPOmL45ydfn4q/+FwSzfHPzzHTPJVQfExEydCm11yvGH3c9/0Xe8Yf0hlRIKgmLyxiOAfe8CX4cij1u982PvjcQFdCggLhweINh8T6PhVyn</enc>]]>
+      </text>
+	  </request>
+    <query>
+      <text>
+        <![CDATA[<enc>r07gHy2a1YsWBN5sJQoNxYa1sI4hSbyxaZPELeOK4RcruMCpSWfc9UthMqmOvYHTE2MipIQ+y/ONHqRuYxwMTw==</enc>]]>&CheckUpdatingDeleting;<![CDATA[<enc>t2Qblm/iKiSKIZpFhUih9XP26HzIDDPeD6n3eA8By4pgl/oQvea7dizviX+gPen/iMrWjB06aP3ThXTEZlPTmGtxz6kQFApWEX8tSwEknDGwPKEUmjVzWymrmA58sQ6PqkNqHx6xzc1OTx3W/zKk7bmN4iiyubmljMkdvNxOiyAvtbyv8Ajpsfq4HtioTPpD8cR0dn90Qb8E9nOmye6pcenRl09EfpkkVKb1XTI26xrsvLGuPMQ1dkrnd6zfYGEIaknyJMgLes1HmOqKMC4y/JGpioxrntDwxihQTxIkwl4YiDDz77sU7q4fG/gosWWVl/KtR6LncV1AqsM4lShaXjUojuPSNOiXpgpM6cJJWF8Pgs83gnX8wmiL1Pm4gPpgFTJJXDGVKCi6iGTKNhv7c/UhUtQLOtSyhQYHpgYc3Bo=</enc>]]>&VoucherNumberQuery;<![CDATA[<enc>+5mLMTNJcvZTJbBjCjbo+cIrPcfaGX7+KR00EEE3U1NtiuNYcGSxxXIYWnaNUSuqHkYOyALhgjz8xbZu31/xojKCwemqRN+7rjKu7hFd4/Gpa8QBU9zmlOs6VN38KPx5+FyWr1pRh/+Lyfh0vREcLHq0HaAUPRkRMwxlJ9Xij9fpvCChlIKX3ELUNoGN04PhBBZ8NcpdIM1rl3tBXL9r6w==</enc>]]>
+      </text>
+    </query>
+
+    <declare>
+      <text>
+        <![CDATA[<enc>gPXoLKnr78Yq5d61Jk4ek0yjfIvQ7wGqgwd9Tj8N7RZOSMrL5c7H/FUuJVvRduyp10wgqEJs2h9LCUoeqF6xhtMgqEi3LwhSFGBdI5OyFJS6gVUgmKlAhdJgg1DtD9BrkfAp3BV6nIJ+sPnXfMz+ZfbU5id85HmPJGkB50MKe/Mah0y30miT66ZTpjji4yVVJ8I04fyHN5i7LPHx1zGH17EAxh6Zfa+3WVJtmHPiahI=</enc>]]>
+      </text>
+    </declare>
+
+    &VoucherJSLoading;
+
+    <beforesave>
+      <text>
+        &VoucherNumberBeforeSave;
+		&FileNumberBeforeSave;
+      </text>
+    </beforesave>
+
+    <deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOHo2m/I5r6vL/VnI32yTLjZo3g4lV17JTn1w4Idh5UQXELGRDhj3lfaPmenquxV6LJdeAZcy1ATG15rdmOcv+B+7FR0uf+aTnVDOCde1+UIktkJdAlDRkdmyt8VubbRgLA==</enc>]]>
+      </text>
+    </deleting>
+
+    <deleted>
+      <text>
+        <![CDATA[<enc>5+v65Ixhm0jsi3lJVV1OHm3U2pP0/f1hn5imLo19aqjBdVpwMOU1TqrbGETw8MBWCD+Zv9a6z0+IYwahswIkCn6/xnO1NEoXC+CxsctHKo+KIKz5w1OGp3jwndRWUY+1/CV9E04+FUqW8xfXVhIxv0zxXuKmezw/AjD34+wGteicXckA/vKNeVgcAMtfmXSf</enc>]]>&VoucherCurrStockCreateTempTable;<![CDATA[<enc>g+KZ+QKBlC+LdD0jHhpbmd3q0zA7W2yvBeUEHA0SbAt4ktdDXwSU63EoLBl6eS9s/l/4uDTcamy78B3QRx7n8pIHcNs+ocqaiw07GE6OfvPnH/1Xg237QdKlkjq5ngw2z0oWOfvxUoU43v3mHUQ0JuOhQsH6S0y9RP8ybEgdwE82ICpPixLD7XDpkwta1Y+w/obTkuRxlnlANGheHsHUqQ==</enc>]]>&VoucherCurrStockCalc;<![CDATA[<enc>2f7U7SAwe9Phsz6OQ9Ow/Knc+nATBvC5vYShpHEyqinXxQtVjA/0XEpps6GJWwbYfMuSpqVFXjkMQlS26/OorrriuiGd2YhGmiWGaH/lcCMboMV1hhOKt5pu8hn5MEIU4Pr/QCWsXZazQ2oigzNScVbMtPKPbjDwCxN2MRIaYIHOvOCoBK6Xllpqd8U7kRFq</enc>]]>
+      </text>
+    </deleted>
+
+    <updating>
+      <text>
+        <![CDATA[<enc>4rf1Mb6DfnSuWpUv/lym8piLz9/2L2bYnE65TZD1RQvEkZYf+3s4AFzMMhBSVakgA6W3kH5GSiAhdi4NjVQr9RZl9UzJLeosniF7C2wH1QQFdYs2d0LOmHB4fq7yH5EEm5tXfVNK1/bvtNI2DoV/yNsfFWdQSN/Cz0NcQ5d9c+QX+aKCVfFZa2RuocAsRShF</enc>]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[<enc>ArurPA4yt4an7w7h9QL0RmqL9Zj9oRpzGQf0F/cns3IvpolVKnuljyreH4wA8QSzWnoIFOCR/WNftHaMvdd1aWHjeKKc38LCvp4LMQzdbhrfHV5vMwHoNRMTypn4J2euyYYS/IrT7apos8oIisCF2Qz8967stH8AXTPc6vUdBLywTWBOSlkKKO1DKTR1SlOMGXfIp7Hl5cW6dzCPajxVHByW+h7cLUjRsWexeeKaFN+znFvvN+lSTmGhrpFND+e9eMx1EQ/kmg+rbYNjlSixJlk2hAd6cgw7UjvNGppOibY=</enc>]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[<enc>z1s4NkrNk+40z3uOtt5qcgjBOPYOzc+u7EaQcyfDObcxnFyoQqy6mMZGCZarMI4LSWp2P3/8eRlbzAG73r5Kulnr3XU9FzoZaiSs6K4ommATqb6GbtHXoTTeK790QdTK52hhuJpcl9ZGjbJ6cuMdEDyrFWidTTfvqUJkn5qDmFqdfxxjRdTWlVTCSLVUBLU5/J3K0kf53EvwOF/dPnLByA==</enc>]]>
+      </text>
+    </inserting>
+
+    <inserted>
+      <text>
+        <![CDATA[<enc>/wI7uhHcwMgy02w9veCLUfS+ddg3PPmAEH1Xys3qbjp8bwl1gb2/BZU9XnpyIc6pgaejHYIY7jjZkYku6aUwSE0HtohD7wRmdjulnsf1lozKidoTdS+p3CsPgZ8RERRrseqcR0L/4HOIf6CawGK9K2lsRwitjNEyitmMf3ZbHMg=</enc>]]>
+      </text>
+    </inserted>
+
+    <aftersave>
+      <text>
+        <![CDATA[<enc>7SqrdY0GGbvOhFaY3B7V6qFEbrBUxAWbx224dZ1jq2wQJK/uxiIeCFz1TvBC4Jq9HiKmJikNg6PbmkkHqZ2z4mF8hv+KdajG52sgO60ISwKmCDW7CM9qIbJOkPA9Tk8VFK+zcfcDx2fxFiZXpKeZW/otNPsqUemrASb08PqDEY/Vau4gODF5PcfxgSvZylEw696YcqIiwb4AZ6vkHtatQJNLR9Jh3Xvo7gXVG6gqgI2assjfd8uOLjnH1YTwCMK6auyXtExzywAuNgoBxC5FvDMUggkcgNHsmHQPO/vFHWxtDL+TN/FzmXVRHNoa2Gd3OxkCfse12k1sOc/9XiPU0RimbAtz+coqL81W5N9piCrDnDFm73/jjaIeJNGiCWdn</enc>]]>&VoucherCurrStockCreateTempTable;<![CDATA[<enc>Y1CqdySvHyFmBkrmcKH7Yt+Q+9GKUn5WAJlVjQbJHCZWDpNhk4ij9XqNtTW9NRA9QP9G+lcjcdz7DgRmCXJs5enFoELPwTT2FJjd82LzsW58pLOUVzpXLJix75WkWTVbUMIXu/7uphDss++0QSqAV/59AvwWPT42C35svGIika2VTp7PVzbfwnp3eUGknYz2UdcD8NEEKq2qvkpQWr4F4op2pfMpJRbyeCELESBYTMskHAtoQ1PPimxGUAB4dtlVB0SDQN2t+bOiiTCoA9vjcw==</enc>]]>&VoucherCurrStockInsertNewTempTable;&VoucherCurrStockCalc;<![CDATA[<enc>7ywuoSrXZcBk0RR1cuFWUAB5YTqbXpQ3TTcDcsSDzo87pgdaxxsGmsxQav4JSTfrzToCRQ9L3juogP/F5VIRh9pONWur5jRTWeJr7FQWOPEucTgqTGiw/Pwbfqj+gwfMmTukl1cf3tK9EE4rVd/2+ZfjoYdU+A0o91E/AXEppEfII9Ge+rYQfWs0Yhs0WVF9eOg7IcgY1ft+kazoN1sfmD7rd4AIQN5Mn1aqoXlT9a+3yHhgw3hZ2J62tBMWVCZTccI5L2PIQ22qzA7Ro4hU9BuAj+KcMcS7V+EoPna/CMO9l0+WUn33poMhOSqNGrduTT1UhZRrAW1980qKpfPSJgVYKlH/pHcXm/WOCuFgjPyYJ8sSEPdXA376n3Iikp1aL2ib/8DDRyoEQdMmivh0Tg==</enc>]]>
+      </text>
+    </aftersave>
+
+  </script>
+
+  <messages>
+    <message val="invoiceRetrieve">
+      <text v="Chỉ xử lý nghiệp vụ lấy số liệu cho hóa đơn" e="" />
+    </message>
+    <message val="DaThanhToan">
+      <text v="Đã có chứng từ thanh toán cho hóa đơn này, không được sửa/xóa." e=""/>
+    </message>
+    <message val="DaTraLai">
+      <text v="Đã có chứng từ trả lại cho hóa đơn này, không được sửa/xóa." e=""/>
+    </message>
+	  <message val="EmptyContainer">
+      <text v="Vui lòng nhập Container" e="Please Enter Congtainer" />
+    </message>
+	<message val="EmptyMK">
+      <text v="Vui lòng nhập khách hàng chi hộ" e="Please Enter GrossWeight" />
+    </message>
+	<message val="EmptyKL">
+      <text v="Vui lòng nhập trọng lượng(KGS)" e="Please Enter GrossWeight" />
+    </message>
+	<message val="EmptyKLV">
+      <text v="Vui lòng nhập trọng lượng và volume" e="Please Enter GrossWeight and Volume" />
+    </message>
+	  <message val="EmptyOrder">
+      <text v="Vui lòng chọn đơn hàng" e="Please Enter Congtainer" />
+    </message>
+	 <message val="HaveIDBG">
+      <text v="Chỉ thực hiện khi đơn hàng lấy từ báo giá" e="Only fulfillment when the order has a quotation number" />
+    </message>
+	<message val="HaveIDTG">
+      <text v="Chỉ thực hiện khi đơn hàng lấy từ tự tìm giá" e="Only fulfillment when the order has a quotation number" />
+    </message>
+	<message val="NewOrder">
+      <text v="Vui lòng chọn đơn hàng" e="Only fulfillment when the order has a quotation number" />
+    </message>
+    <message val="physicalRetrieve">
+      <text v="Chỉ xử lý nghiệp vụ sổ sách lấy dữ liệu từ thực tế" e="" />
+    </message>
+	 <message val="noDate">
+      <text v="Ngày hiệu lực đến không hợp lệ." e="Error Expiry Date."/>
+    </message>
+	<message val="notApproveRightEdit">
+      <text v="Không có quyền sửa/xóa đơn hàng đã duyệt ngoài mức được phân quyền" e="" />
+    </message>
+	<message val="notApproveRight">
+      <text v="Không có quyền duyệt đơn hàng" e="" />
+    </message>
+	 <message val="OnLyNew">
+      <text v="Chỉ thực hiện chức này ở trạng thái thêm mới." e="Only perform this function in the newly added state."/>
+    </message>
+	<message val="NumberFileExists">
+      <text v="&lt;span class='Highlight'&gt;Lưu ý:&lt;/span&gt; Số file đã tồn tại đã tự cập nhật" e="&lt;span class='Highlight'&gt;Warning:&lt;/span&gt; Existing file number has been updated automatically"/>
+    </message>
+  </messages>
+</dir>

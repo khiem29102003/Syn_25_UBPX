@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="hrpermission" table="" fieldKey="user_id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Phân quyền" e="Permission"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120">
+      <fields>
+        <field name="user_id" allowBlank="false" dataType="I" hidden="true" label="" field="1">
+          <text v="" e=""></text>
+        </field>
+        <field name="username" disabled="true" >
+          <text v="Tên" e="Name"></text>
+          <viewInfo lookupType="One" lookupId="dmkho" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_kho" />
+        </field>
+        <field name="nickname" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+    <form tabPageIndex="1" gravity="MiddleLeft" height="400" columns="120,120,120" >
+      <text v="Quyền bộ phận" e=""></text>
+      <fields>
+        <field name="dept_permission" fieldType="EX" hidden="true" label="1" field="1">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+    <form tabPageIndex="2" gravity="MiddleLeft" height="0" columns="120,120,120" >
+      <text v="Quyền chức năng" e=""></text>
+      <fields>
+        <field name="menu_permission" fieldType="EX" hidden="true" label="1" field="1">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$hrpermission(p){
+  this.constructor(p);
+}
+filter$hrpermission.prototype = new DirEvent();
+
+filter$hrpermission.prototype.afterInit = function(){
+  var p = this._dir, pa = p.options.parent, g = pa.grid(), r = g._currRow, dt = g.data;
+  
+  p.valForm(['user_id', 'username', 'nickname'], [dt.val(r, "user_id"), dt.val(r, "username"), dt.val(r, "nickname")]);
+  p.request('getHRPermission', 'GetDataSet', ['user_id'], filter$hrpermission$LoadTree);
+}
+
+filter$hrpermission.prototype.beforeButtonDialogClick = function(id){
+  var p = this._dir;
+  if (id == 'filterOk') {
+    var tbp = p.find("#hrpermission_1").treeview("instance"), tcn = p.find("#hrpermission_2").treeview("instance");
+    p.request('updateRight', '', ['user_id', ['bp', 'C', tbp.getParentCheckedItem()], ['cn', 'C', tcn.getCheckedItem()]], function(p, d, run){
+      if (run) p._close();
+    });
+    return false;
+  }
+  return true;
+}
+
+function filter$hrpermission$LoadTree(p, d){
+  var d = new DataSet(d);
+  p.find("#hrpermission_1").treeview({ tblData: d.get(0), expandAll: true, onCreated: function(tv) {
+      tv.refreshItemCheck();
+    }
+  });
+  p.find("#hrpermission_2").treeview({ tblData: d.get(1), expandAll: true, onCreated: function(tv) {
+      tv.refreshItemCheck();
+    }
+  });
+}
+]]>
+    </text>
+  </js>
+  <css>
+    <text>
+      <![CDATA[
+.tree-resize{
+  display: none;
+}
+
+#hrpermission_1, #hrpermission_2 {
+  overflow: hidden;
+}
+#hrpermission_1 > div:first-child, #hrpermission_2 > div:first-child {
+  display: none;
+}
+      ]]>
+    </text>
+  </css>
+  <script>
+    <request code="getHRPermission">
+      <text>
+        <![CDATA[
+exec ISWIFTStoredHrGetDepartment '@@lan', @user_id, @@userId, @@admin, 0
+exec ISWIFTStoredHrGetEmployeeMenu '@@lan', @user_id, @@userId, @@admin, 1
+         ]]>
+      </text>
+    </request>
+
+    <request code="updateRight" transaction="true">
+      <text>
+        <![CDATA[
+delete sysrighthrdept2 where user_id = @user_id
+if @bp <> ''
+  insert into sysrighthrdept2 
+	  select @user_id, b.ma_bp, b.bp_ref from dbo.ISWIFTFunction$Split(@bp, ',') a join hrdmbp b ON a.data = b.ma_bp
+
+delete sysrighthremenu2 where user_id = @user_id
+if @cn <> ''
+  insert into sysrighthremenu2 
+	  select @user_id, a.data, b.id from dbo.ISWIFTFunction$Split(@cn, ',') a join hremenu b on left(a.data, len(a.data) - 2) = b.controller
+  
+exec ISWIFTStoredUpdateRightHRDepartment @user_id, @@userId, @@admin
+exec ISWIFTStoredUpdateRightHRMenu @user_id, @@userId, @@admin
+select '' as message
+        ]]>
+      </text>
+    </request>
+
+  </script>
+
+</dir>

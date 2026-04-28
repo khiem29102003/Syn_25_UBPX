@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmbh" table="dmbh" fieldKey="ma_bh" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục bảo hành" e="Insurance list"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_bh" format="U" label="1" field="2" allowBlank="false" fieldType="PK" >
+          <text v="Mã bảo hành" e="Insurance code"></text>
+        </field>
+        <field name="ten_bh" label="1" field="2" allowBlank="false"  >
+          <text v="Tên bảo hành" e="Insurance name"></text>
+        </field>
+        <!-- <field name="model" label="1" field="2" fieldType="PK"> -->
+          <!-- <text v="Model" e="Modal name"></text> -->
+        <!-- </field> -->
+		<field name="model" allowBlank="false" viewType="Lookup" label="[120]" field="[120]"  hidden="false" nextRow="true" disabled="false">
+			<text v="Mã Model" e="Product Code"></text>
+			<viewInfo lookupType="One" lookupId="dmvt" lookupKey="status = 1" lookupCheck="1=1" lookupRef="" lookupInfo="dmvt|ma_vt|ten_vt" />
+		</field>
+		<!-- <field name="ten_vt" nextRow="true" fieldType="EX" readOnly="false"  disabled = "true" inactivate="true"  hidden="false" label="1" field="2" aliasName="cast('' as nvarchar(200)) as "> -->
+			<!-- <text v="Tên vật tư" e="Product Name"></text> -->
+		<!-- </field> -->
+		<field name="ten_vt" label="1" field="2" disabled ="true" fieldType="EX">
+          <text v="Tên sản phẩm" e="Product name"></text>
+        </field>
+		<field name="so_ngay_bh" label="1" field="2" disabled="true" dataType="I" fieldType="EX">
+          <text v="Bảo hành (tháng)" e="Guarantee"></text>
+        </field>
+		
+		<field name="ngay_bh" label="1" field="2" allowBlank="false" dataType="D">
+          <text v="Ngày bảo hành" e="Guarantee start"></text>
+        </field>
+		<field name="ngay_hbh" label="1" field="2" allowBlank="true" dataType="D" disabled="true">
+          <text v="Ngày hết bảo hành" e="Guarantee end"></text>
+        </field>
+		<field name="series" label="1" field="2" allowBlank="true" viewType="Lookup" readOnly="false" >
+          <text v="Serial number(S/N)" e="Serial number(S/N)"></text>
+          <viewInfo lookupType="One" lookupId="dmmodelvt" lookupKey="ma_vt = ![model]! and xstatus = 0 and xstatus2 = 0" lookupCheck="1=1" lookupRef="" lookupInfo="dmmodelvt|ma_model" />
+        </field>
+		<field name="pn" label="1" field="2" allowBlank="true" readOnly="false" >
+          <text v="P/N" e="P/N"></text>         
+        </field>
+		<field name="ma_kh" allowBlank="false" viewType="Lookup" label="[120]" field="[120]" hidden="false" nextRow="true" disabled="false">
+			<text v="Mã khách hàng" e="Custom Code"></text>
+			<viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1=1" lookupRef="" lookupInfo="dmkh|ma_kh|ten_kh" />
+		</field>
+		<field name="ten_kh" label="1" field="2" allowBlank="false" disabled="true">
+          <text v="Tên khách hàng" e="Customer name"></text>
+        </field>
+		<field name="dien_thoai" label="1" field="2" allowBlank="false" disabled="true">
+          <text v="Điện thoại" e="Phone"></text>
+        </field>
+		<field name="noi_mua" label="1" field="2" allowBlank="false">
+          <text v="Nơi mua" e="Where"></text>
+        </field>
+		<field name="khoang_trang_action" label="1" field="2" fieldType="EX" hidden="true">
+          <text v="Action" e="Action"></text>
+        </field>
+		<field name="so_luong" label="1" field="2" allowBlank="false" dataType="I">
+          <text v="Số lượng" e="Quantity"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+	<form gravity="TopRight" columns="120,120" >
+		<fields>
+			<field name="ximage1" label="1" field="0" importable="65">
+			  <text v="&lt;img class='image-single' id='img_ximage1' src='' onerror='src=`../Images/noImage.png`'/&gt; &lt;input type='button' value='Tải ảnh' onclick='browseServer(`ximage1`, `img_ximage1`);' value='Mở 1' style='text-align: center; display: block; margin: 0 auto;' /&gt;" e="Image 1"></text>
+			</field>
+	   </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>TguYg0rtJcguPez/1JOXzAwphJwJeE6+Szx5evjzZFW4P3h8MeLpWD4I2iDQwR2CbwfCVU451KVqcpWr2+sGGQFztsfmDKxsqJP88QzOAZr9LuIVS4gSRC1YbIHBOO1hk8zvs2R9g9kUJvbrqdxpt/GyC2rTRbKXlKuvPJWcfTXVHo9o9MbOHI0fP5+tJK0dCqITbppHdg2LV2xCMOuPSS/2Ypcto7LyU9tAXGgoYYRXYp7FqK27XjDomObSXnuzZeZ5g+Gh2RPOxJgmm22L8rtyO5/A1z6I470xaw9kLmTJh5VUGcQW+L4YKEz6qtrlz/Nq59XNlN/qfZ1ehRaSs2BzXjdHFA4+gzJ8eLH6slvFBObY1pO4Yr8h25fxq7cbURPHCvo0azkB7sDHPdoz0d//tszwTi5n29DSp4GGvG6YrLQJyWncD7vmOEUbqws/zDIaAIMOkVPQfgXBRIMyA5kkjTiwFshEQwvdHxjc6M144+N4vB8ap5fx+uQ18I+f81fv7iOSZNBXRhZ3tW4wZpRz3+Zij9sHyULcEWzLwtn1+1hPDWItwfLEWZKpszvZZtTb6d9+aMp8g9Yljq3/5x1XRutlD17NmgSYhLidh3ttTbbQwKM7ULkP4aLHHZsV0R3l5LJFyQfN++G5w8LOvU5Mo9HRSVHCGhObIqc2kiWLgBzQgW2SeZra/XcIv4XFCKYFiCioCjY6egj6GKy/uM44aDsIT/LIKHXo14bGJzMZ81Zl5h6G+/dH8AFsBlZYz1CUL+r/by9J7VG4hiFgtynFpFNWDhpt4+KGTGX42dk3LS9mJvdXbbIYqBPRGGpQRNDea4LJrDsZzxTmaHBmCKXSx++nZqR2A4L0R+eTCeZi9OT278jAERH8Ksl+C63mAOWzIZaCsAAPsS2RSMUdLg2B3d4Tl/ni7bAYAEP9XqFl6pH4WOaCWmXUlNmmVm/VUkoUv0HmOKTVOucX0sL19eUGXP8fiuSHDHkj82CZs9s=</enc>]]>
+    </text>
+  </js>
+
+  <script>
+	<query>
+      <text>
+        <![CDATA[<enc>DFm2Q+sN/iDmlaCg0+inDPEXZB8x737k/FhXZ4L7Xee4oj1mR9TqR0mg4nB+7vMIG13J1yoCA2Ddu7g5K8KPchSoYoU8j0ehLAedj0/3pcYcYy+TX2+PiVJtWxObcEiCASlM65/3QibEyhmWkjvWgYj4ZMDX+N98k1Fjj2H9Kv9DOPRQVavDraEpqPu7kNkf4BXz/ynMz3VWlMHWonnjHeZTccxiQqqmA1NnYtBdw1djxHyYIkE/T8x1i+4CpY36Pda4vbM+C/7B/lI3zyMecqDcdxAGwL0hzscxAz12CB8=</enc>]]>
+      </text>
+    </query>
+	<request code="LoadBHCode">
+	<text>		
+	  <![CDATA[<enc>t6FnlkOjGnyVq7pfuSElmtekmhVSH74reb3uGn4vf23sBjcXZltvLpH7Yr/v+6gwfB2IqHol+/tPie2PZkDITBK7Tc7GOXkVyvXnnxlpL+Q=</enc>]]>
+	</text>
+  </request>
+  <request code="LoadInfoProduct">
+	<text>		
+	  <![CDATA[<enc>EEvnpBgCHdCzDj023UPCGVBEDumAnIGqe0mJTaQjCin47uuGNgJNKuzSvKvDJJRNBroKwUO1oc/go95eIykaXIl9NVR6D8p1EjN9szpMIZzGvzhTzGdOPQHFLcUZFDUA</enc>]]>
+	</text>
+  </request>
+  <request code="LoadInfoCustom">
+	<text>		
+	  <![CDATA[<enc>EEvnpBgCHdCzDj023UPCGcw/NbUSImS32f6M4w4rGA1FnEhCQWIbDdCD3LIxpAne9Nh/8xL4+Fbj/tN0r4AeNFM6WV8PogMWiaDK6yTWyvCdyDYS7grYasuh/F+T+9WX</enc>]]>
+	</text>
+  </request>
+    <declare>
+      <text>
+        <![CDATA[<enc>hxQPm/hYhpvPifcenBxj7nfT+X4T8oXvYmZx4Kpwn3fRRVZY+foYIow2vt1OHdzq0lG6PkDpvnlKR1ei3AR28UkawCxswedTww8YMZ/ax/1/BVJZ6K0wvLOosliedaWZECGm+mOArr1NzezEMj9a3T6oM13AqKxk+XsNiJk0AF7fY6ETn7WyFS8NIOOx8NOXDprY8tWCPRUnFa2zbmCtAaYtDQ7FLLNnKkx+O5W1aeTcPghGE5r7aNIveIS55eE0</enc>]]>
+      </text>
+    </declare>
+	
+	
+	<deleting>
+      <text>
+        <![CDATA[<enc>mIhtwfxzGPVl9lVx/rzwGyOVS+CPP7n4YrYbpZgoSnKWvawxQa/7+OLpHn4CoUXNQ3iiHCZsZFJFgm9mNmZLhowtCqq2CBE1s9k6Dnw11w9Jv2ly9jii8XhFfuKMsq4nwWDeeai9h7WducLk7/ELg9qKEuyXCNRE0oyCSY+O8zoPsgRNO7Hr3NxdhyyrAGPlIm0A8nSNB6ONG/Hdg+86zQ==</enc>]]>
+      </text>
+    </deleting>
+	
+	 <aftersave>
+      <text>
+        <![CDATA[<enc>OwsV86ktk4PV9ZO6KxIUjL9kcRPT4N5eHWdpcJ64yy7ArwqWkRnx9ccTNy4xxvWU912WS5NRqNxfrARNZON5bSMskNd4PkhrPNxVJYcKAWvOHt6FgOXT06WxJw99fqb4cKa5iIo8aajAoSNhttOSHNG4nkbm/E98GddHPYxDVYXi7eMlvsitarL9XNB0eW0+h3OchZ5BGEForKbBXzArDg==</enc>]]>
+      </text>
+    </aftersave>
+	
+
+  </script>
+
+</dir>

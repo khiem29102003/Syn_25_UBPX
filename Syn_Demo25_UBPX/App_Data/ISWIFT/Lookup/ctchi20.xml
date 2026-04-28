@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+]>
+
+<dir id="s61" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách tổng hợp phiếu chi" e="Order summary list"></title>
+
+  <grids>
+    <grid table="ctchi20" fieldKey="id" fieldName="ma_kh" order="id" allowFilter="true" allowOrder="true">
+      <fields>
+		<field name="id" dataType="N" fieldType="PK" width="50" format="0" filterType="Code">
+          <text v="ID" e="ID"></text>
+        </field>
+		<field name="ma_ct" width="80" >
+          <text v="Mã c/từ" e="Voucher Code"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày c/từ" e="Voucher date"></text>
+        </field>
+        <field name="so_ct" width="0" fieldType="RF" >
+          <text v="Số c/từ" e="Voucher number"></text>
+        </field>
+        <field name="ma_kh" width="120" >
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="250" fieldType="EX" >
+          <text v="Tên khách hàng" e="Customer name"></text>
+        </field>
+		<field name="ma_nt" width="100">
+          <text v="Mã nt" e="Voucher number"></text>
+        </field>
+		<field name="tien_nt" width="120" dataType="N" format="FCAmount">
+          <text v="Tiền" e="Carrier Code"></text>
+        </field>
+		<field name="da_pb_nt" dataType="N" format="FCAmount" width="100" aliasName="0*tien_nt as ">
+          <text v="Đã phân bổ" e="Pcs UOM"></text>
+        </field>
+		 <field name="cl_nt" dataType="N" format="FCAmount" width="100" aliasName="0*tien_nt as ">
+          <text v="Chưa phân bổ" e="Cash In Return"></text>
+        </field>
+		<field name="dien_giai" width="250">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+      </fields>
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @key2 nvarchar(3000), @Update nvarchar(4000)
+select @key2 = @lookupKey + case when @val = '' then '' else ' and (@@fieldKey like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or @@fieldName like N''' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+set @Update = 'update #v set da_pb_nt = b.tt_nt from #v a join (select ma_kh, ma_nt, id, sum(tt_nt) as tt_nt from ctct20 where loai_tt = 1 and id in (select id from #v) group by ma_kh, ma_nt, id) b on a.id = b.id and a.ma_kh = b.ma_kh and a.ma_nt = b.ma_nt'
+set @Update = @Update + ' update #v set cl_nt=tien_nt-da_pb_nt '
+set @Update = @Update + ' delete #v where cl_nt = 0 '
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmkh b on a.ma_kh = b.ma_kh', 'b.ten_kh', N'@@key', @key2, @@filterKey, @Update, @pageIndex, 10, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+</dir>

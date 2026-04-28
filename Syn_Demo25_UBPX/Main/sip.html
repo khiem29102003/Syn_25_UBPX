@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SIP Web Client</title>
+</head>
+<body>
+    <h1>SIP Web Client</h1>
+    <button id="startButton">Start SIP</button>
+    <button id="endButton">End SIP</button>
+
+    <!-- Thêm liên kết script đến JsSIP -->
+    <script src="https://jssip.net/download/releases/jssip-3.6.2.js"></script>
+	<script>
+		// Khai báo các thông tin SIP
+		const configuration = {
+			uri: 'sip:admin@ippbx3.tranthu.vn',
+			password: '@ttf2023',
+			sockets: [new JsSIP.WebSocketInterface('wss://ippbx3.tranthu.vn:5070')]
+		};
+
+		// Tạo một đối tượng UA (User Agent)
+		const ua = new JsSIP.UA(configuration);
+
+		// Xử lý sự kiện khi UA đã được kết nối
+		ua.on('connected', (e) => {
+			console.log('Connected to SIP server');
+		});
+
+		// Xử lý sự kiện khi UA nhận cuộc gọi đến
+		ua.on('newRTCSession', (e) => {
+			const session = e.session;
+			if (session.direction === 'incoming') {
+				console.log('Incoming call from ' + session.remote_identity.uri);
+				// Xử lý cuộc gọi đến ở đây
+			}
+		});
+
+		// Bắt đầu kết nối SIP khi nhấn nút "Start SIP"
+		document.getElementById('startButton').addEventListener('click', () => {
+			ua.start();
+		});
+
+		// Kết thúc kết nối SIP khi nhấn nút "End SIP"
+		document.getElementById('endButton').addEventListener('click', () => {
+			ua.stop();
+		});
+	</script>
+</body>
+</html>
+
+

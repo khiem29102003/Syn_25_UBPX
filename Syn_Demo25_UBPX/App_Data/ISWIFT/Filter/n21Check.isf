@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="n21Check" table="" height="" fieldKey="id" voucherCode="PF1" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lọc phiếu đề xuất" e="Filter proposal form (Approve)"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D">
+          <text v="Ngày c/từ (từ/đến)" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+        <field name="so_ct1"  label="1" field="1" operation="a.so_ct &gt;= N'%s'">
+          <text v="Số c/từ (từ/đến)" e="Voucher Number"></text>
+        </field>
+        <field name="so_ct2"  label="" nextRow="false" field="1" operation="a.so_ct &lt;= N'%s'">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_hmdx" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Chọn hạng mục" e="Department"></text>
+			<viewInfo lookupType="One" lookupId="dmhmdx" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_hmdx"  />
+		</field>
+		<field name="ten_hmdx" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 	
+		
+		<field name="ma_loaidx" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Loại đề xuất" e="Department"></text>
+			<viewInfo lookupType="One" lookupId="dmloaidx" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_loaidx"  />
+		</field>
+		<field name="ten_loaidx" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+		<field name="ma_nv" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Mã nhân viên" e="Department"></text>
+			<viewInfo lookupType="One" lookupId="dmnv" lookupKey="xstatus = 5" lookupCheck="1 = 1" lookupRef="ten_nv"  />
+		</field>
+		<field name="ten_nv" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field>
+
+		
+        <field name="tieu_de" label="1" field="-" operation="a.tieu_de like N'%%s%'">
+          <text v="Tiêu đề" e="Explain"></text>
+        </field>
+      </fields>
+    </form>
+
+    <form gravity="BottomLeft" columns="120,120,120,120"  >
+      <fields>
+
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="3" valueDefault="1" operation="=" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Chờ check (Xử lý Duyệt Check)" e="Open (Approve)"/>
+              </option>
+              <option val="2">
+                <text v="Đã check (Xử lý Bỏ Check)" e="Approved (Undo)"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+
+      </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>qZIWkjZGO7eH9WN/pzfr6lZ+6hAUPKez7hGh0zxVQ83s4MJiTm0Ya/IhCmEyjBqMyJZN9eYH4dIgNaA2DQrkvuAFXqOwM1Wqk1uiLOXeudAD9fD2yU974CvGG+ijHKN6UyL4EHhhi7B7hUOmbMp+oG0vfOZxqHAQIYQjq99X/6K3p/SktIjEQfSJtGjuhY7yAqbSoN0hra+5MTIJVUWhcZ9RAfhtLCysSHrbPBa+4gGDkwm5znkMoRfVJQLLNeDT0wU0cXsNvI3As9tjvJwZ6py21FV+xynG6jBoq1QpMyQG6/P+eQ94VVh4nY1QBrdRkFgHYGNNhV6Psrw5VhYKdQ==</enc>]]>
+    </text>
+  </js>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+
+  <messages>
+    <message val="approve">
+      <text v="check" e="Approve"/>
+    </message>
+    <message val="undo">
+      <text v="bỏ check" e="Open "/>
+    </message>
+    <message val="open">
+      <text v="bỏ đóng" e="Open"/>
+    </message>
+  </messages>
+</dir>

@@ -1,0 +1,272 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+  <!ENTITY VoucherRequiredFields01 SYSTEM "..\Include\XML\VoucherRequiredFields01.xml">
+  <!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid01.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+
+  <!ENTITY VoucherSaleRequest SYSTEM "..\Include\XML\VoucherSaleRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from s24 where id = @id and status in (6,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+    ">
+]>
+
+
+<dir id="s24" table="s24" fieldKey="id" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" voucherCode="YG4" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo giá khác" e="Other quotes"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120" >
+		<fields>
+			<field name="tieu_de" label="1"  field="-" allowBlank="false" >
+				<text v="Tiêu đề (*)" e="Request title (*)	"></text>
+			</field>
+			<field name="noi_dung" label="1" rows="7" field="-" valueDefault="Chào Quý công ty,
+Tôi đang cần Báo giá khác cho lô hàng này. 
+Vui lòng xem thông tin và gửi Báo giá khác tốt cho tôi. Mong phản hồi từ  Quý công ty sớm. 
+Trân trọng!">
+				<text v="Ghi chú (*)" e="Remarks (*)"></text>
+			</field>
+			
+			<field name="xfile" label="1" field="2" viewType="File" fieldType="EXParam">
+				<text v="Đính kèm" e="Add attachment"></text>
+				<viewInfo fileFieldId0="id" fileGroup="BG1" fileExtension="*" maxFileCount="10"></viewInfo>
+			</field>
+		</fields>
+    </form>
+
+    <form gravity="TopRight" columns="120,120" >
+		<fields>
+			<field name="unit_id" viewType="Combobox" dataType="I" clientDefault="true" inactivate="true" label="[60]" field="[180]" >
+			  <text v="Đơn vị" e="Unit"></text>
+			  <viewInfo>
+				<options cache="false" query="select unit_id, ten_unit%l from sysunit where unit_id in (select unit_id from dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @@admin, ''))">
+				</options>
+			  </viewInfo>
+			</field>
+<field name="i_so_ct" inactivate="true" hidden="true" label="[60]" field="[60]">
+  <text v="Số tăng" e="Number"></text>
+</field>
+<field name="ten_nk" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="[100]" hidden="true" aliasName="cast('' as nvarchar(4000)) as ">
+  <text v="" e=""></text>
+</field>
+<field name="ma_nk" inactivate="true" label="[60]" field="[60]" clientDefault="true" hidden="true" viewType="Lookup">
+  <text v="Quyển/Số ct" e="Book/No"></text>
+  <viewInfo lookupType="One" lookupId="dmnk" lookupKey="unit_id in (0, ![unit_id]!) and exists(select 1 from dmnk3 x where x.ma_nk = a.ma_nk and x.ma_ct = '@@voucherCode' and (x.user_id in (0, @@userId) or @@admin = 1)) and (ngay_hl1 is null or ![ngay_ct]! &gt;= ngay_hl1) and (ngay_hl2 is null or ![ngay_ct]! &lt;= ngay_hl2) " lookupCheck="1=1" lookupRef="ten_nk" lookupInfo="dmnk|ma_nk|ten_nk" />
+</field>
+<field name="so_ct" format="U" allowBlank="false" nextRow="false" label="" field="[120]">
+  <text v="Số c/từ" e="Voucher No"></text>
+</field>
+<field name="ngay_ct" label="1" field="1" valueDefault="new Date()" copy="false" allowBlank="false" dataType="D">
+  <text v="Ngày chứng từ" e="Voucher Date"></text>
+</field>
+<field name="ngay_lct" label="1" field="1" hidden="true" valueDefault="new Date()" allowBlank="false" disabled="true" dataType="D">
+  <text v="Ngày lập ct" e="Create Date"></text>
+</field>
+			&VoucherRequiredFields02;
+			<field name="tu_ngay" dataType="D" label="1"  field="1" allowBlank="false" >
+				<text v="Từ ngày (*)" e="From (*)"></text>
+			</field>
+			<field name="den_ngay" dataType="D" label="1"  field="1" allowBlank="false">
+				<text v="Đến ngày (*)" e="To (*)"></text>
+			</field>
+		</fields>
+    </form>
+
+    
+  </forms>
+
+  
+
+  &DefaultButton;
+
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$s24(p){
+  this.constructor(p);
+}
+dir$s24.prototype = new DirEvent();
+dir$s24.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$s24.prototype.beforeButtonDialogClick = function (id) {
+  var p = this._dir, g = p.grid(0);
+  switch (id) {
+    case 'ok':
+		if (p.valForm('den_ngay') <= p.valForm('tu_ngay')) { 
+			<!-- $.question('jkhj '+'Nhap sai ngay ??' ); -->
+			$.alert('Ngày hiệu lực đến không hợp lệ. Error Effective Date.');
+			return false;
+			Break;
+			}
+    default:
+      break;
+  }
+  return true;
+}
+         ]]>
+    </text>
+  </js>
+
+
+     <script>
+    &VoucherRequest;
+    &VoucherSaleRequest;
+
+     <query>
+      <text>
+        <![CDATA[
+if @action = 'EDIT' begin
+]]>&CheckUpdatingDeleting;<![CDATA[
+end
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+if @action in ('EDIT', 'VIEW') exec ISWIFTStoreGetListFiles 'xfile', @id, '@@voucherCode', '', @script output
+if @script is null set @script = ''
+
+if @action = 'NEW' begin
+  declare @ma_nk varchar(32), @ten_nk nvarchar(3000), @ngay_ct date, @so_ct varchar(32), @i_so_ct int, @unit_id int
+  select @ngay_ct = getdate(), @unit_id = @@unit
+]]>&VoucherNumberQuery;<![CDATA[
+  if @so_ct is null
+    select '' as [so_ct], 0 as [i_so_ct], @unit_id as [unit_id], '' as ma_nk, '' as ten_nk
+  else
+    select @so_ct as [so_ct], @i_so_ct as [i_so_ct], @unit_id as [unit_id], @ma_nk as ma_nk, @ten_nk as ten_nk
+end
+else select @script as script
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+
+    <declare>
+      <text>
+        <![CDATA[
+declare @warning nvarchar(256), @dOldVoucherDate date, @dVoucherDate date, @nVoucherType tinyint, @strIds varchar(256), @q nvarchar(4000)
+set @warning = ''
+         ]]>
+      </text>
+    </declare>
+
+    &VoucherJSLoading;
+
+    <beforesave>
+      <text>
+        &VoucherNumberBeforeSave;
+      </text>
+    </beforesave>
+
+    <deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct, @dVoucherDate = ngay_ct, @nVoucherType = ma_ngv from s24 where id = @id
+        ]]>
+      </text>
+    </deleting>
+
+    <deleted>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+exec ISWIFTStoredDeleteDataWithKey 'v23_1', @strIds, '', @dVoucherDate
+        ]]>
+      </text>
+    </deleted>
+
+    <updating>
+      <text>
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct from s24 where id = @id
+        ]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId, i_so_ct = @i_so_ct, so_ct = @so_ct where [%whereFieldKey]
+update dmttin set status = 0 from dmttin where id0 = rtrim(@id) and xgroup = '@@voucherCode'
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+         ]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @ma_ct = '@@voucherCode'
+exec ISWIFTStoredGetIdentityNumber '@@voucherCode', '@@table', @id output
+         ]]>
+      </text>
+    </inserting>
+
+    <inserted>
+      <text>
+        <![CDATA[
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+]]>
+      </text>
+    </inserted>
+
+    <aftersave>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+if @action = 'NEW' set @dOldVoucherDate = @ngay_ct
+
+
+
+exec ISWIFTStoredPostingVoucher 's24', 'v23_1', @dOldVoucherDate, @ngay_ct, @id, '@@voucherCode', '', ''
+
+exec ISWIFTStoredIncreaseVoucherNo @ma_nk, @ngay_ct, '@@voucherCode', @i_so_ct, @so_ct, '@@table'
+select '' as message, @warning as warning, @id as [#id], @so_ct as [#so_ct], @ma_unit as [#ma_unit]
+]]>
+      </text>
+    </aftersave>
+  </script>
+
+    <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã chứng từ - Tên/nhóm đã tồn tại" e="Voucher Code - Name/Group Already Exists"/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã chứng từ - Tên/nhóm đã tồn tại" e="Voucher Code - Name/Group Already Exists"/>
+    </message>
+    <message val="commonInfo">
+      <text v="Thông tin chung" e="Header"/>
+    </message>
+    <message val="FCText">
+      <text v="nt" e="FC"/>
+    </message>
+    <message val="noChoice">
+      <text v="Chưa chọn thông tin giới hạn" e="No Selected Items"/>
+    </message>
+  </messages>
+
+</dir>

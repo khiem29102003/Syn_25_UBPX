@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmplnhvtc1" table="dmplnhvtc1" fieldKey="ma_nh" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục nhóm phân loại vật tư 1" e="Material Group Level 1"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_unit" viewType="Lookup" fieldType="EXParam" readOnly="false" label="1" field="1" allowBlank="false">
+          <text v="Đơn vị" e="Unit"></text>
+          <viewInfo lookupType="One" lookupId="sysunit" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_unit" lookupInfo="sysunit|ma_unit|ten_unit" />
+        </field>
+        <field name="ten_unit" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_nh" format="U" label="1" field="1" allowBlank="false" fieldType="PK" >
+          <text v="Mã nhóm plvt 1" e="MGroup Code 1"></text>
+        </field>
+        <field name="ten_nh" label="1" field="-" allowBlank="false" fieldType="PK" >
+          <text v="Tên nhóm plvt 1" e="MGroup Name 1"></text>
+        </field>
+        <field name="ten_nh2" label="1" field="-">
+          <text v="Tên tiếng anh" e="Other name"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmplnhvtc1(p){
+  this.constructor(p);
+}
+dir$dmplnhvtc1.prototype = new DirEvent();
+dir$dmplnhvtc1.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  
+  <script>
+
+    <query>
+      <text>
+        <![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+if @action = 'EDIT' or @copy = 1 select ma_unit, ten_unit from sysunit where unit_id in (select unit_id from #@@table)
+else select ma_unit, ten_unit from sysunit where unit_id = @@unit
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+    
+    <beforesave>
+      <text>
+        <![CDATA[
+select @unit_id = unit_id from sysunit where ma_unit = @ma_unit
+        ]]>
+      </text>
+    </beforesave>
+    
+  </script>
+
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã nhóm phân loại nhóm vật tư 1 đã tồn tại." e="Material Group Level 1 code already exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã nhóm phân loại nhóm vật tư 1 đã tồn tại." e="Material Group Level 1 code already exists."/>
+    </message>
+  </messages>
+
+</dir>

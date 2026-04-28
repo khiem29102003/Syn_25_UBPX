@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmtask" table="dmtask" fieldKey="ma_task" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục chi tiết công việc" e="Detailed Task List"></title>
+  <title0 v="Thêm mới" e="Create New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_task" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="5" >
+          <text v="Mã công việc" e="Task Code"></text>
+        </field>
+        <field name="ten_task" label="1" field="-" allowBlank="false" importable="10" >
+          <text v="Tên công việc" e="Task Name"></text>
+        </field>
+        <field name="ten_task2" label="1" field="-" importable="15" >
+          <text v="Tên tiếng anh" e="Other Name"></text>
+        </field>
+		<!-- <field name="wf" dataType="B"  blank="1" clientDefault="true" label="[100]" field="[40]" inactivate="true"> -->
+          <!-- <text v="Workflow" e="Workflow"></text> -->
+        <!-- </field> -->
+        <field name="status" viewType="Combobox" inactivate="true" valueDefault="1" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmtask(p){
+  this.constructor(p);
+}
+dir$dmtask.prototype = new DirEvent();
+dir$dmtask.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmtask.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+dir$dmtaskDisabledMasterField(p, g);
+
+}
+
+function dir$dmtaskDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_task').trim() != '')
+  {
+    p.setDisabled('ma_task', true);
+  }
+  else
+  {
+    p.setDisabled('ma_task', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+  
+  <css>
+	<text>
+	  <![CDATA[
+		.control-label.ma_task, .control-label.ten_task
+		{	
+			//font-weight:bold;	
+			color: #499b98;;
+		}
+	  ]]>
+	</text>
+  </css>
+  
+  <script>
+	<importing>
+      <text>
+        <![CDATA[
+		@@insert
+        ]]>
+      </text>
+    </importing>
+  </script>
+  
+  <messages>
+	<message val="codeExistsNewMsg">
+		<text v="Mã công việc đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The task code already exists in the catalog, please choose a different code"/>
+	</message>
+	<message val="codeExistsEditMsg">
+		<text v="Mã công việc đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The task code already exists in the catalog, please choose a different code"/>
+	</message>
+  </messages>
+
+</dir>

@@ -1,0 +1,209 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="hrdkcatl" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Đăng ký ca/nhóm ca cho nhân viên" e=""></title>
+  <subtitle v="Từ ngày {ngay_tu} đến {ngay_den}..." e="From {ngay_tu} To {ngay_den}..."></subtitle>
+  <grids>
+    <grid readOnly="false">
+      <fields>
+				<field name="id" dataType="N" fieldType="PK" format="0" hidden="true">
+					<text v="" e=""></text>
+				</field>
+				<field name="ma_nv" width="120" inactivate="true" >
+					<text v="Mã nhân viên" e="Employee ID"></text>
+				</field>
+				<field name="ho_ten_nv" width="250" inactivate="true">
+					<text v="Tên nhân viên" e="Employee Name"></text>
+				</field>
+        <field name="ma_bp" width="100" inactivate="true">
+          <text v="Mã bộ phận" e="Department"></text>
+        </field>
+        <field name="ca" format="U" width="50" viewType="Lookup" readOnly="false" >
+          <text v="Ca" e=""></text>
+          <viewInfo lookupType="One" lookupId="vhrdmca" lookupKey="status=1" lookupExactValue="1"/>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="save">
+          <text v="$SaveToolbar" e="$SaveToolbar"></text>
+        </button>
+				<button id="MultiAdd">
+					<text v="Đăng ký nhanh" e=""></text>
+				</button>
+				<button id="Copy">
+					<text v="Sao chép" e=""></text>
+				</button>
+        <button id="find">
+          <text v="$FindToolbar" e="$FindToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="export">
+          <text v="$ExportToolbar" e="$ExportToolbar"></text>
+        </button>
+      </buttons>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$hrdkcatl(f){
+  this.constructor(f);
+}
+grid$hrdkcatl.prototype = new DirEvent();
+grid$hrdkcatl.prototype.afterInitFields = function(){
+  var p = this._dir;
+
+}
+grid$hrdkcatl.prototype.beforeInit = function(renderType){
+  var fi, p = this._dir, g = p.grid(), dt = new DataTable(g.data.Tables[0]), d = p.options._ngay_den, fm = (d.getMonth() == p.options._ngay_tu.getMonth())?'dd':'dd/mm';
+  p.options._weekend = []; p.options._weekend0 = []; p.options._colDays = {}
+  while (d >= p.options._ngay_tu) {
+    fi = p.addColumn(0, 'ca', 'ca_' + $.date(d, 'yymmdd'), $.date(d, fm), 5);
+    if (d.getDay() == 0 || d.getDay() == 6) p.options._weekend.push(fi.name);
+    if (d.getDay() == 0) {p.options._weekend0.push(fi.name); fi.inactivate = true;}
+    p.options._colDays[fi.name] = d;
+    d = $.addDays(d, -1);
+  }
+  p.field('ca', 0).hidden = true;
+  dt.setPrimaryKey(['id']);
+  if (p.options.reload == "") {
+    var dtU = p.options.dtUpdate, k = dtU.count();
+    while(k--) {
+      var dtTemp = dt.clone(['id'], null);
+      dtTemp.addColumn("C", 'ca_' + $.date(dtU.val(k, 'ngay'), 'yymmdd'));
+      dtTemp.addRow([dtU.val(k, 'id'), dtU.val(k, 'ma_ca')])
+      dt.update(dtTemp, 0, true);
+    }
+  }
+}
+grid$hrdkcatl.prototype.afterInit = function(renderType){
+  var p = this._dir, g = p.grid(), dt = g.data;
+  if (p.options._weekend.length) p.find("." + p.options._weekend.join(",.")).css("color", "red");
+  if (p.options._weekend0.length) p.find("." + p.options._weekend0.join(",.")).css("font-weight", "700");
+  if (p.options.reload != "") {
+    p.options.dtUpdate = dt.clone(['id'], null); //Neu reload lai store thi tao lai bang thay doi
+    p.options.dtUpdate.addColumn(["D", "C"], ["ngay", "ma_ca"]);
+    p.options.dtUpdate.setPrimaryKey(['id', 'ngay']);
+  }
+  p.find(".grid-input-field[value!='']").css({"font-weight": "700"});
+}
+grid$hrdkcatl.prototype.gridCellValueChange = function (o, g, r, c, v) {
+  var p = this._dir, g = p.grid(), dt = g.data;
+  if (c.indexOf('ca_') == 0) {
+    var dtTemp = dt.clone(['id'], null);
+    dtTemp.addColumn(["D", "C"], ["ngay", "ma_ca"]);
+    dtTemp.addRow([dt.val(r, 'id'), p.options._colDays[c], v])
+    p.options.dtUpdate.update(dtTemp, 0, false, ['ma_ca']);
+    o.css({"font-weight": (v != "")? "700":""});
+  }
+}
+grid$hrdkcatl.prototype.beforeButtonGridClick = function (id, gindex) {
+  var p = this._dir;
+  switch (id) {
+    case 'save':
+      if (p.options.dtUpdate.count() == 0) {
+        $.showToast(p.msg('noChange'));
+        return false;
+      }
+      var m = new Memvars();
+      m.val('dkcanv', 'T', p.options.dtUpdate.sqlval(), 'hrdkcanv'); //Khai bao field EX de ko request len server cho nhe
+      p.request('Save', '', m, function(p, d, run) {
+        if (run) p._refresh(true);
+      });
+      return false;
+		case 'MultiAdd':
+      p.showFilter("hrdkcanvMulti");
+			//$.createDir(false, {controller: "hrdkcanvMulti", folder: "Filter", dirViewType: "Dialog", parent: p});
+      break;
+		case 'Copy':
+      p.showFilter("hrdkcatlCopy");
+			//$.createDir(false, {controller: "hrdkcatlCopy", folder: "Filter", dirViewType: "Dialog", parent: p});
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+]]>
+    </text>
+  </js>
+   <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+
+  <script>
+    <request code="Save" transaction="true">
+      <text>
+        <![CDATA[
+if exists(select 1 from @dkcanv where ma_ca not in (select ma_ca from vhrdmca)) begin
+  select '$inValidShift' as message
+  return
+end
+update @dkcanv set datetime0 = getdate(), datetime2 = getdate(), user_id0 = @@userId, user_id2 = @@userId
+update @dkcanv set datetime0 = b.datetime0, user_id0 = b.user_id0 from @dkcanv a join hrdkcanv b on a.id = b.id and a.ngay = b.ngay
+delete hrdkcanv from hrdkcanv a where exists(select 1 from @dkcanv b where a.id = b.id and a.ngay = b.ngay)
+insert into hrdkcanv select * from @dkcanv
+
+select '$Processed' as message
+        ]]>
+      </text>
+    </request>
+
+  </script>
+	<css>
+		<text>
+			<![CDATA[
+.toolbar-MultiAdd > div {
+  background-position: -112px -32px !important;
+}
+.toolbar-Copy > div {
+  background-position: -160px -0px !important;
+}
+      ]]>
+		</text>
+	</css>
+  <messages>
+    <message val="noChange">
+      <text v="Không có dữ liệu thay đổi" e="No Data Changed" />
+    </message>
+    <message val="inValidShift">
+      <text v="Mã ca không đúng hoặc không tồn tại trong danh mục" e="Invalid Shift" />
+    </message>
+  </messages>
+</dir>

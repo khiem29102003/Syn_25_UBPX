@@ -1,0 +1,1397 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+	<!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+	<!ENTITY Jquery371 SYSTEM "..\Include\Script\jquery-3.7.1.min.js">
+]>
+
+
+<dir id="dmpostvt" table="dmpostvt" fieldKey="ma_vt" dirViewType="Dialog" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+	<title v="Danh mục vật tư, sản phẩm" e="Product List"></title>
+	<title0 v="Mới" e="New"></title0>
+	<title1 v="Sửa" e="Edit"></title1>
+	<forms>
+		<form gravity="TopLeft" columns="120,120,120" >
+			<fields>
+				<field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+					<text v="" e=""></text>
+				</field>
+				<field name="ma_vt" format="U" viewType="Lookup" label="1" field="1" allowBlank="false" fieldType="PK">
+					<text v="Mã sản phẩm" e="Product Code"></text>
+					<viewInfo lookupType="One" lookupId="dmvt" lookupKey="status=1" lookupCheck="1=1" lookupRef="" lookupInfo="dmvt|ma_vt|ten_vt" importCheck="@@DF and z.status=1"/>
+				</field>
+				<field name="ten_vt" allowBlank="false" label="1" field="-" importable="10">
+					<text v="Tên sản phẩm" e="Product Name"></text>
+				</field>
+				<field name="ten_vt2" allowBlank="true" label="1" field="-" importable="15">
+					<text v="Tên khác" e="Other name"></text>
+				</field>
+				<field name="status" viewType="Combobox" valueDefault="1" label="1" field="[200]" nextRow="true" >
+					<text v="Trạng thái" e="Status"></text>
+					<viewInfo>
+						<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 order by ma_tt">
+						</options>
+					</viewInfo>
+				</field>
+				<field name="images-container" label="-" field="0" fieldType="EX" disabled="true">
+					<text v="&lt;div class='edit-label edit-title'&gt;
+							&lt;div class='mandatory'&gt;
+								&lt;span class='mandatory-icon'&gt;*&lt;/span&gt;
+							&lt;/div&gt;
+							&lt;span &gt;Hình ảnh sản phẩm&lt;/span&gt;
+						&lt;/div&gt;
+						&lt;div id='imageUploadArea' style='display: flex; margin-bottom: 20px;'&gt;
+							&lt;input type='hidden' id='refId' value='product_123' /&gt;
+
+							&lt;!-- Dòng ảnh ngang --&gt;
+							&lt;div id='imageList' class='image-grid'&gt;&lt;/div&gt;
+
+							&lt;!-- Nút thêm ảnh --&gt;
+							&lt;button id='addImageLabel' onclick='document.getElementById(`imagePicker`).click();'&gt;
+								&lt;div style='color: #ee4d2d;text-align: center;display: -webkit-box;display: -ms-flexbox;display: flex;-webkit-box-orient: vertical;-webkit-box-direction: normal;-ms-flex-direction: column;flex-direction: column;-webkit-box-pack: center;-ms-flex-pack: center;justify-content: center;-ms-flex-line-pack: center;align-content: center;padding: 0 2px;line-height: 20px;'&gt;
+									&lt;div style='font-size: 24px;'&gt;📷&lt;/div&gt;
+									&lt;span&gt;Thêm hình ảnh&lt;/span&gt;
+									&lt;span id='imageCount'&gt;(0/9)&lt;/span&gt;
+								&lt;/div&gt;
+							&lt;/button&gt;
+						&lt;/div&gt;" e="Images"></text>
+				</field>
+				
+				<field name="banner-container" label="-" field="0" fieldType="EX" disabled="true">
+					<text v="&lt;div class='edit-label edit-title'&gt;
+							&lt;div class='mandatory'&gt;
+								&lt;span class='mandatory-icon'&gt;*&lt;/span&gt;
+							&lt;/div&gt;
+							&lt;span &gt;Ảnh bìa&lt;/span&gt;
+						&lt;/div&gt;
+						&lt;div style='display: flex; gap: 10px; margin-bottom: 20px;' &gt;
+							&lt;div id='mainImagePreview' class='main-preview main-image-preview' &gt;
+								Chưa có ảnh
+							&lt;/div&gt;
+							
+							&lt;ul class='edit-label edit-title' style='flex-flow: column; list-style-type: disc;' &gt;
+								&lt;li &gt;
+									Tải lên hình ảnh 1:1.
+								&lt;/li&gt;
+								&lt;li &gt;
+									Ảnh bìa sẽ được hiển thị tại các trang Kết quả tìm kiếm, Gợi ý hôm nay,... Việc sử dụng ảnh bìa đẹp sẽ thu hút thêm lượt truy cập vào sản phẩm của bạn
+								&lt;/li&gt;
+							&lt;/ul&gt;
+						&lt;/div&gt;" e="Banner"></text>
+				</field>
+				
+				<field name="video-container" label="-" field="0" fieldType="EX" disabled="false">
+					<text v="&lt;div class='edit-label edit-title'&gt;
+							&lt;span &gt;Video sản phẩm&lt;/span&gt;
+						&lt;/div&gt;
+
+						&lt;div style='display: flex; gap: 10px; margin-bottom: 20px;' &gt;
+							&lt;div style='display: flex; flex-direction: row; gap: 10px;'&gt;
+								&lt;div id='mainVideoPreview' class='main-preview main-video-preview'&gt;
+									Chưa có video
+								&lt;/div&gt;
+								
+								&lt;button id='addVideoLabel' onclick='document.getElementById(`videoPicker`).click();'&gt;
+									&lt;div style='color: #ee4d2d;text-align: center;display: -webkit-box;display: -ms-flexbox;display: flex;-webkit-box-orient: vertical;-webkit-box-direction: normal;-ms-flex-direction: column;flex-direction: column;-webkit-box-pack: center;-ms-flex-pack: center;justify-content: center;-ms-flex-line-pack: center;align-content: center;padding: 0 2px;line-height: 20px;'&gt;
+										&lt;div style='font-size: 24px;'&gt;📷&lt;/div&gt;
+										&lt;span&gt;Thêm video&lt;/span&gt;
+									&lt;/div&gt;
+								&lt;/button&gt;
+							&lt;/div&gt;
+							
+							&lt;ul class='edit-label edit-title' style='flex-flow: column; list-style-type: disc;' &gt;
+								&lt;li &gt;
+									Kích thước tối đa 30Mb, độ phân giải không vượt quá 1280x1280px
+								&lt;/li&gt;
+								&lt;li &gt;
+									Độ dài: 10s-60s
+								&lt;/li&gt;
+								&lt;li &gt;
+									Định dạng: MP4
+								&lt;/li&gt;
+								&lt;li &gt;
+									Lưu ý: sản phẩm có thể hiển thị trong khi video đang được xử lý. Video sẽ tự động hiển thị sau khi đã xử lý thành công.
+								&lt;/li&gt;
+							&lt;/ul&gt;
+						&lt;/div&gt;" e="Video"></text>
+				</field>
+				
+				<field name="images-multiple" label="0" field="0" fieldType="EX">
+					<text v="&lt;input type='file' id='imagePicker' accept='image/*' multiple hidden /&gt;" e="&lt;input type='file' id='imagePicker' accept='image/*' multiple hidden /&gt;"></text>
+				</field>
+				
+				<field name="video-multiple" label="0" field="0" fieldType="EX">
+					<text v="&lt;input type='file' id='videoPicker' accept='video/mp4' multiple hidden /&gt;" e="&lt;input type='file' id='videoPicker' accept='video/mp4' multiple hidden /&gt;"></text>
+				</field>
+			</fields>
+		</form>
+		<form tabPageIndex="1" gravity="MiddleLeft" height="360" columns="120,120,120,120,120,120" >
+			<text v="Thông tin cơ bản" e="General Information"></text>
+			<fields>	
+				<field name="ma_lvtc1" viewType="Lookup" label="1" field="1" importable="35" allowBlank="false">
+					<text v="Mã NH cấp 1" e="Industry code level 1"></text>
+					<viewInfo lookupType="One" lookupId="dmlvtc1" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_lvtc1" lookupInfo="dmlvtc1|ma_lvtc1|ten_lvtc1" importCheck="@@DF and z.status=1"/>
+				</field>
+				<field name="ten_lvtc1" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as " >
+					<text v="" e=""></text>
+				</field>
+				
+				<field name="ma_lvtc2" viewType="Lookup" label="[100]" field="1" nextRow="false" importable="40" allowBlank="true">
+					<text v="Mã NH cấp 2" e="Industry code level 2"></text>
+					<viewInfo lookupType="One" lookupId="dmlvtc2" lookupKey="status=1 and ma_lvtc1 = ![ma_lvtc1]!" lookupCheck="1=1" lookupRef="ten_lvtc2" lookupInfo="dmlvtc2|ma_lvtc2|ten_lvtc2" importCheck="@@DF and z.status=1"/>
+				</field>
+				<field name="ten_lvtc2" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as " >
+					<text v="" e=""></text>
+				</field>
+				<field name="ma_lvtc3" viewType="Lookup" label="1" field="1" importable="45" allowBlank="true">
+					<text v="Mã NH cấp 3" e="Industry code level 3"></text>
+					<viewInfo lookupType="One" lookupId="dmlvtc3" lookupKey="status=1 and ma_lvtc2 = ![ma_lvtc2]!" lookupCheck="1=1" lookupRef="ten_lvtc3" lookupInfo="dmlvtc3|ma_lvtc3|ten_lvtc3" importCheck="@@DF and z.status=1"/>
+				</field>
+				<field name="ten_lvtc3" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as " >
+					<text v="" e=""></text>
+				</field>	
+
+				<field name="ma_lvtc4" viewType="Lookup" nextRow="false" label="[100]" field="1" importable="50" allowBlank="true">
+					<text v="Mã NH cấp 4" e="Industry code level 4"></text>
+					<viewInfo lookupType="One" lookupId="dmlvtc4" lookupKey="status=1 and ma_lvtc3 = ![ma_lvtc3]!" lookupCheck="1=1" lookupRef="ten_lvtc4" lookupInfo="dmlvtc4|ma_lvtc4|ten_lvtc4" importCheck="@@DF and z.status=1"/>
+				</field>
+				<field name="ten_lvtc4" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as " >
+					<text v="" e=""></text>
+				</field>
+
+				<field name="ma_lvt" viewType="Lookup" label="1" field="1" importable="55" allowBlank="true">
+					<text v="Mã NH cấp 5" e="Industry code level 5"></text>
+					<viewInfo lookupType="One" lookupId="dmlvt" lookupKey="status=1 and ma_lvtc4 = ![ma_lvtc4]!" lookupCheck="1=1" lookupRef="ten_lvt" lookupInfo="dmlvt|ma_lvt|ten_lvt" importCheck="@@DF and z.status=1"/>
+				</field>
+				<field name="ten_lvt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as " >
+					<text v="" e=""></text>
+				</field>
+				<!-- <field name="ton_kho_yn" dataType="B" clientDefault="true" label="[100]" field="[80]" inactivate="true" importable="25" nextRow="false"> -->
+					<!-- <text v="Theo dõi tồn kho" e="Stock Control"></text> -->
+				<!-- </field> -->
+				<!-- <field name="lo_yn" dataType="B" clientDefault="true" label="[100]" field="[80]" nextRow="false" inactivate="true" importable="30"> -->
+					<!-- <text v="Theo dõi lô" e="Lot Control"></text> -->
+				<!-- </field>	 -->
+				<field name="tt" nextRow="true" fieldType="EX" readOnly="true" inactivate="true" label="[150]" field="0">
+					<text v="Thông tin chi tiết:" e="Detail Information:"></text>
+				</field>
+				<field name="dvt" format="U" viewType="Lookup" label="[120]" field="1" nextRow="true" clientDefault="true" allowBlank="false" importable="20" importWidth="50">
+					<text v="Đơn vị tính" e="UOM"></text>
+					<viewInfo lookupType="One" lookupId="dmdvt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_dvt" lookupInfo="dmdvt|dvt|ten_dvt" importCheck="@@DF and z.status=1"/>
+				</field>
+				<field name="ten_dvt" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="[120]" aliasName="cast('' as nvarchar(4000)) as ">
+					<text v="" e=""></text>
+				</field>
+				<field name="ma_th" format="U" viewType="Lookup" label="[120]" field="1" nextRow="false" clientDefault="true" allowBlank="true" importable="20" importWidth="50">
+					<text v="Thương hiệu" e="Brand"></text>
+					<viewInfo lookupType="One" lookupId="dmth" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_th" lookupInfo="dmth|ma_th|ten_th" importCheck="@@DF and z.status=1"/>
+				</field>
+				<field name="ten_th" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="[120]" aliasName="cast('' as nvarchar(4000)) as ">
+					<text v="" e=""></text>
+				</field>
+				<field name="ma_baohanh" format="U" viewType="Lookup" label="[120]" field="1" nextRow="true" clientDefault="true" allowBlank="true" importable="20" importWidth="50">
+					<text v="Bảo hành" e="Warranty"></text>
+					<viewInfo lookupType="One" lookupId="dmbaohanh" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_baohanh" lookupInfo="dmbaohanh|ma_baohanh|ten_baohanh" importCheck="@@DF and z.status=1"/>
+				</field>
+				<field name="ten_baohanh" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="[120]" aliasName="cast('' as nvarchar(4000)) as ">
+					<text v="" e=""></text>
+				</field>
+				<field name="ma_loaibh" format="U" viewType="Lookup" label="[120]" field="1" nextRow="false" clientDefault="true" allowBlank="true" importable="20" importWidth="50">
+					<text v="Loại bảo hành" e="Warranty type"></text>
+					<viewInfo lookupType="One" lookupId="dmloaibh" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_loaibh" lookupInfo="dmloaibh|ma_loaibh|ten_loaibh" importCheck="@@DF and z.status=1"/>
+				</field>
+				<field name="ten_loaibh" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="[120]" aliasName="cast('' as nvarchar(4000)) as ">
+					<text v="" e=""></text>
+				</field>
+				<field name="tt2" nextRow="true" fieldType="EX" readOnly="true" inactivate="true" label="[150]" field="0">
+					<text v="Phân loại hàng:" e="Goods classification:"></text>
+				</field>
+				<field name="ma_kho" viewType="Lookup" label="1" field="1" clientDefault="true" importable="55">
+					<text v="Mã kho" e="Warehouse Code"></text>
+					<viewInfo lookupType="One" lookupId="dmkho" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_kho" lookupInfo="dmkho|ma_kho|ten_kho" importCheck="@@DF and z.status=1"/>
+				</field>
+				
+				<field name="ten_kho" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as "  clientDefault="true">
+					<text v="" e=""></text>
+				</field>
+				<field name="ma_htnhom1" nextRow="false" viewType="Combobox" valueDefault="" label="[100]" field="[120]">
+				  <text v="Hiển thị theo" e="Transaction Code"></text>
+				  <viewInfo>
+					<options query="select ma_htnhom, ten_htnhom%l from dmhtnhom where status = 1 order by ma_htnhom">
+					    <option val="">
+							<text v="Trống" e="Empty"></text>
+						</option>
+					</options>
+				  </viewInfo>
+				</field>
+				<field name="ma_lo" viewType="Lookup" label="1" field="1" clientDefault="true" importable="55">
+					<text v="Mã lô" e="Lot Number "></text>
+					<viewInfo lookupType="One" lookupId="dmlo" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_lo" lookupInfo="dmlo|ma_lo|ten_lo" importCheck="@@DF and z.status=1"/>
+				</field>
+				<field name="ten_lo" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as "  clientDefault="true">
+					<text v="" e=""></text>
+				</field>
+				<field name="ma_htnhom2" nextRow="false" viewType="Combobox" valueDefault="" label="[100]" field="[120]">
+				  <text v="Hiển thị theo" e="Transaction Code"></text>
+				  <viewInfo>
+					<options query="select ma_htnhom, ten_htnhom%l from dmhtnhom where status = 1 order by ma_htnhom">
+						<option val="">
+							<text v="Trống" e="Empty"></text>
+						</option>
+					</options>
+				  </viewInfo>
+				</field>
+				<!-- <field name="ma_km" format="U" viewType="Lookup" label="1" field="1" clientDefault="true" allowBlank="true" importable="20" importWidth="50"> -->
+					<!-- <text v="Mã khuyến mãi" e="UOM"></text> -->
+					<!-- <viewInfo lookupType="One" lookupId="dmkm" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_km" lookupInfo="dmkm|ma_km|ten_km" importCheck="@@DF and z.status=1"/> -->
+				<!-- </field> -->
+				<!-- <field name="ten_km" nextRow="false" fieldType="EX" readOnly="true" clientDefault="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as "> -->
+					<!-- <text v="" e=""></text> -->
+				<!-- </field> -->			
+			</fields>
+		</form>
+
+		<form tabPageIndex="4" gravity="MiddleLeft" height="360" columns="120,120,240" >
+			<text v="Mô tả" e="Description"></text>
+			<fields>
+				<field name="mo_ta" allowBlank="true" label="0" field="-" importable="69">
+					<text v="Mô tả sản phẩm" e="Information"></text>
+				</field>
+			</fields>
+		</form>	
+		
+		<!--
+		<form tabPageIndex="5" gravity="MiddleLeft" height="360" columns="120,120,240" >
+			<text v="Thông tin" e="Information"></text>
+			<fields>
+				<field name="ghi_chu" allowBlank="true" label="0" field="-" importable="100">
+					<text v="Thông tin sản phẩm" e="Notes"></text>
+				</field>
+			</fields>
+		</form>	
+		<form tabPageIndex="6" gravity="MiddleLeft" height="360" columns="120,120,240" >
+			<text v="Thông số" e="Information"></text>
+			<fields>
+				<field name="thong_so" allowBlank="true" label="0" field="-" importable="100">
+					<text v="Thông số sản phẩm" e="Notes"></text>
+				</field>
+			</fields>
+		</form>	
+		-->
+		<form tabPageIndex="7" gravity="MiddleLeft" height="360" columns="120,120,240" >
+			<text v="Khác" e="Other"></text>
+			<fields>
+				<field name="ma_vi_tri" viewType="Lookup" label="[120]" field="1" nextRow="true" clientDefault="true" importable="60">
+					<text v="Mã vị trí" e="Location"></text>
+					<viewInfo lookupType="One" lookupId="dmvitri" lookupKey="status=1 and ma_kho = ![ma_kho]!" lookupCheck="ma_kho = ![ma_kho]!" lookupRef="ten_vi_tri" lookupInfo="dmvitri|ma_vi_tri|ten_vi_tri" importCheck="@@DF and z.ma_kho = a.ma_kho and z.status=1"/>
+				</field>
+				<field name="ten_vi_tri" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as "  clientDefault="true">
+					<text v="" e=""></text>
+				</field>
+				<!-- <field name="nh_vt1" viewType="Lookup" label="1" field="1" importable="40"> -->
+					<!-- <text v="Nhóm 1" e="Group 1"></text> -->
+					<!-- <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'VT1' and status=1" lookupCheck="ma_loai_nh = 'VT1'" lookupRef="ten_nh_vt1" lookupInfo="dmnh|ma_nh|ten_nh" importCheck="@@DF and z.ma_loai_nh = 'VT1' and z.status=1"/> -->
+				<!-- </field> -->
+				<field name="sl_min" label="1" field="1" dataType="N" format="Qty" importable="90">
+					<text v="Tồn tối thiểu" e="Minimum Quantity"></text>
+				</field>
+				<field name="sl_max" label="1" field="1" dataType="N" format="Qty" importable="95">
+					<text v="Tồn tối đa" e="Maximum Quantity"></text>
+				</field>
+				<!-- <field name="ten_nh_vt1" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as "> -->
+					<!-- <text v="" e=""></text> -->
+				<!-- </field> -->
+				<field name="ngay_nhap" label="1" field="1" dataType="D" importable="96">
+					<text v="Ngày nhập cuối" e="Last Receipt Date"></text>
+				</field>
+				<field name="ngay_xuat" label="1" field="1" dataType="D" importable="97">
+					<text v="Ngày xuất cuối" e="Last Issue Date"></text>
+				</field>      
+
+				<!-- <field name="thu_tu" label="1" field="1" dataType="N" importable="98"> -->
+					<!-- <text v="Thứ tự ưu tiên" e="Position item"></text> -->
+				<!-- </field> -->
+				<field name="so_ngay_sp" label="1" field="1" dataType="N" format="Amount" importable="67">
+					<text v="Vòng đời sp (tháng)" e="Product Lifecycle (month)"></text>
+				</field>
+				<field name="so_ngay_bh" label="1" field="1" dataType="N" format="Amount" importable="68">
+					<text v="Tg bảo hành (tháng)" e="Warranty Period (month)"></text>
+				</field>     
+
+
+				<!-- <field name="ten_nh_vt1" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as "> -->
+					<!-- <text v="" e=""></text> -->
+				<!-- </field> -->
+				<!-- <field name="nh_vt2" viewType="Lookup" nextRow="false" label="[100]" field="1" importable="45"> -->
+					<!-- <text v="Nhóm 2" e="Group 2"></text> -->
+					<!-- <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'VT2' and status=1" lookupCheck="ma_loai_nh = 'VT2'" lookupRef="ten_nh_vt2" lookupInfo="dmnh|ma_nh|ten_nh" importCheck="@@DF and z.ma_loai_nh = 'VT2' and z.status=1"/> -->
+				<!-- </field> -->
+				<!-- <field name="ten_nh_vt2" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as "> -->
+					<!-- <text v="" e=""></text> -->
+				<!-- </field> -->
+			
+				<!-- <field name="nh_vt3" viewType="Lookup" label="1" field="1" importable="50"> -->
+					<!-- <text v="Nhóm 3" e="Group 3"></text> -->
+					<!-- <viewInfo lookupType="One" lookupId="dmnh" lookupKey="ma_loai_nh = 'VT3' and status=1" lookupCheck="ma_loai_nh = 'VT3'" lookupRef="ten_nh_vt3" lookupInfo="dmnh|ma_nh|ten_nh" importCheck="@@DF and z.ma_loai_nh = 'VT3' and z.status=1"/> -->
+				<!-- </field> -->
+				<!-- <field name="ten_nh_vt3" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="1" aliasName="cast('' as nvarchar(4000)) as "> -->
+					<!-- <text v="" e=""></text> -->
+				<!-- </field> -->
+			</fields>
+		</form>
+		<!--
+		<form tabPageIndex="8" gravity="MiddleLeft" height="360" columns="120,120,240" >
+			<text v="Ảnh" e="Images"></text>
+			<fields>
+				<field name="ximage1" label="1" field="0" importable="65">
+					<text v="&lt;img class='image-single' id='img_ximage1' src='' onerror='src=`../Images/noImage.png`'/&gt; &lt;input type='button' value='Tải ảnh' onclick='browseServer(`ximage1`, `img_ximage1`);' value='Mở 1' style='text-align: center; display: block; margin: 0 auto;' /&gt; &lt;input type='button' value='X' onclick='removeImage(`ximage1`, `img_ximage1`);' style='display: block;position: absolute;top: 0;right: 0;' /&gt;" e="Image 1"></text>
+				</field>
+				<field name="ximage2" label="1" field="0" importable="65" nextRow="false">
+					<text v="&lt;img class='image-single' id='img_ximage2' src='' onerror='src=`../Images/noImage.png`'/&gt; &lt;input type='button' value='Tải ảnh' onclick='browseServer(`ximage2`, `img_ximage2`);' value='Mở 2' style='text-align: center; display: block; margin: 0 auto;' /&gt; &lt;input type='button' value='X' onclick='removeImage(`ximage2`, `img_ximage2`);' style='display: block;position: absolute;top: 0;right: 0;' /&gt;" e="Image 2"></text>
+				</field>
+				<field name="ximage3" label="[120]" field="0" importable="65" nextRow="false">
+					<text v="&lt;img class='image-single' id='img_ximage3' src='' onerror='src=`../Images/noImage.png`'/&gt; &lt;input type='button' value='Tải ảnh' onclick='browseServer(`ximage3`, `img_ximage3`);' value='Mở 3' style='text-align: center; display: block; margin: 0 auto;' /&gt; &lt;input type='button' value='X' onclick='removeImage(`ximage3`, `img_ximage3`);' style='display: block;position: absolute;top: 0;right: 0;' /&gt;" e="Image 3"></text>
+				</field>
+				<field name="ximage4" label="[120]" field="0" importable="65" nextRow="false">
+					<text v="&lt;img class='image-single' id='img_ximage4' src='' onerror='src=`../Images/noImage.png`'/&gt; &lt;input type='button' value='Tải ảnh' onclick='browseServer(`ximage4`, `img_ximage4`);' value='Mở 4' style='text-align: center; display: block; margin: 0 auto;' /&gt; &lt;input type='button' value='X' onclick='removeImage(`ximage4`, `img_ximage4`);' style='display: block;position: absolute;top: 0;right: 0;' /&gt;" e="Image 4"></text>
+				</field>
+				<field name="ximage5" label="[120]" field="0" importable="65" nextRow="false">
+					<text v="&lt;img class='image-single' id='img_ximage5' src='' onerror='src=`../Images/noImage.png`'/&gt; &lt;input type='button' value='Tải ảnh' onclick='browseServer(`ximage5`, `img_ximage5`);' value='Mở 5' style='text-align: center; display: block; margin: 0 auto;' /&gt; &lt;input type='button' value='X' onclick='removeImage(`ximage5`, `img_ximage5`);' style='display: block;position: absolute;top: 0;right: 0;' /&gt;" e="Image 5"></text>
+				</field>
+				<field name="ximage6" label="1" field="0" importable="65">
+					<text v="&lt;img class='image-single' id='img_ximage6' src='' onerror='src=`../Images/noImage.png`'/&gt; &lt;input type='button' value='Tải ảnh' onclick='browseServer(`ximage6`, `img_ximage6`);' value='Mở 6' style='text-align: center; display: block; margin: 0 auto;' /&gt; &lt;input type='button' value='X' onclick='removeImage(`ximage6`, `img_ximage6`);' style='display: block;position: absolute;top: 0;right: 0;' /&gt;" e="Image 6"></text>
+				</field>
+				<field name="ximage7" label="1" field="0" importable="65" nextRow="false">
+					<text v="&lt;img class='image-single' id='img_ximage7' src='' onerror='src=`../Images/noImage.png`'/&gt; &lt;input type='button' value='Tải ảnh' onclick='browseServer(`ximage7`, `img_ximage7`);' value='Mở 7' style='text-align: center; display: block; margin: 0 auto;' /&gt; &lt;input type='button' value='X' onclick='removeImage(`ximage7`, `img_ximage7`);' style='display: block;position: absolute;top: 0;right: 0;' /&gt;" e="Image 7"></text>
+				</field>
+				<field name="ximage8" label="[120]" field="0" importable="65" nextRow="false">
+					<text v="&lt;img class='image-single' id='img_ximage8' src='' onerror='src=`../Images/noImage.png`'/&gt; &lt;input type='button' value='Tải ảnh' onclick='browseServer(`ximage8`, `img_ximage8`);' value='Mở 8' style='text-align: center; display: block; margin: 0 auto;' /&gt; &lt;input type='button' value='X' onclick='removeImage(`ximage8`, `img_ximage8`);' style='display: block;position: absolute;top: 0;right: 0;' /&gt;" e="Image 8"></text>
+				</field>
+				<field name="ximage9" label="[120]" field="0" importable="65" nextRow="false">
+					<text v="&lt;img class='image-single' id='img_ximage9' src='' onerror='src=`../Images/noImage.png`'/&gt; &lt;input type='button' value='Tải ảnh' onclick='browseServer(`ximage9`, `img_ximage9`);' value='Mở 9' style='text-align: center; display: block; margin: 0 auto;' /&gt; &lt;input type='button' value='X' onclick='removeImage(`ximage9`, `img_ximage9`);' style='display: block;position: absolute;top: 0;right: 0;' /&gt;" e="Image 9"></text>
+				</field>
+			</fields>
+		</form>
+		-->
+		
+		<form tabPageIndex="8" gravity="MiddleLeft" height="450" columns="120,120,120,120,120,120,120,120">
+			<text v="Danh mục ảnh" e="Detail images"></text>
+			<fields>
+				<field name="dmvtmedia" allowBlank="true" label="" field="-" viewType="Grid">
+				  <text v="Chi tiết cài đặt" e="Detail Setup"></text>
+				</field>
+			</fields>
+		</form>
+	</forms>
+	
+	<grids>
+		<grid id="dmvtmedia" table="dmvtmedia" fieldKey="ma_vt, line" order="line">
+			<fields>		
+				<field name="media_id" width="150" readOnly="true" inactivate="true">
+					<text v="Mã gốc" e="Origin code"></text>
+				</field>
+				<field name="ext" width="150" allowBlank="true" readOnly="true" >
+					<text v="Ext" e="Ext"></text>
+				</field>
+				<field name="url" width="150" allowBlank="true" readOnly="true">
+					<text v="Url" e="Url"></text>
+				</field>
+				<field name="thumbnail_url" width="150" allowBlank="true" readOnly="true">
+					<text v="Thumbnail url" e="Thumbnail url"></text>
+				</field>
+				<field name="product_card_url" width="150" allowBlank="true" readOnly="true">
+					<text v="Product card url" e="Product card url"></text>
+				</field>
+				<field name="detail_thumb_srcset" width="150" allowBlank="true" readOnly="true">
+					<text v="Detail thumbnail src set" e="Detail thumbnail src set"></text>
+				</field>
+				<field name="detail_main_srcset" width="150" allowBlank="true" readOnly="true">
+					<text v="Detail main src set" e="Detail main src set"></text>
+				</field>
+				<field name="video_url" width="150" allowBlank="true" readOnly="true">
+					<text v="Video url" e="Video url"></text>
+				</field>
+				<field name="width" width="150" allowBlank="true" readOnly="true">
+					<text v="Width" e="Width"></text>
+				</field>
+				<field name="height" width="150" allowBlank="true" readOnly="true">
+					<text v="Height" e="Height"></text>
+				</field>
+				<field name="type" width="150" allowBlank="true" readOnly="true">
+					<text v="Type" e="Type"></text>
+				</field>
+				<field name="is_cover" width="150" allowBlank="true" readOnly="true">
+					<text v="Is cover" e="Is cover"></text>
+				</field>
+				<field name="status" width="150" allowBlank="true" format="1" readOnly="true">
+					<text v="Status" e="Status"></text>
+				</field>
+
+				<field name="ma_vt" foreignField="ma_vt" dataType="C" width="100" fieldType="PK" copy="false" hidden="true">
+					<text v="Mã sản phẩm" e="Product code"></text>
+				</field>
+				<field name="line" foreignField="@@ROW" dataType="I" width="100" fieldType="PK" hidden="true">
+					<text v="Dòng" e="Line"></text>
+				</field>
+			</fields>
+			
+			<buttons>
+				<button id="freeze">
+					<text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+				</button>
+			</buttons>
+		  
+			<script>
+				<query>
+					<text>
+						<![CDATA[
+							set nocount on
+							select @@fields into #t from dmvtmedia a left join dmpostvt b on a.ma_vt = b.ma_vt where @@key order by line
+							select * from #t a where @@key order by line
+							drop table #t
+						]]>
+					</text>
+				</query>
+			</script>
+		</grid>
+	</grids>
+
+	&DefaultButton;
+
+	<js>
+		<text>
+<![CDATA[
+
+function dir$dmpostvt(p){
+	this.constructor(p);
+	document._dir = p;
+}
+
+dir$dmpostvt.prototype = new DirEvent();
+
+dir$dmpostvt.prototype.afterInit = function(renderType){
+	var p = this._dir;			
+	var grid = p.grid(0).data.obj.Rows;
+	dir$dmpostvtHiddenNhomHTMaKho(p);
+	dir$dmpostvtHiddenNhomHTMaLo(p);
+	dir$dmpostvtLoadDataVT(p);
+	
+	const action = p.options.action;
+	
+												
+	// Chỉ định các phần tử DOM vào biến để dễ sử dụng
+	const deleteBtns = document.querySelectorAll('.delete-btn');
+	const deleteVideoBtns = document.querySelectorAll('.delete-video-btn');
+	const imagePicker = document.getElementById('imagePicker');
+	const videoPicker = document.getElementById('videoPicker');
+	const imageUploadArea = document.getElementById('imageUploadArea');
+	const addVideoLabel = document.getElementById('addVideoLabel');
+	const mainVideoPreview = document.getElementById('mainVideoPreview');
+
+	const imageList = document.getElementById('imageList');
+	const addLabel = document.getElementById('addImageLabel');
+	const countSpan = document.getElementById('imageCount');
+	const mainImagePreview = document.getElementById('mainImagePreview'); // 👉 lấy phần preview ảnh chính
+	const refId = document.getElementById('refId').value;
+	const maxImages = 9;
+	let uploadedImages = []; // chỉ 9 ảnh
+	let uploadedVideo = null; // chỉ 1 video														
+	
+	// Hàm để ẩn/hiện các phần tử, tắt input file và thêm/loại bỏ class 'view-mode'
+	function toggleElements(displayStyle, isDisabled) {
+		// Ẩn/hiện các nút xoá ảnh và video
+		deleteBtns.forEach(btn => btn.style.setProperty('display', displayStyle, 'important'));
+		deleteVideoBtns.forEach(btn => btn.style.setProperty('display', displayStyle, 'important'));
+
+		// Tắt/bật input file
+		if (isDisabled) {
+			imagePicker.setAttribute('disabled', 'true');  // Vô hiệu hóa input
+			videoPicker.setAttribute('disabled', 'true');  // Vô hiệu hóa input
+		} else {
+			imagePicker.removeAttribute('disabled');  // Bật lại input
+			videoPicker.removeAttribute('disabled');  // Bật lại input
+		}
+
+		// Thêm/loại bỏ lớp 'view-mode'
+		const action = isDisabled ? 'add' : 'remove';
+		imageUploadArea?.classList[action]('view-mode');
+		mainImagePreview?.classList[action]('view-mode');
+		addVideoLabel?.classList[action]('view-mode');
+		mainVideoPreview?.classList[action]('view-mode');
+	}
+  
+	// Hàm để kiểm tra và cập nhật các thuộc tính CSS
+	function updateStyles() {
+		// Kiểm tra .main-image-preview có chứa ảnh <img> hay không
+		if ($('.main-image-preview').find('img').length === 0) {
+			$('.main-image-preview').css('border', '2px dashed #999');
+		} else {
+			$('.main-image-preview').css('border', '1px solid #ddd');
+		}
+
+		// Kiểm tra .image-wrapper không rỗng và thêm margin-right
+		$('.image-grid .image-wrapper').each(function() {
+			if ($(this).children().length > 0) {
+				$(this).css('margin-right', '8px');
+			} else {
+				$(this).css('margin-right', '0');
+			}
+		});
+	}
+
+	// Gọi hàm kiểm tra và cập nhật ngay khi trang tải
+	updateStyles();
+
+	function updateImageCount() {
+		countSpan.innerText = `(${uploadedImages.length}/${maxImages})`;
+		addLabel.style.display = uploadedImages.length >= maxImages ? 'none' : 'flex';
+	}
+
+	function generateUniqueId() {
+		return crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`;
+	}
+
+	function updateMainImagePreview() {
+		if (uploadedImages.length === 0) {
+			mainImagePreview.innerHTML = 'Chưa có ảnh';
+			mainImagePreview.style.backgroundImage = '';
+		} else {
+			const firstImg = uploadedImages[0];
+			const srcSet = firstImg.detailMainSrcSet;
+			const imgTag = document.createElement('img');
+			imgTag.src = firstImg.productCardUrl || firstImg.url;
+			if (srcSet) imgTag.srcset = srcSet;
+
+			mainImagePreview.innerHTML = '';
+			mainImagePreview.appendChild(imgTag);
+		}
+	}
+
+	function renderImages() {
+		imageList.innerHTML = '';
+		uploadedImages.forEach(img => {
+			const item = createImageItem(img);
+			imageList.appendChild(item);
+		});
+		updateMainImagePreview();
+	}
+
+	imagePicker.addEventListener('change', async () => {
+		if (action === 'VIEW') return;
+		
+		const files = Array.from(imagePicker.files);
+		const remain = maxImages - uploadedImages.length;
+		if (remain <= 0 || files.length === 0) return;
+
+		const filesToUpload = files.slice(0, remain);
+		const formData = new FormData();
+		formData.append('refId', refId);
+		filesToUpload.forEach(file => formData.append('files', file));
+
+		try {
+			const res = await fetch('http://localhost:5034/api/upload/multiple', {
+				method: 'POST',
+				body: formData
+			});
+			
+			if (!res.ok) {
+				const errMsg = await res.text(); // hoặc res.json() nếu bạn trả lỗi dưới dạng object
+				$.showToast(`Lỗi upload: ${errMsg}`);
+				return;
+			}
+
+			const result = await res.json();
+
+			for (const img of result) {
+				if (!img.id) img.id = generateUniqueId();
+				uploadedImages.push(img);
+
+				const isFirstImage = uploadedImages.length === 1; // Nếu là ảnh đầu tiên sau khi push
+
+				const dataRow = [
+					img.id,                   // media_id
+					img.ext,                  // ext
+					img.url,                  // url
+					img.thumbnailUrl,         // thumbnail_url
+					img.productCardUrl,       // product_card_url
+					img.detailThumbSrcSet,    // detail_thumb_srcset
+					img.detailMainSrcSet,     // detail_main_srcset
+					img.videoUrl,             // video_url
+					img.width,                // width
+					img.height,               // height
+					'image',                  // type
+					isFirstImage ? 1 : 0,     // ✅ chỉ set is_cover = 1 nếu là ảnh đầu tiên
+					1                        // status
+				];
+
+				if (typeof p !== 'undefined') {
+					p.addRow(dataRow, 0);
+				}
+			}
+
+			renderImages();
+			updateImageCount();
+			imagePicker.value = '';
+			
+			updateStyles();
+		} catch (error) {
+			console.error('Upload error:', error);
+			$.showToast('Upload error:', error);
+		}
+	});
+	
+	imageList.addEventListener('click', async (e) => {
+		if (action === 'VIEW') return;
+
+		const target = e.target;
+		if (!target.classList.contains('delete-btn')) return;
+
+		const id = target.dataset.id;
+		if (!id) return;
+
+		// ❗Tìm đúng dòng trong bảng
+		const rowIndex = p.grid(0).data.obj.Rows.findIndex(r => r[0] === id); // media_id ở vị trí index 0
+
+		// ❗Xử lý xoá ảnh: gọi API luôn (cả NEW/EDIT)
+		try {
+			await fetch(`http://localhost:5034/file/${id}`, { method: 'DELETE' });
+		} catch (err) {
+			console.warn('Không thể xoá server:', err);
+			$.showToast('Không thể xoá server:', err);
+		}
+
+		// Gỡ dòng khỏi bảng luôn
+		if (rowIndex !== -1) p.deleteRow(rowIndex, 0);
+
+		// Gỡ ảnh khỏi danh sách hiển thị
+		uploadedImages = uploadedImages.filter(x => x.id !== id);
+		renderImages();
+		updateImageCount();
+		updateStyles();
+	});
+
+	function createImageItem(img) {
+		const wrap = document.createElement('div');
+		wrap.className = 'image-wrapper';
+		wrap.style.cssText = '';
+
+		const image = document.createElement('img');
+		image.src = img.thumbnailUrl || img.url;
+		if (img.detailThumbSrcSet) image.srcset = img.detailThumbSrcSet;
+		image.title = img.url;
+		image.style.cssText = '';
+
+		const removeBtn = document.createElement('button');
+		removeBtn.innerText = '❌';
+		removeBtn.className = 'delete-btn';
+		removeBtn.dataset.id = img.id;
+		removeBtn.style.cssText = '';
+
+		wrap.appendChild(image);
+		wrap.appendChild(removeBtn);
+		return wrap;
+	}
+	
+	function updateVideoUI() {
+		if (uploadedVideo) {
+			addVideoLabel.style.display = 'none';
+			mainVideoPreview.style.display = 'flex';
+
+			mainVideoPreview.innerHTML = `
+				<div class="video-thumbnail-wrapper" style="position: relative; width: 100%; height: 100%;">
+					<img src="${uploadedVideo.thumbnailUrl}" alt="Video thumbnail"
+						style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
+					
+					<!-- Icon Play ở giữa -->
+					<div style="
+						position: absolute;
+						inset: 0;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+					">
+						<div style="
+							width: 32px;
+							height: 32px;
+							background: rgba(0, 0, 0, 0.7);
+							border-radius: 50%;
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							color: white;
+						">
+							▶
+						</div>
+					</div>
+
+					<!-- Thời lượng video -->
+					<div id="videoDurationOverlay" style="
+						position: absolute;
+						bottom: 4px;
+						right: 4px;
+						background: rgba(0, 0, 0, 0.7);
+						color: #fff;
+						padding: 2px 6px;
+						font-size: 12px;
+						border-radius: 3px;
+					">--:--</div>
+
+					<!-- Nút xóa -->
+					<button class="delete-video-btn" data-id="${uploadedVideo.id}" style="
+						position:absolute;
+						top:4px;
+						right:4px;
+						width:20px;
+						height:20px;
+						background:red;
+						color:white;
+						border:none;
+						border-radius:50%;
+						cursor:pointer;
+						font-size:14px;
+					">❌</button>
+				</div>
+			`;
+
+			// Dùng video ẩn để lấy thời lượng
+			const hiddenVideo = document.createElement('video');
+			hiddenVideo.src = uploadedVideo.url;
+			hiddenVideo.preload = 'metadata';
+			hiddenVideo.muted = true;
+			hiddenVideo.playsInline = true;
+			hiddenVideo.style.display = 'none';
+
+			document.body.appendChild(hiddenVideo);
+			hiddenVideo.addEventListener('loadedmetadata', () => {
+				const duration = hiddenVideo.duration;
+				const minutes = Math.floor(duration / 60);
+				const seconds = Math.floor(duration % 60).toString().padStart(2, '0');
+				document.getElementById('videoDurationOverlay').textContent = `${minutes}:${seconds}`;
+				document.body.removeChild(hiddenVideo);
+			});
+		} else {
+			addVideoLabel.style.display = 'flex';
+			mainVideoPreview.style.display = 'none';
+			mainVideoPreview.innerHTML = '';
+		}
+	}
+
+	updateVideoUI();
+
+	videoPicker.addEventListener('change', async () => {
+		if (action === 'VIEW') return;
+		
+		const file = videoPicker.files?.[0];
+		if (!file || uploadedVideo) return;
+
+		const formData = new FormData();
+		formData.append('refId', refId);
+		formData.append('files', file);
+
+		try {
+			const res = await fetch('http://localhost:5034/api/upload/multiple', {
+				method: 'POST',
+				body: formData
+			});
+			
+			if (!res.ok) {
+				const errMsg = await res.text(); // hoặc res.json() nếu bạn trả lỗi dưới dạng object
+				$.showToast(`Lỗi upload: ${errMsg}`);
+				return;
+			}
+
+			const result = await res.json();
+			const video = result.find(f => f.url?.endsWith('.mp4'));
+
+			if (video) {
+				// 🟢 Tạo dataRow để add vào bảng
+				const dataRow = [
+					video.id,                   // media_id
+					video.ext,                  // ext
+					video.url,                  // url
+					video.thumbnailUrl,         // thumbnail_url
+					video.productCardUrl,       // product_card_url
+					video.detailThumbSrcSet,    // detail_thumb_srcset
+					video.detailMainSrcSet,     // detail_main_srcset
+					video.videoUrl,             // video_url
+					video.width,                // width
+					video.height,               // height
+					'video',                  // type
+					0,                        // is_cover
+					1                       // status                   
+				];
+
+				// 🔁 Add vào bảng
+				if (typeof p !== 'undefined') {
+					p.addRow(dataRow, 0);
+				}
+			
+				uploadedVideo = video;
+				updateVideoUI();
+			}
+
+			videoPicker.value = '';
+		} catch (err) {
+			console.error('Lỗi upload video:', err);
+			$.showToast('Lỗi upload video:', err);															
+		}
+	});
+
+	// 👇 Sự kiện xoá video
+	mainVideoPreview.addEventListener('click', async (e) => {
+		if (action === 'VIEW') return;
+
+		if (e.target.classList.contains('delete-video-btn')) {
+			const id = e.target.dataset.id;
+			if (!id) return;
+
+			// Tìm đúng dòng trong bảng
+			const rowIndex = p.grid(0).data.obj.Rows.findIndex(r => r[0] === id);
+
+			// Gọi API xoá video ngay lập tức (NEW/EDIT đều vậy)
+			try {
+				await fetch(`http://localhost:5034/file/${id}`, { method: 'DELETE' });
+			} catch (err) {
+				console.warn('Không thể xoá video:', err);
+				$.showToast('Không thể xoá video:', err);
+			}
+
+			if (rowIndex !== -1) p.deleteRow(rowIndex, 0);
+
+			uploadedVideo = null;
+			updateVideoUI();
+		}
+	});
+	
+	// Kiểm tra điều kiện action và mavt
+	if (action === 'VIEW' || p.valForm('ma_vt') === '') {
+		// Ẩn các nút xoá ảnh và video, tắt input file và thêm class view-mode
+		toggleElements('none', true);
+	} else {
+		console.log("Không phải chế độ VIEW và mavt có giá trị");
+		// Các thao tác khi không phải 'VIEW' hoặc mavt có giá trị, nếu có cần thực hiện gì đó, có thể thêm logic ở đây
+		toggleElements('block', false);
+	}
+	
+	if (action === 'EDIT' || action === 'VIEW') {
+		const rows = p.grid(0).data.obj.Rows;
+		uploadedImages = [];
+		uploadedVideo = null;
+		
+		rows.forEach(row => {
+			const [
+				mediaIdValue, extValue, urlValue, thumbnailUrlValue, productCardUrlValue,
+				detailThumbSrcsetValue, detailMainSrcsetValue, videoUrlValue,
+				widthValue, heightValue, typeValue, isCoverValue, statusValue, mavtValue, lineValue
+			] = row;
+			
+			const media = {
+				refId: mavtValue,
+				id: mediaIdValue,
+				ext: extValue,
+				url: urlValue,
+				thumbnailUrl: thumbnailUrlValue,
+				productCardUrl: productCardUrlValue,
+				detailThumbSrcSet: detailThumbSrcsetValue,
+				detailMainSrcSet: detailMainSrcsetValue,
+				videoUrl: videoUrlValue,
+				width: widthValue,
+				height: heightValue,
+				type: typeValue,
+				isCover: isCoverValue === 1 || isCoverValue === true
+			};
+
+			if (typeValue === 'image') {
+				uploadedImages.push(media);
+			} else if (typeValue === 'video') {
+				uploadedVideo = media;
+			}
+		});
+
+		// Cập nhật giao diện
+		renderImages();
+		updateMainImagePreview();
+		updateVideoUI();
+		updateImageCount();
+		updateStyles();
+	}
+	
+	var mota = document.querySelector('input.mo_ta')
+	editor_mota = CKEDITOR.replace(mota, {
+		customConfig: '/ckeditor/config.js',
+		extraAllowedContent: 'span',
+		maxLength: 256, 
+	});	
+	editor_mota.setData(document.querySelector('input.mo_ta').value);
+	editor_mota.on('change', function () {
+		document.querySelector('input.mo_ta').value = editor_mota.getData();
+	});		
+}
+
+// Sửa lại beforeButtonDialogClick (chỉ giữ lại case 'ok' trống):
+dir$dmpostvt.prototype.beforeButtonDialogClick = async function (id) {
+    // Nếu có logic khác thì giữ lại, KHÔNG xử lý xóa ảnh/video nữa
+    return true;
+}			
+
+dir$dmpostvt.prototype.formFieldValueChange = function (o, cF, v) {
+	var p = this._dir;
+	switch (cF){
+		case 'ma_kho':
+		  p.valForm(['ma_vi_tri', 'ten_vi_tri'], ['', '']);
+		  dir$dmpostvtHiddenNhomHTMaKho(p);
+		break;
+		case 'ma_lo':
+		  dir$dmpostvtHiddenNhomHTMaLo(p);
+		break;
+		case 'ma_vt':
+			dir$dmpostvtLoadDataVT(p);
+			
+			// Chỉ định các phần tử DOM vào biến để dễ sử dụng
+			const deleteBtns = document.querySelectorAll('.delete-btn');
+			const deleteVideoBtns = document.querySelectorAll('.delete-video-btn');
+			const imagePicker = document.getElementById('imagePicker');
+			const videoPicker = document.getElementById('videoPicker');
+			const imageUploadArea = document.getElementById('imageUploadArea');
+			const mainImagePreview = document.getElementById('mainImagePreview');
+			const addVideoLabel = document.getElementById('addVideoLabel');
+			const mainVideoPreview = document.getElementById('mainVideoPreview');
+			
+			// Hàm giúp ẩn/hiện các nút xoá
+			function toggleDeleteBtns(displayStyle) {
+				deleteBtns.forEach(btn => btn.style.setProperty('display', displayStyle, 'important'));
+				deleteVideoBtns.forEach(btn => btn.style.setProperty('display', displayStyle, 'important'));
+			}
+
+			// Hàm bật/tắt input file
+			function toggleFileInput(disabled) {
+				// Tắt/bật input file
+				if (disabled) {
+					imagePicker.setAttribute('disabled', 'true');  // Vô hiệu hóa input
+					videoPicker.setAttribute('disabled', 'true');  // Vô hiệu hóa input
+				} else {
+					imagePicker.removeAttribute('disabled');  // Bật lại input
+					videoPicker.removeAttribute('disabled');  // Bật lại input
+				}
+			}
+
+			// Hàm xử lý các phần tử có lớp 'view-mode'
+			function toggleViewMode(isViewMode) {
+				const action = isViewMode ? 'add' : 'remove';
+				imageUploadArea?.classList[action]('view-mode');
+				mainImagePreview?.classList[action]('view-mode');
+				addVideoLabel?.classList[action]('view-mode');
+				mainVideoPreview?.classList[action]('view-mode');
+			}
+
+			// Kiểm tra nếu v không phải là rỗng
+			if (v !== '') {
+				console.log(v);
+				
+				// Hiện nút xoá ảnh và video
+				toggleDeleteBtns('block');
+				
+				// Bật input file
+				toggleFileInput(false);
+				
+				// Hiển thị các vùng tải ảnh/video
+				toggleViewMode(false);
+			} else {
+				console.log(v);
+				
+				// Ẩn nút xoá ảnh và video
+				toggleDeleteBtns('none');
+				
+				// Tắt input file
+				toggleFileInput(true);
+				
+				// Ẩn các vùng tải ảnh/video
+				toggleViewMode(true);
+			}
+			
+			break;
+		default:
+			break;
+	}
+}
+function dir$dmpostvtLoadDataVT(p){
+	var maVT = p.valForm('ma_vt');
+	
+	if (p.options.action == "NEW")
+	{
+		p.request('request_dmvt', '', [['ma_vt', 'C', maVT]], function(pp, d, run){
+			if (run) {
+				console.log('Load du lieu thanh cong');
+			}
+		});
+	}
+	else {
+		p.setDisabled('ma_vt', true);
+	}				  
+}
+function dir$dmpostvtHiddenNhomHTMaKho(p){
+	var  maKho = p.valForm('ma_kho');
+	
+	if (maKho) {
+	  p.find(".control-label.ma_htnhom1, .input-field.ma_htnhom1").css("display", "block");
+	}
+	else p.find(".control-label.ma_htnhom1, .input-field.ma_htnhom1").css("display", "none");
+}
+function dir$dmpostvtHiddenNhomHTMaLo(p){
+	var  maLot = p.valForm('ma_lo');
+	
+	if (maLot) {
+	  p.find(".control-label.ma_htnhom2, .input-field.ma_htnhom2").css("display", "block");
+	}
+	else p.find(".control-label.ma_htnhom2, .input-field.ma_htnhom2").css("display", "none");
+}
+		]]>
+		</text>
+	</js>
+
+	<css>
+		<text>
+			<![CDATA[
+				.preview { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+				.preview img, .preview video {
+					width: 150px; height: 150px; object-fit: cover; border: 1px solid #ccc; border-radius: 6px;
+				}
+				input[type="file"] { margin-bottom: 10px; }
+				.image-wrapper {
+					position: relative;
+					width: 120px;
+					height: 120px;
+					border: 1px solid #ccc;
+					border-radius: 4px;
+					overflow: hidden;
+					background: #fff;
+				}
+
+				.uploaded-image {
+					width: 100%;
+					height: 100%;
+					object-fit: cover;
+				}
+
+				.remove-button {
+					position: absolute;
+					top: 2px;
+					right: 2px;
+					background: rgba(255, 0, 0, 0.8);
+					color: #fff;
+					border: none;
+					border-radius: 50%;
+					width: 20px;
+					height: 20px;
+					font-size: 12px;
+					cursor: pointer;
+				}
+
+				.main-radio {
+					position: absolute;
+					bottom: 4px;
+					left: 4px;
+					cursor: pointer;
+				}
+				
+				.main-preview {
+					min-width: 80px;
+					width: 80px;
+					max-width: 80px;
+					height: 80px;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					font-size: 12px;
+					color: #666;
+					background-color: #fafafa;
+					border-radius: 8px;
+					background-size: cover;
+					background-position: center;
+					background-repeat: no-repeat;
+					border: 2px dashed #999;
+				}
+				
+				.main-preview img {
+					width: 100%;
+					height: 100%;
+					object-fit: contain;
+					border-radius: 8px;
+				}
+				
+				.main-video-preview {
+					position: relative;
+				}
+
+				.image-grid {
+					display: flex;
+					gap: 8px;
+					overflow-x: auto;
+					padding: 4px 0 4px 0;
+				}
+
+				/* Mỗi ảnh sản phẩm */
+				.image-wrapper {
+					position: relative;
+					width: 80px;
+					height: 80px;
+					border-radius: 6px;
+					border: 1px solid #ddd;
+					overflow: hidden;
+					background-color: #f8f8f8;
+					flex-shrink: 0;
+				}
+
+				/* Ảnh bên trong */
+				.image-wrapper img {
+					width: 100%;
+					height: 100%;
+					object-fit: contain;
+					display: block;
+				}
+
+				/* Nút xóa ❌ */
+				.delete-btn {
+					position: absolute;
+					top: 4px;
+					right: 4px;
+					width: 20px;
+					height: 20px;
+					background: rgba(255, 0, 0, 0.8);
+					color: white;
+					border: none;
+					border-radius: 50%;
+					cursor: pointer;
+					font-size: 14px;
+					line-height: 20px;
+					text-align: center;
+				}
+
+				/* Ô Thêm ảnh */
+				#addImageLabel, #addVideoLabel {
+					border: 2px dashed #aaa;
+					border-radius: 6px;
+					display: flex;
+					-webkit-box-orient: vertical;
+					-webkit-box-direction: normal;
+					-ms-flex-direction: column;
+					flex-direction: column;
+					-webkit-box-pack: center;
+					-ms-flex-pack: center;
+					justify-content: center;
+					-webkit-box-align: center;
+					-ms-flex-align: center;
+					align-items: center;
+					width: 80px;
+					height: 80px;
+					align-items: center;
+					justify-content: center;
+					cursor: pointer;
+					font-size: 12px;
+					color: #999;
+					background: #fafafa;
+					flex-shrink: 0;
+					margin: 4px 0 4px 0;
+				}
+				
+				#addImageLabel:hover, #addVideoLabel:hover {
+					border-color: #ee4d2d;
+				    background: #ee4d2d08;
+				}
+				
+				.edit-label.edit-title {
+					display: flex;
+					justify-content: flex-start;
+					position: relative;
+					color: #333;
+					margin-bottom: 12px;
+					font-weight: 600;
+				}
+				
+				ul.edit-label.edit-title > li {
+					text-wrap: wrap;
+				}
+				
+				.mandatory {
+					color: #ee4d2d;
+					display: inline-block;
+					font-size: 14px;
+				}
+				
+				.mandatory-icon {
+					margin-right: 3px;
+					vertical-align: middle;
+				}
+				
+				.view-mode {
+					pointer-events: none;
+					opacity: 0.6;
+				}
+  
+				.control-label.tt2, .control-label.tt, .control-label.tt3 {color: #499b98; text-decoration: underline}
+			]]>
+		</text>
+	</css>
+
+	<script>
+		<request code="request_dmvt">
+			<text> 
+				<![CDATA[
+					DECLARE @ten_vt NVARCHAR(256), @ten_vt2 NVARCHAR(256), @dvt VARCHAR(32), @ma_kho VARCHAR(32), @ten_kho NVARCHAR(256), @ma_lo VARCHAR(32), @ten_lo NVARCHAR(256)
+
+					IF 1 = (SELECT COUNT(1) FROM dmvt WHERE ma_vt = @ma_vt) BEGIN
+						SELECT @ten_vt = a.ten_vt, @ten_vt2 = a.ten_vt2, @dvt = a.dvt, @ma_kho = a.ma_kho, @ten_kho = b.ten_kho, @ma_lo = a.ma_lo, @ten_lo = c.ten_lo
+						FROM dmvt a
+							LEFT JOIN dmkho b on a.ma_kho = b.ma_kho
+							LEFT JOIN dmlo c on a.ma_lo = c.ma_lo
+						WHERE a.ma_vt = @ma_vt
+					END
+
+					SELECT ISNULL(@ten_vt, '') [!ten_vt], ISNULL(@ten_vt2, '') [!ten_vt2], ISNULL(@dvt, '') [!dvt], ISNULL(@ma_kho, '') [!ma_kho], ISNULL(@ten_kho, '') [!ten_kho], ISNULL(@ma_lo, '') [!ma_lo], ISNULL(@ten_lo,'') [!ten_lo]
+				
+				]]> 
+			</text>
+		</request>
+		<query>
+			<text>
+				<![CDATA[
+					select @@fields into #@@table from @@table a where [%whereFieldKey]
+					[%updateRef]
+					select * from #@@table
+
+					declare @script nvarchar(4000)
+					if @script is null set @script = ''
+
+					if @action = 'EDIT'
+					  if exists(select 1 from syscodeexists with(nolock, index(code1)) where code1 = @ma_vt and field = 'ma_vt')
+						select @script = @script + 'p.setDisabled(''ma_vt'', false); '
+
+					if @action in ('EDIT', 'VIEW') select @script as script
+					drop table #@@table
+				]]>
+			</text>
+		</query>
+
+		<beforesave>
+			<text>
+				<![CDATA[
+					IF @ma_lvtc1 <> '' AND EXISTS (SELECT 1 FROM dmlvtc2 WHERE ma_lvtc1 = @ma_lvtc1) AND (@ma_lvtc2 IS NULL OR @ma_lvtc2 = '')
+					BEGIN
+						SELECT '$EmptyLvtc2' as message, 'ma_lvtc2' as field
+						RETURN;
+					END
+
+					IF @ma_lvtc2 <> '' AND EXISTS (SELECT 1 FROM dmlvtc3 WHERE ma_lvtc2 = @ma_lvtc2) AND (@ma_lvtc3 IS NULL OR @ma_lvtc3 = '')
+					BEGIN
+
+						SELECT '$EmptyLvtc3' as message, 'ma_lvtc3' as field
+						RETURN;
+					END
+
+					IF @ma_lvtc3 <> '' AND EXISTS (SELECT 1 FROM dmlvtc4 WHERE ma_lvtc3 = @ma_lvtc3) AND (@ma_lvtc4 IS NULL OR @ma_lvtc4 = '')
+					BEGIN
+
+						SELECT '$EmptyLvtc4' as message, 'ma_lvtc4' as field
+						RETURN;
+					END
+
+					IF @ma_lvtc4 <> '' AND EXISTS (SELECT 1 FROM dmlvt WHERE ma_lvtc4 = @ma_lvtc4) AND (@ma_lvt IS NULL OR @ma_lvt = '')
+					BEGIN
+
+						SELECT '$EmptyLvtc5' as message, 'ma_lvtc5' as field
+						RETURN;
+					END
+				]]>
+			</text>
+		</beforesave>
+		<loading>
+			<text>
+				<![CDATA[
+					select 'p.options._files = null;' as script
+				]]>
+			</text>
+		</loading>
+
+		<deleting>
+			<text>
+				<![CDATA[
+					if exists(select 1 from syscodeexists with(nolock, index(code1)) where code1 = @ma_vt and field = 'ma_vt') begin
+						select '$ListItemUsed' as message
+						return
+					end
+				]]>
+			</text>
+		</deleting>
+
+		<updated>
+			<text>
+				<![CDATA[
+					update @@table set datetime2 = getdate(), user_id2 = @@userId where [%whereFieldKey]
+				]]>
+			</text>
+		</updated>
+    
+		<inserting>
+			<text>
+				<![CDATA[
+					if exists(select 1 from @@table a where [%whereFieldKey]) begin
+						select '$codeExistsNewMsg' as message, '@@firstFieldKey' as field
+						return
+					end
+
+					select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @unit_id = @@unit;
+				]]>
+			</text>
+		</inserting>
+		<inserted>
+			<text>
+				<!--
+				<![CDATA[
+					if @ximage <> '' update dmttin set status = 1, id0 = @ma_vt from dmttin where charindex(id, @ximage) > 0 and xgroup = 'Item'
+				]]>
+				-->
+			</text>
+		</inserted>
+		<aftersave>
+			<text>
+				<![CDATA[
+					update @dmvtmedia set ma_vt = @ma_vt, user_id0 = @user_id0, user_id2 = @user_id2, datetime0 = getdate(), datetime2 = getdate(), unit_id = @unit_id
+					delete dmvtmedia where ma_vt = @ma_vt
+					insert dmvtmedia select * from @dmvtmedia
+				]]>
+			</text>
+		</aftersave>
+		<importing>
+			<text>
+				<![CDATA[
+					update #data set unit_id = @@unit
+					@@insert
+				]]>
+			</text>
+		</importing>
+	</script>
+
+	<messages>
+		<message val="codeExistsNewMsg">
+			<text v="Mã vật tư đã tồn tại trong danh mục vật tư." e="The record already exists."/>
+		</message>
+		<message val="codeExistsEditMsg">
+			<text v="Mã vật tư đã tồn tại trong danh mục vật tư." e="The record already exists."/>
+		</message>
+		<message val="UploadLimit">
+			<text v="Chỉ được phép chọn tối đa 9 hình ảnh." e="Only a maximum of 9 images are allowed."/>
+		</message>
+		<message val="EmptyLvtc2">
+			<text v="Bạn chưa nhập mã nhóm hàng cấp 2 của danh mục vặt tư – vui lòng bổ sung" e="Please enter the level 2 material category code. This field is required."/>
+		</message>
+		<message val="EmptyLvtc3">
+			<text v="Bạn chưa nhập mã nhóm hàng cấp 3 của danh mục vặt tư – vui lòng bổ sung" e="Please enter the level 3 material category code. This field is required."/>
+		</message>
+		<message val="EmptyLvtc4">
+			<text v="Bạn chưa nhập mã nhóm hàng cấp 4 của danh mục vặt tư – vui lòng bổ sung" e="Please enter the level 4 material category code. This field is required."/>
+		</message>
+		<message val="EmptyLvtc5">
+			<text v="Bạn chưa nhập mã nhóm hàng cấp 5 của danh mục vặt tư – vui lòng bổ sung" e="Please enter the level 5 material category code. This field is required."/>
+		</message>
+	</messages>
+</dir>

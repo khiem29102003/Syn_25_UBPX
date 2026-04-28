@@ -1,0 +1,675 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY CheckUpdatingDeleting "
+	if exists(select 1 from cskh0 where ma_so_thue = @ma_so_thue and status in (1)) begin
+	select '$NotEditVoucherStatus' as message
+		return
+		end
+	">
+]>
+
+
+<dir id="cskh0" table="cskh0" fieldKey="ma_so_thue" transaction="true" tryCatch="true" dirViewType="Dialog" voucherCode="TC1" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Hợp đồng xử lý" e="Processing Contracts"></title>
+  <title0 v="Thêm" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+	<forms>
+	<form gravity="TopLeft" columns="120,120,120,120,120,120,120,120" >
+		<fields>
+			<field name="tt" nextRow="true" fieldType="EX" readOnly="true" inactivate="true" label="[150]" field="0">
+				<text v="Thông tin khách hàng:" e="Customer Information: "></text>
+			</field>
+			<field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+				 <text v="" e=""></text>
+			</field>
+			<field name="ma_so_thue" label="1" field="2" fieldType="PK" disabled="true">
+			  <text v="Mã số thuế" e="Tax Code"></text>
+			</field>
+			<field name="ten_kh" label="1" field="-" fieldType="EX">
+			  <text v="Tên khách hàng" e="Customer Name" ></text>
+			</field>
+			<field name="ten_kh2" label="1" field="-" fieldType="EX">
+			  <text v="Tên khác" e="Other Name"></text>
+			</field>
+			<field name="dia_chi" label="1" field="-" fieldType="EX">
+			  <text v="Địa chỉ" e="Address"></text>
+			</field>
+			<field name="nguoi_lh" label="1" field="-" nextRow="false" fieldType="EX"> 
+			  <text v="Người liên hệ" e="Contact"></text>
+			</field>
+			<field name="e_mail" label="1" field="2" fieldType="EX">
+			  <text v="Email" e="Email"></text>
+			</field>
+			<field name="fax" label="1" field="-" nextRow="false" fieldType="EX">
+			  <text v="Fax" e="Fax"></text>
+			</field>
+			<field name="home_page" label="[120]" field="-" nextRow="true" fieldType="EX">
+			  <text v="Trang chủ" e="Home Page"></text>
+			</field>
+			<field name="ten_nh_kh1" nextRow="true" fieldType="EX" readOnly="false" inactivate="true" label="1" field="-">
+			  <text v="Nhóm 1" e="Group 1"></text>
+			</field>
+			<field name="ten_nh_kh2" nextRow="true" fieldType="EX" readOnly="false" inactivate="true" label="1" field="-" >
+			  <text v="Nhóm 2" e="Group 2"></text>
+			</field>
+			<field name="ten_nh_kh3" nextRow="true" fieldType="EX" readOnly="false" inactivate="true" label="1" field="-" >
+			  <text v="Nhóm 3" e="Group 3"></text>
+			</field>
+			
+			<field name="dien_thoai_ex" nextRow="true" label="[120]" field="" allowBlank="true" fieldType="EX" disabled="false">
+				<text v="Điện thoại &lt;input class='buttonimg' width ='16px' height ='16px' type='image' alt='copy' name='dien_thoai' src='/Images/copy.png' onclick='copyText(this.name);' &gt;" e="Phone &lt;input class='buttonimg' width ='16px' height ='16px' type='image' alt='copy' name='dien_thoai' src='/Images/copy.png' onclick='copyText(this.name);' &gt;"></text>
+			</field>
+			<field name="dien_thoai" nextRow="false" label="[300]" field="" allowBlank="true" disabled="false" fieldType="EX">
+				<text v="&lt;select id='dien_thoai_ex' class='input-field dien_thoai C form-control materail-input' style='' tabindex='1' &gt;&lt;/select&gt;" 						
+					  e="&lt;select id='dien_thoai_ex' class='input-field dien_thoai C form-control materail-input' style='' tabindex='1' &gt;&lt;/select&gt;"></text>
+			</field>
+			<field name="call_main" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="[30]" field="">
+				<text v="&lt;img class='dien_thoai' name='00' width ='24px' height ='24px' alt='call' style='' src='/Images/phone.png' onclick='getCall(this);' &gt;" e="&lt;img class='dien_thoai' width ='24px' height ='24px' alt='call' style='' src='/Images/phone.png' onclick='getCall(this);' &gt;"></text>
+			</field>
+			<field name="zalo_main" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="[30]" field="0">
+				<text v="&lt;a id = 'dien_thoai' onclick='getCall2(this);' title='zalo' target='_blank' &gt;&lt;img alt='zalo' style='' src='/Images/iconzalo.png' &gt;&lt;/a&gt;" e="&lt;a id = 'dien_thoai' onclick='getCall2(this);' title='zalo' target='_blank' &gt;&lt;img alt='zalo' style='' src='/Images/iconzalo.png' &gt;&lt;/a&gt;"></text>
+			</field>
+			<field name="google_main" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="[30]" field="0">
+				<text v="&lt;a id = 'dien_thoai' class='dien_thoai' onclick='getGoogle(this);' target='_blank' &gt;&lt;img src='/Images/searchgg.png' &gt; &lt;/a&gt;" e="&lt;a id = 'dien_thoai1' class='dien_thoai' onclick='getGoogle(this);' target='_blank' &gt;&lt;img src='/Images/searchgg.png' &gt; &lt;/a&gt;"></text>
+			</field>
+			<field name="ttcg_main" label="0" field="[80]" fieldType="EX" nextRow="false" allowBlank="true" importable="-1" hidden="true" disabled="true">
+			  <text v="&lt;a id='ttcg_main' class='Phone main number' &gt;&lt;/a&gt;" e=""></text>
+			</field>
+			<field name="dien_thoai_detail" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="[30]" field="">
+					<text v="&lt;a onclick='openPopups(`popup_dmttsdt`, `dien_thoai`);' class='a-copy' &gt;&lt;i class='fa-solid fa-plus'&gt; &lt;/i&gt;&lt;/a&gt;" e="&lt;img class='dien_thoai' width ='24px' height ='24px' alt='call' style='' src='/Images/phone.png' onclick='getCall(this);' &gt;"></text>
+			</field>
+			
+			<field name="dien_thoai_t1" label="1" field="1" allowBlank="true" importable="33" disabled="false">
+			  <text v="Số Skip &lt;input class='buttonimg' width ='16px' height ='16px' type='image' alt='copy' name='dien_thoai_t1' src='/Images/copy.png' onclick='copyText(this.name);' &gt;" e="Phone T1" ></text>
+			</field>	
+			<field name="call_t1" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="[30]" field="0">
+				<text v="&lt;img class='dien_thoai_t1' name='03' width ='24px' height ='24px' alt='call' style='' src='/Images/phone.png' onclick='getCall(this);' &gt;" e="&lt;img class='dien_thoai_t1' width ='24px' height ='24px' alt='call' style='' src='/Images/phone.png' onclick='getCall(this);' &gt;"></text>
+			</field>
+			<field name="zalo_t1" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="[30]" field="0">
+				<text v="&lt;a id = 'dien_thoai_t1' onclick='getCall2(this);' title='zalo' target='_blank' &gt;&lt;img alt='zalo' style='' src='/Images/iconzalo.png' &gt;&lt;/a&gt;" e="&lt;a id = 'dien_thoai_t1' onclick='getCall2(this);' title='zalo' target='_blank' &gt;&lt;img alt='zalo' style='' src='/Images/iconzalo.png' &gt;&lt;/a&gt;"></text>
+			</field>
+			<field name="google_t1" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="[30]" field="0">
+				<text v="&lt;a id = 'dien_thoai_t11' class='dien_thoai_t1' onclick='getGoogle(this);' target='_blank' &gt;&lt;img src='/Images/searchgg.png' &gt; &lt;/a&gt;" e="&lt;a id = 'dien_thoai_t11' class='dien_thoai_t1' onclick='getGoogle(this);' target='_blank' &gt;&lt;img src='/Images/searchgg.png' &gt; &lt;/a&gt;"></text>
+			</field>
+			<field name="ttcg_t1" label="0" field="[80]" nextRow="false" fieldType="EX" allowBlank="true" hidden="true" disabled="true">
+			  <text v="&lt;a id = 'ttcg_t1' class='dien_thoai_t1' &gt;&lt;/a&gt;" e=""></text>
+			</field>
+			<field name="dien_thoai_t1_detail" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="false" label="[30]" field="0">
+				<text v="&lt;a onclick='openPopups(`popup_dmttsdt`, `dien_thoai_t1`);' class='a-copy' &gt;&lt;i class='fa-solid fa-plus'&gt; &lt;/i&gt;&lt;/a&gt;" e="&lt;img class='dien_thoai_t1' width ='24px' height ='24px' alt='call' style='' src='/Images/phone.png' onclick='getCall(this);' &gt;"></text>
+			</field>
+			<field name="ghi_chu" label="1" field="-" inactivate="false" disabled="false">
+			  <text v="Ghi chú" e="Notes"></text>
+			</field>
+		</fields>
+	</form>
+	<form gravity="TopRight" columns="120,120,120,120" >
+	<fields>
+		<field name="tt" nextRow="true" fieldType="EX" readOnly="true" inactivate="true" label="[150]" field="0">
+				<text v="Thông tin thanh toán:" e="Payment Information: "></text>
+		</field>
+		<field name="recording_file" nextRow="false" fieldType="EX" label="[300]" field="0" allowBlank="true" importable="1" disabled="true">
+		  <text v="&lt;a id='mo_file_record' onclick='openMediaPlayer(this);' &gt; &lt;img src='/Images/icons8-voice-id-100.png' alt='GHI ÂM' class='img-recording' &gt; &lt;/a&gt;" e="ID"></text>
+		</field>
+        <field name="ten_tt" nextRow="true" fieldType="EX" readOnly="false" inactivate="true" label="1" field="-">
+          <text v="Thanh toán" e="Payment"></text>
+        </field>
+		<field name="so_tk" label="1" field="-" nextRow="true" allowBlank="true" importable="110" fieldType="EX">
+          <text v="Số tài khoản" e="Account Number"></text>
+        </field>
+
+        <field name="ten_nh" nextRow="true" fieldType="EX" readOnly="false" inactivate="true" label="1" field="-" disabled="true">
+          <text v="Ngân hàng" e="Bank"></text>
+        </field>
+		
+		<field name="gioi_han_no" label="1" field="1" dataType="N" format="" importable="120" fieldType="EX">
+          <text v="Giới hạn tiền nợ" e="Debt Limit"></text>
+        </field>
+		<field name="ky_han_no" label="1" field="1" dataType="N" nextRow="false" format="" importable="125" fieldType="EX">
+          <text v="Kỳ hạn nợ" e="Debt Maturity"></text>
+        </field>
+		<field name="ma_nvbh" label="1" field="[120]" allowBlank="true" disabled="true">
+			<text v="Mã nhân viên" e="Employee Code"></text>
+		</field>
+		<field name="ten_nvbh" nextRow="true" fieldType="EX" readOnly="false" inactivate="true" label="1" field="-" clientDefault="true">
+          <text v="Tên nhân viên" e="Employee Name"></text>
+        </field>
+		<field name="phong_kd" label="1" field="1" nextRow="true" dataType="N" format="" importable="135" fieldType="EX">
+          <text v="Phòng kinh doanh" e="Sales Department"></text>
+        </field>
+		<field name="ten_plkh" nextRow="true" fieldType="EX" readOnly="false" inactivate="true" label="1" field="-" disabled="true">
+          <text v="P/loai khách hàng" e="Customer Classification"></text>
+        </field>
+		<field name="tt" nextRow="true" fieldType="EX" readOnly="true" inactivate="true" label="[150]" field="0">
+				<text v="Nơi khách hàng từ, đến:" e="Payment Information: "></text>
+		</field>
+		<field name="ma_noi_di" viewType="Lookup" label="1" field="1" allowBlank="true">
+			<text v="Nơi đi" e="Origin"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangdi" lookupKey="(hc_yn = 1 or kkh_yn =1) and status = 1" lookupCheck="1=1" lookupRef="ten_noi_di" lookupInfo="vdmcangdi|ma_noi_di|ten_noi_di" />
+		</field>
+		<field name="ten_noi_di" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-"  aliasName="cast('' as nvarchar(4000)) as ">
+			<text v="" e=""></text>
+		</field> 
+		<field name="ma_noi_den" viewType="Lookup" label="1" field="1" allowBlank="true">
+			<text v="Nơi đến" e="Destination"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangden" lookupKey="(hc_yn = 1 or kkh_yn =1) and status = 1" lookupCheck="1=1" lookupRef="ten_noi_den" lookupInfo="vdmcangden|ma_noi_den|ten_noi_den" />
+		</field>
+		<field name="ten_noi_den" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-"  aliasName="cast('' as nvarchar(4000)) as ">
+			<text v="" e=""></text>
+		</field>
+	</fields>
+	</form>
+	<form tabPageIndex="1" gravity="MiddleRight" height="300" columns="120,120,120,120,120,120,120,120" >
+		<text v="Lời nhắn cuộc gọi" e="Call Notes"></text>
+		<fields>
+			<field name="lslncuocgoi" allowBlank="true" label="" field="-" viewType="Grid">
+			  <text v="Lời nhắn cuộc gọi" e="Call Notes"></text>
+			</field>
+		</fields>
+	</form>
+	<form tabPageIndex="2" gravity="MiddleLeft" height="300" columns="120,120,360" >
+      <text v="Điện thoại khách hàng" e="Phone number"></text>
+		 <fields>
+			<field name="dmdtcn" allowBlank="true" label="" field="-" viewType="Grid">
+			  <text v="Điện thoại khách hàng" e="Phone number"></text>
+			</field>
+		</fields>
+    </form>
+	<form tabPageIndex="3" gravity="MiddleLeft" height="300" columns="120,120,360" >
+      <text v="Nơi đi/ đến khách hàng" e="Customer Origin/Destination Locations"></text>
+		 <fields>
+			<field name="dmddkh" allowBlank="true" label="" field="-" viewType="Grid">
+			  <text v="Nơi đi/ đến khách hàng" e="Customer Origin/Destination Locations"></text>
+			</field>
+		</fields>
+    </form>
+	<form tabPageIndex="4" gravity="MiddleLeft" height="300" columns="120,120,360" >
+      <text v="Báo giá cước" e="Freight Quotation"></text>
+		 <fields>
+			<field name="bgcvc" allowBlank="true" label="" field="-" viewType="Grid">
+			  <text v="Báo giá cước" e="Phone number"></text>
+			</field>
+		</fields>
+    </form>
+	<form tabPageIndex="8" gravity="MiddleLeft" height="300" columns="120,120,360" >
+      <text v="Đính kèm" e="Attach Files"></text>
+      <fields>
+        <field name="xfile" label="1" field="2" viewType="File" fieldType="EXParam">
+          <text v="Chọn files" e="Attach Files"></text>
+          <viewInfo fileFieldId0="ma_so_thue" fileGroup="cskh0" fileExtension="*" maxFileSize="10240" maxFileCount="10"></viewInfo>
+        </field>
+      </fields>
+    </form>
+	<form gravity="BottomLeft" columns="100,100,100,100,100,100,130" >
+      <fields>
+	   <field name="t_so_luong" label="1" field="1" dataType="N" disabled="true" format="Amount" hidden="true" fieldType="EX" >
+          <text v="Tổng số lượng" e="Total Quatity"></text>
+        </field>
+        <field name="t_tien1" nextRow="false" label="1" field="1" disabled="true" dataType="N" format="Amount" hidden="true"  fieldType="EX">
+          <text v="Tổng tiền" e="Total Amount"></text>
+        </field>
+		<field name="t_tien2" nextRow="false" label="0" field="1" disabled="true" dataType="N" format="Amount" hidden="true" fieldType="EX">
+          <text v="Tổng tiền bán" e="Total Amount"></text>
+        </field>
+		<field name="t_tt" label="" field="1" nextRow="false" disabled="true" dataType="N" format="Amount" hidden="true"  fieldType="EX">
+          <text v="" e=""></text>
+        </field>
+        <field name="t_tienx2" nextRow="false" label="[60]" field="[100]" disabled="true" dataType="N" format="Amount" hidden="true"  fieldType="EX">
+          <text v="Phụ thêm" e="Add Amount"></text>
+        </field>
+
+
+		<field name="t_ln" nextRow="true" blank="2" label="1" field="1" disabled="true" dataType="N" format="Amount" hidden="true"  fieldType="EX">
+          <text v="Tổng lợi nhuận" e="Total Profit"></text>
+        </field>
+		<field name="t_tl_ln" nextRow="false" label="[80]" field="[60]" disabled="true" dataType="N" format="FCAmount" hidden="true"  fieldType="EX">
+          <text v="% Lợi nhuận" e="% Profit"></text>
+        </field>
+		
+        <field name="t_thue_nt" blank="2" label="1" field="1" dataType="N" disabled="true" format="FCAmount" hidden="true" fieldType="EX">
+          <text v="Tổng thuế" e="Total Tax"></text>
+        </field>
+        <field name="t_thue" label="" field="1" nextRow="false" disabled="true" dataType="N" format="Amount" hidden="true" fieldType="EX">
+          <text v="" e="Total Tax"></text>
+        </field>
+        <field name="t_tt_nt" nextRow="false" label="1" field="1" dataType="N" disabled="true" format="FCAmount" hidden="true" fieldType="EX">
+          <text v="Tổng thanh toán" e="Total Amount"></text>
+        </field>
+        
+		<field name="t_so_luongx" label="1" field="1" dataType="N" disabled="true" format="Amount" hidden="true" fieldType="EX">
+          <text v="Tổng số lượng" e="Total Quatity"></text>
+        </field>
+		 <field name="t_tien_ntx2"  blank="2" nextRow="true" label="1" field="1" dataType="N" disabled="true" format="FCAmount" hidden="true" fieldType="EX">
+          <text v="Tổng tiền bán" e="Total Bill Amount"></text>
+        </field>
+       
+      </fields>
+    </form>
+	</forms>
+	<grids>
+		<grid id="lslncuocgoi" table="lslncuocgoi" fieldKey="ma_so_thue, line" order="line" allowFilter="true" readOnly="false" allowOrder="true">
+		  <fields>
+			<field name="ma_so_thue" fieldType="PK" copy="false" hidden="true">
+			  <text v="" e=""></text>
+			</field>							
+			<field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+			  <text v="Dòng" e="Line"></text>
+			</field>
+			<field name="ngay_goi" dataType="D" valueDefault="new Date()" allowBlank="true" width="80" readOnly="false" disabled="true" hidden="false">
+			  <text v="Ngày gọi" e="Date of call"></text>
+			</field>
+			<field name="gio_goi" width="80" inactivate="true" readOnly="false" disabled="true" hidden="false">
+			  <text v="Giờ gọi" e="Time of call"></text>
+			</field>
+			<field name="phone_type" width="100" inactivate="true" readOnly="false" disabled="true" hidden="true">
+			  <text v="Phone Type" e="Phone Type"></text>
+			</field>
+			<field name="ma_nv" width="100" inactivate="true" readOnly="false" disabled="true">
+			  <text v="Nhân viên" e="Employee"></text>
+			</field>
+			<field name="ma_donvi" width="100" inactivate="true" readOnly="false" disabled="true" hidden="true">
+			  <text v="Đơn vị" e="Unit"></text>
+			</field>
+			<field name="ma_bp" width="100" inactivate="true" readOnly="false" disabled="true" hidden="true">
+			  <text v="Bộ phận" e="Department"></text>
+			</field>
+			<field name="ma_pb" width="100" inactivate="true" readOnly="false" disabled="true" hidden="true">
+			  <text v="Phòng ban" e="Division"></text>
+			</field>
+			<field name="sdt_vua_goi" allowBlank="true" width="120" readOnly="false" disabled="true">
+			  <text v="Số điện thoại" e="Phone number"></text>
+			</field>
+			<field name="ma_td" width="150" allowBlank="true" readOnly="false" disabled="true" >
+			  <text v="Mã cuộc gọi" e="Call Code"></text>
+			</field>
+			<field name="ma_plkh" width="150" allowBlank="true"  readOnly="false" disabled="true" >
+			  <text v="P/loại khách hàng" e="Customer Classification"></text>
+			</field>
+			<field name="ngay_goi_lai" dataType="D" allowBlank="true" width="120" readOnly="false" disabled="true" >
+			  <text v="Ngày gọi lại" e="Callback date"></text>
+			</field>
+			<field name="dien_giai" width ="250" readOnly="false" disabled="true" >
+			  <text v="Ghi chú cuộc gọi" e="Call Note"></text>
+			</field>
+		  </fields>
+      <buttons>
+        <button id="refresh">
+          <text v="Hiện tất cả" e="Show All"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+		  <script>
+			<query>
+			  <text>
+				<![CDATA[<enc>9TEUL10FF1z13CoX4ywBHODGwjt3kxbcgpDh39O/79LY7sYH04hSaw5NMh0aiGlrNpgzTRNVwyoQGLTNme52Yf2lyKhy45x/kPkggaB/UokvQFpOHx7dI+DJqLipRij68sP1yYyeES3lf6Xrw5QNXNc5VqdLTLXWNU2x9w970WMghZ0Z1Bo+bWhanZAWzhz5avvxkxdi+4MpUylpmrAH0A==</enc>]]>
+			  </text>
+			</query>
+		  </script>
+		</grid>
+		
+		<grid id="dmdtcn" table="dmdtcn" fieldKey="ma_so_thue" order="ma_so_thue" allowFilter="true" readOnly="true" allowOrder="true">
+		  <fields>
+			<field name="ma_so_thue" allowBlank="true" width="200" readOnly="false" >
+				<text v="Mã số thuế" e="Citizen ID"></text>
+			</field>
+			<field name="ten_kh" allowBlank="true" width="200" readOnly="false" align="right" fieldType="EX" aliasName="b">
+			  <text v="Tên khách hàng" e="Phone number"></text>
+			</field>
+			<field name="dien_thoai" allowBlank="true" width="200" readOnly="false" align="right">
+			  <text v="Điện thoại khách hàng" e="Phone number"></text>
+			</field>
+			<field name="ghi_chu" allowBlank="true" width="200" readOnly="false" >
+				<text v="Ghi chú" e="Citizen ID"></text>
+			</field>
+			<field name="ghi_chu2" allowBlank="true" width="200" readOnly="false" >
+				<text v="Ghi chú 2" e="Citizen ID"></text>
+			</field>
+		  </fields>
+		  <script>
+			<query>
+			  <text>
+				<![CDATA[<enc>Ola3cYzy5l7pQ/Zh8Wd9FU3CAOLVfl0Tzg848PLEBM7a4rqungLLJyeL98wcGwMdSDsH+B5FJOcJ1NmTzqzbPp0GnBynLKuQAnc0ynxc7SuttMAT7PKgBNI93IoYvM5i5sCvTHTlCEr1Jo98e6YWQIhuzXrqzpbZA4GRfEWyzlyouOf1Gx+CquUMAb0kkGj6xCFq1j3Zq7GJyeip+YUHRjP0MsyBBryA+Z/6Qb5/lFbSGZd+r4BvakgKEx3RIkoA</enc>]]>
+			  </text>
+			</query>
+		  </script>
+		</grid>
+		<grid id="dmddkh" table="dmddkh" fieldKey="ma_so_thue" order="ma_so_thue" allowFilter="true" readOnly="true" allowOrder="true">
+		  <fields>
+			<field name="ma_so_thue" allowBlank="true" width="200" readOnly="false" >
+				<text v="Mã số thuế" e="Tax Code"></text>
+			</field>
+			<field name="ten_kh" allowBlank="true" width="200" readOnly="false" align="right" fieldType="EX" aliasName="b">
+			  <text v="Tên khách hàng" e="Customer Name"></text>
+			</field>
+			<field name="ma_noi_di" allowBlank="true" width="200" readOnly="false" >
+				<text v="Mã nơi đi" e="Orgin"></text>
+			</field>
+			<field name="ten_noi_di" allowBlank="true" width="200" readOnly="false" align="right" fieldType="EX" aliasName="c">
+			  <text v="Tên nơi đi" e="Orgin"></text>
+			</field>
+			<field name="ma_noi_den" allowBlank="true" width="200" readOnly="false" >
+				<text v="Mã nơi đến" e="Destination"></text>
+			</field>
+			<field name="ten_noi_den" allowBlank="true" width="200" readOnly="false" align="right" fieldType="EX" aliasName="d">
+			  <text v="Tên nơi đến" e="Destination"></text>
+			</field>
+		  </fields>
+		  <script>
+			<query>
+			  <text>
+				<![CDATA[<enc>UYK9a1saDY6yOErd7Oelll+wsZx+Ssq2hwZDjiWZkP5z5zDeB8IuiOcM7AVhn5kQ3OtqC40kiibe8Ob5tZVkISqY+0Pu24Es0n2YqA8nqa7FnBVWYNTv7s/tyURCIOOAgdobSqZTRh08nDgkQPqPThFcyrFfdJKBxPlJ+QL3kxXpku2xPeXvfVaXS6y2Cgi/FK6xfgOgIQu3+MGoVHSe0tZnLmYkUC1nnpgdaF8/lzxtSVbBEfNcpJmt6pbLCSFJfT70ifPDz2xSdlL+oUiFzQ==</enc>]]>
+			  </text>
+			</query>
+		  </script>
+		</grid>
+		<grid id="bgcvc" table="v41" fieldKey="id, line" order="line" readOnly="false">
+		  <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true" importable="-1">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true" importable="-1">
+          <text v="Dòng" e="Line"></text>
+        </field>
+        <field name="ma_phi" width="80" allowBlank="true" viewType="Lookup" readOnly="false" importable="1" disabled = "true">
+          <text v="Mã phí" e="Fee"></text>
+          <viewInfo lookupType="One" lookupId="dmphi" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_phi" lookupInfo="dmphi|ma_phi|ten_phi" />
+        </field>
+        <field name="ten_phi" width="200" fieldType="EX" inactivate="true" readOnly="true" aliasName="b" join=" left join dmphi b on a.ma_phi = b.ma_phi ">
+          <text v="Tên phí" e="Fee Name"></text>
+        </field>
+		 <field name="ma_cong" width="100" allowBlank="true" viewType="Lookup" readOnly="false" importable="2"  disabled = "true">
+          <text v="Container" e="Container"></text>
+          <viewInfo lookupType="One" lookupId="dmcong" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_cong" lookupInfo="dmcong|ma_cong|ten_cong" />
+        </field>
+        <field name="ten_cong" width="0" fieldType="EX" inactivate="true" readOnly="true" aliasName="c" join=" left join dmcong c on a.ma_cong = c.ma_cong ">
+          <text v="Container" e="Container Name"></text>
+        </field>
+         <field name="ma_dk_phi" viewType="Combobox" width="120" readOnly="false" disabled = "true">
+			<text v="Loại phí" e="Fee type"></text>
+			<viewInfo>
+				<options query="select ma_bgn, ten_bgn%l from dmbgn where ma_ct = 'LPH' and status = 1 order by stt">
+				</options>
+			</viewInfo>
+		</field>	
+		<field name="ma_dvt" width="80" allowBlank="true" viewType="Lookup" readOnly="false" disabled = "true">
+          <text v="Đơn vị" e="Unit"></text>
+          <viewInfo lookupType="One" lookupId="dmdvt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_dvt" lookupInfo="dmdvt|dvt|ten_dvt" />
+        </field>
+        <field name="ten_dvt" width="0" fieldType="EX" inactivate="true" readOnly="true" aliasName="x" join=" left join dmdvt x on a.ma_dvt = x.dvt ">
+          <text v="Tên đơn vị" e="Fee Name"></text>
+        </field>
+        <field name="so_luong" dataType="N" format="Amount" allowBlank="false" valueDefault="1" width="100" readOnly="false" disabled = "true">
+          <text v="Số lượng" e="Quantity"></text>
+        </field>
+        <field name="ct_km" width="100" valueDefault="0" viewType="Combobox" inactivate="true" hidden="true" readOnly="false" disabled = "true">
+          <text v="Loại hàng" e="Fee Type"></text>
+          <viewInfo>
+            <options>
+              <option val="0">
+                <text v="Hàng bán" e="Sale"/>
+              </option>
+              <option val="1">
+                <text v="Hàng KM" e="Promotion"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="gia_nt1" dataType="N" hidden="true" format="FCPrice" width="100" readOnly="false"  disabled = "true">
+          <text v="Giá mua " e=" Cost Price"></text>
+        </field>
+        
+		 <field name="tien_nt1" dataType="N" hidden="true" format="FCAmount" width="100" valueDefault="0" readOnly="false" disabled="true" >
+          <text v="Tiền mua" e="Cost Amount"></text>
+        </field>
+		
+		<field name="gia_nt2" dataType="N" format="FCPrice" width="100" readOnly="false" disabled = "true">
+          <text v="Giá bán" e="Bill Price"></text>
+        </field>
+        <field name="tien_nt2" dataType="N" format="FCAmount" valueDefault="0" width="100" readOnly="true" disabled = "true">
+          <text v="Tiền bán" e="Bill Amount"></text>
+        </field>
+        <field name="tl_ck" dataType="N" format="Rate" width="100" hidden="true" readOnly="false" disabled = "true">
+          <text v="Tl ck(%)" e="Dis.Rate"></text>
+        </field>
+        <field name="ck_nt" dataType="N" format="FCAmount" width="100" hidden="true" readOnly="false" clientDefault="true" disabled = "true">
+          <text v="Ch.khấu " e=" Discount"></text>
+        </field>
+		 <field name="ma_nt" width="70" allowBlank="true" viewType="Lookup" readOnly="false" disabled = "true">
+          <text v="Mã NT" e="Currency"></text>
+          <viewInfo lookupType="One" lookupId="dmnt" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_nt" lookupInfo="dmnt|ma_nt|ten_nt" />
+        </field>
+		 <field name="ten_nt" width="0" fieldType="EX" inactivate="true" readOnly="true" aliasName="d" join=" left join dmnt d on a.ma_nt = d.ma_nt ">
+          <text v="Tên phí" e="Fee Name"></text>
+        </field>
+		 <field name="ty_gia" dataType="N" format="Price" width="100" valueDefault="1" hidden="false" readOnly="false" disabled = "true">
+          <text v="Tỷ giá" e="Curr.Rate"></text>
+        </field>
+        
+        <field name="gia1" dataType="N" format="Price" width="100" hidden="true"  valueDefault="0" inactivate="true" readOnly="true" disabled = "true">
+          <text v="Giá chuẩn" e="Std.Price"></text>
+        </field>
+        <field name="gia2" dataType="N" format="Price" width="0" inactivate="true" valueDefault="0" readOnly="true" disabled = "true">
+          <text v="Giá bán" e="Price"></text>
+        </field>
+		 <field name="tien1" dataType="N" format="Amount" width="100" inactivate="true"  valueDefault="0" readOnly="false" disabled="true" hidden="true">
+          <text v="Chi phí" e="Total Cost"></text>
+        </field>
+        <field name="tien2" dataType="N" format="Amount" width="100" inactivate="true" valueDefault="0" readOnly="true" disabled = "true">
+          <text v="Doanh thu" e="Total Bill"></text>
+        </field>
+		
+        <field name="ck" dataType="N" format="Amount" width="100" inactivate="true" hidden="true" readOnly="false" disabled = "true">
+          <text v="Chiết khấu" e="Discount"></text>
+        </field>
+		<field name="thue_suat" dataType="N" format="0" width="60" readOnly="false"  valueDefault="0" hidden="false" clientDefault="true" disabled = "true">
+          <text v="VAT(%)" e="Tax"></text>
+        </field>
+        <field name="thue_nt" dataType="N" format="FCAmount" width="100" hidden="true" readOnly="true" disabled = "true">
+          <text v="Thuế %s" e="%s Tax"></text>
+        </field>
+        <field name="thue" dataType="N" format="Amount" width="100" inactivate="true" hidden="true" readOnly="true" disabled = "true">
+          <text v="Thuế" e="Tax"></text>
+        </field>
+		<field name="tc_tien2" dataType="N" format="Amount" width="100" hidden="true" valueDefault="0" inactivate="false" readOnly="true" disabled = "true">
+          <text v="" e="Total"></text>
+        </field>
+		<field name="tc_tien_nt2" dataType="N" format="Amount" width="100" hidden="true" valueDefault="0" inactivate="false" readOnly="true" disabled = "true">
+          <text v="" e="Total "></text>
+        </field>
+		
+		<field name="tt" dataType="N" format="Amount" width="100" hidden="false" valueDefault="0" inactivate="false" readOnly="true" disabled = "true">
+          <text v="Tổng cộng" e="Total"></text>
+        </field>
+		<field name="tt_nt" dataType="N" format="Amount" width="100" hidden="true" inactivate="false" readOnly="true" disabled = "true">
+          <text v="" e="Total "></text>
+        </field>
+		<field name="tien_ln" dataType="N" format="Amount" width="100" inactivate="false" valueDefault="0" readOnly="false" disabled="true" hidden="true" >
+          <text v="Lợi nhuận" e="Profit"></text>
+        </field>
+		<field name="dien_giai" width="200" inactivate="true" readOnly="false" disabled = "true">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+		<field name="id_yc" dataType="N" inactivate="true" hidden="true" format="0" width="80" copy="false" disabled = "true">
+          <text v="ID BG" e="ID BG"></text>
+        </field>
+        <field name="line_yc" dataType="I" width="70" copy="false" hidden="true" inactivate="true" disabled = "true">
+          <text v="Dòng BG" e="Quot. Line"></text>
+        </field>
+		<field name="id_tg" dataType="N" inactivate="true" hidden="true" format="0" width="80" copy="false" disabled = "true">
+          <text v="ID BG" e="ID BG"></text>
+        </field>
+        <field name="line_tg"  dataType="I" width="70" copy="false" hidden="true" inactivate="true" disabled = "true">
+          <text v="Dòng BG" e="Quot. Line"></text>
+        </field>
+	</fields>
+
+		  <buttons>
+			<!-- <button id="add"> -->
+			  <!-- <text v="$AddToolbar" e="$AddToobar"></text> -->
+			<!-- </button> -->
+			<!-- <button id="delete"> -->
+			  <!-- <text v="$DeleteToolbar" e="$DeleteToolbar"></text> -->
+			<!-- </button> -->
+			<!-- <button id="copy"> -->
+			  <!-- <text v="$CopyToolbar" e="$CopyToolbar"></text> -->
+			<!-- </button> -->
+			<!-- <button id="paste"> -->
+			  <!-- <text v="$PasteToolbar" e="$PasteToolbar"></text> -->
+			<!-- </button> -->
+			<button id="moveup">
+			  <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+			</button>
+			<button id="movedown">
+			  <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+			</button>
+			<button id="split">
+			  <text v="-" e="-"></text>
+			</button>
+			<button id="export">
+			<text v="$ExportToolbar" e="$ExportToolbar"></text>
+			</button>
+			<button id="downtemplate">
+			<text v="Tải mẫu Excel" e="Down import template"></text>
+			</button>
+			<button id="import">
+			<text v="Lấy dữ liệu từ tập tin" e="Import data"></text>
+			</button>
+			<button id="retrieve">
+			  <text v="$RetrieveToolbar" e="$RetrieveToolbar"></text>
+			  <items>
+				<button id="20">
+				  <text v="Lấy dữ liệu từ phiếu giá cước"  e="Get data from freight costs"/>
+				</button>
+				<button id="80">
+				  <text v="-"  e="-"/>
+				</button>
+				
+			  </items>
+			</button>
+			<button id="split">
+			  <text v="-" e="-"></text>
+			</button>
+			<button id="freeze">
+			  <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+			</button>
+		  </buttons>
+
+		  <script>
+			<query>
+			  <text>
+				<![CDATA[<enc>rCxMhU43BEKIPf+N5Qoqfs/LxnyoFiPRq0zwx7z5d8r7da96CKmKhY63DxANeGkAX+z5FN9uXQUh+rteGwCkBlGr3Sk1W+xwPucRpZVqQQ5nGzEwEuywVCZp0IPNNKgLSb+s50zERk7cMeKKSp/LvHjV7YDrwawFCqlO+SrKm/IxBSmurh/0DpzUSL/Q3HTYP6frU3FbQIp+CaLkrklMPG3zXoOX6gibyk9gQPxWoHCpQZy99doNrYQNjQW4nmCZ</enc>]]>
+			  </text>
+			</query>
+		  </script>
+
+		</grid>
+	</grids>
+  
+	<buttons>
+	  <button id="ok" default="true">
+		<text v="$AcceptLabel" e="$AcceptLabel"></text>
+	  </button>
+	  <!-- <button id="cancel" default="true"> -->
+		<!-- <text v="$CancelLabel" e="$CancelLabel"></text> -->
+	  <!-- </button> -->
+	</buttons>
+  
+    <js>
+    <text>
+      <![CDATA[<enc>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</enc>]]>
+    </text>
+  </js>
+
+<css>
+	<text>
+	  <![CDATA[<enc>SV98tNdH4f7Pn2SvfFdv5/Jc7N/d8aOzDYjbf9y8hQlveNYmMJFJXy0q2zuiPUQkGHY3Uwj2svEZjnr5GGvJOCAWZcBpmgjOiP+IC1ZL0vAtYr5BBeBZ6ZwVISLg0jQTuKlXD5q8wXp3Oe9Lnze+pYizJl9jKxA5lwMh5O0t+SVsstRasCoWcJJRmHQhP4AVwm9TKsf+uQoGqqK2D3FPJFfktdT4IwuD9HfMUbW/Ta6RlWm5+qgClY6U/13gYirOvBhcXmcaI2BAEZPbh2dPksYZxjuh1v9QjQqkC/Y7Blfn+TlWU1c6QkKnOjhPDjyT/MUueOEjtrRqFi0s7a3vHAL48d/giPyVzH9kr2zYMDQ6sHyRJYJBSHFemmyXISeeoxNRtcr/G2C0creX0R/Ehvf0xPnVcjKIm5OjIxJw3QPkSzjT/JnN4ijPyFmE1a0HwqYn7NSRrkzFC5H0RZxcoXEFsQgquuZY+hsL5bokKNdXRL9RqfqLclVkP6ZBuSBvXakahKJWxE5hj2b4xLlu6jEATKU3N5qcp7ucTga4NZDGopVNmYnpbXOOMRZ4e6ZYbk8UaWoyaTHt0le35WCcQX9qIvqR0jZnr4G+iIPo4+XNHkE3pu3DKyedJq+hz1AzsxRuFi+1ddJPVBqjapE57vN3Zuf8sa6B3pqp827jJanTMCe/wZYcIIkt27AkM0A3MKrdQoW88/BPQKzvFS/abIjcLj05UcmDpK7qWIqxXr/KeTkjrbxh5+TbN5/GL98IjXBBhtbGKnkQYWIBOW82bpKv5oYqQGhB7QX1aS23CqOTqbRJev8gjst7jxJ8HiFkk8sC0t+MY738BDrHjSLZl4yYeeD0v5TiQDvaO0iemGPkYOlMhDK0XebNmLPONBNpWJuRv+x/Bee1kNIArQnJMlmEy+mNJ6PjF5JYjOG4AE4x3hi+JxDyuV3Zvp3TK+QhjtPI70amRbdPB6QO1D3g6DWcbaeEB8MlmbaTQERrWXZiDwE2JfremVHfcp1oGIkc9OGwb4MuhFQM+Dc+5hC+RZXaquhTo45URQIGx60auUE4O2XqiS77JXJ2Md8e2+194iYr2M1FyQfyikLIRX28KgkNNLp2H0odGxiFqXNwR2sIkD8xuEGYjhT42WV5oToL6WP7U5ueblXC6tpaWnaUqZBjYq6ATOALgy1kOhGVbaGmhH6lJcdNEdOh4199/7xsi4McWwJyuj55LbZX+gpeyYo4NOJ8NMLIl80UVabrfB1H5yLkGNuIrLPVgtvhIHcbWrLK0KkOMd1j1brnFu4QB66qAMl1QLhEkOSGKg+8uw8/X+YnADsbeGe9Et0no0z3/nHwU+eBpxgLtvi3m7ZmPKk1LApD4aw3ZrSTSb2NtCh2Czzbc+mxAeFcyheHGRFiul/zibs6Ks74OeDAj8E9sI17i/uozMA5qYipLqvI34R0o/0ev12JnSHorx77PDRX4LWcvebeQ8eGYdIrROhpG4GIoBTK/76xH5kKGt5dQogXE53gHvD01oCVh20LbwACiuJ6XL5iQUPIHntVy5g4PXxDsAX1j14CiSa+hb+LA47/pxCgV4Ntm1g1XV09qOCsXh2cQOWCHInqU+EbzXnWzvHvCo6WQWaHQfKklqqRCroocm9llofos3+z4NqZoB+bSn8ZZbgmgBXiaomfxnNKDr+zJFVtJXYQ826BiaIuXepYmMNYPAIVnAcR1hpzU5SzxexGwXpuZ5wBvm2SgujILXz/W1QyePhZmfush6koP2OVsfRNA/o8YFii4Da060lMK2BITSEC5hMe6/+ImQsb2Q==</enc>]]>
+	</text>
+</css>
+  <script>
+	<request code="LoadDataKH">
+	<text>
+	  <![CDATA[<enc>uApbzdfY81GUGjFicFWqlENp5jj+GGF3na0bI2C9sMeQAAtPyYMuJS9KkUIIXCg9sWONb5Q4hnfVNHm8Z0HcVEkvcV1oEWy/lWWx+mP2IyjnutvFJicPnzZATcXGGqIEhB5Q13lwLXBwVAPmmpjM7yOYASPksc3tLjw1k9ckICauu7knv9Tepxiqp1D0wNBXAP4jlH2EuuamVgEaQgaGNn94YUwEbFkgJjbC/WAN/uQx5mPaTPvzPk0rgPyTtj4B72J7M1lFUxMCAkg4KMiudNOSgtggUQnHH26+KT86juw8xIhdqLLdP8gVTAWDZOAroG9bWUeJSXeBg4nclR58iUf0XiE7keWTocfG/39+jaKzLZxVst9lQ6EG7+CsSZxjWcE1+5WlKk7jcOQUJU6yGH60qlHJAgyYt6bhZmhMzgmLk3c68sAm3rtBOAJ69m25ejCqd2nVS3c3XAXqLbwV7VhJ/Tq07DcX2gInOJat/64Oljg1f+1R2c91hpZDldr88hi0MrowFAiJ+IRAymuSmLtNklVEA3M6Y2dxXEgr6rrSftOmXzow36OVBTX2Gch7b7/xGQXP2qusRnCYvuli6vEucmMeia9X9u9qkSoI3Jv9l4N4hFIpC5SHU/swVMUS0R0dVILHbiDUV/w5FsUyCAGYVHbkkx0rwqDNeFLoSfvs3n7x2M9AyOeZYLjbXEpi2wLOrdJ/bvvj1vEvuvGvuKkkNf0WPw08vvfnh7VPcJrUNh1LCLJAsE34X3Ynuya8bfGFZtoh8pIqXqfP0QVRzzdIb2+SRApbtB561R9pWk14j0ZfOBW9DIi6m4/Ryc87ljuLBvIC+BVZxc/6Jk525djczmri/PHHQYAxGILllhbAqjcrEILv5MjKbmZiyGMYHet3RPTJA+ndTHtnQQ+q4tr28IjZdcHuRgp1T6+0YxDsduqGhqJYP1gp5tnNMI1PiC6bX225ZquFVHLnVFfVmx8Zn/6S7m82SGf+gIBseZjOF6xBXh1rG4qceRGa5k9M/vfXZ+kLcda/UBTmVOknD5zGWCZ+VwIA4xldOV2+ujZtPqAWA0r1PalbYldeBL09</enc>]]>
+	</text>
+  </request>
+  <!-- <request code="LoadStatus"> -->
+	<!-- <text>		 -->
+	  <!-- <![CDATA[<enc>DIgruXSDtKnCR15GyIWsKSx2G7ju1692cadQ02g2nRNTg/pa1uoDLRkj9Amp02ViyqhN4xqsheEqykYfaoLbrRKhzTTFmGsws8wE4yLA5nSIqOLsjYmuz798pqM2AXDL3b4mgdB7IFptxTwoK5djA2KIjMX3uiuF8AsA0K8ByhhsGF2ahbEKcICjz0gXGwda</enc>]]> -->
+	<!-- </text> -->
+  <!-- </request> -->
+  <!-- <request code="LoadiContractRef"> -->
+	<!-- <text>		 -->
+	  <!-- <![CDATA[<enc>iFDHsG/bxeEfseR6RbvWB7LgdIo51RODHdEuHJundtxuM4E115dyd1+EJnnPClteaBxwpJ8qskJZptf5wSgpqycrxu5ehhzI+d6bZyG8B7GVWB6T2jHHerhaCT0Yt68kuy4Eapx05aU9hYDmYG2rEQsFrRPpO9QjSQ2TeuDj2qn6bJWUc0gWP2XIM6XfXwcjtgttyOp5+7dGbGEE0PcL0or4+SO+zajCqS5LyqLdC6W4fRvx/xINfjLWgy1G7SB5ZjfmcvnwIkncAhmZdY+4pPdMCst1t77k2C9fzsKrmpr0r3QcCxv6/rPPTwMnB0fmVNkkyoismuJn5Al99WXSTe62s6o5X1LnHKm0DFAacS4OB6/DpI8Y7VOkOQ8Efp9oj/AUCLgeB0xb+lHELnCOtVE/4wraT3dNXs+m+oEwmck=</enc>]]> -->
+	<!-- </text> -->
+  <!-- </request> -->
+    <query>
+      <text>
+        <![CDATA[<enc>60nqoBfqweArXLaAWogkT6I/aY7hWPj1sNXfmg5Nvcpcg2PfNy3qvotAcVBHcQL9wD7ftTsijYakt1P+w4lNrtRjuduuJzvMHUDmfkbbXehc5+TFtPOFWhR5id+c78SKT4zHh45q0eeKCLn+zsPIAj69uY/qzNtHXh8f5oHsf1hKtY8VIIyDtMDYbHlDiWSXYmyJ8dUSSxOVfhMuvVyeVyLRby+Sy0hdTG9O/xGNUhUVHI0uDbvHJuTulxXhRH99HBzeZc67NaYQDO6E5rW7s5HOIfsHHPXRO7HTk8SeRYy243ghKExjj2BFWCeKW0QMazDTuhh2Jl87MbV8Thoj0pLoIycLIfNMX8wyDH/PIBMU69oOMza+4qVhkyxy6T/JFDmgCuN07twpzpN5GN4zva1+N6t88m046OGk17w/jix6Bs3Q0gXZxVgYB2W0SqAbF1T3Rti8hPMs1bK+EcmUU+0bLL2xn+TgWZrFR7y59Zw=</enc>]]>
+      </text>
+    </query>
+	<updated>
+		  <text>
+			<![CDATA[<enc>cQkwRnCaGL0MCs664OUf1RxVLRRYjaytA5ybbJ1KKkhO5JjToEiguKzJZY6Og1KHa6E+pQtlyPI5Beu0PhxhnMxf2XBRO9NdntNa1DzPq2XX8ur9ETLCbcvNpaYF7D7sWkHOSBMbNWlv1eisLzocYhBE/Xx/oz3YeMOxcLVT+QhOfFcu1ADq6dpeN9vk7rp8ZtTExN/yXH8eY/TFtg7k7R0QTUezb/kN/iTX0lC2Wzw8LXi1W7kYpjT1qvWRb1ZBnPyhKSo1JDUXez+r8P0RcQ==</enc>]]>
+      </text>
+   </updated>
+	<declare>
+      <text>
+        <![CDATA[<enc>hxQPm/hYhpvPifcenBxj7h7oN0snZYZljPmd/kTMe5whTFFwkDsDfoO5JwiPltwxLjPx0ikYFWniqwhGnBg2yIKR1GXkzLJhZhasObH3kRsMi+yMMT3AHG3z2B+SI1eCh/KK0L4RiaNQw5pWSMR6N/4K0NUT4Jasbv0dcsOCexc=</enc>]]>
+      </text>
+    </declare>
+	<deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOHo2m/I5r6vL/VnI32yTLjZo3g4lV17JTn1w4Idh5UQX+5zHXoYhL4XkkzxabwGNedFar9jNkUzdkRci6Kq9E05M68nOuOkcpB1O+k/9xmBS</enc>]]>
+      </text>
+    </deleting>
+    <inserting>
+      <text>
+        <![CDATA[<enc>Dglo6ONrrpDIkD75hnbh1PdnbULPJbEsHKXbYxKWFI0vy1AATlaGuTB3u/oPRateRtrSvtXPg53rC2U4UzWMPJvZVoS1Tj9EzWS6OV+vA7cZAKQz8mlWLHp0Btq98RVSfeUmtXlbnoPOVJikVcBW9p8llH+uGVuF8ZkCdJAN9mWb6jqPjjLeLt7LOKo4DcuDeIqpijb16PPdA/NxJFiF1fVXFQqpTb9W4BJM+08lLWTIR6EJCjGOsZUct2rRYhpQddCi8CImL/NtaKvvb5OySA==</enc>]]>
+      </text>
+    </inserting>
+	<inserted>
+      <text>
+        <![CDATA[<enc>vum/pavkDglUHHNwaN9j9+VnlmPeHYrjw2lf1/6YThAoB/Rx2oJL8OzlpRXXwNDBWf35H4vyvG5zO6LF/Zr6XE85r9Ogm+ay9VZaM0yGu67TDeKVGL+8m4F89lJPw8w2Ve48sbeUYkegMvFu7E6fnE52H3pO56WmWjJaHsJdUPcjazpwex0MMbsn5PaEyM3X</enc>]]>
+      </text>
+    </inserted>
+    <aftersave>
+      <text>
+<![CDATA[<enc>5y0DbgjGJTDiwqDwXj6LP0PeBF4d2oAbYlVTINwv2LI=</enc>]]>
+      </text>
+    </aftersave>
+
+  </script>
+
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã hợp đồng đã tồn tại trong hợp đồng." e="The record already exists."/>
+    </message>
+	<message val="copypaste">
+      <text v="Đã sao chép " e="Copied "/>
+    </message>
+	<message val="tdnull">
+      <text v="Dữ liệu rỗng" e="Null"/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã hợp đồng đã tồn tại trong hợp đồng." e="The record already exists."/>
+    </message>
+    <message val="taxtCodeExists">
+      <text v="Mã số thuế đã tồn tại trong danh mục, &lt;span class='Highlight'&gt;Lưu ý:&lt;/span&gt; hệ thống vẫn lưu dữ liệu vừa cập nhật." e="The tax code is already exists, &lt;span class='Highlight'&gt;Warning:&lt;/span&gt; Updated data has been saved."/>
+    </message>
+	<message val="OnLyEdit">
+      <text v="Chỉ thực hiện chức này ở trạng thái sửa." e="Perform this function only in the edited state."/>
+    </message>
+	<message val="Empty">
+      <text v="Ô này trống không có số điện thoại." e="This box is empty without a phone number."/>
+    </message>
+	<message val="Empty1">
+      <text v="Nhập CP bắt buộc chọn Lý do" e="Enter the required CP, select Reason"/>
+    </message>
+	<message val="NotAllow">
+      <text v="Bật microphone trước khi thực hiện cuộc gọi." e="Turn on the microphone before making a call."/>
+    </message>
+  </messages>
+</dir>

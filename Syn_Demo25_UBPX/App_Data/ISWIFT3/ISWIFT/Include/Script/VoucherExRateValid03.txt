@@ -1,0 +1,6 @@
+﻿  select @ngay_ct = getdate()
+  if @id = 0
+    select top 1 @ma_nk = ma_nk, @ten_nk = ten_nk from dmnk where charindex('@@voucherCode', ds_ma_ct) > 0 and (ngay_hl1 is null or @ngay_ct >= ngay_hl1) and (ngay_hl2 is null or @ngay_ct <= ngay_hl2)
+  else
+    select @ma_nk = ma_nk, @ten_nk = ten_nk from #m64
+  exec ISWIFTStoredGetVoucherNo @ma_nk, @ngay_ct, '@@voucherCode', @i_so_ct output, @so_ct output

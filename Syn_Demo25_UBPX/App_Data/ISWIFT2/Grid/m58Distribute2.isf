@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="m58Distribute2" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Chi tiết hóa đơn" e="Allocation to Invoices"></title>
+  <subtitle v="Phiếu thu số %s1 ngày %s2 phân bổ: &lt;b&gt;%s3&lt;/b&gt;, còn lại: &lt;b&gt;%s4&lt;/b&gt;" e="%s"></subtitle>
+
+  <grids>
+    <grid table="cttt20" fieldKey="id" order="ngay_ct, so_ct, id" allowFilter="true" readOnly="false" allowOrder="true" key="loai_tt = 0">
+      <fields>
+        <field name="tag" dataType="B" fieldType="EX" format="0" width="40" readOnly="false">
+          <text v="..." e="..."></text>
+        </field>
+        <field name="stt" dataType="I" fieldType="EX" format="0" width="40">
+          <text v="Stt" e="Order"></text>
+        </field>
+        <field name="so_ct" width="100" link="V" >
+          <text v="Số hóa đơn" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày hóa đơn" e="Voucher Date"></text>
+        </field>
+        <field name="ma_kh" hidden="true" width="120" >
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+        <field name="ma_nt" width="50" hidden="true" >
+          <text v="Ngoại tệ" e="FC"></text>
+        </field>
+        <field name="t_tt_nt" dataType="N" format="FCAmount" width="100">
+          <text v="Tổng tiền" e=""></text>
+        </field>
+        <field name="da_pb_nt" dataType="N" format="FCAmount" width="100" aliasName="0*t_tt_nt as ">
+          <text v="Đã phân bổ" e=""></text>
+        </field>
+        <field name="da_pb_ct_nt" dataType="N" format="FCAmount" width="100" aliasName="0*t_tt_nt as ">
+          <text v="P/bổ trên pthu" e=""></text>
+        </field>
+        <field name="tt_nt" dataType="N" format="FCAmount" width="100" aliasName="0*t_tt_nt as " readOnly="false">
+          <text v="Phân bổ" e=""></text>
+        </field>
+        <field name="cl_nt" dataType="N" format="FCAmount" width="100" aliasName="0*t_tt_nt as " >
+          <text v="Còn lại" e=""></text>
+        </field>
+        <field name="tt_yn" dataType="B" width="80" >
+          <text v="Tất toán" e=""></text>
+        </field>
+        <field name="unit_id" hidden="true" dataType="I" width="80" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_ct" width="80" >
+          <text v="Chứng từ" e="Voucher"></text>
+        </field>
+        <field name="id" dataType="N" fieldType="PK" format="0" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="save">
+          <text v="Lưu phân bổ" e="Save"></text>
+        </button>
+        <button id="delete">
+          <text v="Xóa phân bổ" e="Delete"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+      <script>
+        <query>
+          <text>
+            <![CDATA[<enc>EGBI5eHYh+kanLuGaZ04rDheI9C0wgjZDDSfO4wr55HSu3sgflX09LCjK7LzTqRE31QNN4vt4gIw2HndIvXP3gnPCqxNNzkNMBto8AlPQUNPFXjT9yDUDCHMJtkvi2dtAfkQbtiWPQQ/sYRjWTlgr2INXY9gBQMhW9x77IvtiDWOlGnSfizVXfJfc+i+5fpU0+xpCxdPAVl25j0RWI7csDbkpcIH497mobN5S6Qig7qLiNCo8kPWjYyJQiZTvV0edWRRaEl2/uqYXIvKkoVg+QrDbOOiH0k/DFyHAlnm7SvIK6Ye9rsB7HBbZ2PiLDoAlS+F8aQrFoyS9eHEUuRAMMtUs+BgauqZgSsXmWRLixC76/6NzFYiOQFnaq2ctOSzVc6wk3f0OF02MeYo02izUT7NT8SVUihuCVMfdo3QJ3A/KSmdEKwtpp9AYdY7AYfFX/9Fm4ZrfNx0/Tschirst33gT0+t+j8M/dUAuItyZjt9OXm/UfDtmiH54ekYee2Kazkg+KH3sGHTG54qXmByMWeYALLvC+EZjRlEpZBB/iL5c4tPtoqwZCpktBKVPHN/k+ECpHICALNwK42QN2KMuzd8Ga6EzJuhOHLvo/llWXeOaGrmUP7LKzVxUzgHCDFHv1HZsfYmn4Ymj+wEUVHiz6EYf2j/UNn4rRGiX6Gx+kQ6F4eOJEGjotTpSP/SwSOjBCNAsGnAlR5GP1Gjwrm28PqVEhIiykgt3Zg2sQCg5xqg8JkofYGgKHUEf45Y+u52PMcTCzyqLDdwm71VLbjQGx+Ij15kZlQphuoJ78FIYAGjJgi4O+ilL8eAZGCLfFDLvuioHuGBWZvroThYfURnplY0dauwP2ticb7fzp/JWonn3PR0ceZkJnP/6eVS2pMchG7mbv06V+J2HdkfBFeTHYx2dI7B18XrYsk69hpNbcxjUgXy/SJed71aKXFqkRntX4EuLTy3K/1lvFwoZ0xPOZB/oIfgWdwN06S0L0pKaVc=</enc>]]>
+          </text>
+        </query>
+      </script>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[<enc>r8u4zOiAedP9Q48d3FGS83mpatBOiKRIOSOMrQ4v8oU44Zx7rpm2cDSHOa3trmUOIzZBtHOnzXgbBOs1ojJDXK9mMJFleyzArCcsGkC+2FJavE23sn4aMmNPouC3AsVXbb0nReLkxfrnqyf+NFbt8bKsZChRfvYAGbVifN9bKNqmbAUiIbB5rhZdeVQZAqVJkIKzcZ4VvB3twb+TdyOIXaDkN+qmDgE4JOhVIIij7LUHIPMRItMCkA3qXFKJ1hFFTWL6IKLkJEwRMm6scHESLwbpLnyTlDzfwW5aqsErtNcwefi0X7qTJsHaWeyeAFqKfwkgYGpMRzS+moHovYrl6IM2yduqqdgk1/4IGSaVE2TlibVdc6ViUy4s2sPxvBM1kB+PgISnDekQTSmIeP/+XznwDY1k/6690q5/cIOfyeRaP7tYA6IJVlX5oJiYPdYkALwdzaRyQu23xZMuJdm0Lrt68m5WniuVcsI0cAT2WSQjKvd14EBP/iPvIxodnFlyAa0PwVRATqzc5N7U1NjaYxej4WlBOYK2Xhpvurl5E2QAoDHOZcQ4Y0JjtjGugiKuQ2tzIc3HoJmrpViwGMpfYm57TyfpMVitd06oFBK//9lZVsRKGfPJlSR6WSafvu4vo5muMSw5dBbXzcwrV9BGeJKZzuko3Aa7dWUC1TdB5Jaz24n08nzjVTbvZoNDo1z6baA7cJZG7ELyBGVVBK8PFXScTMKGwUEeRfdTxPWt+o4nazKw1EK5kcPvEfGFLqvewxch3vzWTq9LjhL5pkiviTbng05DAPq85yqeC0Y6fjJE378EGarZ1PRZjNNzIqUcCH/btavzn03hPu3To4pJt6R+2fN52fx7C/WuMHZTfDiR1rNVRkijvkclqWx1SYXSj+b6dRoucTlii2OlpXG33kBCn6mkmzGmybypLbgQrbgqfp6t3jSVHag1z1p+7J4EOD+/hoBWcI2KugBPb9WqdxMGyvvj+YphFIDtufpk9236p7Q8ow56pbaY6OmstKQZt7nNC5UAZH0ex1lABJYJHHvVV4TTWJyrjGZPp3Lo5ESLZ9OrHg76dP7XedPu+J3p3CQcQQLA2qzoxXW4l4oKRfaY8g+OwzrO0i2DGWpTDzgIFRBEnDHEm5TljiUTE8Fm9g/yQEkiBwS+PGrL+MI244SLQM/UdBiysLtzaIca4bjcwjRAh2MYBe4/PK66U3Yxt2XdNGn6IHV8FdtTGtZXGMPxl2ayp767x3htVfMTPAv8x5vmmoCBmixcnE8t9qnXMSNh5WF56COn74h1Tr3DqORRtwf2BXGua/BaLilhLysO8ZY4kaMnaB1tyax/zauSyWLaCGk3KvNRqTfAnVlxEguy20Q9DzNJf32wfVy2/z3/+zZNzYVBY510T2m5MEYSFIcLkHF0QJkBRgY6t1bp4ghZlAXio1fPxY4OQpgT73pc5338T1Q+OZy95u4Og5XKvxPVs8zEdRES2M2MzhjrhhQzEyi3dMzxZI/8K5ZVtGE/INZg+UtHmGHtL7oLoUsH</enc>]]>
+    </text>
+  </js>
+
+  <css>
+    <text>
+      <![CDATA[<enc>XN7SSMVQXNjTZZuKXE9kvamr3qklLMQb194oNMt+zqHlch5uK9b5CYBw1rrMUUCiCZwUbXuNuPwsT5HcAhuyl2lKZ/D0FzEaXRtSkSJNkYw=</enc>]]>
+    </text>
+  </css>
+
+  <script>
+    <request code="SaveDistribute" transaction="true">
+      <text>
+        <![CDATA[<enc>A3JlrBZxLAU9AzH3fXZp5DW13LYUIbwiPhzwYkLz/Yxnl7Zqsf7h4QbRx9VxDF8aews1O50qZpHozk79vplYs0YqmGeSjdBwVJqZfD3+fG5JyLYm84G6zxjG2u93G7nySqt/h8eqHPUtyHCfkl3TMNz9JGiuHyZbFKRMlrj2nd0jm0DfBUCXAwun/hzugyQueJuTO9Tn5TPwj+qGBt3tH8Bm/aavDEHlthcxenWPvObzVXVpmAG8C8BLzc/zEvADuiWOdHVHe35+xdrMplftCwov1R1RhURKOmDyeMeBWX83vEe5Gvtbk0kWTard7l6V6KB6VdIBxYyzFUrVA3drdW5RT/gr20cjc+P+ApO0rkCPn9MTQZSuV9f3KAv5J8kb9Wolgmcvkz7H6wrqU/CorzPFX/MhuBR95l622+eYrj7nVWXGUhXB6voTQjaqSI3j3tKFEaXNfPrcBwKr4PGstN4JmcKlVN9fXO9PltsNRMg=</enc>]]>
+      </text>
+    </request>
+
+    <request code="DeleteDistribute" transaction="true">
+      <text>
+        <![CDATA[<enc>IAxVQXgeXaqOMZAFSpXGaaIYHOmUl9//RSHwWpUlWA1L5ogOHVwTM45MxG/JJmIm9z2dWSylwT5s5zgxZWThOS0MFBXgxiOVepT8vjdUwscdyEQqZcIa/cADLLFEHlYbnyvbcX2N5t29dnyfZkHQowMxCuHphds5dlR5GxGPdIS/BXufilqQ4aSY/dCM0wiC6ldAEjNveSNQUcISPED3CmEEmJ934Gk+ALBAVKI3ibO2vqfNgfnWPsVsUVzqjMtKWUyp1idEjYfxLJ/ybVHdjA==</enc>]]>
+      </text>
+    </request>
+
+    &VoucherJSLoading;
+  </script>
+
+  <messages>
+    <message val="NoRowsChoice">
+      <text v="Không có dòng phân bổ được nhập" e=""/>
+    </message>
+    <message val="GreaterThanAR">
+      <text v="Số tiền phân bổ vượt quá số tiền trên phiếu thu, không thể lưu" e=""/>
+    </message>
+  </messages>
+</dir>

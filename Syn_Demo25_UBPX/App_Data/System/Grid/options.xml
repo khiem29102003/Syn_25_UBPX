@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="options" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Khai báo các tham số tùy chọn" e="Optional Parameters"></title>
+  <subtitle v="Sửa tham số tùy chọn" e="Edit Parameters"></subtitle>
+  <grids>
+    <grid table="voptions" fieldKey="name" order="name" allowFilter="true" allowOrder="true" key="" >
+      <fields>
+        <field name="name" hidden="true" fieldType="PK" width="0">
+          <text v="" e=""></text>
+        </field>
+        <field name="descript" fieldType="PK" width="350" filterType="Code">
+          <text v="Tên tham số" e="Name"></text>
+        </field>
+        <field name="val_mask" width="250" >
+          <text v="Giá trị" e="Giá trị"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="edit">
+          <text v="$EditToolbar" e="$EditToolbar"></text>
+        </button>
+        <button id="find">
+          <text v="$FindToolbar" e="$FindToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(128)
+set @strKey = case when @cgroup = '' then '1=1' else 'cgroup = ''' + dbo.ISWIFTFunctionReplaceSQLParam(@cgroup) + '''' end + ' and status = 1'
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$options(f){
+  this.constructor(f);
+}
+grid$options.prototype = new DirEvent();
+grid$options.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+</dir>

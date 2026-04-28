@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="i10" dirViewType="Lookup" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Thẻ kho" e="Stock"></title>
+
+  <grids>
+    <grid table="" fieldKey="id" fieldName="so_ct" order="id" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="id" dataType="N" fieldType="PK" width="60" format="-1">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="ma_unit" width="80" aliasName="d" join="left join sysunit d on a.unit_id = d.unit_id" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="so_ct" width="100" fieldType="RF" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+        <field name="ma_kho" width="100" >
+          <text v="Mã kho" e="Site"></text>
+        </field>
+        <field name="ma_vt" width="100">
+          <text v="Mã vật tư" e="Item Code"></text>
+        </field>
+        <field name="ten_vt" width="250" aliasName="b" join="left join dmvt b on a.ma_vt = b.ma_vt">
+          <text v="Tên vật tư" e="Item Name"></text>
+        </field>
+        <field name="ma_lo" width="100" >
+          <text v="Mã lô" e="Lot"></text>
+        </field>
+        <field name="ma_vi_tri" width="100" >
+          <text v="Mã vị trí" e="Location"></text>
+        </field>
+        <field name="ma_kh" width="120" >
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="250" aliasName ="c" join="left join dmkh c on a.ma_kh = c.ma_kh" >
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+        <field name="ma_nt" width="80" >
+          <text v="Ngoại tệ" e="FC"></text>
+        </field>
+        
+        <field name="sl_nhap" dataType="N" format="Qty" width="100">
+          <text v="Sl nhập" e="Received Q'ty"></text>
+        </field>
+        <field name="tien_nt_nhap" dataType="N" format="FCAmount" width="100">
+          <text v="Tiền nhập nt" e="FC Receive Amt."></text>
+        </field>
+        <field name="tien_nhap" dataType="N" format="Amount" width="100">
+          <text v="Tiền nhập" e="Receive Amt."></text>
+        </field>
+
+        <field name="sl_xuat" dataType="N" format="Qty" width="100">
+          <text v="Sl xuất" e="Issued Q'ty"></text>
+        </field>
+        <field name="tien_nt_xuat" dataType="N" format="FCAmount" width="100">
+          <text v="Tiền xuất nt" e="FC Issued Amt."></text>
+        </field>
+        <field name="tien_xuat" dataType="N" format="Amount" width="100">
+          <text v="Tiền xuất" e="Issued Amt."></text>
+        </field>
+
+        <field name="ma_nvbh" width="100" >
+          <text v="Mã nhân viên bh" e="Sales"></text>
+        </field>
+        <field name="ten_nvbh" width="250" aliasName="nv" join="left join dmnvbh nv on a.ma_nvbh = nv.ma_nvbh">
+          <text v="Tên nhân viên" e="Sales Name"></text>
+        </field>
+        <field name="tien_nt2" dataType="N" format="FCAmount" width="100">
+          <text v="Doanh thu nt" e="FC Revenue"></text>
+        </field>
+        <field name="tien2" dataType="N" format="Amount" width="100">
+          <text v="Doanh thu" e="Revenue"></text>
+        </field>
+        <field name="ck_nt" dataType="N" format="FCAmount" width="100">
+          <text v="Chiết khấu nt" e="FC Discount"></text>
+        </field>
+        <field name="ck" dataType="N" format="Amount" width="100">
+          <text v="Chiết khấu" e="Discount"></text>
+        </field>
+        
+        <field name="ma_bp" width="100" >
+          <text v="Mã bộ phận" e="Department"></text>
+        </field>
+        <field name="ma_vv" width="100" >
+          <text v="Mã vụ việc" e="Job"></text>
+        </field>
+        <field name="unit_id" dataType="I" hidden="true" width="100" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="id" dataType="I" hidden="true" width="100" >
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="ma_ct" width="100" >
+          <text v="Mã chứng từ" e="VC Code"></text>
+        </field>
+      </fields>
+      
+      <buttons>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="print">
+          <text v="$PrintToolbar" e="$PrintToolbar"></text>
+        </button>
+        <button id="editPrintForm">
+          <text v="$EditPrintFormToolbar" e="$EditPrintFormToolbar"></text>
+        </button>
+        <button id="export">
+          <text v="$ExportToolbar" e="$ExportToolbar"></text>
+        </button>
+      </buttons>
+    </grid>
+  </grids>
+
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+declare @q nvarchar(4000), @key nvarchar(4000), @partable varchar(32), @i int
+select @fieldKey = dbo.ISWIFTFunctionReplaceSQLValue(@fieldKey), @valKey = dbo.ISWIFTFunctionReplaceSQLValue(@valKey), @i = 1, @key = ''
+while @i <= dbo.sf_GetWordCount(@fieldKey) begin
+	set @key = @key + case when @i <> 1 then ' and ' else '' end + 'a.' + dbo.sf_GetWordNum(@fieldKey, @i) + ' = ''' + dbo.sf_GetWordNum(@valKey, @i) + ''''
+	set @i = @i + 1
+end
+create table #par(ngay_ct date)
+set @q = 'insert into #par select ngay_ct from ' + dbo.ISWIFTFunctionReplaceSQLValue(@table) + ' a where ' + @key
+exec (@q)
+select @q = 'select @@gridFields from ' + 'r70$' + convert(char(6), ngay_ct, 112) + ' a @@gridJoin where ' + @key + ' order by line' from #par
+exec (@q)
+drop table #par
+        ]]>
+      </text>
+    </processing>
+  </script>
+  
+</dir>

@@ -1,0 +1,41 @@
+<grid id="v41_3" table="v41_3" fieldKey="id, ma_cong" order="ma_cong" readOnly="false">
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+		
+        <field name="ma_cong"  width="100" viewType="Lookup" readOnly="true" copy="false" >
+          <text v="Mã cont" e="Cont Code"></text>
+          <viewInfo lookupType="One" lookupId="dmcong" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_cong" lookupInfo="dmcong|ma_cong|ten_cong" />
+        </field>
+        <field name="ten_cong" width="150" fieldType="EX" inactivate="true" readOnly="true" aliasName="b" join=" left join dmcong b on a.ma_cong = b.ma_cong ">
+          <text v="Container" e="Container"></text>
+        </field>
+		<field name="chon_yn" dataType="B" width="80" readOnly="false" >
+          <text v="Chọn" e="Check"></text>
+        </field>
+      </fields>
+		
+							
+      <buttons>
+        <button id="refresh">
+          <text v="Hiện tất cả" e="Show All"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+	  
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+set nocount on
+select @@fields into #t from v41_3 a @@join where @@key order by ma_cong
+select * from #t order by ma_cong
+drop table #t
+         ]]>
+          </text>
+        </query>
+      </script>
+    </grid>

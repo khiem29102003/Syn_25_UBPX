@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<script>
+  <beforeWriteLog>
+    <text>
+      <![CDATA[
+if @@admin <> 1
+  if not exists(select 1 from sysmenu a where controller = @controller and exists(select 1 from sysrightmenu b where b.user_id = @@userId and a.id = b.menu_id and a_view = 1)) begin
+    select '$NotAuthorize' as message
+    return
+  end
+         ]]>
+    </text>
+  </beforeWriteLog>
+
+  <getDynamicReportTemplate>
+    <text>
+      <![CDATA[
+select rtrim(user_id) + '_' + rtrim(id) as id, report_name%l as text, 'rdlc' as fileType, 'false' as disabled, '' as image, id as xid, user_id, '1' as dynamic from sysreportprint where (user_id in (@@userId, 0) or form_type = 1) and controller = '@@controller' order by case when user_id = @@userId then 0 else id end
+         ]]>
+    </text>
+  </getDynamicReportTemplate>
+</script>

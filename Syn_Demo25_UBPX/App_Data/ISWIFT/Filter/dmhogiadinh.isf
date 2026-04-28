@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="dmhogiadinh" table="" height="" fieldKey="ma_hogiadinh" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Điều kiện lọc" e="Filter Condition"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120,120"  >
+      <fields>
+		<field name="ma_hogiadinh" inactivate="false" label="1" field="-" operation="like" >
+			<text v="Mã văn bản" e="Document Code"></text>
+		</field>
+		<field name="ma_chuho" allowBlank="true" viewType="Lookup" label="1" field="1"  hidden="false" operation="like">
+		  <text v="Mã chủ hộ" e="Household Head Code"></text>
+		  <viewInfo lookupType="One" lookupId="qldctcccd" lookupKey="ma_qhgd = '03' and ma_dancu in (select ma_chuho from dmhogiadinh) and status = 1" lookupCheck="1=1" lookupRef="ten_chuho" lookupInfo="qldctcccd|ma_dancu|ten_dancu" />
+		</field>
+		<field name="ten_chuho" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+		  <text v="" e=""></text>
+		</field>
+		<field name="ma_ttp" allowBlank="true" viewType="Lookup" label="1" field="1"  hidden="false" operation="like">
+		  <text v="Mã tỉnh thành phố" e="Province/City Code"></text>
+		  <viewInfo lookupType="One" lookupId="dmttp" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_ttp" lookupInfo="dmttp|ma_ttp|ten_ttp" />
+		</field>
+		<field name="ten_ttp" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+		  <text v="" e=""></text>
+		</field>
+		<field name="ma_phuongxa" allowBlank="true" viewType="Lookup" label="1" field="1"  hidden="false" operation="like">
+		  <text v="Mã phường/xã" e="Ward/Commune Code"></text>
+		  <viewInfo lookupType="One" lookupId="dmphuongxa" lookupKey="ma_ttp = ![ma_ttp]! and status = 1" lookupCheck="1=1" lookupRef="ten_phuongxa" lookupInfo="dmphuongxa|ma_phuongxa|ten_phuongxa" />
+		</field>
+		<field name="ten_phuongxa" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+		  <text v="" e=""></text>
+		</field>
+		<field name="ma_khupho" allowBlank="true" viewType="Lookup" label="1" field="1"  hidden="false" operation="like">
+		  <text v="Mã khu phố" e="Neighborhood Code"></text>
+		  <viewInfo lookupType="One" lookupId="dmkhupho" lookupKey="(ma_phuongxa = '' or  ma_phuongxa = ![ma_phuongxa]!) and status = 1" lookupCheck="1=1" lookupRef="ten_khupho" lookupInfo="dmkhupho|ma_khupho|ten_khupho" />
+		</field>
+		<field name="ten_khupho" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+		  <text v="" e=""></text>
+		</field>
+		<field name="dia_chi" label="1" field="-"  allowBlank="true" disabled="false" operation="dia_chi like N'%%s%'">
+		  <text v="Địa chỉ" e="Address"></text>
+		</field>
+		<field name="status" viewType="Combobox" label="1" field="1" operation="=" >
+          <text v="Trạng thái" e="Status"></text>
+		  <viewInfo>
+			<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 ">
+				<option val="">
+                <text v="Tất cả" e="All"></text>
+              </option>
+			</options>
+		  </viewInfo>
+		</field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>9ePPrC+HbhwfpGwZNLnMoSqC/VjFH324JUtkGcQ050uCOfGIZKUqIKQuLAo6J7k5M5ggamsRVvHx5hRIavIs+HJChW6vRZJNweEnY5VHy3BLON2fqWJquahCgqqcjI7I/gwu6h7sf2Nxd43+1zYTPaXz3QEeRDozUsFMOpq3uniGrjvwTOLZGrFZ9tTd+d4RsxsHrJSZxkow4RbyEB5H+g==</enc>]]>
+    </text>
+  </js>
+</dir>

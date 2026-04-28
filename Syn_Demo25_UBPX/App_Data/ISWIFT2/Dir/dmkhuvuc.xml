@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmkhuvuc" table="dmkhuvuc" fieldKey="ma_kv" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục khu vực" e="Area Directory"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_kv" format="U" label="1" field="1" allowBlank="false" fieldType="PK" >
+          <text v="Mã khu vực" e="Area code"></text>
+        </field>
+        <field name="ten_kv" label="1" field="2" allowBlank="false" fieldType="PK" >
+          <text v="Tên khu vực" e="Area name"></text>
+        </field>
+        <field name="ten_kv2" label="1" field="2">
+          <text v="Tên khác" e="Other name"></text>
+        </field> 
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmkhuvuc(p){
+  this.constructor(p);
+}
+dir$dmkhuvuc.prototype = new DirEvent();
+dir$dmkhuvuc.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmkhuvuc.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+  dir$dmkhuvucDisabledMasterField(p, g);
+
+}
+
+function dir$dmkhuvucDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_kv').trim() != '')
+  {
+    p.setDisabled('ma_kv', true);
+  }
+  else
+  {
+    p.setDisabled('ma_kv', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã khu vực đã tồn tại' else N'Area code is exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã khu vực đã tồn tại' else N'Area code is exists' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+
+</dir>

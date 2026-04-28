@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmxe" table="dmxe" fieldKey="ma_xe" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục Xe" e="Vehicle List"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120" >
+      <fields>
+       <field name="ma_xe" fieldType="PK" width="100" filterType="Code" >
+          <text v="Biển số" e="License plate"></text>
+        </field>
+        <field name="ten_xe" width="250">
+          <text v="Chủ Xe" e="Car owner"></text>
+        </field>		
+		<field name="ma_loai" viewType="Lookup" label="1" field="1" >
+          <text v="Mã loại" e="Type code"></text>
+          <viewInfo lookupType="One" lookupId="dmloaixe" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_loai" lookupInfo="dmloaixe|ma_loai|ten_loai" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_loai" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_nhom" viewType="Lookup" label="1" field="1" >
+          <text v="Mã nhóm" e="Group code"></text>
+          <viewInfo lookupType="One" lookupId="dmnhomxe" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_nhom" lookupInfo="dmnhomxe|ma_nhom|ten_nhom" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_nhom" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="dia_chi" label="1" field="-" >
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+		<field name="nhan_hieu" label="1" field="1" >
+          <text v="Nhãn hiệu" e="Brand"></text>
+        </field>
+		<field name="so_khung" label="[70]" field="[160]" nextRow="false">
+          <text v="Số khung" e="Frame number"></text>
+        </field>
+		<field name="mau_son" label="1" field="1"  >
+          <text v="Màu sơn" e="Color of paint"></text>
+        </field>
+		<field name="so_may" label="[70]" field="[160]" nextRow="false" >
+          <text v="Số máy" e="Phone number"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+	<form gravity="TopRight" columns="120,120" >
+      <fields>
+	    <field name="ngay_dk" label="1" field="1" dataType="D">
+          <text v="Ngày đăng kí" e="Registration date"></text>
+        </field>
+		<field name="ngay_dk_ld" label="1" field="1" dataType="D" >
+          <text v="Ngày đăng kí lần đầu" e="First registration date"></text>
+        </field>
+		<field name="han_dk" label="1" field="1" dataType="D">
+          <text v="Hạn đăng kí" e="Registration deadline"></text>
+        </field>
+		<field name="tai_trong" label="1" field="1" dataType="N">
+          <text v="Tải trọng" e="Weight"></text>
+        </field>
+		<field name="dung_tich" label="1" field="1" dataType="N">
+          <text v="Dung tích" e="Capacity"></text>
+        </field>
+	  </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmxe(p){
+  this.constructor(p);
+}
+dir$dmxe.prototype = new DirEvent();
+dir$dmxe.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã xe đã tồn tại' else N'Vehicle code already exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã xe đã tồn tại' else N'Vehicle code already exists' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+
+</dir>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="dmcong" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục công/thùng hàng" e="List of Container/Cargo"></title>
+  <grids>
+    <grid table="dmcong" fieldKey="ma_cong" fieldName="ten_cong" order="datetime0,datetime2" allowFilter="true" allowOrder="true" key="" >
+      <fields join="">
+        <field name="ma_cong" fieldType="PK" width="120" filterType="Code" >
+          <text v="Mã Container" e="Container Code"></text>
+        </field>
+        <field name="ten_cong" width="250">
+          <text v="Container" e="Container Name"></text>
+        </field>
+		<field name="ten_cong2" width="250">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+		 <field name="ma_loai" width="120">
+          <text v="Mã loại" e="Type Code"></text>
+        </field>
+		<field name="ten_loai" width="250" fieldType="EX">
+          <text v="Loại Container" e="Container Type"></text>
+        </field>
+      </fields>
+	  <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = @lookupKey + case when @val = '' then '' else ' and (@@fieldKey like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or @@fieldName like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmloaicong c on a.ma_loai = c.ma_loai', 'c.ten_loai', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+    </grid>
+  </grids>
+</dir>

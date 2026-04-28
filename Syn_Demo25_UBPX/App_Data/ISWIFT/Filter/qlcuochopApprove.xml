@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="qlcuochopApprove" table="" height="" fieldKey="id" voucherCode="PF1" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Điều kiện lọc" e="Filter Condition"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D">
+          <text v="Ngày họp (từ/đến)" e="Meeting Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+
+		<field name="ma_cuochop" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Mã cuộc họp" e="Meeting code"></text>
+			<viewInfo lookupType="One" lookupId="qlcuochop" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_cuochop"  />
+		</field>
+		<field name="ten_cuochop" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 	
+        <field name="noi_dung" label="1" field="-" operation="a.noi_dung like N'%%s%'">
+          <text v="Nội dung" e="Content"></text>
+        </field>
+		<field name="dia_diem" label="1" field="-" operation="a.dia_diem like N'%%s%'">
+          <text v="Địa điếm" e="Address"></text>
+        </field>
+      </fields>
+    </form>
+
+    <form gravity="BottomLeft" columns="120,120,120,120"  >
+      <fields>
+        <field name="ma_unit" viewType="Lookup" inactivate="true" label="1" field="2" hidden="true"		>
+          <text v="Đơn vị" e="Unit"></text>
+          <viewInfo lookupType="Multi" lookupId="sysunit" lookupKey="status = 1 and unit_id in (select unit_id from dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @@admin, ''))" lookupCheck="1 = 1" lookupRef="ten_unit" />
+        </field>
+        <field name="ten_unit" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="3" valueDefault="1" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Chờ đồng ý" e="Pending Approval"/>
+              </option>
+			  <option val="5">
+                <text v="Đã đồng ý" e="Approved"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+
+      </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$qlcuochopApprove(p){
+  this.constructor(p);
+}
+filter$qlcuochopApprove.prototype = new DirEvent();
+filter$qlcuochopApprove.prototype.afterInit = function(){
+  var p = this._dir;
+}
+filter$qlcuochopApprove.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir;
+  if (opt._status == 1) sub = ['%s', p.msg('approve')]
+  else if (opt._status == 5) sub = ['%s', p.msg('undo')]
+  else sub = ['%s', p.msg('open')]
+  return [m2, opt, sub];
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+
+  <messages>
+    <message val="approve">
+      <text v="xác nhận" e="confirm"/>
+    </message>
+    <message val="undo">
+      <text v="bỏ xác nhận" e="Cancel confirmation "/>
+    </message>
+    <message val="open">
+      <text v="bỏ đóng" e="Open"/>
+    </message>
+  </messages>
+</dir>

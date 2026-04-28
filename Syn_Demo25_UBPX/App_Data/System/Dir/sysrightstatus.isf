@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="sysrightstatus" table="sysrightstatus3" fieldKey="ma_ct,user_id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Giới hạn quyền truy nhập cho các trạng thái của chứng từ" e="Limit Access Right to Voucher Statuses"></title>
+  <title0 v="Mới" e="New" />
+  <title1 v="Sửa" e="Edit" />
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_ct" format="U" label="1" field="1" viewType="Lookup" clientDefault="true" allowBlank="false" fieldType="PK" >
+          <text v="Mã chứng từ" e="Voucher Code"></text>
+          <viewInfo lookupType="One" lookupId="dmct" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_ct" lookupInfo="dmct|ma_ct|ten_ct" />
+        </field>
+        <field name="ten_ct" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" clientDefault="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="user_id" hidden="true" dataType="I" label="1" field="1" fieldType="PK" >
+          <text v="User id" e="User id"></text>
+        </field>
+        <field name="username" fieldType="EXParam" viewType="Lookup" allowBlank="false" label="1" field="1">
+          <text v="Tên/Nhóm" e="Name/Group"></text>
+          <viewInfo lookupType="One" lookupId="vsysuserinfo" lookupKey="status = 1 and admin = 0" lookupCheck="1=1" lookupRef="nickname" lookupInfo="vsysuserinfo|username|nickname" />
+        </field>
+        <field name="nickname" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="1" gravity="MiddleLeft" height="350" >
+      <text v="Trạng thái" e="Status"></text>
+      <fields>
+        <field name="sysrightstatus2" label="" field="-" viewType="Grid">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  <grids>
+    <grid id="sysrightstatus2" table="sysrightstatus2" fieldKey="user_id, ma_ct, ma_ttct" order="ma_ttct" allowFilter="true" allowOrder="true" readOnly="false">
+      <fields>
+        <field name="user_id" dataType="I" foreignField="user_id" fieldType="PK" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_ct" foreignField="ma_ct" fieldType="PK" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_ttct" width="80" hidden="true" fieldType="PK" readOnly="true" >
+          <text v="Trạng thái" e="Status"></text>
+        </field>
+        <field name="ten_ttct" width="250" readOnly="true" inactivate="true" aliasName="b" >
+          <text v="Tên trạng thái" e="Status Name"></text>
+        </field>
+        <field name="a_view" dataType="B" width="80" readOnly="false" >
+          <text v="Xem" e="View"></text>
+        </field>
+        <field name="a_new" dataType="B" width="80" readOnly="false" >
+          <text v="Mới" e="New"></text>
+        </field>
+        <field name="a_edit" dataType="B" width="80" readOnly="false" >
+          <text v="Sửa" e="Edit"></text>
+        </field>
+        <field name="a_del" dataType="B" width="80" readOnly="false" >
+          <text v="Xóa" e="Delete"></text>
+        </field>
+        <field name="stt" dataType="I" aliasName="b" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[<enc>m+NJqfNgxHrO3YuPcxH14FOY5iTN6VMW7deC7mTalmdtosPadWn75Guu/Xp7rza9T5Ede2XdzX5HeTXCzNGHNRKNFmnecBULKcAEWOj0jQJl4CYpUYiAtb07lc4Q8XUywpEu05iDcJ6hXWwBF69zA4oEDF2DuHYEWBKdUrYR8s2UpDwaZ3RdqP0i00X3af3gnoVTaRL4kj534LJJkncCY3meLXgAjXog3wu6vePgLNzqos+WbSOidbgKMkS1xV5q4UIpdCfj+DYdVYWa71FeFQ==</enc>]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>Lv3faLv27XNd3+48iS28wzF+srbQLG2EXIAWkp4neQv9wbwE4NGwZYg+jE3Tn8wIkJWlsMvsJdZf6cKsDGTcES9v6BWOLb4uvzD7kh1VsOVJ5cf6reC9v/KjgGVzCuc5sqdkj5EAmcaZH/dv4BeyDATbtYTUNltshS+Q5YhmiupmjDm8L4JjoXEdwp2DD3U752gBKpgWhRoo97qqAI9kYvWewT+Kg5o3IKPTTj+6szx+qRRKMHNS9cbIEnn7UZQFHhKw2xlepae5YjlmLoTMvenF84w0J1D7mjn3qH77dhcN/wflfdbsm4D0UurcLgeNf4BJKMWuysd84cBwwMmwuPiWK2KdtoQOjDRVFmaNnp4/h02N4BHfRod6UwQAS7TqRGaSrcoV16wpxmT8NzFWYxo3HYNYVQkGexTBwysnJZM=</enc>]]>
+    </text>
+  </js>
+
+  <script>
+    <query>
+      <text>
+        <![CDATA[<enc>xEVHRMEZJK02WrBNdmBrzeyEJFpKVeMQkLiXAkw5tkpGHFK1rlRtROC0XkLA9iAMA6eZRFCVqAzE+5ifUiaB6HhXAjfKWdQP9za0OR7jSrYprL/QK2UGcaEwRq266gCcCdYXWfckxWI7kGY5Ix0ITzII7aWe2pG+7/BMgWZB61Cb6QHUEs5/u/RBsI+3JSb8h95VbM5OwKVzXuNODbVyfOui9i4ltbk9MKVHIEHe4h8=</enc>]]>
+      </text>
+    </query>
+
+    <beforesave>
+      <text>
+        <![CDATA[<enc>GJgBVkOd9xy3In+SUACpOIWsJhz27nlnO+8pkLN4hGdjeD5jP9qR/Uh19nTTwvCQs3DUp3VMEbq5IEvaYHz85M9foe3zIZ8CLkja4nGfWvNw00rc1AdSqAnsizcYV5SF</enc>]]>
+      </text>
+    </beforesave>
+
+    <deleted>
+      <text>
+        <![CDATA[<enc>l2RBYdHOlenDqXbxvQR0AmR7W8WTMDag7SeNYAx057que0J6nhpvrfhLo+DsOAqOlU+AFdgMsQPrZpOzNHmk9JP/c5Q5aN/xiduShdFUnO1CpOnm8Sd+FE/o5PVsVHtqs7+opkRs+Xp83gYfisC/XyTnAZcrzt/KMtqZywaUtfXWv6wENo999VMKBtgaH75y</enc>]]>
+      </text>
+    </deleted>
+    
+    <updated>
+      <text>
+        <![CDATA[<enc>QMMVPI+GMLiRHqtzglz/Pp9ScJtUgwCSDB2kyK4aCTkG9QrUikfmmGNKRSNGhvfl1/fRl/ApTNXFcbglWak9rmHywbB9IoC5tf2sj3PHHOJrzow0PdoP+qmv0LS6cMIVL1T5ScqiWWzWcz0Nyki92zgoMYQ8AkH0g8/USGqp6JLKybC5hMIWxEYKwvbzUnGcEi5lLWrHhY3RQeJb5zsiiQ==</enc>]]>
+      </text>
+    </updated>
+    
+    <aftersave>
+      <text>
+        <![CDATA[<enc>xb2rAmc693GQGAq5bKJH4vEfRbr9mpzXwqAP2m20JH2MtCjRTN484TYL2JNvaMAf8+MsBXNfHF/GfydtMY1G0gOhKj+NXQ1ndcx858mcTO4Heu8WfkLEDAb2qBgdUZAVqux5FBP++8U4auaxaLKk8sHwlrqwiSUi9s8FuUM+I1JoALr92eURdpy2tyDVA2F0k+Q29fcSN3r+D+a6gsKZRqC078+INN//DxyiCttLUO0Mah3CFafmpnjOVBEA3PNfVWuW08U4Ni34gJZYTtk4OLPDxq+moNzIa7lF+LAaKtd6TT7FiZzddmSXaz68XaCfSu6UmeNGO6ejOOC9HTAdHQ==</enc>]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã chứng từ - Tên/nhóm đã tồn tại" e="Voucher Code - Name/Group Already Exists"/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã chứng từ - Tên/nhóm đã tồn tại" e="Voucher Code - Name/Group Already Exists"/>
+    </message>
+  </messages>
+  
+</dir>

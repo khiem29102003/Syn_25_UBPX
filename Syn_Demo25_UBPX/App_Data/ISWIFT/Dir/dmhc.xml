@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmkhobai" table="dmkhobai" fieldKey="ma_kho" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục cảng biển" e="List of Seaports"></title>
+  <title0 v="Thêm mới" e="Create New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_kho" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="1">
+          <text v="Mã cảng" e="Port Code"></text>
+        </field>
+        <field name="ten_kho" label="1" field="-" allowBlank="false" importable="5">
+          <text v="Tên cảng" e="Port Name"></text>
+        </field>
+        <field name="ten_kho2" label="1" field="-" importable="10">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+        <field name="hc_yn" dataType="B" clientDefault="true" blank="1" label="[70]" field="[40]" nextRow="true" inactivate="true" valueDefault="1" hidden="false" importable="15">
+          <text v="Cảng biển" e="Port"></text>
+        </field>
+	    <field name="hk_yn" dataType="B" clientDefault="true" label="[120]" field="[40]" nextRow="false" inactivate="true" valueDefault="0" hidden="false" importable="20">
+          <text v="Cảng hàng không" e="Port Airline"></text>
+        </field>
+
+		
+		<field name="ma_ttp" viewType="Lookup" label="1" field="[120]" importable="25">
+           <text v="Khu vực" e="Area"></text>
+           <viewInfo lookupType="One" lookupId="dmttp" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_ttp" lookupInfo="dmttp|ma_ttp|ten_ttp" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_ttp" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+		<field name="ma_qg" viewType="Lookup" label="1" field="[120]" importable="30">
+           <text v="Quốc gia" e="Country"></text>
+           <viewInfo lookupType="One" lookupId="dmquocgia" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_qg" lookupInfo="dmquocgia|ma_qg|ten_qg" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_qg" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" valueDefault="1" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmkhobai(p){
+  this.constructor(p);
+}
+dir$dmkhobai.prototype = new DirEvent();
+dir$dmkhobai.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmkhobai.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+dir$dmkhobaiDisabledMasterField(p, g);
+
+}
+
+function dir$dmkhobaiDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_kho').trim() != '')
+  {
+    p.setDisabled('ma_kho', true);
+  }
+  else
+  {
+    p.setDisabled('ma_kho', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+  
+  <css>
+	<text>
+	  <![CDATA[
+		.control-label.ma_kho, .control-label.ten_kho
+		{	
+			//font-weight:bold;	
+			color: #499b98;;
+		}
+	  ]]>
+	</text>
+  </css>
+  
+  <script>
+	<importing>
+      <text>
+        <![CDATA[
+		@@insert
+        ]]>
+      </text>
+    </importing>
+  </script>
+  
+  <messages>
+	<message val="codeExistsNewMsg">
+		<text v="Mã cảng biển đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The sea port code already exists in the catalog, please choose a different code."/>
+	</message>
+	<message val="codeExistsEditMsg">
+		<text v="Mã cảng biển đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The sea port code already exists in the catalog, please choose a different code."/>
+	</message>
+  </messages>
+
+
+</dir>

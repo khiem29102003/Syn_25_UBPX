@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="cskh0BN1" fieldKey="id" voucherCode="PX3" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lọc báo giá" e="Quotation Entry Filter"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" allowBlank="false" dataType="D">
+          <text v="Ngày c/từ từ/đến" e="Date From"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" allowBlank="false" inactivate="true" dataType="D" nextRow="false">
+          <text v="Ngày đến" e="Date To"></text>
+        </field>
+		<field name="ngay_ct" label="" field="1" allowBlank="false"  valueDefault="new Date()"  inactivate="true"  hidden="true" dataType="D" nextRow="true">
+          <text v="Ngày chứng từ" e="Voucher Date"></text>
+        </field>
+		<field name="ma_ct_dh" viewType="Combobox" inactivate="true" label="1" field="1">
+          <text v="Loại đơn hàng" e="Type Order"></text>
+          <viewInfo>
+            <options>
+              <option val="">
+                <text v="Tất cả" e="All"></text>
+              </option>
+              <option val="FCL">
+                <text v="Hàng FCL" e="FCL Marine"></text>
+              </option>
+			  <option val="LCL">
+                <text v="Hàng LCL" e="LCL Marine"></text>
+              </option>
+				<option val="AIR">
+                <text v="Hàng AIR" e="AIR Marine"></text>
+              </option>
+			  <option val="OTH">
+                <text v="Hàng Khác" e="OTHER Marine"></text>
+              </option>
+			  <option val="CTS">
+                <text v="Dịch vụ hải quan" e="Customs Service"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="ma_nt" hidden="true" label="1" field="1">
+          <text v="Mã ngoại tệ" e="Ex Code"></text>
+        </field>
+        <field name="unit_id" dataType="I" hidden="true" label="1" field="1">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+        <field name="ma_noi_di" viewType="Lookup" disabled="true" inactivate="true" label="1" field="1">
+			<text v="Nơi đi" e="Origin "></text>
+			<viewInfo lookupType="One" lookupId="vdmcangdi" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_di" />
+		</field>
+		<field name="ten_noi_di" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+		<field name="ma_noi_den" viewType="Lookup" disabled="true" label="1" field="1" operation="like">
+			<text v="Nơi đến" e="Destination"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangden" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_den"  />
+		</field>
+		<field name="ten_noi_den" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field>  
+		
+		<field name="ma_hang" viewType="Lookup" disabled="true" inactivate="true" label="1" field="1" hidden="true">
+          <text v="Mã hãng tàu" e=" Carriers"></text>
+          <viewInfo lookupType="One" lookupId="dmhangtau" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_hang" />
+        </field>
+        <field name="ten_hang" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+		
+		 <field name="ds_cong" allowBlank="true" viewType="Lookup" label="1" field="2"  hidden="">
+			  <text v="Container" e="Container List"></text>
+			  <viewInfo lookupType="Multi" lookupId="dmcong2" lookupKey="status=1" lookupCheck="status=1" lookupRef="" lookupInfo="dmcong|ma_cong|ten_cong" />
+		</field>
+		<field name="t_tong_trong" dataType="N" label="1" field="1" disabled="false" format="FCAmount" hidden="false">
+			<text v="Trọng lượng(KGS)" e="Gross Weight(KGS)"></text>
+		</field>
+		
+		<field name="t_tong_khoi" dataType="N" label="1" field="1" disabled="false" format="FCAmount"  hidden="false" >
+		  <text v="Volume(CBM)" e="Volume(CBM)"></text>
+		</field>		
+
+        <field name="so_ct" label="1" field="1" allowBlank="true" hidden="true" viewType="Lookup">
+          <text v="Số báo giá" e="Quot. Number"></text>
+          <viewInfo lookupType="One" lookupId="v311" lookupRef="ds_so_ct" lookupKey=" ![ngay_ct2]! >= ngay_hl  and  ngay_hld >= ![ngay_ct1]! and ma_noi_di = ![ma_noi_di]! and ma_noi_den = ![ma_noi_den]! and ma_kh like ![ma_hang]! +'%' and unit_id = ![unit_id]!" />
+        </field>
+      </fields>
+    </form>
+	
+	
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$cskh0BN1(p){
+  this.constructor(p);
+}
+filter$cskh0BN1.prototype = new DirEvent();
+function showToastAndFocus(message, fieldId, p) {
+    $.showToast(message);
+    p.jObject(fieldId).focus();
+	return false;
+}
+filter$cskh0BN1.prototype.afterInit = function(){
+  var p = this._dir;
+  p.valForm(['ngay_ct','ngay_ct1','ngay_ct2','ma_noi_di', 'ten_noi_di', 'ma_noi_den', 'ten_noi_den', 'ma_hang', 'ten_hang','ma_ct_dh','ds_cong','t_tong_trong','t_tong_khoi','ma_nt', 'unit_id'], [p.options._ngay_ct,p.options._ngay_ct1,p.options._ngay_ct2,p.options._ma_noi_di, p.options._ten_noi_di,p.options._ma_noi_den, p.options._ten_noi_den, p.options._ma_hang, p.options._ten_hang,p.options._ma_ct_dh,p.options._ds_cong,p.options._t_tong_trong,p.options._t_tong_khoi, p.options._ma_nt, p.options._unit_id]);
+}
+filter$cskh0BN1.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir;
+  var mactDh = p.valForm('ma_ct_dh'), dsCong = p.valForm('ds_cong'), tongTrong = p.valForm('t_tong_trong'), tongKhoi = p.valForm('t_tong_khoi');
+
+	switch (mactDh) {
+		case 'FCL':
+			if(dsCong.length === 0) {
+				return showToastAndFocus(p.msg('EmptyListContainer'), 'ds_cong', p);
+			}
+			break;
+		case 'LCL':
+		case 'AIR':
+			if(tongTrong === 0) {
+				return showToastAndFocus(p.msg('EmptyGrossWeight'), 't_tong_trong', p);
+			}
+			if(tongKhoi === 0) {
+				return showToastAndFocus(p.msg('EmptyVolume'), 't_tong_khoi', p);
+			}
+			break;
+		default:
+			// Thực hiện hành động cho các trường hợp khác nếu cần
+			console.log('Other value');
+			break;
+	}
+  m2.val('id', 'I', p.options.parent.valForm('id'))
+  opt = $.extend({}, opt, {controller: "cskh0BN1Filter", folder: "Filter", dirViewType: "Dialog", parent: p.options.parent, useDataSet: true, memvars: m2});
+ // opt = $.extend({}, opt, {controller: "v311", folder: "Lookup", dirViewType: "Dialog", parent: p.options.parent, useDataSet: true, memvars: m2});
+  p._close();
+  $.createDir(false, opt);
+  return false;
+}
+
+         ]]>
+    </text>
+  </js>
+
+  <script>
+
+  </script>
+  <messages>
+  <message val="EmptyListContainer">
+      <text v="Vui lòng nhập Container" e="Please Enter Congtainer" />
+    </message>
+    <message val="EmptyGrossWeight">
+      <text v="Vui lòng nhập Trọng lượng(KGS)" e="" />
+    </message>
+	 <message val="EmptyVolume">
+      <text v="Vui lòng nhập Volume(CBM)" e="Error Expiry Date."/>
+    </message>
+	 <message val="OnLyNew">
+      <text v="Chỉ thực hiện chức này ở trạng thái thêm mới." e="Only perform this function in the newly added state."/>
+    </message>
+  </messages>
+</dir>

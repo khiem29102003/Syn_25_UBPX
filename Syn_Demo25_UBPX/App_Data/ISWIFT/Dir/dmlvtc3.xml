@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+	<!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmlvtc3" table="dmlvtc3" fieldKey="ma_lvtc3" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+	<title v="Danh mục nghành hàng cấp 2" e="Level 2 product catalog"></title>
+	<title0 v="Thêm mới" e="New"></title0>
+	<title1 v="Sửa" e="Edit"></title1>
+
+	<forms>
+		<form gravity="TopLeft" columns="120,120,120" >
+			<fields>
+				<field name="ma_lvtc3" label="1" field="2" fieldType="PK" >
+					<text v="Mã nghành hàng" e="Industry code"></text>
+				</field>
+				<field name="ten_lvtc3" label="1" field="2" allowBlank="false" >
+					<text v="Tên nghành hàng" e="Industry name"></text>
+				</field>
+				<field name="ten_khac" label="1" field="2" allowBlank="false" >
+					<text v="Tên khác" e="Other name"></text>
+				</field>
+				<field name="ma_lvtc2" viewType="Lookup" label="1" field="1" importable="35" allowBlank="false">
+					<text v="Mã nghành hàng cấp 2" e="Industry code level 2"></text>
+					<viewInfo lookupType="One" lookupId="dmlvtc2" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_lvtc2" lookupInfo="dmlvtc2|ma_lvtc2|ten_lvtc2" importCheck="@@DF and z.status=1"/>
+				</field>
+				<field name="ten_lvtc2" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as " >
+					<text v="" e=""></text>
+				</field>
+				<field name="unit_id" label="1" field="2" hidden="true" dataType="I">
+					<text v="Đơn vị" e="Unit"></text>
+				</field>
+				<field name="thu_tu" label="1" field="2" dataType="I">
+					<text v="Thứ tự" e="Position"></text>
+				</field>
+				<field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+					<text v="Trạng thái" e="Status"></text>
+					<viewInfo>
+						<options>
+							<option val="1">
+								<text v="1 - Còn sử dụng" e="1 - Use"></text>
+							</option>
+							<option val="0">
+								<text v="0 - Không sử dụng" e="0 - Not use"></text>
+							</option>
+						</options>
+					</viewInfo>
+				</field>
+			</fields>
+		</form>
+	</forms>
+
+	&DefaultButton;
+
+	<js>
+		<text>
+			<![CDATA[
+				function dir$dmlvtc3(p){
+					this.constructor(p);
+					document._dir = p;
+				}
+
+				dir$dmlvtc3.prototype = new DirEvent();
+				dir$dmlvtc3.prototype.afterInit = function(){
+					var p = this._dir;
+					if (p.options.action == 'NEW') {
+						p.request('request_code_unit', '', '' , function(pp, d, run) {
+							if (run) {
+								p.setDisabled('ma_lvtc3', true);
+							}
+						});
+					}
+				}
+			]]>
+		</text>
+	</js>
+	<script>
+		<request code="request_code_unit">
+			<text> 
+				<![CDATA[
+					DECLARE @ma_unit VARCHAR(32);
+					SELECT @ma_unit = ma_unit FROM sysunit WHERE unit_id = @@unit;
+
+					SELECT 
+						@ma_unit + 'C3' + RIGHT('00000' + CAST(ISNULL(MAX(CAST(SUBSTRING(ma_lvtc3, LEN(@ma_unit) + 3, 5) AS INT)), 0) + 1 AS VARCHAR), 5) AS [!ma_lvtc3]
+					FROM dmlvtc3
+					WHERE ma_lvtc3 LIKE @ma_unit + 'C3%';							
+				]]> 
+			</text>
+		</request>
+		<inserting>
+			<text>
+				<![CDATA[
+					select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @unit_id = @@unit;
+					--exec ISWIFTStoredGetIdentityNumber '', '@@table', @ma_lvtc3 output;
+				]]>
+			</text>
+		</inserting>
+	</script>
+	<messages>
+		<message val="codeExistsNewMsg">
+			<text v="Mã dịch vụ đã có hoặc lồng nhau trong danh mục dịch vụ." e="The Service is invalid or already exists."/>
+		</message>
+		<message val="codeExistsEditMsg">
+			<text v="Mã dịch vụ đã có hoặc lồng nhau trong danh mục dịch vụ." e="The Service is invalid or already exists."/>
+		</message>
+	</messages>
+</dir>

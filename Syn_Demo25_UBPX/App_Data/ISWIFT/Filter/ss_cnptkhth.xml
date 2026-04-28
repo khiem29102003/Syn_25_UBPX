@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY ReportFilterItemGroup SYSTEM "..\Include\XML\ReportFilterItemGroup.xml">
+  <!ENTITY ReportFilterCustomerGroup SYSTEM "..\Include\XML\ReportFilterCustomerGroup.xml">
+  <!ENTITY ReportFilterStockType SYSTEM "..\Include\XML\ReportFilterStockType.xml">
+  <!ENTITY ReportJSLoading SYSTEM "..\Include\XML\ReportJSLoading.xml">
+  <!ENTITY ReportFilterUnit SYSTEM "..\Include\XML\ReportFilterUnitHidden.xml">
+  <!ENTITY ReportFiltering SYSTEM "..\Include\XML\ReportFiltering.xml">
+  <!ENTITY ReportDataAnalysisStruct SYSTEM "..\Include\XML\ReportDataAnalysisStruct.xml">
+
+]>
+
+<dir id="ss_cnptkhth" table="" height="" fieldKey="id" dirViewType="Dialog" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Công nợ phải thu khách hàng" e="Receivables from Customers"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+  <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" dataType="D">
+          <text v="Ngày từ/đến" e="Date From/To"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+	    <field name="ma_job" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Mã Job" e="Job Code"></text>
+          <viewInfo lookupType="One" lookupId="dmjob" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_job" />
+        </field>
+        <field name="ten_job" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+	    <field name="ma_kh" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Mã người thanh toán" e="Payer Code"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_kh" />
+        </field>
+        <field name="ten_kh" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_xe" viewType="Lookup" label="1" field="1" operation="like" hidden="true">
+          <text v="Mã xe" e="Vehicle Code"></text>
+          <viewInfo lookupType="One" lookupId="dmxe" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_xe" />
+        </field>
+        <field name="ten_xe" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+		<!-- <field name="ma_nvbh" viewType="Lookup" label="1" field="1" operation="like" hidden = "true"> -->
+          <!-- <text v="Nhân viên" e="Staff"></text> -->
+          <!-- <viewInfo lookupType="One" lookupId="dmnvbh" lookupKey="status = 1 and nv_yn = 1" lookupCheck="1 = 1" lookupRef="ten_nvbh" /> -->
+        <!-- </field> -->
+        <!-- <field name="ten_nvbh" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-"> -->
+          <!-- <text v="" e=""></text> -->
+        <!-- </field> -->
+		<!-- <field name="ma_ct" viewType="Combobox" inactivate="true" label="1" field="1" operation="="> -->
+          <!-- <text v="Loại đơn hàng" e="Filter By User"></text> -->
+          <!-- <viewInfo> -->
+            <!-- <options> -->
+              <!-- <option val=""> -->
+                <!-- <text v="Tất cả" e="All"></text> -->
+              <!-- </option> -->
+              <!-- <option val="FCL"> -->
+                <!-- <text v="Hàng FCL" e="FCL Marine"></text> -->
+              <!-- </option> -->
+			  <!-- <option val="LCL"> -->
+                <!-- <text v="Hàng LCL" e="LCL Marine"></text> -->
+              <!-- </option> -->
+				<!-- <option val="AIR"> -->
+                <!-- <text v="Hàng AIR" e="AIR Marine"></text> -->
+              <!-- </option> -->
+			  <!-- <option val="Oth"> -->
+                <!-- <text v="Hàng Khác" e="OTHER Marine"></text> -->
+              <!-- </option> -->
+            <!-- </options> -->
+          <!-- </viewInfo> -->
+        <!-- </field> -->
+		<field name="ps" viewType="Combobox" inactivate="true" label="1" field="1" valueDefault = "2" hidden = "true">
+           <text v="Người thanh toán" e="Payer Code"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Nhân viên" e="Employee"></text>
+              </option>
+              <option val="2">
+                <text v="Nhà cung cấp" e="Supplier"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+		<field name="tt" viewType="Combobox" inactivate="true" label="1" field="1" hidden = "false">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+			  <option val="3">
+                <text v="Tất cả" e="All"></text>
+              </option>
+              <option val="1">
+                <text v="Tất toán" e="The payment has been settled"></text>
+              </option>
+              <option val="2">
+                <text v="Chưa tất toán" e="Not settled yet"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+	&ReportFilterUnit;
+  </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$ss_cnptkhth(p){
+  this.constructor(p);
+}
+filter$ss_cnptkhth.prototype = new DirEvent();
+filter$ss_cnptkhth.prototype.afterInit = function(){
+  var p = this._dir, ev = this;
+}
+         ]]>
+    </text>
+  </js>
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+--@@gridFields
+        ]]>
+      </text>
+    </processing>
+    &ReportJSLoading;
+  </script>
+</dir>

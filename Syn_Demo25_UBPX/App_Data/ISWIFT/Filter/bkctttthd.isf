@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY ReportFilterItemGroup SYSTEM "..\Include\XML\ReportFilterItemGroup.xml">
+  <!ENTITY ReportFilterCustomerGroup SYSTEM "..\Include\XML\ReportFilterCustomerGroup.xml">
+  <!ENTITY ReportFilterStockType SYSTEM "..\Include\XML\ReportFilterStockType.xml">
+  <!ENTITY ReportJSLoading SYSTEM "..\Include\XML\ReportJSLoading.xml">
+  <!ENTITY ReportFilterUnit SYSTEM "..\Include\XML\ReportFilterUnit.xml">
+  <!ENTITY ReportFiltering SYSTEM "..\Include\XML\ReportFiltering.xml">
+  <!ENTITY ReportDataAnalysisStruct SYSTEM "..\Include\XML\ReportDataAnalysisStruct.xml">
+
+]>
+
+<dir id="bkctttthd" table="" height="" fieldKey="id" dirViewType="Dialog" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Bảng kê chi tiết thu tiền theo hóa đơn" e=""></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" dataType="D" operation="a.ngay_ct &gt;= %s">
+          <text v="Ngày h.toán từ/đến" e="Date From/To"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" dataType="D" operation="a.ngay_ct &lt;= %s" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+        <field name="ngay_ct3" hidden="true" label="1" field="1" clientDefault="true" dataType="D">
+          <text v="Ngày hóa đơn từ/đến" e="Date From/To"></text>
+        </field>
+        <field name="ngay_ct4" label="" field="1" clientDefault="true" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+        <field name="ngay_tt" label="1" field="1" aliasName="@CurrDate" clientDefault="true" allowBlank="false" dataType="D">
+          <text v="Được thánh toán đến" e="Date From/To"></text>
+        </field>
+        <field name="tk" hidden="true" label="1" field="1" valueDefault="" operation="like">
+          <text v="Tài khoản" e="Account"></text>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="1" gravity="MiddleLeft" height="0" columns="120,120,120,120,120"  >
+      <text v="Chi tiết" e="Detail"></text>
+      <fields>
+        <field name="ma_kh" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Mã khách hàng" e="Customer"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_kh" />
+        </field>
+        <field name="ten_kh" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        &ReportFilterCustomerGroup;
+        <field name="tt_yn" viewType="Combobox" valueDefault="" label="1" field="2" operation="=" >
+          <text v="Số dư" e=""></text>
+          <viewInfo>
+            <options>
+              <option val="">
+                <text v="Tất cả" e="All"/>
+              </option>
+              <option val="0">
+                <text v="Chỉ có hóa đơn số dư lớn hơn 0" e="Greater than zero"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="ct_thu" viewType="Combobox" valueDefault="0" label="1" field="2" >
+          <text v="Chi tiết thu tiền" e=""></text>
+          <viewInfo>
+            <options>
+              <option val="0">
+                <text v="Không" e="No"/>
+              </option>
+              <option val="1">
+                <text v="Có" e="Yes"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        &ReportFilterUnit;
+        <field name="mau_bc" dataType="I" viewType="Combobox" valueDefault="1" label="1" field="[360]" >
+          <text v="Mẫu báo cáo" e="Report Form"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Mẫu tiền chuẩn" e="Standard Form"></text>
+              </option>
+              <option val="2">
+                <text v="Mẫu ngoại tệ" e="FC Form"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="2" gravity="MiddleLeft" height="0" columns="120,120,120,120,120"  >
+      <text v="Khác" e="Other"></text>
+      <fields>
+        <field name="so_ct1"  label="1" field="1" operation="a.so_ct &gt;= N'%s'">
+          <text v="Số c/từ (từ/đến)" e="Voucher Number"></text>
+        </field>
+        <field name="so_ct2"  label="" nextRow="false" field="1" operation="a.so_ct &lt;= N'%s'">
+          <text v="" e=""></text>
+        </field>
+        &ReportFiltering;
+        &ReportDataAnalysisStruct;
+      </fields>
+    </form>
+
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>jXURNvzdl9OjE9ExOQPHam6YiJEXcS8+k2OL1678YAUzlsbULW1U0Qf66jRZnJPqEGGCx5enEkxTolMJVhhL+QmbCCGCVUMWTlUe5+gK0MLXBCpuVt5f267uDGW66zZPsUu1TgqMrlZ7pBBRTmoatixnZH06LLZhHKHKiyq+su3ODrtf+ICozblrdrBo0Z3/ML5QwnKAUNzv4RpZJnwcjw==</enc>]]>
+    </text>
+  </js>
+
+  <script>
+    <processing>
+      <text>
+        <![CDATA[<enc>JLkwqORifmwQOR0fnxsKKXfsbT1JhLsk6WhMK3Mmea86cBymzA36uAKDJO1h6MT+UnaCj6hJLrmx27+Slg1Gx9sp4CfZ/7kT/GOS4X/+0Vw7Co/pxTs5IXvGNJXb7Z1a81xWz8TUpSMqhomoEopbCLtdofWC/xyonZzxK8Z0rrg=</enc>]]>
+      </text>
+    </processing>
+    &ReportJSLoading;
+  </script>
+</dir>

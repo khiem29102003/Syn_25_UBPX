@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="bdtkvt" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo động tồn kho vật tư" e="Stock" />
+  <subtitle v="Đến ngày {ngay_ct1}..." e="Date To {ngay_ct1}..."></subtitle>
+  <grids>
+    <grid>
+      <fields>
+        <field name="ma_kho" width="100">
+          <text v="Mã kho" e="Site"></text>
+        </field>
+        <field name="ma_vt" width="100">
+          <text v="Mã vật tư" e="Item Code"></text>
+        </field>
+        <field name="ten_vt" width="250">
+          <text v="Tên vật tư" e="Item Name"></text>
+        </field>
+
+        <field name="ton_cuoi" dataType="N" format="Qty" width="100">
+          <text v="Tồn cuối" e="Closing Q'ty"></text>
+        </field>
+        <field name="du_cuoi_nt" dataType="N" format="FCAmount" width="100">
+          <text v="Dư cuối nt" e="FC Closing Amt."></text>
+        </field>
+        <field name="du_cuoi" dataType="N" format="Amount" width="100">
+          <text v="Dư cuối" e="Closing Amt."></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$bdtkvt(f){
+  this.constructor(f);
+}
+grid$bdtkvt.prototype = new DirEvent();
+grid$bdtkvt.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+grid$bdtkvt.prototype.beforeInit = function(){
+  var p = this._dir;
+}
+grid$bdtkvt.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(), dt = g.data;
+  if (p.options._data_analysis_struct == '') {
+    p.setColumnHidden(0, ['du_cuoi', 'du_cuoi_nt'], false);
+    if (p.options._mau_bc == 1) p.setColumnHidden(0, ['du_cuoi', 'du_cuoi_nt'], true);
+    if (p.options._mau_bc == 2) p.setColumnHidden(0, ['du_cuoi_nt'], true);
+  }
+}
+]]>
+    </text>
+  </js>
+
+</dir>

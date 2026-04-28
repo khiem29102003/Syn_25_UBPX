@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="sysuserinfo" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Khai báo người sử dụng cho nhân viên" e="User Maintenance"></title>
+  <subtitle v="Thêm, sửa, phân quyền người sử dụng..." e="New, edit user..."></subtitle>
+  <grids>
+    <grid id="0" table="sysuserinfo" fieldKey="user_id" order="user_id" allowFilter="true" allowOrder="true" key="(@@admin = 1 or user_id = @@userId)" >
+      <fields>
+        <field name="user_id" fieldType="PK" dataType="N" align="Right" width="40" filterType="Code" aliasName="a">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="username" width="120" filterType="Code" aliasName="a">
+          <text v="Tên" e="Name"></text>
+        </field>
+        <field name="nickname" width="300" aliasName="a">
+          <text v="Tên đầy đủ" e="Fullname"></text>
+        </field>
+        <field name="parent_user" hidden="true" dataType="N" align="Right" width="40" filterType="Code">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="parent_username" width="120" aliasName="b.username as " fieldType="EX">
+          <text v="Cấp trên" e="Cấp trên"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="Thêm (Alt + N)" e="Add (Alt + N)"></text>
+        </button>
+        <button id="edit">
+          <text v="Sửa (Ctrl + E, Alt + E)" e="Edit (Ctrl + E, Alt + E)"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="permission">
+          <text v="Phân quyền" e="Permission"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="Làm tươi" e="Refresh"></text>
+        </button>
+        <button id="freeze">
+          <text v="Gim cột" e="Freeze"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @ma_nv varchar(32), @admin int
+select top 1 @ma_nv = username from sysuserinfo where user_id = @@userId
+set @strKey= ' username in (select username from vdmnv)'
+
+IF @@admin = 1
+BEGIN
+	exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysuserinfo b on a.parent_user = b.user_id', 'b.username as parent_username', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+END
+ELSE
+BEGIN
+	set @strKey =' username =  '''+@ma_nv+''' '
+	exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysuserinfo b on a.parent_user = b.user_id', 'b.username as parent_username', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+
+END
+         ]]>
+          </text>
+        </query>
+      </script>
+
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$sysuserinfo(f){
+  this.constructor(f);
+}
+grid$sysuserinfo.prototype = new DirEvent();
+grid$sysuserinfo.prototype.afterInit = function(){
+	var p = this._dir;
+}
+grid$sysuserinfo.prototype.beforeButtonGridClick = function(id){
+  if (id == 'permission') {
+    var p = this._dir;
+    p.wait(true);
+    
+    var m = new Memvars();
+    p.grequest(0, 'permission', 'GetRow', 'user_id', funResult);
+    return false;
+  }
+  return true
+}
+function funResult(p, d){
+  d = new DataRow(d);
+  if(d.val('result') == '')
+    $.createDir(false, { controller: 'permissionUser', backdropclick: false, folder: "Filter", dirViewType: "Dialog", parent: p });   
+  else
+    $.alert($.msg.get(d.val('result')));
+}
+]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+
+
+  <script>
+    <request code="permission">
+      <text>
+        <![CDATA[
+declare @r as nvarchar(1000)
+select @r = ''
+
+if @@admin = 0 select @r = N'AdminAccess'
+if exists(select 1 from sysuserinfo where admin = 1 and user_id = @user_id)
+  select @r = N'NotAuthorized'
+select @r as result
+]]>
+      </text>
+    </request>
+  </script>
+
+</dir>

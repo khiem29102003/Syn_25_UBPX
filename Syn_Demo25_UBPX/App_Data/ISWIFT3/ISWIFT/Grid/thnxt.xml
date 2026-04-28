@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="thnxt" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Tổng hợp nhập xuất tồn" e="Stock Summary"></title>
+  <subtitle v="Từ ngày {ngay_ct1} đến ngày {ngay_ct2}..." e="From {ngay_ct1} To {ngay_ct2}..."></subtitle>
+  <grids>
+    <grid>
+      <fields>
+        <field name="ma_kho" width="100" link="~bknxk" operation="=">
+          <text v="Mã kho" e="Site"></text>
+        </field>
+        <field name="ma_vt" link="~bknxk" operation="=" width="100">
+          <text v="Mã vật tư" e="Item Code"></text>
+        </field>
+        <field name="ten_vt" width="250" aliasName="b">
+          <text v="Tên vật tư" e="Item Name"></text>
+        </field>
+
+        <field name="ton_dau" dataType="N" format="Qty" width="100">
+          <text v="Tồn đầu" e="Opening Q'ty"></text>
+        </field>
+        <field name="du_dau_nt" dataType="N" format="FCAmount" width="100">
+          <text v="Dư đầu nt" e="FC Opening Amt."></text>
+        </field>
+        <field name="du_dau" dataType="N" format="Amount" width="100">
+          <text v="Dư đầu" e="Opening Amt."></text>
+        </field>
+
+        <field name="sl_nhap" dataType="N" format="Qty" width="100">
+          <text v="Sl nhập" e="Received Q'ty"></text>
+        </field>
+        <field name="tien_nt_nhap" dataType="N" format="FCAmount" width="100">
+          <text v="Tiền nhập nt" e="FC Receive Amt."></text>
+        </field>
+        <field name="tien_nhap" dataType="N" format="Amount" width="100">
+          <text v="Tiền nhập" e="Receive Amt."></text>
+        </field>
+
+        <field name="sl_xuat" dataType="N" format="Qty" width="100">
+          <text v="Sl xuất" e="Issued Q'ty"></text>
+        </field>
+        <field name="tien_nt_xuat" dataType="N" format="FCAmount" width="100">
+          <text v="Tiền xuất nt" e="FC Issued Amt."></text>
+        </field>
+        <field name="tien_xuat" dataType="N" format="Amount" width="100">
+          <text v="Tiền xuất" e="Issued Amt."></text>
+        </field>
+
+        <field name="ton_cuoi" dataType="N" format="Qty" width="100">
+          <text v="Tồn cuối" e="Closing Q'ty"></text>
+        </field>
+        <field name="du_cuoi_nt" dataType="N" format="FCAmount" width="100">
+          <text v="Dư cuối nt" e="FC Closing Amt."></text>
+        </field>
+        <field name="du_cuoi" dataType="N" format="Amount" width="100">
+          <text v="Dư cuối" e="Closing Amt."></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$thnxt(f){
+  this.constructor(f);
+}
+grid$thnxt.prototype = new DirEvent();
+grid$thnxt.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+grid$thnxt.prototype.beforeInit = function(){
+  var p = this._dir;
+}
+grid$thnxt.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(), dt = g.data;
+  if (p.options._data_analysis_struct == '') {
+    p.setColumnHidden(0, ['tien_nhap', 'tien_xuat', 'tien_nt_nhap', 'tien_nt_xuat', 'du_dau', 'du_dau_nt', 'du_cuoi', 'du_cuoi_nt'], false);
+    if (p.options._mau_bc == 1) p.setColumnHidden(0, ['tien_nhap', 'tien_xuat', 'tien_nt_nhap', 'tien_nt_xuat', 'du_dau', 'du_dau_nt', 'du_cuoi', 'du_cuoi_nt'], true);
+    if (p.options._mau_bc == 2) p.setColumnHidden(0, ['tien_nt_nhap', 'tien_nt_xuat', 'du_dau_nt', 'du_cuoi_nt'], true);
+  }
+}
+]]>
+    </text>
+  </js>
+</dir>

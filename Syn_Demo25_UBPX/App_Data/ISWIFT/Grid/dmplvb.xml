@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+   <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="dmplvb" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách văn bản lưu hành" e="List of Circulated Documents"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="dmplvb" fieldKey="ma_pl" order="loai_ut desc" allowFilter="true" allowOrder="true" >
+	  <fields>
+	  	<field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="100" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+		<field name="ma_pl" width="120" fieldType="PK">
+		  <text v="Mã văn lưu hành" e="Circulation Document Code"></text>
+		</field>
+		<field name="ten_pl" width="250">
+		  <text v="Tên văn bản lưu hành" e="Circulation Document Name"></text>
+		</field>
+		<field name="ten_pl2" width="300">
+		  <text v="Tên English" e="Name English"></text>
+		</field>
+		<field name="tu_so" dataType="N" width="100">
+		  <text v="Ký hiệu từ" e="Word symbol"></text>
+		</field>
+		<field name="den_so" dataType="N" width="100">
+		  <text v="Ký hiệu đến" e="Incoming symbol"></text>
+		</field>
+		<field name="loai_ut" dataType="N" width="100">
+		  <text v="Ưu tiên" e="Priority"></text>
+		</field>
+		<field name="loai_ut" viewType="Combobox" width="100">
+		  <text v="Ưu tiên" e="Priority"></text>
+          <viewInfo>
+            <options>
+				<option val="0">
+					<text v="0 - Không ưu tiên" e="0 - Không ưu tiên"></text>
+				</option>
+				<option val="1">
+					<text v="1 - Ưu tiên" e="1 - Ưu tiên"></text>
+				</option>
+            </options>
+          </viewInfo>
+        </field>
+		<field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_tt, ten_tt%l from dmttsd where status = 1">
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+		
+	  &DefaultButton;
+	  
+	  
+	<script>
+        <query>
+			<text>
+            <![CDATA[
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id', 'b.ma_unit', '@@key', '', @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+			]]>
+			</text>
+        </query>
+
+        <finding>
+			<text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = @strFinding
+  
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id', 'b.ma_unit', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+			</text>
+        </finding>
+      </script>
+    </grid>
+  </grids>
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmplvb(f){
+  this.constructor(f);
+}
+grid$dmplvb.prototype = new DirEvent();
+grid$dmplvb.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+<css>
+    <text>
+      <![CDATA[
+		.tree-form{
+			width: 250px;
+		}
+		.ic-view-dept{
+		  background-position: 0px 0px;
+		}
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+  <script>
+
+  </script>
+
+</dir>

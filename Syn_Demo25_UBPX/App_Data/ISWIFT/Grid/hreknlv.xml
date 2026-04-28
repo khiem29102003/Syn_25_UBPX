@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="hreknlv" width="Large" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Kinh nghiệm làm việc &lt;b&gt;[%s]&lt;/b&gt;" e="&lt;b&gt;[%s]&lt;/b&gt;"></title>
+  <subtitle v="Thêm, sửa, xóa..." e="Add, Edit, Delete..."></subtitle>
+  <grids>
+    <grid table="hreknlv" fieldKey="id, line" order="id, line" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="id" dataType="N" fieldType="PK" width="100" format="0" hidden="true">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="line" dataType="N" fieldType="PK" width="100" format="0" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+        <field name="cong_ty" width="200">
+          <text v="Công ty" e=""></text>
+        </field>
+        <field name="chuc_vu" width="150">
+          <text v="Chức vụ" e=""></text>
+        </field>
+        <field name="ngay_tu" width="100" dataType="D">
+          <text v="Từ ngày" e=""></text>
+        </field>
+        <field name="ngay_den" width="100" dataType="D">
+          <text v="Đến ngày" e=""></text>
+        </field>
+        <field name="muc_luong" dataType="N" fieldType="PK" width="100" format="0">
+          <text v="Lương" e=""></text>
+        </field>
+        <field name="ghi_chu" width="300">
+          <text v="Ghi chú" e="Note"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = 'id = ' + rtrim(@id)
+exec iswiftStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '@@join', '', '@@key', @key2, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$hreknlv(f){
+  this.constructor(f);
+}
+grid$hreknlv.prototype = new DirEvent();
+grid$hreknlv.prototype.afterInit = function(){
+  var p = this._dir;
+}
+]]>
+    </text>
+  </js>
+   <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

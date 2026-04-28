@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmloailinhvuc" table="dmloailinhvuc" fieldKey="ma_loai" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục Loại lĩnh vực" e="List of customer types"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_loai" format="U" label="1" field="1" allowBlank="false" fieldType="PK" >
+          <text v="Mã loại" e="Type Code"></text>
+        </field>
+        <field name="ten_loai" label="1" field="-" allowBlank="false" fieldType="PK" >
+          <text v="Tên loại" e="Type Name"></text>
+        </field>
+     
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmloailinhvuc(p){
+  this.constructor(p);
+}
+dir$dmloailinhvuc.prototype = new DirEvent();
+dir$dmloailinhvuc.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  
+  <css>
+		<text>
+		  <![CDATA[
+	.control-label.ma_loai, .control-label.ten_loai{color: #499b98;}
+	.input-field.status {color: #ab6926;}	
+	.Break {
+		margin: 1px 0 1px 8px
+		padding: 0;
+		overflow:hidden;
+		display:block;
+		background-color: red
+		border-top: 1px solid #ced3de;
+	}
+		  ]]>
+		</text>
+  </css>
+
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã Loại lĩnh vực đã tồn tại' else N'Customer type code already exists.' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã Loại lĩnh vực đã tồn tại' else N'Customer type code already exists.' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+
+</dir>

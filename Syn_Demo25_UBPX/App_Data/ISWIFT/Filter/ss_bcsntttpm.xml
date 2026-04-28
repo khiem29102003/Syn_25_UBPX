@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY ReportFilterItemGroup SYSTEM "..\Include\XML\ReportFilterItemGroup.xml">
+  <!ENTITY ReportFilterCustomerGroup SYSTEM "..\Include\XML\ReportFilterCustomerGroup.xml">
+  <!ENTITY ReportFilterStockType SYSTEM "..\Include\XML\ReportFilterStockType.xml">
+  <!ENTITY ReportJSLoading SYSTEM "..\Include\XML\ReportJSLoading.xml">
+  <!ENTITY ReportFilterUnit SYSTEM "..\Include\XML\ReportFilterUnitHidden.xml">
+  <!ENTITY ReportFiltering SYSTEM "..\Include\XML\ReportFiltering.xml">
+  <!ENTITY ReportDataAnalysisStruct SYSTEM "..\Include\XML\ReportDataAnalysisStruct.xml">
+
+]>
+
+<dir id="ss_bcsntttpm" table="" height="" fieldKey="id" dirViewType="Dialog" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Số ngày trễ thanh toán mua hàng" e="Number of days overdue for purchase payment filtering"></title>
+
+<forms>
+ <form gravity="TopLeft" columns="120,120,120"  >
+  <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" dataType="D">
+          <text v="Ngày từ/đến" e="Date From/To"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_kh" viewType="Lookup" label="1" field="1" operation="like">
+          <text v="Mã người thanh toán" e="Customer"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_kh" />
+        </field>
+        <field name="ten_kh" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+		<field name="ps" viewType="Combobox" inactivate="true" label="1" field="1" valueDefault = "2" hidden = "false">
+          <text v="Người thanh toán" e=""></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="Nhân viên" e=""></text>
+              </option>
+              <option val="2">
+                <text v="Nhà cung cấp" e=""></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+	&ReportFilterUnit;
+  </fields>
+ </form>
+</forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$ss_bcsntttpm(p){
+  this.constructor(p);
+}
+filter$ss_bcsntttpm.prototype = new DirEvent();
+filter$ss_bcsntttpm.prototype.afterInit = function(){
+  var p = this._dir, ev = this;
+}
+         ]]>
+    </text>
+  </js>
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+--@@gridFields
+        ]]>
+      </text>
+    </processing>
+    &ReportJSLoading;
+  </script>
+</dir>

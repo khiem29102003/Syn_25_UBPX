@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY ReportFiltering SYSTEM "..\Include\XML\ReportFiltering.xml">
+]>
+
+<dir id="hrbstcong" table="" height="" fieldKey="id" dirViewType="Dialog" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Điều chỉnh, bổ sung công tổng hợp" e=""></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_tu" label="1" field="1" aliasName="@DFDFrom" allowBlank="false" dataType="D">
+          <text v="Ngày từ/đến" e="Date From/To"></text>
+        </field>
+        <field name="ngay_den" label="" field="1" aliasName="@DFDTo" allowBlank="false" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+				<field name="ma_nv" viewType="Lookup" label="1" field="1"  aliasName="b">
+					<text v="Nhân viên" e="Employee ID"></text>
+					<viewInfo lookupType="One" lookupId="hrdmnv" lookupKey="status=1" lookupCheck="1=1" lookupRef="ho_ten_nv" lookupExactValue="1" />
+				</field>
+				<field name="ho_ten_nv" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" >
+					<text v="Tên nhân viên" e="Employee Name"></text>
+				</field>
+				<field name="ma_bp"  format="U" viewType="Lookup" label="1" field="1" >
+					<text v="Bộ phận" e="Department"></text>
+					<viewInfo lookupType="One" lookupId="hrdmbp" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_bp" />
+				</field>
+				<field name="ten_bp" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-">
+					<text v="" e=""></text>
+				</field>
+        <field name="ma_cong" format="U" viewType="Lookup" aliasName="@DF_hrbstcong_ma_cong" label="1" field="1">
+          <text v="Mã công" e=""></text>
+          <viewInfo lookupType="Multi" lookupId="hrdmcong" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_cong" />
+        </field>
+        <field name="ten_cong" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$hrbstcong(p){
+  this.constructor(p);
+}
+filter$hrbstcong.prototype = new DirEvent();
+filter$hrbstcong.prototype.afterInit = function(){
+  var p = this._dir, ev = this;
+}
+filter$hrbstcong.prototype.commandActionClick = function(action, xid, po){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+
+	<script>
+		<processing>
+			<text>
+				<![CDATA[
+exec hs_bstcong @ngay_tu, @ngay_den, @ma_nv, @ma_bp, @ma_cong, 1, 1
+        ]]>
+			</text>
+		</processing>
+
+	</script>
+
+</dir>

@@ -1,0 +1,8 @@
+SELECT a.id, a.s_mail, a.title, a.email_body, a.link, b.ten_mail as ten_s_mail,
+       b.username_smail, c.ten_kh as ten_r_mail, b.mk_mail, b.smtp_server, b.smtp_port, b.type_smail, 
+       c.e_mail as r_mail
+FROM smaildmkh a
+LEFT JOIN dmsmail b ON a.s_mail = b.s_mail
+CROSS APPLY ISWIFTFunction$Split(a.ds_kh, ',') s
+LEFT JOIN dmkh0 c ON s.data = c.ma_so_thue
+WHERE a.id = @id and c.e_mail IS NOT NULL and c.e_mail <> ''

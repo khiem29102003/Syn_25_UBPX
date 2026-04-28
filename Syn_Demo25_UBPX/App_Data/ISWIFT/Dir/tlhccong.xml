@@ -1,0 +1,397 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+  <!ENTITY VoucherRequiredFields01 SYSTEM "..\Include\XML\VoucherRequiredFields01.xml">
+  <!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid05.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+  <!ENTITY JobNumberBeforeSave SYSTEM "..\Include\Script\JobNumberBeforeSave.txt">
+  
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+
+  <!ENTITY VoucherSaleRequest SYSTEM "..\Include\XML\VoucherSaleRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from tlhccong where id = @id and status in (5,6,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+    ">
+]>
+
+
+<dir id="tlhccong" table="tlhccong" fieldKey="id" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" voucherCode="HC1" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Thiết lập hành chính công" e="Public Administration Setup"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,100,120,120" >
+      <fields>
+		<field name="ma_hccong" allowBlank="false" viewType="Lookup" label="1" field="1"  hidden="false">
+          <text v="Mã hành chính công" e="Public Administration Code"></text>
+          <viewInfo lookupType="One" lookupId="dmhccong" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_hccong" lookupInfo="dmhccong|ma_hccong|ten_hccong" />
+        </field>
+        <field name="ten_hccong" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		<field name="stt_bd" dataType="N" label="1" field="1" disabled="false" format="0" hidden="false">
+			<text v="Số bắt đầu" e="Gross Weight(KGS)"></text>
+		</field>
+		<field name="tt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="1" field="">
+          <text v="" e=""></text>
+        </field>
+		<field name="stt_td" dataType="N" label="1" field="1" disabled="false" format="0" hidden="false" nextRow="false">
+			<text v="Số tối đa" e="Gross Weight(KGS)"></text>
+		</field>
+		<field name="tg_lamviec" label="1" field="1" allowBlank="true" disabled="false" nextRow="false" >
+			<text v="Thời gian làm việc" e="Working hours"></text>
+		</field>
+		<field name="tg_dukien" dataType="N" label="1" field="1" disabled="false" format="0" hidden="false" nextRow="true">
+          <text v="Thời gian dự kiến (s)" e="Estimated time (s)"></text>
+		</field>
+		<field name="tt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="1" field="">
+          <text v="" e=""></text>
+        </field>
+		<field name="tg_trihoan" dataType="N" label="1" field="1" disabled="false" format="0" hidden="false" nextRow="false">
+          <text v="Thời gian trì hoãn (s)" e="Delay time (s)"></text>
+		</field>
+		<field name="id" dataType="N" fieldType="PK" format="0" copy="true" hidden="true">
+		  <text v="" e=""></text>
+		</field>
+      </fields>
+    </form>
+
+    <form gravity="TopRight" columns="120,120" >
+      <fields>
+        &VoucherRequiredFields01;
+        <field name="status" viewType="Combobox" valueDefault="5" inactivate="true" label="[60]" field="[180]" >
+		  <text v="Trạng thái" e="Status"></text>
+		  <viewInfo>
+			<options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+			</options>
+		  </viewInfo>
+		</field>
+		</fields>
+    </form>
+
+    <form tabPageIndex="1" gravity="MiddleLeft" height="200" columns="120,120,360" >
+      <text v="Đính kèm" e="Attach Files"></text>
+      <fields>
+        <field name="xfile" label="1" field="2" viewType="File" fieldType="EXParam">
+          <text v="Chọn files" e="Attach Files"></text>
+          <viewInfo fileFieldId0="id" fileGroup="HC1" fileExtension="*" maxFileSize="10240" maxFileCount="10"></viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$tlhccong(p){
+  this.constructor(p);
+}
+dir$tlhccong.prototype = new DirEvent();
+dir$tlhccong.prototype.beforeInit = function(renderType){
+  this._dir.options._files = null;
+  document._dir = this._dir;
+}
+function getSystemTime(format) {
+    return new Promise(function(resolve, reject) {
+        $.ajax({
+            type: "POST",
+            url: "/Main/Defaults.aspx/GetSystemTime",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify({ format: format }),
+            success: function(response) {
+                var systemTime = response.d;
+                resolve(systemTime);
+            },
+            error: function(error) {
+                reject(error);
+            }
+        });
+    });
+}
+function getTime(p, className) {
+	const inputEl = document.querySelector(`input.${className}`);
+	console.log(inputEl);
+    if (!inputEl) return;
+
+    let isValid = false;
+
+    inputEl.addEventListener("input", function (e) {
+        let raw = e.target.value.replace(/\D/g, "").slice(0, 4); // Giữ lại 4 chữ số đầu
+        let formatted = raw;
+		
+        if (raw.length >= 3) {
+            formatted = `${raw.slice(0, 2)}:${raw.slice(2, 4)}`;
+        }
+		
+        e.target.value = formatted;
+		
+		const [h, m] = formatted.split(":").map(Number);
+        isValid = Number.isInteger(h) && Number.isInteger(m) && h >= 0 && h <= 23 && m >= 0 && m <= 59;
+
+    });
+
+    inputEl.addEventListener("blur", async (e) => {
+        if (!isValid && e.target.value.trim() !== "") {
+            try {
+                const [hh, mm] = await Promise.all([
+                    getSystemTime("HH"),
+                    getSystemTime("mm")
+                ]);
+                e.target.value = `${hh}:${mm}`;
+            } catch (err) {
+                console.error("Lỗi lấy giờ hệ thống:", err);
+            }
+        } else {
+            console.log("✅ Giờ hợp lệ:", e.target.value);
+        }
+    });
+}
+dir$tlhccong.prototype.afterInit = function(renderType){
+  var p = this._dir;
+  getTime(p,'tg_lamviec');
+  dir$tlhccongDisabledMasterField(p);
+  dir$tlhccongDisabledStatusByAction(p);
+
+}
+
+dir$tlhccong.prototype.beforeButtonDialogClick = function (id) {
+  var p = this._dir;
+  switch (id) {
+    case 'ok':
+		var sttBd = p.valForm('stt_bd'), sttTd = p.valForm('stt_td'), tgDukien = p.valForm('tg_dukien'), tgTrihoan = p.valForm('tg_trihoan');
+		
+		if (isNaN(sttBd) || sttBd <= 0) {
+			$.showToast(p.msg('RequireLonHonKhong'));
+			p.jObject('stt_bd').focus(); 
+			return false;
+		}
+		if (isNaN(sttTd) || sttTd <= 0) {
+			$.showToast(p.msg('RequireLonHonKhong'));
+			p.jObject('stt_td').focus(); 
+			return false;
+		}
+		if (isNaN(tgDukien) || tgDukien <= 0) {
+			$.showToast(p.msg('RequireLonHonKhong'));
+			p.jObject('tg_dukien').focus(); 
+			return false;
+		}
+		if (isNaN(tgTrihoan) || tgTrihoan <= 0) {
+			$.showToast(p.msg('RequireLonHonKhong'));
+			p.jObject('tg_trihoan').focus(); 
+			return false;
+		}
+    default:
+      break;
+  }
+  return true;
+}
+dir$tlhccong.prototype.beforeButtonGridClick = function (id, gindex) {
+
+  var p = this._dir;
+  switch (id) {
+    case '20':
+		break;
+    default:
+      break;
+  }
+  return true;
+}
+
+dir$tlhccong.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+
+    default:
+      break;
+  }
+}
+
+dir$tlhccong.prototype.gridDetailActionChange = function(gindex, action, r){
+  var p = this._dir;
+  if (action == 'AfterDeleteRow' || action == 'AfterAppendGrid') dir$tlhccongDisabledMasterField(p);
+  return true;
+}
+
+function dir$tlhccongDisabledMasterField(p){
+	if (p.options.action !== "NEW")
+	{
+		p.setDisabled(['unit_id', 'ngay_ct', 'so_ct'], true);
+	}
+
+}
+
+
+function dir$tlhccongDisabledStatusByAction(p){
+  var o = p.jObject('status');
+  if (p.options.action != 'VIEW') o.find("[value=4],[value=6],[value=7],[value=9],[value=5],[value=0]").remove();
+}
+         ]]>
+    </text>
+  </js>
+
+<css>
+    <text>
+      <![CDATA[
+		.control-label.t_tieny_nt2, .control-label.t_tt, .control-label.t_soy_luong, .control-label.t_tieny2,.control-label.t_tienx2, .control-label.t_sox_luong, .control-label.t_tienx_nt2, .control-label.t_ttx, .control-label.t_tty, .control-label.t_thuex, .control-label.t_thuey, .control-label.t_tieny_nt1, .control-label.t_tieny1, .control-label.t_tienx1, .control-label.t_lny, .control-label.t_lnx, .control-label.t_tly_ln, .control-label.t_tlx_ln,
+		.input-field.t_tieny_nt2, .input-field.t_tt, .input-field.t_soy_luong, .input-field.t_tieny2, .input-field.t_tienx2, .input-field.t_sox_luong, .input-field.t_tienx_nt2, .input-field.t_ttx, .input-field.t_tty, .input-field.t_thuex, .input-field.t_thuey, .input-field.t_tieny_nt1, .input-field.t_tieny1, .input-field.t_tienx1, .input-field.t_lny, .input-field.t_lnx, .input-field.t_tly_ln, .input-field.t_tlx_ln  {
+			font-weight:bold;
+		}
+		.control-label.ma_noi_di,.control-label.ma_noi_den, .control-label.ma_kh,  .control-label.ngay_hld, .control-label.so_ngay_vc,.control-label.ngay_hl {color: #499b98;}
+		.input-field.status, .input-field.unit_id,.control-label.tt,.control-label.tt2,.control-label.tt3, .input-field.ma_gd {color: #ab6926;}	
+		.ma_phi,.tl_ban span {color: #ab6926;}
+		.input-field.t_tl_ln {color: #499b98;}
+		.grid-input-field.ma_phi, .grid-input-field.tl_ban {color: #ab6926;}
+		.tien_nt1, .gia1, .tien1, .tien_ln span, .gia_nt1 {color: #499b98;}
+		.grid-input-field.tien_nt1, .grid-input-field.gia1, .grid-input-field.tien1, .grid-input-field.tien_ln, .grid-input-field.gia_nt1{color: #499b98;}	
+      ]]>
+    </text>
+  </css>
+  <script>
+    &VoucherRequest;
+    &VoucherSaleRequest;
+
+    <query>
+      <text>
+        <![CDATA[
+if @action = 'EDIT' begin
+]]>&CheckUpdatingDeleting;<![CDATA[
+end
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+if @action in ('EDIT', 'VIEW') exec ISWIFTStoreGetListFiles 'xfile', @id, '@@voucherCode', '', @script output
+if @script is null set @script = ''
+
+if @action = 'NEW' begin
+  declare @ma_nk varchar(32), @ten_nk nvarchar(3000), @ngay_ct date, @so_ct varchar(32), @i_so_ct int, @unit_id int
+  select @ngay_ct = getdate(), @unit_id = @@unit
+  
+  
+]]>&VoucherNumberQuery;<![CDATA[
+  if @so_ct is null
+    select '' as [so_ct], 0 as [i_so_ct], @unit_id as [unit_id], '' as ma_nk, '' as ten_nk
+  else
+    select @so_ct as [so_ct], @i_so_ct as [i_so_ct], @unit_id as [unit_id], @ma_nk as ma_nk, @ten_nk as ten_nk
+end
+else select @script as script
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+
+    <declare>
+      <text>
+        <![CDATA[
+declare @warning nvarchar(256), @dOldVoucherDate date, @dVoucherDate date, @nVoucherType tinyint, @strIds varchar(256), @q nvarchar(4000)
+set @warning = ''
+
+
+         ]]>
+      </text>
+    </declare>
+
+    &VoucherJSLoading;
+
+    <beforesave>
+      <text>
+        &VoucherNumberBeforeSave;
+      </text>
+    </beforesave>
+
+    <deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct, @dVoucherDate = ngay_ct from tlhccong where id = @id
+        ]]>
+      </text>
+    </deleting>
+
+    <deleted>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+
+        ]]>
+      </text>
+    </deleted>
+
+    <updating>
+      <text>
+
+        <![CDATA[
+insert into #idupdatestatusBG select id_bg from tlhccong where id = @id and id_bg <> 0 group by id_bg
+select @dOldVoucherDate = ngay_ct from tlhccong where id = @id
+        ]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId, i_so_ct = @i_so_ct, so_ct = @so_ct where [%whereFieldKey]
+update dmttin set status = 0 from dmttin where id0 = rtrim(@id) and xgroup = '@@voucherCode'
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+         ]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @ma_ct = '@@voucherCode'
+exec ISWIFTStoredGetIdentityNumber '@@voucherCode', '@@table', @id output
+         ]]>
+      </text>
+    </inserting>
+
+    <inserted>
+      <text>
+        <![CDATA[
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+]]>
+      </text>
+    </inserted>
+
+    <aftersave>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+if @action = 'NEW' set @dOldVoucherDate = @ngay_ct
+
+
+exec ISWIFTStoredIncreaseVoucherNo @ma_nk, @ngay_ct, '@@voucherCode', @i_so_ct, @so_ct, '@@table'
+select '' as message, @warning as warning, @id as [#id], @so_ct as [#so_ct], @ma_unit as [#ma_unit]
+]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+	 <message val="RequireLonHonKhong">
+      <text v="Yêu cầu nhập số lớn hơn không." e="Only perform this function in the newly added state."/>
+    </message>
+  </messages>
+</dir>

@@ -1,0 +1,526 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY DefaultButtonGridDetail SYSTEM "..\Include\XML\DefaultButtonGridDetail.xml">
+  <!ENTITY VoucherRequiredFields01 SYSTEM "..\Include\XML\VoucherRequiredFields01.xml">
+  <!ENTITY VoucherRequiredFields02 SYSTEM "..\Include\XML\VoucherRequiredFields02.xml">
+  <!ENTITY VoucherRequest SYSTEM "..\Include\XML\VoucherRequest.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+
+  <!ENTITY VoucherExRateValid01 SYSTEM "..\Include\Script\VoucherExRateValid01.txt">
+  <!ENTITY VoucherExRateValid02 SYSTEM "..\Include\Script\VoucherExRateValid02.txt">
+  <!ENTITY VoucherNumberQuery SYSTEM "..\Include\Script\VoucherNumberQuery.txt">
+  <!ENTITY VoucherNumberBeforeSave SYSTEM "..\Include\Script\VoucherNumberBeforeSave.txt">
+
+  <!ENTITY VoucherCurrStockCreateTempTable SYSTEM "..\Include\Script\VoucherCurrStockCreateTempTable.txt">
+  <!ENTITY VoucherCurrStockInsertNewTempTable SYSTEM "..\Include\Script\VoucherCurrStockInsertNewTempTable.txt">
+  <!ENTITY VoucherCurrStockCalc SYSTEM "..\Include\Script\VoucherCurrStockCalc.txt">
+
+  <!ENTITY VoucherSaleRequest SYSTEM "..\Include\XML\VoucherSaleRequest.xml">
+  <!ENTITY VoucherSaleRequestGrid SYSTEM "..\Include\Script\VoucherSaleRequestGrid.txt">
+
+  <!ENTITY CheckUpdatingDeleting "
+  if exists(select 1 from s23 where id = @id and status in (6,7,9)) begin
+    select '$NotEditVoucherStatus' as message
+    return
+  end
+    ">
+]>
+
+
+<dir id="s23" table="s23" fieldKey="id" transaction="true" tryCatch="true" dirViewType="Dialog" dirObjectType="Voucher" voucherCode="YG3" width="Large" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Báo giá hàng không" e="Airline quote"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120" >
+      <fields>
+		<field name="ma_kh" viewType="Lookup" label="1" field="1" hidden="true" >
+          <text v="Mã khách hàng" e="Customer Code"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_kh" lookupInfo="dmkh|ma_kh|ten_kh" />
+        </field>
+        <field name="ten_kh" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+		
+		
+		<field name="ma_noi_di" viewType="Lookup" label="1" field="1" allowBlank="false">
+			<text v="Nơi đi (*)" e="Origin"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangdi" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_di" lookupInfo="vdmcangdi|ma_noi_di|ten_noi_di" />
+		</field>
+		<field name="ten_noi_di" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="[150]"  aliasName="cast('' as nvarchar(4000)) as ">
+			<text v="" e=""></text>
+		</field> 	
+		<field name="ma_dk" viewType="Combobox" valueDefault="" label="[120]" field="[70]" nextRow="false" >
+			<text v="Điều kiện giao hàng" e="Traffic term"></text>
+			<viewInfo>
+				<options query="select ma_bgn, ten_bgn%l from dmbgn where ma_ct = 'DK' and status = 1 order by stt">
+				</options>
+			</viewInfo>
+		</field>		
+		<field name="ma_noi_den" viewType="Lookup" label="1" field="1" allowBlank="false ">
+			<text v="Nơi đến (*)" e="Destination"></text>
+			<viewInfo lookupType="One" lookupId="vdmcangden" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_noi_den" lookupInfo="vdmcangden|ma_noi_den|ten_noi_den"/>
+		</field>
+		<field name="ten_noi_den" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" hidden="true" label="" field="[150]" aliasName="cast('' as nvarchar(200)) as ">
+			<text v="" e=""></text>
+		</field> 			
+		<field name="ma_gn" viewType="Combobox" valueDefault="" label="[120]" field="[70]" nextRow="false">
+			<text v="Điều kiện nhận hàng" e="Traffic term"></text>
+			<viewInfo>
+				<options query="select ma_bgn, ten_bgn%l from dmbgn where ma_ct = 'DK' and status = 1 order by stt">
+				</options>
+			</viewInfo>
+		</field>		
+
+		
+		<field name="trong_luong" label="1" field="1" dataType="N" length="7" allowBlank="false">
+			<text v="Trọng lượng(KGS) (*)" e="Gross Weight (KG) (*)"></text>
+        </field>
+
+		<field name="khoi_luong" label="1" field="1" dataType="N" nextRow="false" allowBlank="false">
+			<text v="Khối lượng (CBM) (*)" e="Volume (CBM) (*)"></text>
+        </field>
+		<field name="so_kien" label="1" field="1" dataType="N">
+			<text v="Số kiện" e="No. of piece"></text>
+        </field>
+		<field name="lkh" viewType="Combobox" valueDefault="" label="1" field="1" nextRow="false">
+			<text v="Loại kiện hàng" e="Package type"></text>
+			<viewInfo>
+				<options query="select ma_bgn, ten_bgn%l from dmbgn where ma_ct = 'LK' and status = 1 order by stt">
+				</options>
+			</viewInfo>
+		</field>
+		
+		<field name="length" label="[150]" field="[70]" dataType="N"  >
+			<text v="Kích thước (CM) (L/W/H)" e="Dimension (CM) (L/W/H)"></text>
+        </field>
+		<field name="width" label="" field="[70]" dataType="N" nextRow="false">
+			<text v="" e=""></text>
+        </field>
+		<field name="height" label="" field="[70]" dataType="N" nextRow="false">
+			<text v="" e=""></text>
+        </field>	
+		
+		
+		
+		
+		<field name="ma_nhom" viewType="Combobox" valueDefault="" label="1" field="1" allowBlank="false">
+			<text v="Nhóm hàng (*)" e="Commodity (*)"></text>
+			<viewInfo>
+				<options query="select ma_bgn, ten_bgn%l from dmbgn where ma_ct = 'NH' and status = 1 order by stt">
+				</options>
+			</viewInfo>
+		</field>
+		
+		<field name="desc_hh" label="1" field="-" nextRow="false" allowBlank="false" >
+          <text v="Mô tả hàng hóa (*)" e="Commodity description (*)"></text>
+        </field>
+
+		<field name="so_imo" label="1" field="1" >
+          <text v="Thông tin IMO" e="IMO classification"></text>
+        </field>
+		<field name="so_un" label="1" field="1" nextRow="false" >
+          <text v="Số UN" e="UN number"></text>
+        </field>
+		
+		
+
+        <field name="ghi_chu" label="1" field="-" valueDefault="">
+          <text v="Ghi chú" e="Note"></text>
+        </field>
+        <field name="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+
+    <form gravity="TopRight" columns="120,120" >
+      <fields>
+        &VoucherRequiredFields01;
+        &VoucherRequiredFields02;
+		<field name="tu_ngay" dataType="D" label="1" rows="1" field="1" allowBlank="false" >
+          <text v="Từ ngày (*)" e="From (*)"></text>
+        </field>
+		<field name="den_ngay" dataType="D" label="1" rows="1" field="1" allowBlank="false">
+          <text v="Đến ngày (*)" e="To (*)"></text>
+        </field>
+		
+      </fields>
+    </form>
+
+    <form tabPageIndex="1" gravity="MiddleLeft" height="320" columns="120,120,240" >
+      <text v="Yêu cầu thêm các dịch vụ Logistics khác" e="Request other logistics services"></text>
+      <fields>
+        <field name="v23_1" allowBlank="false" label="" field="-" viewType="Grid">
+          <text v="Yêu cầu thêm các dịch vụ Logistics khác" e="Request other logistics services"></text>
+        </field>
+      </fields>
+    </form>
+
+    <form tabPageIndex="2" gravity="MiddleLeft" height="0" columns="120,120,360" >
+      <text v="Đính kèm" e="Attach Files"></text>
+      <fields>
+        <field name="xfile" label="1" field="2" viewType="File" fieldType="EXParam">
+          <text v="Chọn files" e="Attach Files"></text>
+          <viewInfo fileFieldId0="id" fileGroup="YG3" fileExtension="*" maxFileSize="10240" maxFileCount="10"></viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+  <grids>
+    <grid id="v23_1" table="v23_1" fieldKey="id, line" order="line" allowFilter="true" allowOrder="true" readOnly="false">
+      <fields>
+          <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" fieldType="PK" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+		
+        <field name="ma_dv" width="120" readOnly="false" hidden="true" >
+          <text v="Mã dịch vụ" e="Item"></text>
+        </field>
+        <field name="ten_dv1" width="250" inactivate="true" readOnly="true" aliasName="b" >
+          <text v="Tên dịch vụ" e="Item Name"></text>
+        </field>
+		 <field name="ghi_chu" width="450" fieldType="EX" inactivate="true" readOnly="true" aliasName="b">
+          <text v="Mô tả" e="Item Name"></text>
+        </field>
+	
+        <field name="a_choose" dataType="B" width="100" readOnly="false" >
+          <text v="Chọn" e="View"></text>
+        </field>
+
+      </fields>
+      <buttons>
+        <button id="refresh">
+          <text v="Hiện tất cả" e="Show All"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+set nocount on
+select @@fields into #t from v23_1 a left join dmdv1 b on a.ma_dv = b.ma_dv where @@key order by line
+insert into #t select 0,0,ma_dv,ten_dv1,ghi_chu,0 from dmdv1 where @action = 'New' order by ma_dv
+insert into #t select 0,0,ma_dv,ten_dv1,ghi_chu,0 from dmdv1 where @action = 'Edit' and ma_dv not in (select ma_dv from #t)	order by ma_dv			
+select * from #t order by a_choose desc,line
+drop table #t
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  &DefaultButton;
+
+
+
+
+
+
+
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$s23(p){
+  this.constructor(p);
+}
+dir$s23.prototype = new DirEvent();
+dir$s23.prototype.beforeInit = function(){
+  var p = this._dir;
+  if (p.options.action == 'EDIT') {
+    p.field('ma_ct').disabled = true;
+    p.field('username').disabled = true;
+  }
+}
+dir$s23.prototype.afterInit = function(){
+  var p = this._dir;
+  p.options.dataChanged = true;
+}
+dir$s23.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+    case 'ma_ct':
+      p.reloadGrid(0, ['ma_ct', 'C', v]);
+      break;
+    default:
+      break;
+  }
+}
+dir$s23.prototype = new DirEvent();
+dir$s23.prototype.beforeInit = function(renderType){
+  this._dir.options._files = null;
+}
+dir$s23.prototype.afterInit = function(renderType){
+  var p = this._dir, g = p.grid()
+  p.options.dataChanged = true;
+
+  
+  dir$s23DisabledMasterField(p, g);
+  dir$s23HiddenColumnByType(p);
+  dir$s23HiddenColumnByTran(p);
+  dir$s23HiddenColumnByComboBox(p);
+  dir$s23DisabledStatusByAction(p);
+}
+
+
+dir$s23.prototype.beforeButtonDialogClick = function (id) {
+  var p = this._dir, g = p.grid(0), dt = g.data;
+  switch (id) {
+    case 'ok':
+		if (p.valForm('den_ngay') <= p.valForm('tu_ngay')) { 
+			<!-- $.question('jkhj '+'Nhap sai ngay ??' ); -->
+			$.alert('Ngày hiệu lực đến không hợp lệ. Error Effective Date.');
+			return false;
+			Break;
+			}
+    default:
+      break;
+  }
+  return true;
+}
+dir$s23.prototype.beforeButtonGridClick = function (id, gindex) {
+var p = this._dir;
+  switch (id) {
+    case 'refresh':
+      dir$s23LoadFieldGrid(p, 0);
+      return false;
+    default:
+      break;
+  }
+  return true;
+}
+function dir$s23LoadFieldGrid(p, xtype) {
+
+}
+dir$s23.prototype.gridCellValueChange = function (o, g, r, c, v) {
+  var p = this._dir;
+  switch (c){
+]]>&VoucherSaleRequestGrid;<![CDATA[
+    default:
+      break;
+  }
+}
+dir$s23.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+]]>&VoucherExRateValid01;<![CDATA[
+    case 'ma_gd':
+      dir$s23HiddenColumnByTran(p);
+      break;
+    case 'ma_ngv':
+      dir$s23HiddenColumnByType(p);
+      break;
+    case 'ty_gia':
+      p.calcExpressionAll(0, '!ty_gia');
+      break;
+   case 'ma_nhom':
+	  dir$s23HiddenColumnByComboBox(p);
+	  break;
+    default:
+      break;
+}
+}
+			
+			
+]]>&VoucherExRateValid02;<![CDATA[
+dir$s23.prototype.gridDetailActionChange = function(gindex, action, r){
+  var p = this._dir;
+  if (action == 'AfterDeleteRow' || action == 'AfterAppendGrid') dir$s23DisabledMasterField(p, p.grid(gindex));
+  return true;
+}
+function dir$s23DisabledMasterField(p, g){
+
+
+}
+function dir$s23HiddenColumnByType(p){
+  var v = p.valForm('ma_ngv'), nt = p.valForm('ma_nt'), bc = p.options.struct.baseCurrency;
+}
+function dir$s23HiddenColumnByTran(p){
+  
+}
+function dir$s23HiddenColumnByComboBox(p){
+	var v = p.valForm('ma_nhom');
+	console.log(v);
+	if(v == 1 || v == 2 || v == 4)
+	{
+		p.setDisabled(['so_imo','so_un'],true);
+		p.setInvisible(['so_imo','so_un'], true);
+	}
+	else
+	{
+		p.setDisabled(['so_imo','so_un'],false);
+		p.setInvisible(['so_imo','so_un'],false);
+	}
+	
+
+	
+}
+function dir$s23DisabledStatusByAction(p){
+  var o = p.jObject('status');
+  if (p.options.action != 'VIEW') o.find("[value=6],[value=7],[value=9]").remove();
+}
+         ]]>
+    </text>
+  </js>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    &VoucherRequest;
+    &VoucherSaleRequest;
+
+    <query>
+      <text>
+        <![CDATA[
+if @action = 'EDIT' begin
+]]>&CheckUpdatingDeleting;<![CDATA[
+end
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+
+declare @script nvarchar(4000)
+if @action in ('EDIT', 'VIEW') exec ISWIFTStoreGetListFiles 'xfile', @id, '@@voucherCode', '', @script output
+if @script is null set @script = ''
+
+if @action = 'NEW' begin
+  declare @ma_nk varchar(32), @ten_nk nvarchar(3000), @ngay_ct date, @so_ct varchar(32), @i_so_ct int, @unit_id int
+  select @ngay_ct = getdate(), @unit_id = @@unit
+]]>&VoucherNumberQuery;<![CDATA[
+  if @so_ct is null
+    select '' as [so_ct], 0 as [i_so_ct], @unit_id as [unit_id], '' as ma_nk, '' as ten_nk
+  else
+    select @so_ct as [so_ct], @i_so_ct as [i_so_ct], @unit_id as [unit_id], @ma_nk as ma_nk, @ten_nk as ten_nk
+end
+else select @script as script
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+
+    <declare>
+      <text>
+        <![CDATA[
+declare @warning nvarchar(256), @dOldVoucherDate date, @dVoucherDate date, @nVoucherType tinyint, @strIds varchar(256), @q nvarchar(4000)
+set @warning = ''
+         ]]>
+      </text>
+    </declare>
+
+    &VoucherJSLoading;
+
+    <beforesave>
+      <text>
+        &VoucherNumberBeforeSave;
+      </text>
+    </beforesave>
+
+    <deleting>
+      <text>
+        &CheckUpdatingDeleting;
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct, @dVoucherDate = ngay_ct, @nVoucherType = ma_ngv from s23 where id = @id
+        ]]>
+      </text>
+    </deleting>
+
+    <deleted>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+exec ISWIFTStoredDeleteDataWithKey 'v23_1', @strIds, '', @dVoucherDate
+        ]]>
+      </text>
+    </deleted>
+
+    <updating>
+      <text>
+        <![CDATA[
+select @dOldVoucherDate = ngay_ct from s23 where id = @id
+        ]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId, i_so_ct = @i_so_ct, so_ct = @so_ct where [%whereFieldKey]
+update dmttin set status = 0 from dmttin where id0 = rtrim(@id) and xgroup = '@@voucherCode'
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+         ]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @ma_ct = '@@voucherCode'
+exec ISWIFTStoredGetIdentityNumber '@@voucherCode', '@@table', @id output
+         ]]>
+      </text>
+    </inserting>
+
+    <inserted>
+      <text>
+        <![CDATA[
+if @xfile <> '' update dmttin set status = 1, id0 = @id from dmttin where charindex(id, @xfile) > 0 and xgroup = '@@voucherCode'
+]]>
+      </text>
+    </inserted>
+
+    <aftersave>
+      <text>
+        <![CDATA[
+select @strIds = rtrim(@id)
+if @action = 'NEW' set @dOldVoucherDate = @ngay_ct
+update @v23_1 set id = @id
+delete v23_1 where id = @id
+insert v23_1 select * from @v23_1
+
+
+exec ISWIFTStoredPostingVoucher 's23', 'v23_1', @dOldVoucherDate, @ngay_ct, @id, '@@voucherCode', '', ''
+
+exec ISWIFTStoredIncreaseVoucherNo @ma_nk, @ngay_ct, '@@voucherCode', @i_so_ct, @so_ct, '@@table'
+select '' as message, @warning as warning, @id as [#id], @so_ct as [#so_ct], @ma_unit as [#ma_unit]
+]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+    <message val="physicalRetrieve">
+      <text v="Chỉ xử lý nghiệp vụ sổ sách lấy dữ liệu từ thực tế" e="" />
+    </message>
+  </messages>
+</dir>

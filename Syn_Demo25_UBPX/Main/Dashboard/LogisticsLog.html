@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Đơn hàng & Báo giá</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f8f9fa; }
+        .stat-card {
+            border-radius: 18px;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 22px;
+            min-height: 128px;
+            box-shadow: 0 1px 6px rgba(80,60,120,0.07);
+            transition: .2s;
+        }
+        .stat-card:hover { box-shadow: 0 4px 18px rgba(80,60,120,0.14); transform: scale(1.015);}
+        .gradient-orders { background: linear-gradient(120deg,#007adf,#00ecbc 90%);}
+        .gradient-quotes { background: linear-gradient(120deg,#fd746c,#ff9068 90%);}
+        .gradient-published { background: linear-gradient(120deg,#36d1c4,#4e54c8 90%);}
+        .stat-card-icon {
+            position: absolute; right: 24px; top: 22px; font-size: 2.5rem; opacity: .18;
+        }
+        .stat-value { font-size: 2.22rem; font-weight: 700; margin-bottom: 6px;}
+        .stat-label { font-size: 1.07rem; font-weight: 500;}
+        .stat-detail-row {margin-top: 9px;}
+        .stat-detail-label {font-size: .95rem; opacity: .90;}
+        .stat-detail-value {font-size: 1.09rem; font-weight: 600;}
+        .chart-card { border-radius: 20px; }
+        @media (max-width: 991px) {
+            .stat-card { min-height: 120px;}
+        }
+        #SYS_Calendar { display: none; }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+<script src="jquery-2.2.4.min.js"></script>
+<script src="j0.js"></script>
+<script src="j1.js"></script>
+<script src="jAjax.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div class="container-fluid py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <h5 class="mb-0">Tổng quan Đơn hàng & Báo giá</h5>
+        <div class="d-flex gap-2 align-items-center">
+            <input type="text" class="form-control" id="text_username" style="width:150px;" value="" disabled>
+            <input type="text" class="form-control" id="text_unit" style="width:220px;" value="" disabled>
+            <input type="date" class="form-control" id="date_from" style="width:160px;">
+            <input type="date" class="form-control" id="date_to" style="width:160px;">
+            <button class="btn btn-outline-secondary" id="btn_filter">Tùy chỉnh</button>
+        </div>
+    </div>
+    <!-- Cards -->
+    <div class="row g-3 mb-3">
+        <!-- Đơn hàng -->
+        <div class="col-12 col-md-4">
+            <div class="stat-card gradient-orders p-3 pb-1 h-100">
+                <i class="bi bi-box-seam stat-card-icon"></i>
+                <div class="stat-value" id="total_orders">0</div>
+                <div class="stat-label">Tổng Đơn hàng</div>
+                <div class="row stat-detail-row mt-2">
+                    <div class="col text-center">
+                        <div class="stat-detail-label">FCL</div>
+                        <div class="stat-detail-value" id="orders_fcl">0</div>
+                    </div>
+                    <div class="col text-center">
+                        <div class="stat-detail-label">LCL</div>
+                        <div class="stat-detail-value" id="orders_lcl">0</div>
+                    </div>
+                    <div class="col text-center">
+                        <div class="stat-detail-label">AIR</div>
+                        <div class="stat-detail-value" id="orders_air">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Phiếu yêu cầu báo giá -->
+        <div class="col-12 col-md-4">
+            <div class="stat-card gradient-quotes p-3 pb-1 h-100">
+                <i class="bi bi-receipt stat-card-icon"></i>
+                <div class="stat-value" id="total_quote_requests">0</div>
+                <div class="stat-label">Yêu cầu báo giá</div>
+                <div class="row stat-detail-row mt-2">
+                    <div class="col text-center">
+                        <div class="stat-detail-label">FCL</div>
+                        <div class="stat-detail-value" id="quotes_fcl">0</div>
+                    </div>
+                    <div class="col text-center">
+                        <div class="stat-detail-label">LCL</div>
+                        <div class="stat-detail-value" id="quotes_lcl">0</div>
+                    </div>
+                    <div class="col text-center">
+                        <div class="stat-detail-label">AIR</div>
+                        <div class="stat-detail-value" id="quotes_air">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Báo giá đã đăng -->
+        <div class="col-12 col-md-4">
+            <div class="stat-card gradient-published p-3 pb-1 h-100">
+                <i class="bi bi-upload stat-card-icon"></i>
+                <div class="stat-value" id="total_published_quotes">0</div>
+                <div class="stat-label">Báo giá đã đăng</div>
+                <div class="row stat-detail-row mt-2">
+                    <div class="col text-center">
+                        <div class="stat-detail-label">FCL</div>
+                        <div class="stat-detail-value" id="published_fcl">0</div>
+                    </div>
+                    <div class="col text-center">
+                        <div class="stat-detail-label">LCL</div>
+                        <div class="stat-detail-value" id="published_lcl">0</div>
+                    </div>
+                    <div class="col text-center">
+                        <div class="stat-detail-label">AIR</div>
+                        <div class="stat-detail-value" id="published_air">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Chart -->
+    <div class="row g-3">
+        <div class="col-12 col-md-8">
+            <div class="card chart-card p-3">
+                <h6 class="mb-3">So sánh Đơn hàng & Báo giá theo loại</h6>
+                <canvas id="orderBarChart" height="110"></canvas>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="card chart-card p-3">
+                <h6 class="mb-3">Tỷ lệ Đơn hàng theo loại</h6>
+                <canvas id="orderDonutChart" height="160"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. Mặc định gán user (tuỳ hệ thống bạn, demo thôi)
+	const textUnitid = $.localVal('$USERINFO').Items[9];
+	const textUsername = $.localVal('$USERINFO').Items[2];
+	document.getElementById("text_username").value = textUsername;
+	
+	// Chart code y chang như trước
+    let barChart, donutChart;
+
+	$(function() {
+		// Set default dates: đầu tháng đến hôm nay
+		let today = new Date().toISOString().slice(0, 10);
+		let firstDay = new Date();
+		firstDay.setDate(1);
+		let firstDayStr = firstDay.toISOString().slice(0, 10);
+		$('#date_from').val(firstDayStr);
+		$('#date_to').val(today);
+
+		// Lấy lần đầu khi load trang
+		loadDashboard();
+	});
+	
+    // Sự kiện filter
+    $('#btn_filter').click(function() {
+        loadDashboard();
+    });
+	
+	const requestDataSet = function(script) {
+		return new Promise((resolve, reject) => {
+			var m = new Memvars();
+			var controller = "loaddulieutable";
+			var p = window.location.href.toString();
+			p = p.substring(0, p.indexOf("Main/")) + 'AppService/EService.asmx/' + "GetData";
+			var query = `${script}`;
+			m.val("query", 'C', query);
+			$.ajax({
+				type: "POST",
+				url: p,
+				header: '',
+				data: JSON.stringify({
+					controller: controller,
+					oMemvar: m.val()
+				}),
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				timeout: 30000,
+				success: function(msg, s) {
+					if (msg.d.length > 0) {
+						const data = msg.d;
+						resolve(data);
+					} else {
+						resolve("");
+					}
+				},
+				error: function(e) {
+					console.log(e);
+				}
+			});
+		});
+	}
+
+	function formatDotNetDate(dateStr) {
+		const timestamp = parseInt(dateStr.match(/\d+/)[0]);
+		const dateObj = new Date(timestamp);
+		return dateObj.toISOString().slice(0, 10);
+	}
+
+    function loadDashboard() {
+        let fromDate = $('#date_from').val();
+		let toDate = $('#date_to').val();
+
+		// Validate date
+		if (!fromDate || !toDate || fromDate > toDate) {
+			alert('Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc!');
+			return;
+		}
+
+		fromDate = fromDate + ' 00:00:00';
+		toDate = toDate + ' 23:59:59';
+		
+		Promise.all([
+			requestDataSet(`SELECT * FROM sysunit where unit_id = ${textUnitid}`),
+			requestDataSet(`
+				DECLARE @fromDate DATETIME = '${fromDate}';
+				DECLARE @toDate   DATETIME = '${toDate}';
+
+				SELECT
+					(SELECT COUNT(*) FROM ms61 WHERE ma_job = 'FC' AND ngay_ct BETWEEN @fromDate AND @toDate) AS orders_fcl,
+					(SELECT COUNT(*) FROM ms61 WHERE ma_job = 'LC' AND ngay_ct BETWEEN @fromDate AND @toDate) AS orders_lcl,
+					(SELECT COUNT(*) FROM ms61 WHERE ma_job = 'AI' AND ngay_ct BETWEEN @fromDate AND @toDate) AS orders_air,
+
+					(SELECT COUNT(*) FROM s11 WHERE ngay_ct BETWEEN @fromDate AND @toDate) AS quotes_fcl,
+					(SELECT COUNT(*) FROM s12 WHERE ngay_ct BETWEEN @fromDate AND @toDate) AS quotes_lcl,
+					(SELECT COUNT(*) FROM s13 WHERE ngay_ct BETWEEN @fromDate AND @toDate) AS quotes_air,
+
+					(SELECT COUNT(*) FROM e41 WHERE ngay_ct BETWEEN @fromDate AND @toDate) AS published_fcl,
+					(SELECT COUNT(*) FROM e42 WHERE ngay_ct BETWEEN @fromDate AND @toDate) AS published_lcl,
+					(SELECT COUNT(*) FROM e43 WHERE ngay_ct BETWEEN @fromDate AND @toDate) AS published_air
+			`)
+		]).then(([unitData, chartData]) => { 
+			if (unitData && Array.isArray(unitData) && unitData.length > 0 && unitData[0].ten_unit) {
+				document.getElementById("text_unit").value = unitData[0].ten_unit;
+			} else {
+				document.getElementById("text_unit").value = "";
+			}
+			
+			// Nếu chartData bị rỗng thì tự set all zero
+			if (!Array.isArray(chartData) || chartData.length == 0 || !chartData[0]) {
+				chartData = [{
+					orders_fcl: 0, orders_lcl: 0, orders_air: 0,
+					quotes_fcl: 0, quotes_lcl: 0, quotes_air: 0,
+					published_fcl: 0, published_lcl: 0, published_air: 0
+				}];
+			}
+			let d = chartData[0];
+
+            let orders = {
+                FCL: d.orders_fcl || 0,
+                LCL: d.orders_lcl || 0,
+                AIR: d.orders_air || 0
+            };
+            let quotes = {
+                FCL: d.quotes_fcl || 0,
+                LCL: d.quotes_lcl || 0,
+                AIR: d.quotes_air || 0
+            };
+            let published = {
+                FCL: d.published_fcl || 0,
+                LCL: d.published_lcl || 0,
+                AIR: d.published_air || 0
+            };
+
+            let totalOrders = orders.FCL + orders.LCL + orders.AIR;
+            let totalQuotes = quotes.FCL + quotes.LCL + quotes.AIR;
+            let totalPublished = published.FCL + published.LCL + published.AIR;
+
+            // Gán lên card
+            $('#total_orders').text(totalOrders);
+            $('#orders_fcl').text(orders.FCL);
+            $('#orders_lcl').text(orders.LCL);
+            $('#orders_air').text(orders.AIR);
+
+            $('#total_quote_requests').text(totalQuotes);
+            $('#quotes_fcl').text(quotes.FCL);
+            $('#quotes_lcl').text(quotes.LCL);
+            $('#quotes_air').text(quotes.AIR);
+
+            $('#total_published_quotes').text(totalPublished);
+            $('#published_fcl').text(published.FCL);
+            $('#published_lcl').text(published.LCL);
+            $('#published_air').text(published.AIR);
+
+            // Render lại chart
+            renderCharts(orders, quotes, published);
+		});
+    }
+
+    function renderCharts(orders, quotes, published) {
+        if(barChart) barChart.destroy();
+        if(donutChart) donutChart.destroy();
+
+        // Bar chart
+        const ctxBar = document.getElementById('orderBarChart').getContext('2d');
+        barChart = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: ['FCL', 'LCL', 'AIR'],
+                datasets: [
+                    {
+                        label: 'Đơn hàng',
+                        data: [orders.FCL, orders.LCL, orders.AIR],
+                        backgroundColor: '#007adf',
+                        borderRadius: 8,
+                        barPercentage: 0.60,
+                    },
+                    {
+                        label: 'Yêu cầu báo giá',
+                        data: [quotes.FCL, quotes.LCL, quotes.AIR],
+                        backgroundColor: '#fd746c',
+                        borderRadius: 8,
+                        barPercentage: 0.60,
+                    },
+                    {
+                        label: 'Báo giá đã đăng',
+                        data: [published.FCL, published.LCL, published.AIR],
+                        backgroundColor: '#36d1c4',
+                        borderRadius: 8,
+                        barPercentage: 0.60,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: { enabled: true }
+                },
+                scales: {
+                    x: { title: { display: false }},
+                    y: { beginAtZero: true, title: { display: false } }
+                }
+            }
+        });
+
+        // Donut chart
+        const ctxDonut = document.getElementById('orderDonutChart').getContext('2d');
+        donutChart = new Chart(ctxDonut, {
+            type: 'doughnut',
+            data: {
+                labels: ['FCL', 'LCL', 'AIR'],
+                datasets: [{
+                    data: [orders.FCL, orders.LCL, orders.AIR],
+                    backgroundColor: [
+                        '#007adf',
+                        '#fd746c',
+                        '#36d1c4'
+                    ],
+                    borderWidth: 2,
+                    borderColor: "#fff"
+                }]
+            },
+            options: {
+                cutout: "68%",
+                plugins: {
+                    legend: { display: true, position: 'bottom' },
+                    tooltip: { enabled: true }
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

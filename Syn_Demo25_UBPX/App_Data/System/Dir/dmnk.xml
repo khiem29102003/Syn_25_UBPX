@@ -1,0 +1,343 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmnk" table="dmnk" fieldKey="ma_nk" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục quyển" e="List of customer"></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,240,120"  >
+      <fields>
+        <field name="ma_nk" fieldType="PK" format="U" label="1" field="1" allowBlank="false" >
+          <text v="Mã quyển" e="Code"></text>
+        </field>
+        <field name="ten_nk" allowBlank="false" label="1" field="-">
+          <text v="Tên quyển" e="Name"></text>
+        </field>
+        <field name="ten_nk2" label="1" field="-">
+          <text v="Tên 2" e="Name 2"></text>
+        </field>
+
+      </fields>
+    </form>
+
+    <form tabPageIndex="1" gravity="MiddleLeft" columns="120,120,240,120" >
+      <text v="Thông tin chung" e="Header Data"></text>
+      <fields>
+        <field name="so_ct_mau" format="U" label="1" field="2" allowBlank="false" >
+          <text v="Số chứng từ mẫu" e="VC Template"></text>
+        </field>
+        <field name="number_text" hidden="true" format="U" label="1" field="2" >
+          <text v="Text số" e="Text số"></text>
+        </field>
+        <field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_unit" viewType="Lookup" fieldType="EXParam" readOnly="false" label="1" field="1" >
+          <text v="Đơn vị" e="Unit"></text>
+          <viewInfo lookupType="One" lookupId="sysunit" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_unit" lookupInfo="sysunit|ma_unit|ten_unit" />
+        </field>
+        <field name="ten_unit" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="kieu_trung_so" viewType="Combobox" valueDefault="5" label="1" field="2" >
+          <text v="Kiểm tra trùng số" e="Check Duplication"></text>
+          <viewInfo>
+            <options>
+              <option val="0">
+                <text v="0 - Không kiểm tra" e="0 - No"></text>
+              </option>
+              <option val="1">
+                <text v="1 - Theo ngày" e="1 - Daily"/>
+              </option>
+              <option val="2">
+                <text v="2 - Theo tháng" e="2 - Monthly"/>
+              </option>
+              <option val="3">
+                <text v="3 - Theo quý" e="3 - Quarterly"/>
+              </option>
+              <option val="4">
+                <text v="4 - Theo năm" e="4 - Annually"/>
+              </option>
+              <option val="5">
+                <text v="5 - Tất" e="5 - All"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="i_so_ct_ht" disabled="true" dataType="N" format="-1" label="1" field="1" >
+          <text v="Số hiện tại" e="Current Number"></text>
+        </field>
+        <field name="ngay_hl1" label="1" field="1" dataType="D">
+          <text v="Hiệu lực từ/đến" e="Date From"></text>
+        </field>
+        <field name="ngay_hl2" label="" field="[120]" dataType="D" nextRow="false">
+          <text v="Ngày chứng từ từ/đến" e="Voucher Date"></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+    <form tabPageIndex="2" gravity="MiddleLeft" height="0" >
+      <text v="Chứng từ &amp; Người sử dụng" e="Voucher &amp; User"></text>
+      <fields>
+        <field name="dmnk3" allowBlank="false" label="" field="-" viewType="Grid">
+          <text v="Chứng từ &amp; Người sử dụng" e="Voucher &amp; User"></text>
+        </field>
+      </fields>
+    </form>
+    <form tabPageIndex="3" gravity="MiddleLeft" height="0" >
+      <text v="Số hiện tại" e="Current Number"></text>
+      <fields>
+        <field name="dmnk2" allowBlank="true" label="" field="-" viewType="Grid">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+
+  <grids>
+    <grid id="dmnk3" table="dmnk3" fieldKey="user_id, ma_nk" order="line" readOnly="false">
+      <fields>
+        <field name="ma_nk" foreignField="ma_nk" fieldType="PK" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="line" foreignField="@@ROW" dataType="I" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+        <field name="ma_ct" width="100" viewType="Lookup" fieldType="PK" allowBlank="false" readOnly="false" >
+          <text v="Mã chứng từ" e="Currency Code"></text>
+          <viewInfo lookupType="One" lookupId="dmct" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_ct" lookupInfo="dmct|ma_ct|ten_ct" />
+        </field>
+        <field name="ten_ct" width="250" fieldType="EX" readOnly="true" inactivate="true" aliasName="c">
+          <text v="Tên chứng từ" e="Currency Name"></text>
+        </field>
+        <field name="user_id" readOnly="true" hidden="true" fieldType="PK" inactivate="true" dataType="I" width="80" >
+          <text v="" e=""></text>
+        </field>
+        <field name="username" width="100" viewType="Lookup" readOnly="false" aliasName="b" >
+          <text v="Người sử dụng" e="Username"></text>
+          <viewInfo lookupType="One" lookupId="vsysuserinfo" lookupKey="is_user = 1 and status = 1 and admin = 0" lookupCheck="1=1" lookupRef="nickname" lookupInfo="vsysuserinfo|username|nickname" />
+        </field>
+        <field name="nickname" width="250" readOnly="true" inactivate="true" aliasName="b" fieldType="EX" >
+          <text v="Tên người sử dụng" e="Nick Name"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="moveup">
+          <text v="$MoveUpToolbar" e="$MoveUpToolbar"></text>
+        </button>
+        <button id="movedown">
+          <text v="$MoveDownToolbar" e="$MoveDownToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+select @@fields into #t from @@table a left join sysuserinfo b on a.user_id = b.user_id left join dmct c on a.ma_ct = c.ma_ct where @@key order by line
+select * from #t
+drop table #t
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+    <grid id="dmnk2" table="dmnk2" fieldKey="user_id, line" order="ngay_nk" readOnly="true">
+      <fields>
+        <field name="ma_nk" foreignField="ma_nk" fieldType="PK" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="ngay_nk" dataType="D" fieldType="PK" width="100" >
+          <text v="Ngày" e="Date"></text>
+        </field>
+        <field name="i_so_ct_ht" dataType="N" width="100" format="0" readOnly="false" >
+          <text v="Số hiện tại" e="Curr. No"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+      </buttons>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+select @@fields from @@table a where @@key order by ngay_nk
+         ]]>
+          </text>
+        </query>
+      </script>
+    </grid>
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmnk(p){
+  this.constructor(p);
+}
+dir$dmnk.prototype = new DirEvent();
+dir$dmnk.prototype.afterInit = function(){
+  var p = this._dir;
+  if (p.options.action == "NEW") this.formFieldValueChange(null, 'so_ct_mau', p.valForm('so_ct_mau'));
+  p.setHidden('i_so_ct_ht', p.valForm('kieu_trung_so') != 5);
+}
+dir$dmnk.prototype.formFieldValueChange = function (o, cF, v) {
+  var p = this._dir;
+  switch (cF){
+    case 'so_ct_mau':
+      var ts = p.jObject('kieu_trung_so');
+      p.setDisabled('kieu_trung_so', true);
+      if (v.indexOf('[DD]') != -1) ts.fval(1);
+      else if (v.indexOf('[MM]') != -1) ts.fval(2);
+      else if (v.indexOf('[YY') != -1) ts.fval(4);
+      else {
+        ts.fval(5);
+        p.setDisabled('kieu_trung_so', false);
+      }
+      var i = v.indexOf('[#'), j = v.indexOf('#]');
+      p.valForm('number_text', v.substr(i, j - i + 2))
+      p.setHidden('i_so_ct_ht', p.valForm('kieu_trung_so') != 5);
+      break;
+    case 'kieu_trung_so':
+      p.setHidden('i_so_ct_ht', p.valForm('kieu_trung_so') != 5);
+    default:
+      break;
+  }
+}
+dir$dmnk.prototype.gridCellValueChange = function (o, g, r, c, v) {
+  var p = this._dir;
+  switch (c){
+    case 'username':
+      p.grequest(g, 'User', '', ['username'], null, r);
+      break;
+    default:
+      break;
+  }
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <request code="User">
+      <text>
+        <![CDATA[
+select isnull(max(user_id), 0) as [#user_id] from sysuserinfo where username = @username
+        ]]>
+      </text>
+    </request>
+
+    <query>
+      <text>
+        <![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+declare @script nvarchar(3000)
+if @action = 'EDIT' and exists(select 1 from syscodeexists with(nolock, index(code1)) where code1 = @ma_nk and field = 'ma_nk')
+  set @script = 'p.setDisabled([''@@firstFieldKey'', ''so_ct_mau'', ''number_text'', ''kieu_trung_so'', ''ma_unit''], true);'
+else 
+  set @script = ''
+if (@action = 'EDIT' or @copy = 1) and exists(select 1 from #@@table where unit_id <> 0) select ma_unit, ten_unit, @script as script from sysunit where unit_id in (select unit_id from #@@table)
+else select @script as script
+
+drop table #@@table
+         ]]>
+      </text>
+    </query>
+
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã quyển đã tồn tại' else N'Region Code is exists' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã quyển đã tồn tại' else N'Region Code is exists' end
+         ]]>
+      </text>
+    </declare>
+
+    <beforesave>
+      <text>
+        <![CDATA[
+select @unit_id = isnull(max(unit_id), 0) from sysunit where ma_unit = @ma_unit
+update @dmnk3 set ma_nk = @ma_nk
+
+if exists(select 1 from @dmnk3 group by ma_ct, user_id having count(1) > 1) begin
+  select '$duplicateUserVoucher' as message, '@2' as field
+  return
+end
+        ]]>
+      </text>
+    </beforesave>
+    
+    <deleted>
+      <text>
+        <![CDATA[
+delete dmnk3 where ma_nk = @ma_nk
+        ]]>
+      </text>
+    </deleted>
+    <aftersave>
+      <text>
+        <![CDATA[
+update dmnk set unit_id = @unit_id where [%whereFieldKey]
+delete dmnk3 where [%whereFieldKey]
+insert into dmnk3 select * from @dmnk3
+        ]]>
+      </text>
+    </aftersave>
+  </script>
+
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã quyển đã có trong danh mục." e="The Book Is Already Exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã quyển đã có trong danh mục." e="The Book Is Already Exists."/>
+    </message>
+    <message val="duplicateUserVoucher">
+      <text v="Chứng từ và người sử dụng đã bị trùng." e="Voucher And User Is Already Exists."/>
+    </message>
+  </messages>
+</dir>

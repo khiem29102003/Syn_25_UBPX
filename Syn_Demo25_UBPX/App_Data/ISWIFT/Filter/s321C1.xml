@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+]>
+
+<dir id="s331C1" fieldKey="id" voucherCode="" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lọc danh sách cảng" e="Filter The Port List"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+       
+        <field name="unit_id" dataType="I" hidden="true" label="1" field="1">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+		
+        <field name="ma_ttp" viewType="Lookup" disabled="false" label="1" field="1">
+			<text v="Khu vực" e="Area "></text>
+			<viewInfo lookupType="One" lookupId="dmttp" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_ttp" />
+		</field>
+		<field name="ten_ttp" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+		<field name="ma_qg" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Quốc gia" e="Country"></text>
+			<viewInfo lookupType="One" lookupId="dmquocgia" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_qg"  />
+		</field>
+		<field name="ten_qg" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field>  
+      </fields>
+    </form>
+	
+	
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$s331C1(p){
+  this.constructor(p);
+}
+filter$s331C1.prototype = new DirEvent();
+
+filter$s331C1.prototype.afterInit = function(){
+  var p = this._dir;
+  
+  p.valForm(['ngay_ct', 'ma_ttp', 'ten_ttp', 'ma_qg', 'ten_qg', 'unit_id'], [p.options._ngay_ct,p.options._ma_ttp, p.options._ten_ttp,p.options._ma_qg, p.options._ten_qg, p.options._unit_id]);
+}
+filter$s331C1.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir;
+ // m2.val('id', 'I', p.options.parent.valForm('id'))
+  opt = $.extend({}, opt, {controller: "s321C1Select", folder: "Filter", dirViewType: "Dialog", parent: p.options.parent, useDataSet: true, memvars: m2});
+ // opt = $.extend({}, opt, {controller: "v311", folder: "Lookup", dirViewType: "Dialog", parent: p.options.parent, useDataSet: true, memvars: m2});
+  p._close();
+  $.createDir(false, opt);
+  return false;
+}
+
+         ]]>
+    </text>
+  </js>
+
+  <script>
+
+  </script>
+</dir>

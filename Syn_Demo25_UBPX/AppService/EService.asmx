@@ -1,0 +1,1 @@
+﻿<%@ WebService Language="VB" CodeBehind="EService.asmx.vb" Class="ISWIFT.External.Methods" %>

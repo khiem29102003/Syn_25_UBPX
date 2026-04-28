@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+    <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridNotPrint.xml">
+]>
+
+<dir id="dmbbct" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục biên bản chứng từ" e="List of Voucher Report"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid id="0" table="dmbbct" fieldKey="ma_bbct" order="ma_bbct" allowFilter="true" allowOrder="true" >
+      <fields>
+        <field name="ma_bbct" fieldType="PK" width="120">
+          <text v="Mã biên bản" e="Report Code"></text>
+        </field>
+		 <field name="ten_bbct" width="250">
+          <text v="Tên biên bản" e="Report Name"></text>
+        </field>		 
+		<field name="ten_bbct2" width="250">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+        <field name="status" width="120" align="center">
+          <text v="Trạng thái" e="Status"></text>
+        </field>
+      </fields>
+      &DefaultButton;
+	  <script>
+		<query>
+			<text>
+				<![CDATA[
+		declare @strKey nvarchar(3000)
+		exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey , @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+				]]>
+			</text>
+		</query>
+
+		<finding>
+			<text>
+			<![CDATA[
+		declare @strKey nvarchar(3000)
+		set @strKey = @strFinding
+		exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+			]]>	
+			</text>
+		</finding>
+	   </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmbbct(f){
+  this.constructor(f);
+}
+grid$dmbbct.prototype = new DirEvent();
+grid$dmbbct.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

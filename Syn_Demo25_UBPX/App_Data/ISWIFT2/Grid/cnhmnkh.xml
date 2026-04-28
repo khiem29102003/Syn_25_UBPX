@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridFinding.xml">
+]>
+
+<dir id="cnhmnkh" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Cập nhật hạn mức nợ khách hàng" e="Cập nhật hạn mức nợ khách hàng"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit..."></subtitle>
+  <grids>
+    <grid table="cnhmnkh" fieldKey="ma_kh, ngay_hl" order="ma_kh, ngay_hl" allowFilter="true" allowOrder="true" >
+      <fields>
+        <field name="ma_kh" width="120" fieldType="PK" >
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="350" fieldType="EX" >
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+        <field name="ngay_hl" width="100" dataType="D" fieldType="PK">
+          <text v="Từ ngày" e="Từ ngày"></text>
+        </field>
+        <field name="han_muc_no" dataType="N" format="Amount" width="120">
+          <text v="Hạn mức nợ" e="Hạn mức nợ"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmkh b on a.ma_kh = b.ma_kh_kt', 'b.ten_kh', '@@key', '', @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = @strFinding
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </finding>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$cnhmnkh(f){
+  this.constructor(f);
+}
+grid$cnhmnkh.prototype = new DirEvent();
+grid$cnhmnkh.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+</dir>

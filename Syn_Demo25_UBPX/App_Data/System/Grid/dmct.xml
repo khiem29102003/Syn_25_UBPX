@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="dmct" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục chứng từ" e="List of group"></title>
+  <subtitle v="Sửa, khóa sổ chứng từ" e="Edit, Lock Voucher"></subtitle>
+  <grids>
+    <grid table="dmct" fieldKey="ma_ct" order="ma_ct" allowFilter="true" allowOrder="true" key="" >
+      <fields>
+        <field name="ma_ct" fieldType="PK" width="100" filterType="Code">
+          <text v="Mã chứng từ" e="Code"></text>
+        </field>
+        <field name="ten_ct" width="250">
+          <text v="Tên chứng từ" e="Name"></text>
+        </field>
+        <field name="ma_ct_in" width="100">
+          <text v="Mã in" e="Print Code"></text>
+        </field>
+        <field name="ngay_ks" dataType="D" width="100">
+          <text v="Ngày khóa sổ" e="Lock Date"></text>
+        </field>
+        <field name="ct_nxd" width="100" viewType="Combobox">
+          <text v="Loại ct kho" e="Inventory Type"></text>
+          <viewInfo>
+            <options>
+              <option val="0">
+                <text v="Khác" e="Other"/>
+              </option>
+              <option val="1">
+                <text v="Nhập" e="Receipt"/>
+              </option>
+              <option val="2">
+                <text v="Xuất" e="Issue"/>
+              </option>
+              <option val="3">
+                <text v="Điều chuyển" e="Transfer"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="edit">
+          <text v="Sửa (Ctrl + E, Alt + E)" e="Edit (Ctrl + E, Alt + E)"></text>
+        </button>
+        <!--<button id="lock">
+          <text v="Khóa số liệu chứng từ" e="Lock Voucher Data"></text>
+        </button>-->
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="Làm tươi" e="Refresh"></text>
+        </button>
+        <button id="freeze">
+          <text v="Gim cột" e="Freeze"></text>
+        </button>
+      </buttons>
+
+    </grid>
+  </grids>
+
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmct(f){
+  this.constructor(f);
+}
+grid$dmct.prototype = new DirEvent();
+grid$dmct.prototype.afterInit = function() {
+  var p = this._dir;
+}
+grid$dmct.prototype.beforeButtonGridClick = function (id, gindex) {
+  var p = this._dir, g = p.grid(), r = p.curr("r");
+  console.log(id)
+  switch (id) {
+    case 'lock':
+      if (r < 0) return;
+      var m = new Memvars(), vc = g.data.val(r, 'ma_ct');
+      console.log(vc);
+      m.val('ma_ct', 'C', vc)
+      p.showFilter('dataclosingvoucher', m, {_ma_ct: vc});
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+
+         ]]>
+    </text>
+  </js>
+
+  <css>
+    <text>
+      <![CDATA[
+.toolbar-lock > div, .menu-item-lock {
+  background-position: -304px -288px !important;
+}
+    ]]>
+    </text>
+  </css>
+
+</dir>

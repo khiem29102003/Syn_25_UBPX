@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="cdncc" table="cdncc" fieldKey="nam,unit_id,ma_kh" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Vào đầu kỳ công nợ nhà cung cấp" e="Customer Opening Balance"></title>
+  <title0 v="Cập nhật công nợ" e="New Customer Opening Balance"></title0>
+  <title1 v="Sửa công nợ" e="Edit Customer Opening Balance"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="nam" label="" field="1" format="-1" maxLength="4" hidden="true" fieldType="PK" dataType="I">
+          <text v="" e=""></text>
+        </field>
+        <field name="unit_id" label="" field="1" format="-1" hidden="true" fieldType="PK" dataType="I">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_kh" format="U" label="1" field="1" viewType="Lookup" allowBlank="false" fieldType="PK" >
+          <text v="Mã nhà cung cấp" e="Customer Code"></text>
+          <viewInfo lookupType="One" lookupId="dmkh" lookupKey="1=1" lookupCheck="1=1" lookupRef="ten_kh" lookupInfo="dmkh|ma_kh|ten_kh" />
+        </field>
+        <field name="ten_kh" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="du_no0" label="1" field="1" allowBlank="true" format="Amount" dataType="N">
+          <text v="Dư nợ" e="Debit Balance"></text>
+        </field>
+        <field name="du_co0" label="1" field="1" allowBlank="true" format="Amount" dataType="N">
+          <text v="Dư có" e="Credit Balance"></text>
+        </field>
+        <field name="du_no_nt0" label="1" field="1" allowBlank="true" format="FCAmount" dataType="N">
+          <text v="Dư nợ nt" e="FC Dr. Balance"></text>
+        </field>
+        <field name="du_co_nt0" label="1" field="1" allowBlank="true" format="FCAmount" dataType="N">
+          <text v="Dư có nt" e="FC Cr. Balance"></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$cdncc(p){
+  this.constructor(p);
+}
+dir$cdncc.prototype = new DirEvent();
+dir$cdncc.prototype.afterInit = function(){
+  var p = this._dir, pa = p.options.parent;
+
+  if (p.options.action == 'NEW') p.valForm(['nam'], [pa.options._nam]);
+}
+]]>
+    </text>
+  </js>
+
+  <script>
+    <query>
+      <text>
+        <![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+drop table #@@table
+]]>
+      </text>
+    </query>
+
+    <beforesave>
+      <text>
+      <![CDATA[
+if @action = 'NEW' select @unit_id = @@unit
+]]>
+      </text>
+    </beforesave>
+
+    <deleted>
+      <text>
+        <![CDATA[
+delete cdtk where [%whereFieldKey] and tk = '131'
+        ]]>
+      </text>
+    </deleted>
+
+    <aftersave>
+      <text>
+        <![CDATA[
+delete cdtk where nam = @nam and unit_id = @unit_id and ma_kh = @ma_kh and tk = '131'
+insert into cdtk select nam, unit_id, '131', ma_kh, du_no0, du_co0, du_no_nt0, du_co_nt0, du_no1, du_co1, du_no_nt1, du_co_nt1, status, datetime0, datetime2, user_id0, user_id2 from @@table a where [%whereFieldKey]
+select @@unit as [#unit_id]
+]]>
+      </text>
+    </aftersave>
+
+  </script>
+
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Công nợ nhà cung cấp tồn tại." e="Customer Opening Balance is exists." />
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Công nợ nhà cung cấp tồn tại." e="Customer Opening Balance is exists." />
+    </message>
+  </messages>
+
+</dir>

@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridFinding.xml">
+]>
+
+<dir id="cdlo2" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Vào tồn kho đầu kỳ thực tế" e="Stock Opening Balance"></title>
+  <subtitle v="Vào tồn kho đầu kỳ thực tế năm {nam}" e="Physical Stock Opening Balance Year {nam}"></subtitle>
+  <grids>
+    <grid table="vcdlo2" fieldKey="nam, ma_vt, ma_kho, ma_vi_tri, ma_lo" order="nam, ma_vt, ma_kho, ma_vi_tri, ma_lo" allowFilter="true" allowOrder="true" >
+      <fields>
+        <field name="nam" fieldType="PK" width="0" hidden="true" dataType="I">
+          <text v="Năm" e="Năm"></text>
+        </field>
+        <field name="ma_vt" fieldType="PK" width="120">
+          <text v="Mã vật tư" e="Item"></text>
+        </field>
+        <field name="ten_vt" width="300">
+          <text v="Tên vật tư" e="Customer Name"></text>
+        </field>
+        <field name="ma_kho" fieldType="PK" width="120">
+          <text v="Mã kho" e="Site"></text>
+        </field>
+        <field name="ma_vi_tri" fieldType="PK" width="120">
+          <text v="Mã vị trí" e="Location"></text>
+        </field>
+        <field name="ma_lo" fieldType="PK" width="120">
+          <text v="Mã lô" e="Lot"></text>
+        </field>
+        <field name="ton00" format="Qty" dataType="N" width="120">
+          <text v="Tồn đầu" e="Opening Quantity"></text>
+        </field>
+        <field name="du00" format="Amount" dataType="N" width="120">
+          <text v="Dư đầu" e="Opening Balance"></text>
+        </field>
+        <field name="du_nt00" format="FCAmount" dataType="N" width="120">
+          <text v="Dư đầu ngoại tệ" e="FC Opening Balance"></text>
+        </field>
+      </fields>
+      
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="edit">
+          <text v="$EditToolbar" e="$EditToolbar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="view">
+          <text v="$ViewToolbar" e="$ViewToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="find">
+          <text v="$FindToolbar" e="$FindToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="export">
+          <text v="$ExportToolbar" e="$ExportToolbar"></text>
+        </button>
+        <button id="downtemplate">
+          <text v="Tải mẫu Excel" e="Down import template"></text>
+        </button>
+        <button id="import">
+          <text v="Lấy dữ liệu từ tập tin" e="Import data"></text>
+        </button>
+      </buttons>
+      
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = 'nam = ' + rtrim(@nam)            
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = 'nam = ' + rtrim(@nam)    
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </finding>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$cdlo2(f){
+  this.constructor(f);
+}
+grid$cdlo2.prototype = new DirEvent();
+grid$cdlo2.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  <messages>
+    <message val="dbLockDate">
+      <text v="Đã khóa số liệu, kiểm tra lại ngày khóa sổ." e="Data is locked, you must modify system locked date."/>
+    </message>
+  </messages>
+</dir>

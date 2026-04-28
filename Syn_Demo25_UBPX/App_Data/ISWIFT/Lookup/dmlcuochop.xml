@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="dmlcuochop" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục loại cuộc họp" e="List of meeting type"></title>
+  <grids>
+    <grid table="dmlcuochop" fieldKey="ma_lcuochop" fieldName="ten_lcuochop" order="ma_lcuochop" allowFilter="true" allowOrder="true">
+      <fields>
+		<field name="ma_lcuochop" width="120">
+			<text v="Mã loại cuộc họp" e="Meeting Type Code"></text>
+        </field>
+        <field name="ten_lcuochop" width="250">
+			<text v="Tên loại cuộc họp" e="Meeting Type Name"></text>
+        </field>
+		<field name="ten_lcuochop2" width="250">
+         <text v="Tên tiếng anh" e="English Name"></text>
+        </field>
+      </fields>
+	  <script>
+        <query>
+          <text> 	
+            <![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = @lookupKey + case when @val = '' then '' else ' (@@fieldKey like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'' or @@fieldName like N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' end
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+    </grid>
+  </grids>
+</dir>

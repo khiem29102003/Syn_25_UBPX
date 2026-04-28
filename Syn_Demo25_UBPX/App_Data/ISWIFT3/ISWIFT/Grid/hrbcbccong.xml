@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="hrbcbccong" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Bảng chấm công" e="Timesheet" />
+  <subtitle v="Từ ngày {ngay_tu} đến ngày {ngay_den}..." e="Date From {ngay_tu} Date To {ngay_den}..."></subtitle>
+  <grids>
+    <grid>
+      <fields>
+        <field name="stt" dataType="I" format="0" width="50">
+          <text v="Stt" e="No."></text>
+        </field>
+        
+        <field name="ma_nv" width="100">
+          <text v="Mã nhân viên" e="Employee ID"></text>
+        </field>
+        <field name="ho_ten_nv" width="250">
+          <text v="Họ và tên" e="Employee Full Name"></text>
+        </field>
+        <field name="xvalue" dataType="N" format="2" width="100">
+          <text v="Giá trị" e="Giá trị"></text>
+        </field>
+        <field name="chi_tieu" width="100">
+          <text v="Chỉ tiêu" e="Chỉ tiêu"></text>
+        </field>
+        <field name="stt_pivot" width="50">
+          <text v="Stt pivot" e="Stt pivot"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$hrbcbccong(f){
+  this.constructor(f);
+}
+grid$hrbcbccong.prototype = new DirEvent();
+grid$hrbcbccong.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+grid$hrbcbccong.prototype.beforeInit = function(){
+  var p = this._dir;
+}
+grid$hrbcbccong.prototype.beforeRenderGrid = function(g, dt){
+  var p = this._dir, d = p.options._ngay_den, fm = (d.getMonth() == p.options._ngay_tu.getMonth())?'dd':'dd/mm', k = 1, cF = '';
+  p.options._weekend = []; p.options._weekend0 = []; p.options._colDays = {}
+  
+  while (d >= p.options._ngay_tu) {
+    fi = p.addColumn(0, 'ho_ten_nv', 'n_' + $.date(d, 'yymmdd'), $.date(d, fm), 3);
+    fi.width = 70;
+    if (d.getDay() == 0 || d.getDay() == 6) p.options._weekend.push(fi.name);
+    if (d.getDay() == 0) {p.options._weekend0.push(fi.name); fi.inactivate = true;}
+    p.options._colDays[fi.name] = d;
+    d = $.addDays(d, -1);
+  }
+}
+grid$hrbcbccong.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(), dt = g.data;
+  if (p.options._weekend.length) p.find("." + p.options._weekend.join(",.")).css("color", "#25c65e");
+  if (p.options._weekend0.length) p.find("." + p.options._weekend0.join(",.")).css("color", "#F44336");
+
+ 
+}
+
+function addDays(date, days) {
+    var result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+}
+]]>
+    </text>
+  </js>
+
+</dir>

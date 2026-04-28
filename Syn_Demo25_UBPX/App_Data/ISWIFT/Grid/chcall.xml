@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="chcall" dirViewType="Grid" dirObjectType="Voucher" voucherCode="CH1" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Cấu hình cuôc gọi" e="Call configuration"></title>
+  <subtitle v="Thêm, sửa, xóa..." e="New, Edit, Delete..."></subtitle>
+
+  <grids>
+    <grid table="chcall" fieldKey="id, ma_dv" order="id desc" allowFilter="true" allowOrder="true">
+      <fields>
+	    <field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="120" fieldType="EX" hidden="true" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+
+        <field name="so_ct" width="100" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ngay_ct" width="120" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+		<field name="ma_dv" width="150" fieldType="PK" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+		<field name="t_so_luong" width="100" >
+          <text v="Tổng số lượng" e="Total quantity"></text>
+        </field>
+
+        <field name="dien_giai" width="200" >
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+		
+        <field name="status" viewType="Combobox" inactivate="true" width="150">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options query="select ma_ttct, ten_ttct%l from dmttct where ma_ct = '@@voucherCode' and status = 1 order by stt">
+            </options>
+          </viewInfo>
+        </field>
+		
+        <field name="id" dataType="N" fieldType="PK" format="0" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey =' ma_ct =  ''CH1'''
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id', 'b.ma_unit', '@@key', '', @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @strDetailKey nvarchar(3000); set @strDetailKey = ''
+set @strKey = 'ngay_ct between ''' + convert(char(8), @ngay_ct1, 112) + ''' and ''' + convert(char(8), @ngay_ct2, 112) + ''' and ' + @strFinding + ' and ' + dbo.ISWIFTFunctionGetUnitIDRightKeys(@@admin, @@userId, @ma_unit, 'a.unit_id') + @strDetailKey
+set @strKey = @strKey +' and ma_ct =  ''CH1'''
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit b on a.unit_id = b.unit_id,'b.ma_unit', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+drop table #unitright
+         ]]>
+          </text>
+        </finding>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$chcall(f){
+  this.constructor(f);
+}
+grid$chcall.prototype = new DirEvent();
+grid$chcall.prototype.afterInit = function(renderType){
+  var p = this._dir;
+}
+grid$chcall.prototype.beforeButtonGridClick = function(id){
+  if (id == 'register') {
+    var p = this._dir, g = p.grid(), r = p.curr("r");
+    if (r == null || r < 0) return;
+    
+    var m = new Memvars(), vc = g.data.val(r, 'id');   
+    register(this, vc);
+    return false;
+  }
+  return true
+}
+
+
+function register(o, id) {
+  $.invoke('RegisterDepositCode', { id: id }, this, 30000
+    , function (result) {
+		console.log(result);
+      if (result) {
+        if(result) $.alert(result);
+      }
+    }, function (event) {} );
+}
+
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+      <![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+    .toolbar-register{
+      background-repeat: no-repeat;
+      background-image: url('data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAAB+ElEQVR4nLXU70sTcQDHcf+AoEcj6MGBPiukBzoRpAyhH1I72B5I6AN7YAqngjif9GQwTMciNMdQH8SSkDGRvN0N73RO8WTJTEULSlBkZJNczQrnj1x5+8i+QrVr7G5oX3g/+fL9vvh+j+Obl/e/hn0R53teJwJqTX6UbZpAxxJ0PfMJqLW6I0OKyP1nBq7Fk/iwl1RHHTmAG/saUIdGcOHLEd5uy6Tl2FHSt/bz4alAZVb/u9EihvLoGaosK/h49gC24H7GuucOT9YEo7jWVhIvZigUM1RnVpB+FkHpk/WMmYXv6ArtoNJqSkGpFi836s5lBZu4r6j1fE6rbmgTLpZDYMaH2k6aYBXmKz9K6/IvqH5DJXjfE8UCbwXGaLwPFaK8hcLN1gJEXt4Cxgx2VVB55RG3nWADfBUswasIr1/E6uB1MneSAlWC7dIeLFNx0tTEC7JpRGBAe00wsUaEXUWI9hUiKRr+oCLtVj1hjTNIFgvsA1R7jTB6jXjj0uOT8xK+PddDFu78dUoaqv+hc34X/LQbwngDIHWQTb/420iwN9IgaAVT1Y8/xSNfFXb9NRkR5ALapRjucc0wT/MY9ouQhF7EB8twwKWuasgdbBfDsE1upc31hmIYmFkB5/eBfTUXwOjdApJYqfsNan1g/+3QkvFxOKtxDMNGWyT5OsJFAAAAAElFTkSuQmCC');
+   }
+		]]>
+    </text>
+  </css>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+</dir>

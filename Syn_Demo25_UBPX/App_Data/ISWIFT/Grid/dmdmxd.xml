@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="dmdmxd" dirViewType="Grid" dirObjectType="Voucher" voucherCode="DM0" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Khai báo định mức xăng dầu" e="Timekeeping"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="dmdmxd" fieldKey="id" order="id desc" allowFilter="true" allowOrder="true">
+      <fields >
+        <field name="id" fieldType="PK" hidden="true" width="120">
+          <text v="" e=""></text>
+        </field>
+		<field name="unit_id" hidden="true" dataType="I" width="120" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="ma_unit" width="120" fieldType="EX" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+		<field name="ma_xd" width="120">
+          <text v="Nhiên liệu" e="Fuel"></text>
+        </field>
+		<field name="ten_xd" width="220" fieldType="EX">
+          <text v="Tên nhiên liệu" e="Staff name"></text>
+        </field>	
+		<field name="ngay_ct" width="120" dataType="D">
+          <text v="Ngày hiệu lực" e="Effective date"></text>
+        </field>
+     </fields>
+	&DefaultButton;
+		
+	<script>
+        <query>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey =' ma_ct =  ''DM0'''
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join sysunit e on a.unit_id = e.unit_id left join dmxd c on a.ma_xd = c.ma_xd ',' e.ma_unit, c.ten_xd', '@@key', '', @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000), @strDetailKey nvarchar(3000); set @strDetailKey = ''
+set @strKey = 'ngay_ct between ''' + convert(char(8), @ngay_ct1, 112) + ''' and ''' + convert(char(8), @ngay_ct2, 112) + ''' and ' + @strFinding + ' and ' + dbo.ISWIFTFunctionGetUnitIDRightKeys(@@admin, @@userId) + @strDetailKey
+set @strKey = @strKey +' and ma_ct =  ''DM0'''
+exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmxd e on a.ma_xd = e.ma_xd ','e.ten_xd', '@@key', @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+drop table #unitright
+         ]]>
+          </text>
+        </finding>
+		
+      </script>
+	  
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmdmxd(f){
+  this.constructor(f);
+}
+grid$dmdmxd.prototype = new DirEvent();
+grid$dmdmxd.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

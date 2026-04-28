@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="cnptKHCT" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Công nợ phải thu khách hàng chi tiết" e="Customer receivables detail"></title>
+  <subtitle v="Từ ngày {ngay_ct1} đến ngày {ngay_ct2}..." e="From {ngay_ct1} To {ngay_ct2}..."></subtitle>
+  <grids>
+    <grid>
+	<fields>
+		<field name="tt_yn" width="150" fieldType="EX" hidden="true">
+          <text v="Tất toán" e="Pay off"></text>
+        </field>
+		<field name="stt" width="50" fieldType="EX">
+          <text v="STT" e="STT"></text>
+        </field>
+			<field name="id" width="100" hidden="true">
+          <text v="ID" e="ID"></text>
+        </field>
+		<field name="ma_kh" width="100" hidden="true">
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+		<field name="ten_kh" width="250"  aliasName="v" join="left join dmkh v on a.ma_kh = v.ma_kh">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+			<field name="ngay_ct" width="100" hidden="false" dataType="D">
+          <text v="Ngày chứng từ" e="Voucher day"></text>	
+        </field>
+		<field name="so_ct" width="100" hidden="true">
+          <text v="Số chứng từ" e="Voucher number"></text>
+        </field>
+		<field name="ma_ct" width="100" hidden="true">
+          <text v="Mã chứng từ" e="Voucher Code"></text>
+        </field>
+			<field name="ma_job" width="100" hidden="true">
+          <text v="Mã Job" e="Job code"></text>
+        </field>
+			<field name="so_job" width="100" hidden="true">
+          <text v="Số Job" e="Job number"></text>	
+        </field>
+			<field name="ma_job_ct1" width="70" fieldType="EX" align="Center">
+          <text v="Số chứng từ Đ/H" e="Order voucher number"></text>
+        </field>
+			<field name="ma_job_ct2" width="100" fieldType="EX">
+          <text v="Số job Đ/H" e="Order job"></text>
+        </field>
+			<field name="ma_gd" width="70" align="Center">
+          <text v="Mã loại" e="Type code"></text>
+        </field>
+			<field name="mbl_no" width="100" hidden="false">
+          <text v="Số MBL" e="MBL No"></text>	
+        </field>
+			<field name="hbl_no" width="100" hidden="false">
+          <text v="Số HBL" e="HBL No"></text>	
+        </field>
+			<field name="book_no" width="100" hidden="false">
+          <text v="Số booking" e="Booking No"></text>
+        </field>
+			<field name="so_tk" width="100" hidden="false">
+          <text v="Số tờ khai" e="Declarations"></text>	
+        </field>
+		
+	
+		<field name="ban" width="150" fieldType="EX" dataType="N">
+          <text v="Phí dịch vụ" e="Cost"></text>
+        </field>
+		<field name="chiho" width="150" fieldType="EX" dataType="N">
+          <text v="Tiền chi hộ" e="Pay on behalf"></text>
+        </field>
+		<field name="tong_tt" width="150" fieldType="EX" dataType="N">
+          <text v="Tổng tiền" e="Total money"></text>
+        </field>
+		<field name="thutienkh" width="150" fieldType="EX" dataType="N">
+          <text v="Tiền KH thanh toán" e="Customers pay"></text>
+        </field>
+		<field name="conlai" width="150" fieldType="EX" dataType="N">
+          <text v="Còn lại" e="Remaining"></text>
+        </field>
+		<field name="tattoan" width="60" fieldType="EX" align="Center">
+          <text v="Tất toán" e="Paid in full"></text>
+        </field>
+	
+	
+
+		
+		<field name="dien_giai" width="300">
+          <text v="Diễn giải" e="Explain"></text>
+        </field>
+
+		</fields>
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$cnptKHCT(f){
+  this.constructor(f);
+}
+grid$cnptKHCT.prototype = new DirEvent();
+grid$cnptKHCT.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+grid$cnptKHCT.prototype.beforeInit = function(){
+  var p = this._dir;
+}
+grid$cnptKHCT.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(), dt = g.data;
+}
+]]>
+    </text>
+  </js>
+  <script>
+    <processing>
+      <text>
+        <![CDATA[
+exec st_CPKHweb @ngay_ct1, @ngay_ct2, '@@gridJoin', '@@gridFields', @strJoin, @strFinding, @ma_unit, '@@lan', @@userId, @@admin
+        ]]>
+      </text>
+    </processing>
+  </script>
+</dir>

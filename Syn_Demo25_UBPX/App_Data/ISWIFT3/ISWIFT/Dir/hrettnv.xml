@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+  <!ENTITY HreScript SYSTEM "..\Include\XML\HreScript.xml">
+]>
+
+<dir id="hrdmnv" table="hrdmnv" fieldKey="id" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Thông tin nghỉ việc" e=""></title>
+  <title0 v="Mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120" >
+      <fields>
+        <field name="id" dataType="N" fieldType="PK" label="1" field="1" format="0" hidden="true">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="ngay_nghi" dataType="D" allowBlank="false" label="1" field="1" >
+          <text v="Ngày nghỉ" e=""></text>
+        </field>
+        <field name="ly_do_nghi" format="U" label="1" field="1" viewType="Lookup">
+          <text v="Lý do" e=""></text>
+          <viewInfo lookupType="One" lookupId="hrdmldnv" lookupKey="1=1" lookupCheck="1=1" lookupRef="ten_ly_do_nghi" lookupInfo="hrdmldnv|ma_ldnv|ten_ldnv" />
+        </field>
+        <field name="ten_ly_do_nghi" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="so_quyet_dinh" format="U" label="1" field="1" >
+          <text v="Số quyết định" e=""></text>
+        </field>
+        <field name="so_tro_cap" dataType="N" label="1" field="1" format="0" >
+          <text v="Trợ cấp thất nghiệp" e=""></text>
+        </field>
+        <field name="ghi_chu_tt" rows="3" label="1" field="-" >
+          <text v="Ghi chú" e="Notes"></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$hrdmnv(p){
+  this.constructor(p);
+}
+dir$hrdmnv.prototype = new DirEvent();
+dir$hrdmnv.prototype.afterInit = function(){
+  var p = this._dir, pa = p.options.parent;
+  if (p.options.action == 'NEW') p.valForm('id', pa.options._id);
+}
+]]>
+    </text>
+  </js>
+
+  <script>
+    &HreScript;
+  </script>
+</dir>

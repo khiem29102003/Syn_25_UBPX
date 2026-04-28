@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<report xmlns="urn:schemas-iswift:struct-report">
+  <query>
+    <text>
+      <![CDATA[
+select a.unit_id, isnull(u.ma_so_thue, '') as ms_thue, a.so_ct, a.so_ct2 as ky_hieu,  a.ong_ba as nguoi_mua_hang,  a.dia_chi, isnull(c.ten_tt, '') as ten_tt, a.ma_tt, a.dien_giai,
+	 cast(a.status as char(1)) as status, a.ma_nt, dbo.iswiftFunctionReadCurrency(a.ma_nt, a.t_tien_nt) as t_tt_in_word, isnull(t_tien_nt,0) t_tien_nt
+	  , replace(str(day(a.ngay_ct),2),' ','0') day, replace(str(month(a.ngay_ct),2),' ','0') month, cast(year(a.ngay_ct) as char(4)) year, a.ngay_ct,
+	  d.ma_kh, e.ten_kh, f.ten_pttt
+	from m58 a with(nolock)
+		left join dmtt c on a.ma_tt = c.ma_tt
+		left join sysunit u on a.unit_id = u.unit_id
+		left join d58 d on a.id = d.id
+		left join dmkh e on d.ma_kh = e.ma_kh
+		left join dmpttt f on d.ma_pttt = f.ma_pttt
+	where a.id = @id
+
+select line as stt, a.ma_kh, b.ten_kh, a.tien_nt,a.tien,a.id_hd,d.ten_pttt
+	from d58 a with(nolock) 
+	left join dmkh b with(nolock) on a.ma_kh = b.ma_kh
+	left join dmpttt d on a.ma_pttt = d.ma_pttt
+	where a.id = @id
+]]>
+    </text>
+  </query>
+
+  <forms>
+    <form id="010" fileName="m58_01" fileType="rdlc" exportExt="pdf" image="pdf">
+      <text v="Phiếu thu" e="Receipt"></text>
+    </form>
+    <form id="020" fileName="m58_01" fileType="rdlc" exportExt="docx" image="docx">
+      <text v="Phiếu thu" e="Receipt"></text>
+    </form>
+	 <form id="030" fileName="m58_01" fileType="rdlc" exportExt="xlsx" image="xlsx">
+      <text v="Phiếu thu" e="Receipt"></text>
+    </form>
+	
+	<form id="050" fileName="m58_02" fileType="rdlc" exportExt="pdf" image="pdf">
+      <text v="Phiếu thu cho nhiều khách hàng" e="Receipts"></text>
+    </form>
+    <form id="060" fileName="m58_02" fileType="rdlc" exportExt="docx" image="docx">
+      <text v="Phiếu thu cho nhiều khách hàng" e="Receipts"></text>
+    </form>
+	 <form id="070" fileName="m58_02" fileType="rdlc" exportExt="xlsx" image="xlsx">
+      <text v="Phiếu thu cho nhiều khách hàng" e="Receipts"></text>
+    </form>
+  </forms>
+
+  <fields>
+    <field name="isFC" type="B">
+      <text v="False" e="False"/>
+    </field>
+    <field name="title" type="C">
+      <text v="PHIẾU THU" e="RECEIPTS"/>
+    </field>
+    <field name="h_day" type="C">
+      <text v="Ngày" e="Date"/>
+    </field>
+    <field name="h_month" type="C">
+      <text v="tháng" e="Month"/>
+    </field>
+    <field name="h_year" type="C">
+      <text v="năm" e="Year"/>
+    </field>
+
+
+    <field name="h_don_vi_ban" type="C">
+      <text v="Đơn vị bán hàng:" e="Seller:"/>
+    </field>
+
+    <field name="h_nguoi_mua" type="C">
+      <text v="Họ tên người nộp tiền:" e="Buyer:"/>
+    </field>
+    <field name="h_don_vi_mua" type="C">
+      <text v="Tên đơn vị:" e="Company:"/>
+    </field>
+    <field name="h_ma_so_thue" type="C">
+      <text v="Mã số thuế:" e="Tax Code:"/>
+    </field>
+    <field name="h_dia_chi" type="C">
+      <text v="Địa chỉ:" e="Address:"/>
+    </field>
+	<field name="h_so_ct" type="C">
+      <text v="Số:" e="Company"/>
+    </field>
+    <field name="h_company" type="C">
+      <text v="Đơn vị" e="Company"/>
+    </field>
+    <field name="h_address" type="C">
+      <text v="Địa chỉ:" e="Address:"/>
+    </field>
+    <field name="h_ten_kh" type="C">
+      <text v="Tên khách hàng:" e="Customer Name:"/>
+    </field>
+    <field name="h_noi_giao" type="C">
+      <text v="Nơi giao" e="Ship - to"/>
+    </field>
+	<field name="h_dien_giai" type="C">
+      <text v="Lý do nộp tiền:" e="Ship - to"/>
+    </field>
+	<field name="h_stt" type="C">
+      <text v="Stt" e="Item"/>
+    </field>
+    <field name="h_kh" type="C">
+      <text v="Khách hàng" e="Customer"/>
+    </field>
+	<field name="h_ma_kh" type="C">
+      <text v="Khách hàng:" e="Customer:"/>
+    </field>
+    <field name="h_dvt" type="C">
+      <text v="Đvt" e="UOM"/>
+    </field>
+    <field name="h_sl" type="C">
+      <text v="Số lượng" e="Quantity"/>
+    </field>
+	<field name="h_id_hd" type="C">
+      <text v="Số hóa đơn" e="Price"/>
+    </field>
+    <field name="h_gia" type="C">
+      <text v="Giá" e="Price"/>
+    </field>
+    <field name="h_tien" type="C">
+      <text v="Tiền" e="Amount"/>
+    </field>
+	<field name="h_ten_pttt" type="C">
+      <text v="Phương thức TT" e="In words:"/>
+    </field>
+    <field name="h_total" type="C">
+      <text v="Cộng tiền bán hàng hóa, dịch vụ:" e="Total Amount:"/>
+    </field>
+	<field name="h_so_tien" type="C">
+      <text v="Số tiền:" e="In words:"/>
+    </field>
+    <field name="h_bang_chu" type="C">
+      <text v="Bằng chữ:" e="In words:"/>
+    </field>
+    <field name="h_kiem_tra" type="C">
+      <text v="(Cần kiểm tra, đối chiếu khi lập, giao, nhận hóa đơn)" e="(Please do check, compare when issuing, delivering and receiving invoice)"/>
+    </field>
+    <field name="h_nguoi_mua_hang" type="C">
+      <text v="Họ tên người nộp tiền:" e="Buyer"/>
+    </field>
+    <field name="h_nguoi_ban_hang" type="C">
+      <text v="Người bán hàng" e="Seller"/>
+    </field>
+	
+	<field name="h_thue" type="C">
+      <text v="Thuế (%)" e="Tax (%)"/>
+    </field>
+	<field name="h_ck" type="C">
+      <text v="C.Khấu (%)" e="Discount (%)"/>
+    </field>
+	<field name="h_con_lai" type="C">
+      <text v="Tổng tiền" e="Total"/>
+    </field>
+	<field name="h_chi_phi" type="C">
+      <text v="Tổng chi phí:" e="Total Cost:"/>
+    </field>
+	<field name="h_tong_cong" type="C">
+      <text v="Tổng cộng:" e="Total All Amount:"/>
+    </field>
+	
+	<field name="h_hotline" type="C">
+      <text v="Hotline: 1900 2862 - 086 686 4878" e="Hotline: 1900 2862 - 086 686 4878"/>
+    </field>
+	<field name="h_ma_pttt" type="C">
+      <text v="Phương thức thanh toán:" e="Payment Method:"/>
+    </field>
+  </fields>
+
+</report>

@@ -1,0 +1,7 @@
+﻿<![CDATA[  
+  if @id = 0
+    select top 1 @ma_nk = ma_nk, @ten_nk = ten_nk from dmnk a where a.status = 1 and unit_id in (0, @@unit) and exists(select 1 from dmnk3 x where x.ma_nk = a.ma_nk and x.ma_ct = '@@voucherCode' and (x.user_id in (0, @@userId) or @@admin = 1)) and (ngay_hl1 is null or @ngay_ct >= ngay_hl1) and (ngay_hl2 is null or @ngay_ct <= ngay_hl2)
+  else
+    select @ma_nk = ma_nk, @ten_nk = ten_nk, @unit_id = unit_id from #@@table
+  exec ISWIFTStoredGetVoucherNo @ma_nk, @ngay_ct, '@@voucherCode', @unit_id, @@userId, @@admin, @i_so_ct output, @ma_nk output, @ten_nk output, @so_ct output 
+]]>

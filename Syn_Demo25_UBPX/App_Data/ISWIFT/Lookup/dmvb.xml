@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<dir id="dmvb" dirViewType="Lookup" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục mẫu văn bản" e="Document Template Catalog"></title>
+  <grids>
+    <grid table="dmvb" fieldKey="ma_vb" fieldName="ten_vb" order="ma_vb" allowFilter="true" allowOrder="true">
+		<fields>
+			<field name="ma_vb" width="120" fieldType="PK">
+			  <text v="Mã văn bản" e="Document code"></text>
+			</field>
+			<field name="ten_vb" width="250">
+			  <text v="Tên văn bản" e="Document Name"></text>
+			</field>
+			<field name="ten_vb2" width="250">
+			 <text v="Tên tiếng anh" e="English Name"></text>
+			</field>
+		</fields>
+		<script>
+			<query>
+				<text>
+				<![CDATA[
+DECLARE @key2 nvarchar(3000)
+SELECT @key2 = (CASE WHEN @lookupKey = '' THEN '1=1' ELSE @lookupKey END) + CASE WHEN @val = '' THEN ''ELSE ' AND (@@fieldKey LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%''' + ' OR @@fieldName LIKE N''%' + dbo.ISWIFTFunctionReplaceSQLValue(@val) + '%'')' END;
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', N'@@key', @key2, @@filterKey, '', @pageIndex, 10, @@admin, @@userId
+				]]>
+				</text>
+			</query>
+		</script>
+    </grid>
+  </grids>
+</dir>

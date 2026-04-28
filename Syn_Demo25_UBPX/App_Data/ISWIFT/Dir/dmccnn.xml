@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmccnn" table="dmccnn" fieldKey="ma_cc" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục chứng chỉ ngoại ngữ" e="List of Language Certifications"></title>
+  <title0 v="Thêm mới" e="Create New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_cc" format="U" label="1" field="1" allowBlank="false" fieldType="PK" importable="5" >
+          <text v="Mã chứng chỉ" e="Certification Code"></text>
+        </field>
+        <field name="ten_cc" label="1" field="-" allowBlank="false" importable="10"  >
+          <text v="Tên chứng chỉ" e="Certification Name"></text>
+        </field>
+        <field name="ten_cc2" label="1" field="-" importable="15" >
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+		<field name="ma_nn" viewType="Lookup" label="1" field="1" importable="20" >
+			<text v="Ngôn ngữ" e="Languages"></text>
+			<viewInfo lookupType="One" lookupId="dmngoaingu" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_nn" lookupInfo="dmngoaingu|ma_nn|ten_nn" importCheck="@@DF and z.status=1"/>
+        </field>
+        <field name="ten_nn" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+           <text v="" e=""></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" valueDefault="1" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmccnn(p){
+  this.constructor(p);
+}
+dir$dmccnn.prototype = new DirEvent();
+dir$dmccnn.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmccnn.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+dir$dmccnnDisabledMasterField(p, g);
+
+}
+
+function dir$dmccnnDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_cc').trim() != '')
+  {
+    p.setDisabled('ma_cc', true);
+  }
+  else
+  {
+    p.setDisabled('ma_cc', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+  
+  <css>
+	<text>
+	  <![CDATA[
+		.control-label.ma_cc, .control-label.ten_cc
+		{	
+			//font-weight:bold;	
+			color: #499b98;;
+		}
+	  ]]>
+	</text>
+  </css>
+  
+  <script>
+	<importing>
+      <text>
+        <![CDATA[
+		@@insert
+        ]]>
+      </text>
+    </importing>
+  </script>
+  
+  <messages>
+	<message val="codeExistsNewMsg">
+		<text v="Mã chứng chỉ ngoại ngữ đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The language certification code already exists in the catalog, please choose a different code."/>
+	</message>
+	<message val="codeExistsEditMsg">
+		<text v="Mã chứng chỉ ngoại ngữ đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The language certification code already exists in the catalog, please choose a different code."/>
+	</message>
+  </messages>
+
+</dir>

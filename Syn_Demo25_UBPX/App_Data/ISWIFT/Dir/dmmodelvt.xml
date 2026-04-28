@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmmodelvt" table="dmmodelvt" fieldKey="ma_vt,ma_model" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Quản lý sản phẩm theo S/N" e="Department List"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+		<field name="ma_vt" allowBlank="false" viewType="Lookup" label="1" field="1" fieldType="PK" importable="5">
+          <text v="Mã hàng hóa" e="Supplier Code"></text>
+          <viewInfo lookupType="One" lookupId="dmvt" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_vt" lookupInfo="dmvt|ma_vt|ten_vt" />
+        </field>
+        <field name="ten_vt" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="ma_model" format="U" label="1" field="2" allowBlank="false" fieldType="PK" importable="10" >
+          <text v="Mã S/N" e="Model Code"></text>
+        </field>
+		<field name="ma_kho" allowBlank="false" viewType="Lookup" label="1" field="1" importable="15">
+          <text v="Mã kho xuất" e="Site Issue"></text>
+          <viewInfo lookupType="One" lookupId="dmkho" lookupKey="status=1" lookupCheck="1=1" lookupRef="ten_kho" lookupInfo="dmkho|ma_kho|ten_kho" />
+        </field>
+        <field name="ten_kho" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="Tên đối tượng" e="Customer Name"></text>
+        </field>
+		<field name="xstatus" viewType="Combobox" inactivate="true" valueDefault="1" label="1" field="2"  importable="-1">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Tồn trong kho" e="1 - In Stock"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Đã bán" e="0 - Sold"></text>
+              </option>
+			  <option val="5">
+                <text v="5 - Lập chứng từ" e="5 - Vouchers"></text>
+              </option>
+			  <option val="7">
+                <text v="7 - Chuyển kho" e="7 - Transfer Warehouse"></text>
+              </option>
+			  <option val="9">
+                <text v="9 - Hoàn trả" e="9 - Returned Product"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" valueDefault="1" label="1" field="2" hidden="true"  importable="-1">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmmodelvt(p){
+  this.constructor(p);
+}
+dir$dmmodelvt.prototype = new DirEvent();
+dir$dmmodelvt.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <inserting>
+      <text>
+        <![CDATA[
+if exists(select 1 from @@table a where a.ma_vt = @ma_vt and a.ma_model = @ma_model) begin
+  select '$codeExistsNewMsg' as message, '@@firstFieldKey' as field
+  return
+end
+
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId
+]]>
+      </text>
+    </inserting>
+	<importing>
+      <text>
+        <![CDATA[
+@@insert
+        ]]>
+      </text>
+
+    </importing>
+  </script>
+  
+	<messages>
+		<message val="codeExistsNewMsg">
+			<text v="Mã hàng hóa và mã model đã cùng tồn tại trong danh mục." e="The product code and model code already exist in the inventory."/>
+		</message>
+		<message val="codeExistsEditMsg">
+			<text v="Mã hàng hóa và mã model đã cùng tồn tại trong danh mục." e="The product code and model code already exist in the inventory."/>
+		</message>
+	</messages>
+</dir>

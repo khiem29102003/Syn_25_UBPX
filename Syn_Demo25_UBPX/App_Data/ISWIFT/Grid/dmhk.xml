@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridNotPrint.xml">
+]>
+
+<dir id="dmkhobai" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục cảng hàng không" e="List of Airports"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="dmkhobai" fieldKey="ma_kho" order="ma_kho" allowFilter="true" allowOrder="true">
+      <fields >
+        <field name="ma_kho" fieldType="PK" width="120">
+          <text v="Mã cảng" e="Port Code"></text>
+        </field>
+        <field name="ten_kho" width="250">
+          <text v="Tên cảng" e="Port Name"></text>
+        </field>
+		<field name="ten_kho2" width="250">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+
+		<field name="hc_yn" hidden="false" dataType="B" align="center" width="100" allowOrder="false" >
+          <text v="Cảng biển" e="Seaports"></text>
+        </field>
+		<field name="hk_yn" hidden="false" dataType="B" align="center" width="120" allowOrder="false">
+          <text v="Cảng hàng không" e="Airports"></text>
+        </field>
+		 <field name="ma_ttp" width="120" >
+          <text v="Mã khu vực" e="Area Code"></text>
+        </field>
+        <field name="ten_ttp" width="120" fieldType="EX" hidden = "true" >
+          <text v="Khu vực" e="Area"></text>
+        </field> 
+		 <field name="ma_qg" width="120" >
+          <text v="Mã quốc gia" e="Country Code"></text>
+        </field>
+        <field name="ten_qg" width="120" fieldType="EX" hidden = "true" >
+          <text v="Quốc gia" e="Country"></text>
+        </field> 
+		<field name="status" width="120" align="center" >
+          <text v="Trạng thái" e="Status"></text>
+        </field>
+      </fields>
+		
+		
+		
+	  &DefaultButton;
+	  
+	  
+	<script>
+        <query>
+          <text>
+            <![CDATA[
+			declare @strKey nvarchar(3000)
+			set @strKey= ' hc_yn=1 or hk_yn = 1 '
+			exec ISWIFTStoreVoucherTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmquocgia g on a.ma_qg = g.ma_qg left join dmttp p on a.ma_ttp = p.ma_ttp', 'g.ten_qg, p.ten_ttp', '@@key',  @strKey, @@filterKey, '', @pageIndex, 0, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+		<finding>
+          <text>
+            <![CDATA[
+				declare @strKey nvarchar(3000)
+				set @strKey = @strFinding
+				select @filterKey = @filterKey +  ' hc_yn=1 or hk_yn = 1 '
+				if @rg_code <> '' set @strKey = @strKey + ' and rg_code in (''' + replace(replace(dbo.ISWIFTFunctionReplaceSQLParam(@rg_code), ' ', ''), ',', ''',''') + ''')'		  
+				exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '', '', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+			]]>
+		  </text>
+        </finding>
+    </script>
+    </grid>
+  </grids>
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmkhobai(f){
+  this.constructor(f);
+}
+grid$dmkhobai.prototype = new DirEvent();
+grid$dmkhobai.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGrid.xml">
+]>
+
+<dir id="dmvt" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục hàng hóa, sản phẩm" e="Product List"></title>
+  <subtitle v="Thêm, xóa, sửa..." e="New, delete, edit"></subtitle>
+  <grids>
+    <grid table="vdmvt" fieldKey="ma_vt" order="ma_vt" allowFilter="true" allowOrder="true" >
+      <fields>
+        <field name="ma_vt" fieldType="PK" width="120" link="1">
+          <text v="Mã hàng hóa" e="Product Code"></text>
+        </field>
+        <field name="ten_vt" width="300">
+          <text v="Tên hàng hóa" e="Description"></text>
+        </field>
+        <field name="dvt" width="80">
+          <text v="Đvt" e="UOM"></text>
+        </field>
+        <field name="ma_lvt" width="80" >
+          <text v="Loại hàng hóa" e="Goods Type"></text>
+        </field>
+		<field name="ten_lvt" width="200" fieldType="EX" >
+          <text v="Tên loại hàng hóa" e="Goods Type"></text>
+        </field>
+		   <field name="ximage1" width="80" hidden="true">
+          <text v="Ảnh" e="Goods Type"></text>
+        </field>
+        <field name="nh_vt1"  width="80" hidden="true">
+          <text v="Nhóm 1" e="Group 1"></text>
+        </field>
+        <field name="nh_vt2"  width="150" hidden="true">
+          <text v="Nhóm 2" e="Group 2"></text>
+        </field>
+		<field name="nh_vt3"  width="150" hidden="true">
+          <text v="Nhóm 3" e="Group 3"></text>
+        </field>
+		<field name="thu_tu" width="250">
+          <text v="Thứ tự" e="Position"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="add">
+          <text v="$AddToolbar" e="$AddToobar"></text>
+        </button>
+        <button id="edit">
+          <text v="$EditToolbar" e="$EditToolbar"></text>
+        </button>
+        <button id="delete">
+          <text v="$DeleteToolbar" e="$DeleteToolbar"></text>
+        </button>
+        <button id="copy">
+          <text v="$CopyToolbar" e="$CopyToolbar"></text>
+        </button>
+        <button id="view">
+          <text v="$ViewToolbar" e="$ViewToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+       
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="$RefreshToolbar" e="$RefreshToolbar"></text>
+        </button>
+        <button id="freeze">
+          <text v="$FreezeToolbar" e="$FreezeToolbar"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="export">
+          <text v="$ExportToolbar" e="$ExportToolbar"></text>
+        </button>
+        <button id="downtemplate">
+          <text v="Tải mẫu Excel" e="Down import template"></text>
+        </button>
+        <button id="import">
+          <text v="Lấy dữ liệu từ tập tin" e="Import data"></text>
+        </button>
+      </buttons>
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmlvt b on a.ma_lvt = b.ma_lvt', 'b.ten_lvt', '@@key', '', @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+
+        <finding>
+          <text>
+            <![CDATA[
+declare @strKey nvarchar(3000)
+set @strKey = @strFinding
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join dmlvt b on a.ma_lvt = b.ma_lvt', 'b.ten_lvt', '@@key', @strKey, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </finding>
+      </script>
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmvt(f){
+  this.constructor(f);
+}
+grid$dmvt.prototype = new DirEvent();
+grid$dmvt.prototype.afterInit = function(){
+  var p = this._dir;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

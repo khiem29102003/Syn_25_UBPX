@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmhotline_td" table="dmhotline" fieldKey="ma_hl" transaction="true" tryCatch="true" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách số điện thoại tiếp nhận tiếp dân" e="List of Citizen Reception Contact Numbers"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+  <forms>
+	<form gravity="TopLeft" columns="120,120,120,120" >
+		<fields>
+		    <field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_hl" label="1" field="1" allowBlank="true" fieldType="PK" disabled="true" importable="-1">
+				<text v="Mã hotline" e="Hotline code"></text>
+			</field>
+			<field name="hl_name" label="1" field="-" allowBlank="false" disabled="false" importable="5">
+			  <text v="Tên hiển thị" e="Display Name"></text>
+			</field>
+			<field name="hl_lienhe" label="1" field="-" allowBlank="true" disabled="false" importable="10">
+			  <text v="Người liên hệ" e="Contact Person"></text>
+			</field>
+			<field name="dien_thoai" nextRow="true" label="1" field="1" disabled="false" align="left" importable="15" >
+				<text v="Điện thoại" e="Phone Number"></text>
+			</field>
+			<field name="ma_loai" viewType="Combobox" label="1" field="1" inactivate="true" disabled="true" importable="-1">
+			  <text v="Loại điện thoại" e="Phone Type"></text>
+			  <viewInfo>
+				<options query="select ma_loai, ten_loai%l from dmloaiphone where status = 1 and ma_loai = 'TIEPDAN' order by ma_loai">
+				</options>
+			  </viewInfo>
+			</field>
+			<field name="ma_ttp" allowBlank="false" viewType="Lookup" label="1" field="1" hidden="false" disabled="false" importable="20">
+			  <text v="Tỉnh thành phố" e="Province/City"></text>
+			  <viewInfo lookupType="One" lookupId="dmttp" lookupKey="status = 1" lookupCheck="1=1" lookupRef="ten_ttp" lookupInfo="dmttp|ma_ttp|ten_ttp" />
+			</field>
+			<field name="ten_ttp" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_phuongxa" allowBlank="false" viewType="Lookup" label="1" field="1" hidden="false" disabled="false" importable="25">
+			  <text v="Phường/xã" e="Ward/Commune"></text>
+			  <viewInfo lookupType="One" lookupId="dmphuongxa" lookupKey="ma_ttp = ![ma_ttp]! and status = 1" lookupCheck="1=1" lookupRef="ten_phuongxa" lookupInfo="dmphuongxa|ma_phuongxa|ten_phuongxa" />
+			</field>
+			<field name="ten_phuongxa" nextRow="false" fieldType="EX" readOnly="true" inactivate="true"  hidden="false" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ghi_chu" nextRow="true" label="1" field="2" disabled="false" importable="30">
+				<text v="Ghi chú" e="Note"></text>
+			</field>
+			<field name="status" viewType="Combobox" label="1" field="2" valueDefault="1">
+			  <text v="Trạng thái" e="Status"></text>
+			  <viewInfo>
+				<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 order by ma_tt">
+				</options>
+			  </viewInfo>
+			</field>
+      </fields>
+    </form>
+  </forms>
+
+&DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>MHKoXjsQC6eMt2StcwOqyiRDBYzSjVcA/G3izWtCZnwsFRLolNz0FpgsX83sgRZBdTHg9Y3KUnkSejHeZTDIWoC7OJFrObmgzXAxfFhCxtPMGp3L+lD83LUkyvzt2MvHtV4Ztax5ZIt3Vz1yzVkhpo0vgic6RMfU0vy4T9fakmXYje5eK8u+PNViK5Cq6oq5RcKb71mV80eerFbz92b0C74rqV6V339tbYRMo9pQb+YvtsLleVMhghb+Qg7a+RPo/dle3wsV0zrLwIvtoV72ZdToPZhRkgFDl2pRkgTWQ3Gx++DR4XHbdMpsfvbsBSlUyn/tqgi41BWa7+0akAM1cYlIdl44CsJSJ/xHTs/VKGpO1qoeRSgfo95m/vPtgt68eua0XILIqgc7yGpnMT/cxnWYDXYy3dZ/fd48PxSsDEIrxBcVWxZEdx2Ka5LqJQEQOxfVbA2j+h+e3Zr19BK7RwUYL5KLSnpGHgDlcSGXsC0=</enc>]]>
+    </text>
+  </js>
+<css>
+	<text>
+		  <![CDATA[<enc>jQr9S/4suFsxQDzGTuBaEsqfUH9rEW3J3ox53HYE5DjeZ8NE40WvRK6KX0cQbiaofK3qnuzf6Jt22LOr1da3DOrM0NBMfTzQZ9u3rHpewsS4Zdq5Ty6hGxhYgsgo1by77ubKIOexcArxC0jTlGWthFGRWP3lMOGhA90WEFhPuqGttjqMtBy52Qrh4IUwKaRH85l/E5g9ngYyEMaPFmmwqQ==</enc>]]>
+	</text>
+</css>
+  <script>
+	<request code="LoadCode">
+		<text>		
+			<![CDATA[<enc>BAJxLZ/u7SaiPpWahBy+VVwpHljniJbGedtHPTdsTgRJV1gaw80Skl4xBb/5J4CCD28NMWLMnslSPi6t2wlyz0glgRp7k6vdirZMr+f2/UsYDj15D7JVDC9gkKqLxrluaOxVPrnQrKMHVFgnKudjUa4imb8tTjzZgMacAScgRr6701mW1UreftJxOGM8MflIy9LZN6JD4MzugFPItBddna0FhjMfsR7VvAutdr0RCGEnkQtOa4iPmS8PEsu82Mo+049ony4bGhfwEljlAsxlD+IHpQhCkhCXd9FCSHWA9qZ14MgOyB3U5A/whPAw28R0L/tY9gegXL4DQQ6D/LTMMQ==</enc>]]>
+		</text>
+	</request>
+  <inserting>
+      <text>
+        <![CDATA[<enc>qSibm796KHzTjltPx3ASfBJS3Slq3OhU64lN0N/Xa+7rh9PmO4e9o63d0euJ/IXsdL5ukrdrQCzIM8QLWr7MpxAQ+/ZvEOSnKjsUEpbZui2ulN9Tho9gwdxtLD7qbzXBVrYZ/Ew+PttGwPfU5tzhpe+9EDAc8KB0rEGQFtKLS+f5hvtZTNTEPCoOS1ChvdoD+Gx8bxaSdZSnA6buggrW7uP4hP9/GSb+AS7L0sN8LHnXatPxonFOvwcBL/bsTv8r043NaxWVQYYwoPSi4jv6tg==</enc>]]>
+      </text>
+    </inserting>
+	<importing>
+      <text>
+        <![CDATA[<enc>sxD5Swu0R4mcxEHdwcy2yi46ZbQRyi0uEDh1tGVfNVOBZJeZZHskWnswm55XGvVMtI3kJxA271ZmaBNQ7vOM1svvmG7tRC9SwsrihBxLjQw=</enc>]]>
+      </text>
+    </importing>
+  </script>
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Số điện thoại đã tồn tại" e="Phone number is exists"/>
+    </message>
+    <message val="taxtCodeExists">
+      <text v="Số điện thoại đã tồn tại" e="Phone number is exists"/>
+    </message>
+  </messages>
+</dir>

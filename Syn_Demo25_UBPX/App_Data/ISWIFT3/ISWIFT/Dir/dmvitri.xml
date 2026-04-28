@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+
+<dir id="dmvitri" table="dmvitri" fieldKey="ma_kho, ma_vi_tri" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục vị trí kho hàng" e="Location List"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_kho" allowBlank="false" viewType="Lookup" readOnly="false" fieldType="PK">
+          <text v="Mã kho" e="Site"></text>
+          <viewInfo lookupType="One" lookupId="dmkho" lookupKey="status=1 and vi_tri_yn = 1" lookupCheck="vi_tri_yn = 1" lookupRef="ten_kho" lookupInfo="dmkho|ma_kho|ten_kho" />
+        </field>
+        <field name="ten_kho" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+
+        <field name="ma_vi_tri" format="U" label="1" field="1" allowBlank="false" fieldType="PK" >
+          <text v="Mã vị trí" e="Location"></text>
+        </field>
+        <field name="ten_vi_tri" label="1" field="-" allowBlank="false" fieldType="PK" >
+          <text v="Tên vị trí" e="Description"></text>
+        </field>
+        <field name="ten_vi_tri2" label="1" field="-">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+
+        <field name="ghi_chu" rows="3" label="1" field="-" >
+          <text v="Ghi chú" e="Notes"></text>
+        </field>
+
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmvitri(p){
+  this.constructor(p);
+}
+dir$dmvitri.prototype = new DirEvent();
+dir$dmvitri.prototype.afterInit = function(){
+  var p = this._dir;
+}
+]]>
+    </text>
+  </js>
+
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã kho và vị trí đã có trong danh mục vị trí kho." e="The record consisting of site and location is already exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã kho và vị trí đã có trong danh mục vị trí kho." e="The record consisting of site and location is already exists."/>
+    </message>
+  </messages>
+
+</dir>

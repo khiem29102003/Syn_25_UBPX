@@ -1,0 +1,271 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridVoucher.xml">
+]>
+
+<dir id="dmkhtest" dirViewType="Grid" selectMultiple="Table" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục khách hàng test" e="List of dmkhtest"></title>
+  <subtitle v="Từ ngày 25/08/2015 đến ngày 30/06/2016...(test)" e="List of dmkhtest"></subtitle>
+  <grids>
+    <grid table="dmkh" fieldKey="ma_kh" order="a.ma_kh" allowFilter="true" allowOrder="true" headerRowCount="3" >
+      <fields>
+        <field name="ma_kh" fieldType="PK" width="100" filterType="Code">
+          <text v="Mã khách hàng" e="Code"></text>
+        </field>
+        <field name="ten_kh" width="250">
+          <text v="Tên khách hàng" e="Name"></text>
+        </field>
+        <field name="dia_chi" width="300" allowFilter="false">
+          <text v="Địa chỉ" e="Address"></text>
+        </field>
+        <field name="kh_yn" dataType="B" align="Center" width="80" allowOrder="false">
+          <text v="Khách hàng" e="Cust"></text>
+        </field>
+        <field rowspan="1" rowspan2="2" columnspan="2" name="gioi_han_no" fieldType="PK" dataType="N" format="Amount" width="80" allowOrder="false" >
+          <text v="Dư" e="Cust"></text>
+          <text2 v="Dư vnd" e="Cust"/>
+        </field>
+        <field rowspan2="2" name="du_nt13" dataType="N" format="FCAmount" fieldType="EX" aliasName="0*gioi_han_no as " width="80" >
+          <text v="" e=""></text>
+          <text2 v="Dư nt" e="Cust"></text2>
+        </field>
+      
+        <field rowspan="1" rowspan2="2" columnspan="3" name="nh_kh1" width="180">
+          <text v="Nhóm" e="Group"/>
+          <text2 v="Nhóm 1" e="Group 1"/>
+        </field>
+        <field rowspan2="1" columnspan2="2" rowspan3="1" name="nh_kh2" width="180">
+          <text v="" e=""></text>
+          <text2 v="Nhóm/tên nhóm 2" e="Group/name 1"></text2>
+          <text3 v="Nhóm 2" e="Group 1"/>
+        </field>
+        <field rowspan3="1" name="ten_nh_kh2" width="250" fieldType="EX">
+          <text v="" e=""></text>
+          <text3 v="Tên nhóm 2" e="Group 1"></text3>
+        </field>
+        <field name="nh_kh3" hidden="true" width="180">
+          <text v="Nhóm 3" e="Group 1"></text>
+        </field>
+      </fields>
+
+      <buttons>
+        <button id="edit">
+          <text v="Sửa (Ctrl + E, Alt + E)" e="Edit (Ctrl + E, Alt + E)"></text>
+        </button>
+        <button id="add">
+          <text v="Thêm (Alt + N)" e="Add (Alt + N)"></text>
+        </button>
+        <button id="delete">
+          <text v="Xóa (Ctrl + D, Alt + D)" e="Delete (Ctrl + D, Alt + D)"></text>
+        </button>
+        <button id="copy">
+          <text v="Sao chép (Alt + U)" e="Duplicate (Alt + U)"></text>
+        </button>
+        <button id="view">
+          <text v="Xem (Alt + V)" e="View (Alt + V)"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="find">
+          <text v="Tìm kiếm" e="Find"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="refresh">
+          <text v="Làm tươi" e="Refresh"></text>
+        </button>
+        <button id="freeze">
+          <text v="Gim cột" e="Freeze"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="print">
+          <text v="In ấn (Alt + P)" e="Print (Alt + P)"></text>
+        </button>
+        <button id="export">
+          <text v="Kết xuất dữ liệu" e="Kết xuất dữ liệu"></text>
+        </button>
+        <button id="split">
+          <text v="-" e="-"></text>
+        </button>
+        <button id="downtemplate">
+          <text v="Tải mẫu Excel" e="Down import template"></text>
+        </button>
+        <button id="import">
+          <text v="Lấy dữ liệu từ tập" e="Import data"></text>
+        </button>
+      </buttons>
+
+      <mobileView>
+        <text>
+          <![CDATA[
+     [stt]   Mạ khach hang: [ma_kh] 
+        TEN kh: [ten_kh]
+        ]]>
+        </text>
+      </mobileView>
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+--WAITFOR DELAY '00:00:02'
+--set @@columnOrderField = dbo.sf_GetOrderField('@@fieldOrder', @@columnOrderField)
+exec ISWIFTStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', 'left join @@table b on a.nh_kh2 = b.ma_kh', 'b.ten_kh as ten_nh_kh2,a.gioi_han_no as du_nt13', '@@key', 'a.ma_kh like ''%''', @@filterKey, '', @pageIndex, 50, @@admin, @@userId    --@@columnFilterKey
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$dmkhtest(f){
+  this.constructor(f);
+}
+grid$dmkhtest.prototype = new DirEvent();
+grid$dmkhtest.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+
+var tbl;
+grid$dmkhtest.prototype.afterInit = function(){
+  var p = this._dir;
+  
+  var s = '<button class="btn-action btn-action-v1" id="btnViewTree"><img src="../Images/ic_calendar.png" class="icon-bottom-toolbar"/></button>'
+  $("#content").append(s);
+  $("#btnViewTree").click(function () {
+    var f = $("#tree_form_region");
+    if(f.css("display") && f.css("display") != "none"){
+      var s = "";
+      var chk = $(".tree-check:checked")
+      chk.each(function () {
+          if (!$(this).closest('li').hasClass("tree-hassub"))
+            s += "," + tbl[$(this).attr("rowid")][2];
+      });
+      alert(s.substring(1))
+    }
+    else if(tbl)
+      $("#tree_form_region").show(150);
+    else
+      p.request('viewtree', 'GetTable', null, loadTree);
+  });
+}
+function loadTree(p, d){
+  var d = new DataTable(d);
+  tbl = d.obj.Rows;
+  
+  var mgTop = $(p.find(".table-bottom")[0]).css("top");
+  
+  var s = '<div class="tree-form" id="tree_form_region" style="top: ' + mgTop + '; margin-top: 2px; display: none;"><div class="header-tree">Cây vùng, khu vực</div><button type="button" id="cancel_tree_region" class="btn-close-form btn-close-tree" data-dismiss="modal" aria-label="Close"><span class="icon-close-form">✖</span></button><div class="tree-group" id="tree_region"></div></div>';
+  $("#content").append(s);
+  $("#tree_form_region").show(150);
+  $("#cancel_tree_region").click(function () {
+      $("#tree_form_region").hide(150);
+  });
+  
+  
+  var lastLevel = -1, maxLevel = 1;
+  s = '<ul class="tree-main">@@L001';  
+  for(var i = 0; i < tbl.length; i ++){
+    var ilevel = parseInt(tbl[i][0]);
+    if(ilevel > maxLevel) maxLevel = ilevel;
+    var xlevel = ("000" + ilevel).substr(-3);
+    var xlevel2 = ("000" + (ilevel + 1)).substr(-3);
+    var tmp = '<div class="checkbox node-tree"><label><input class="tree-check" type="checkbox" rowid="' + i + '"><span class="checkbox-material checkbox-tree"><span class="check"></span></span></label></div><span class="tree-collaps">' + tbl[i][1] + '</span>@@L' + xlevel2 + '</li>@@L' + xlevel;
+    
+    if(lastLevel == -1 || ilevel == lastLevel){
+      s = s.replace("@@L" + xlevel2, "");
+      tmp = '<li ' + (xlevel == "001" ? ' class="tree-root"' : '') + '>' + tmp;
+      s = s.replace("@@L" + xlevel, tmp);
+    }
+    else if(ilevel > lastLevel){
+      tmp = '<ul style="display: none;"><li>' + tmp + '</ul>';
+      s = s.replace("@@L" + xlevel, tmp);
+    }
+    else{
+      for(var x = ilevel + 1; x <= lastLevel + 1; x ++)
+        s = s.replace("@@L" + ("000" + x).substr(-3), "");
+      s = s.replace("@@L" + xlevel, '<li>' + tmp);
+    }
+    lastLevel = ilevel;
+  }
+  s += '</ul>';
+  for(var i = 1; i <= maxLevel + 1; i ++)
+    s = s.replace("@@L" + ("000" + i).substr(-3), "");
+  
+  $("#tree_region").append(s);
+  
+  $('.tree-group li:has(ul)').addClass('tree-hassub');
+  $('.tree-group .tree-collaps').click(function () {
+      $(this).parent().children().toggle();
+      $(this).toggle();
+
+      var chk = $(this).parent().find('.checkbox:eq(0)');
+      chk.toggle();
+
+      var c = chk.parent().find("ul:eq(0)").css("display");
+      if (c) {
+          if(c == "none")
+              chk.removeClass("node-tree-expand")
+          else
+              chk.addClass("node-tree-expand")
+
+      }
+  });
+  $('.tree-group .tree-check').change(function () {
+      var obj = $(this);
+      var flag = this.checked;
+      obj.parent().find(".check").removeClass('check-rdo')
+
+      var parentLi = obj.closest('li');
+      parentLi.find('.tree-check:gt(0)').prop('checked', flag);
+      parentLi.find(".check").removeClass('check-rdo');
+
+      treeCheckParent(parentLi);
+  });
+}
+
+function treeCheckParent(obj) {
+  var curUl = obj.closest('ul');
+  var curli = curUl.closest('li');
+  var hasUncheck = false;
+  var hasCheck = false;
+  curUl.find('li').each(function () {
+      if (!$(this).find('.tree-check').prop('checked'))
+          hasUncheck = true;
+      else
+          hasCheck = true;
+  });
+  if (hasUncheck) {
+      curli.find('.check:eq(0)').addClass('check-rdo');
+      curli.find('.tree-check:eq(0)').prop('checked', hasCheck);
+  }
+  else {
+      curli.find('.check:eq(0)').removeClass("check-rdo");
+      curli.find('.tree-check:eq(0)').prop('checked', hasCheck);
+  }
+  if (!curli.hasClass("tree-root") && !curUl.hasClass("tree-main"))
+      treeCheckParent(curli);
+}
+
+         ]]>
+    </text>
+  </js>
+
+  <script>
+    <viewtree>
+      <text>
+        <![CDATA[
+exec getTreeCustomerRegion
+]]>
+      </text>
+    </viewtree>
+  </script>
+</dir>

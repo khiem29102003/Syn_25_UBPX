@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmhmdx" table="dmhmdx" fieldKey="ma_hmdx" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục hạng mục đề xuất" e="List of proposed types"></title>
+  <title0 v="Thêm mới" e="New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+        <field name="ma_hmdx" format="U" label="1" field="1" allowBlank="false" fieldType="PK"  importable="5">
+          <text v="Mã hạng mục" e="Type code"></text>
+        </field>
+        <field name="ten_hmdx" label="1" field="-" allowBlank="false" fieldType="PK"  importable="10">
+          <text v="Tên hạng mục" e="Type name"></text>
+        </field>
+        <field name="ten_hmdx2" label="1" field="-" allowBlank="true"  importable="15">
+          <text v="Tên khác" e="Other name"></text>
+        </field> 
+		<field name="nguoi_check" allowBlank="true" viewType="Lookup" label="1" field="-"  hidden="false">
+			<text v="Quyền check" e="Check"></text>
+			<viewInfo lookupType="Multi" lookupId="dmnv" lookupKey="xstatus = 5" lookupCheck="xstatus = 5" lookupRef="" lookupInfo="dmnv|ma_nv|ten_nv" />
+		</field>
+		<field name="nguoi_duyet" allowBlank="true" viewType="Lookup" label="1" field="-"  hidden="false">
+			<text v="Quyền duyệt" e="Approve"></text>
+			<viewInfo lookupType="Multi" lookupId="dmnv" lookupKey="xstatus = 5" lookupCheck="xstatus = 5" lookupRef="" lookupInfo="dmnv|ma_nv|ten_nv" />
+		</field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="[150]">
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmhmdx(p){
+  this.constructor(p);
+}
+dir$dmhmdx.prototype = new DirEvent();
+dir$dmhmdx.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmhmdx.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid()
+
+dir$dmhmdxDisabledMasterField(p, g);
+
+}
+
+function dir$dmhmdxDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_hmdx').trim() != '')
+  {
+    p.setDisabled('ma_hmdx', true);
+  }
+  else
+  {
+    p.setDisabled('ma_hmdx', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+		<text>
+		  <![CDATA[
+	.control-label.ma_hmdx, .control-label.ten_hmdx, .control-label.nguoi_check, .control-label.nguoi_duyet, .control-label.nguoi_thuchien
+	{	
+		//font-weight:bold;	
+		color: #499b98;;
+	}
+		  ]]>
+		</text>
+  </css>
+  <script>
+    <declare>
+      <text>
+        <![CDATA[
+declare @codeExistsNewMsg nvarchar(256), @codeExistsEditMsg nvarchar(256)
+select @codeExistsNewMsg = case when '@@lan' = 'v' then N'Mã hạng mục đã tồn tại' else N'The type code already exists.' end
+select @codeExistsEditMsg = case when '@@lan' = 'v' then N'Mã hạng mục đã tồn tại' else N'The type code already exists.' end
+         ]]>
+      </text>
+    </declare>
+  </script>
+  <messages>
+    <message val="codeExistsNewMsg">
+      <text v="Mã hạng mục đã tồn tại." e="The type code already exists."/>
+    </message>
+    <message val="codeExistsEditMsg">
+      <text v="Mã hạng mục đã tồn tại." e="The type code already exists."/>
+    </message>
+  </messages>
+</dir>

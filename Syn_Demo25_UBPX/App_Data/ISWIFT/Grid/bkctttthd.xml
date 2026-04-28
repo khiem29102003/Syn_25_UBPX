@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonGridReport.xml">
+]>
+
+<dir id="bkctttthd" dirViewType="Grid" dirObjectType="Report" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Bảng kê chi tiết thu tiền theo hóa đơn" e=""></title>
+  <subtitle v="Từ ngày {ngay_ct1} đến ngày {ngay_ct2}..." e="From {ngay_ct1} To {ngay_ct2}..."></subtitle>
+  <grids>
+    <grid>
+      <fields>
+        <field name="ngay_ct" width="100" dataType="D">
+          <text v="Ngày c/từ" e="Voucher Date"></text>
+        </field>
+        <field name="so_ct" width="100" link="V" >
+          <text v="Số c/từ" e="Voucher Number"></text>
+        </field>
+        <field name="ma_kh" width="100">
+          <text v="Mã khách hàng" e="Customer Code"></text>
+        </field>
+        <field name="ten_kh" width="250" aliasName="b" join="left join dmkh b on a.ma_kh = b.ma_kh">
+          <text v="Tên khách hàng" e="Customer Name"></text>
+        </field>
+        <field name="dien_giai" width="250">
+          <text v="Diễn giải" e="Description"></text>
+        </field>
+        <field name="ma_nt" width="50">
+          <text v="Mã nt" e="FC Code"></text>
+        </field>
+        <field name="ty_gia" dataType="N" format="ExRate" width="80">
+          <text v="Tỷ giá" e="Exchange Rate"></text>
+        </field>
+
+        <field name="t_tt_nt" dataType="N" format="FCAmount" width="100">
+          <text v="Tổng tiền nt" e=""></text>
+        </field>
+        <field name="tt_nt" dataType="N" format="FCAmount" width="100" aliasName="0*t_tt_nt as " readOnly="false">
+          <text v="Đã th.toán nt" e=""></text>
+        </field>
+        <field name="cl_nt" dataType="N" format="FCAmount" width="100" aliasName="0*t_tt_nt as " >
+          <text v="Còn lại nt" e=""></text>
+        </field>
+
+        <field name="t_tt" dataType="N" format="FCAmount" width="100">
+          <text v="Tổng tiền" e=""></text>
+        </field>
+        <field name="tt" dataType="N" format="FCAmount" width="100" aliasName="0*t_tt_nt as " readOnly="false">
+          <text v="Đã thanh toán" e=""></text>
+        </field>
+        <field name="cl" dataType="N" format="FCAmount" width="100" aliasName="0*t_tt_nt as " >
+          <text v="Còn lại" e=""></text>
+        </field>
+
+        <field name="tt_yn" dataType="B" width="80" >
+          <text v="Tất toán" e=""></text>
+        </field>
+
+        <field name="unit_id" dataType="I" hidden="true" width="100" >
+          <text v="Unit ID" e="Unit ID"></text>
+        </field>
+        <field name="id" dataType="I" hidden="true" width="100" >
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="ma_ct" width="100" >
+          <text v="Mã chứng từ" e="VC Code"></text>
+        </field>
+        <field name="ma_unit" width="80" aliasName="d" join="left join sysunit d on a.unit_id = d.unit_id" >
+          <text v="Đơn vị" e="Unit"></text>
+        </field>
+      </fields>
+
+      &DefaultButton;
+    </grid>
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$bkctttthd(f){
+  this.constructor(f);
+}
+grid$bkctttthd.prototype = new DirEvent();
+grid$bkctttthd.prototype.afterInitFields = function(){
+  var p = this._dir;
+}
+grid$bkctttthd.prototype.beforeInit = function(){
+  var p = this._dir;
+}
+grid$bkctttthd.prototype.afterInit = function(){
+  var p = this._dir, g = p.grid(), dt = g.data;
+}
+]]>
+    </text>
+  </js>
+   <css>
+    <text>
+		<![CDATA[
+		.table-bottom{
+			left: 0px!important;
+			height: calc(100% - 77px);
+			top: 0px;
+			position: relative;
+			margin-top: 27px;
+			clear: both;
+			border-bottom: 1px solid #ddd;
+		}
+		#content .dir{
+			position: relative !important;
+			height: 100%;
+		}
+
+		@media only screen and (max-width: 767px) {
+		  .table-bottom{
+			margin-top: 42px;
+			height: calc(100% - 92px);
+		  }
+		}
+		]]>
+    </text>
+  </css>
+</dir>

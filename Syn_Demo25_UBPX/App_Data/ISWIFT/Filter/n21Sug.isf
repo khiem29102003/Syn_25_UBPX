@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherJSLoading SYSTEM "..\Include\XML\VoucherJSLoading.xml">
+]>
+
+<dir id="n21Sug" table="" height="" fieldKey="id" voucherCode="PF1" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Lọc đề nghị đã được kiểm tra" e="Filter training form (Approve)"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" aliasName="@DFDFrom" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D">
+          <text v="Ngày c/từ (từ/đến)" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" aliasName="@DFDTo" clientDefault="true" allowBlank="false" fieldType="PK" dataType="D" nextRow="false">
+          <text v="" e=""></text>
+        </field>
+        <field name="so_ct1"  label="1" field="1" operation="a.so_ct &gt;= N'%s'">
+          <text v="Số c/từ (từ/đến)" e="Voucher Number"></text>
+        </field>
+        <field name="so_ct2"  label="" nextRow="false" field="1" operation="a.so_ct &lt;= N'%s'">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_hmdx" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Chọn hạng mục" e="Department"></text>
+			<viewInfo lookupType="One" lookupId="dmhmdx" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_hmdx"  />
+		</field>
+		<field name="ten_hmdx" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 	
+		
+		<field name="ma_loaidx" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Loại đề xuất" e="Department"></text>
+			<viewInfo lookupType="One" lookupId="dmloaidx" lookupKey="status = 1" lookupCheck="1 = 1" lookupRef="ten_loaidx"  />
+		</field>
+		<field name="ten_loaidx" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+		<field name="ma_nv" viewType="Lookup" label="1" field="1" operation="like">
+			<text v="Mã nhân viên" e="Department"></text>
+			<viewInfo lookupType="One" lookupId="dmnv" lookupKey="xstatus = 5" lookupCheck="1 = 1" lookupRef="ten_nv"  />
+		</field>
+		<field name="ten_nv" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field>
+
+		
+        <field name="tieu_de" label="1" field="-" operation="a.tieu_de like N'%%s%'">
+          <text v="Tiêu đề" e="Explain"></text>
+        </field>
+      </fields>
+    </form>
+
+    <form gravity="BottomLeft" columns="120,120,120,120"  >
+      <fields>
+        <field name="ma_unit" viewType="Lookup" inactivate="true" label="1" field="2" hidden="true"		>
+          <text v="Đơn vị" e="Unit"></text>
+          <viewInfo lookupType="Multi" lookupId="sysunit" lookupKey="status = 1 and unit_id in (select unit_id from dbo.ISWIFTFunctionGetUnitIDRight(@@userId, @@admin, ''))" lookupCheck="1 = 1" lookupRef="ten_unit" />
+        </field>
+        <field name="ten_unit" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+          <text v="" e=""></text>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="3" valueDefault="1" operation="=" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="2">
+                <text v="Đã check" e="Approved (Undo)"/>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+
+      </fields>
+    </form>
+  </forms>
+
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>sO2K7bI+jBc0axDxJ8zSIUDig0VdVtVYjeOpEJjGeCgSEQNnGkExjlMsfhnH4sbFjY3SNLPf6JydN2+Pcz7F2fRRNverTwBmObgh/ZtfBGxiU1/tcBj5Bua9Xz274o/Zz5ty3aBuu+JBFDrxzsNFj9XSKDss/wf9mJ7gmz289oKFJyXq1OX8oewpWo6i77j/SsCvdfjsC85Qo/jXduyEjlRw25/F8fC34CCCLVnEwFAUQx6g0/8AU+VbL8JL20vy5MD8hgJ+LhbjxiizBnzkuJI6+M3UnvJ2t8RmCmPqd6Q=</enc>]]>
+    </text>
+  </js>
+
+  <script>
+    &VoucherJSLoading;
+  </script>
+
+  <messages>
+    <message val="approve">
+      <text v="góp ý" e="Approve"/>
+    </message>
+    <message val="undo">
+      <text v="bỏ check" e="Open "/>
+    </message>
+    <message val="open">
+      <text v="bỏ đóng" e="Open"/>
+    </message>
+  </messages>
+</dir>

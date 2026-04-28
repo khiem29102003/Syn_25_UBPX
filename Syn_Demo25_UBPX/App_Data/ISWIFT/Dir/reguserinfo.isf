@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="reguserinfo" table="reguserinfo" fieldKey="user_id" dirViewType="Dialog" transaction="true" tryCatch="true" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Khai báo người sử dụng" e="User Maintenance"></title>
+  <title0 v="Thêm thông tin người sử dụng" e="New User's Information"></title0>
+  <title1 v="Sửa thông tin người sử dụng" e="Edit User's Information"></title1>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120,120"  >
+      <fields>
+        <field name="user_id" label="" field="1" dataType="I" hidden="true" fieldType="PK" >
+          <text v="" e=""></text>
+        </field>
+        <field name="admin" label="1" field="1" dataType="I" hidden="true" >
+          <text v="" e=""></text>
+        </field>
+		<field name="username" format="U" label="1" field="1" allowBlank="false" >
+          <text v="Tên người dùng" e="Name"></text>
+        </field>
+		<field name="type_member" viewType="Combobox" valueDefault="" label="1" field="2" nextRow="true" >
+		<text v="Chọn loại thành viên" e="Type of Member"></text>
+		<viewInfo>
+			<options query="select ma_bgn, ten_bgn%l from dmbgn where ma_ct = 'RSU' and status = 1 order by stt">
+			</options>
+		</viewInfo>
+		</field>
+        <field name="ma_so_thue" label="1" field="1"  importable="35">
+          <text v="Mã số thuế &lt;a onclick='getTax(this);'&gt;(Kiểm tra)&lt;/a&gt;" e="Tax code &lt;a onclick='getTax(this);'&gt;(Test)&lt;/a&gt;"></text>
+        </field>
+		<field name="nguoi_lh" label="1" field="2" hidden="false" nextRow="false">
+          <text v="Người liên hệ" e="Description"></text>
+        </field>		
+		<field name="company" format="U" label="1" field="2" >
+          <text v="Tên công ty" e="Company Name"></text>
+        </field>
+		<field name="phone" label="1" field="1" nextRow="true" allowBlank="false">
+          <text v="Điện thoại" e="Mobile Phone Number"></text>
+        </field>
+		<field name="e_mail" label="1" field="2" nextRow="false">
+          <text v="Email" e="Email Address"></text>
+        </field>
+        <field name="image_id" label="0" field="1" viewType="Image">
+          <text v="" e=""></text>
+          <viewInfo fileFieldId0="user_id" fileGroup="SysUser" fileExtension="jpg,png" maxFileSize="10240" maxFileCount="1"></viewInfo>
+        </field>	
+        <field name="nickname" allowBlank="false" label="1" field="2" hidden="true">
+          <text v="Tên đầy đủ" e="Description"></text>
+        </field>
+        <field name="vpassword" allowBlank="false" fieldType="EX" valueDefault="********" label="1" field="2">
+          <text v="Mật khẩu" e="Password"></text>
+        </field>
+        <field name="vpassword2" allowBlank="false" fieldType="EX" valueDefault="********" label="1" field="2">
+          <text v="Nhập lại mật khẩu" e="Re-Password"></text>
+        </field>
+
+        <field name="birthday" label="1" field="1" clientDefault="true" dataType="D" hidden="true">
+          <text v="Ngày sinh" e="Birthday"></text>
+        </field>
+        <field name="parent_user" label="-" field="1" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="parent_username" clientDefault="true" fieldType="EXParam" viewType="Lookup" label="1" field="1" hidden="true">
+          <text v="Nhân viên cấp trên" e="Parent User"></text>
+          <viewInfo lookupType="One" lookupId="sysuserinfo" lookupKey="1=1" lookupCheck="1=1" lookupRef="parent_username_name" lookupInfo="sysuserinfo|username|nickname" />
+        </field>
+        <field name="parent_username_name" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="user_ref" label="" field="1" hidden="true">
+          <text v="" e=""></text>
+        </field>
+        <field name="rg_code" clientDefault="true" viewType="Lookup" label="1" field="1">
+          <text v="Khu vực" e="Region"></text>
+          <viewInfo lookupType="One" lookupId="sysregioninfo" lookupKey="1=1" lookupCheck="1=1" lookupRef="rg_code_name" lookupInfo="sysregioninfo|rg_code|rgname" />
+        </field>
+        <field name="rg_code_name" clientDefault="true" nextRow="false" fieldType="EX" readOnly="true" inactivate="true" label="" field="-" aliasName="cast('' as nvarchar(4000)) as ">
+          <text v="" e=""></text>
+        </field>
+        <field name="language" viewType="Combobox" inactivate="true" label="1" field="1" >
+          <text v="Ngôn ngữ ngầm định" e="Default Language"></text>
+          <viewInfo>
+            <options>
+              <option val="v">
+                <text v="Tiếng Việt" e="Vietnamese"></text>
+              </option>
+              <option val="e">
+                <text v="Tiếng Anh" e="English"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="lock_yn" dataType="B" valueDefault="1" label="1" field="[60]" fieldType="EXParam" aliasName="case when errorpass > 5 then 1 else 0 end as ">
+          <text v="Khóa đăng nhập" e="Khóa đăng nhập"></text>
+        </field>
+
+        <field name="status" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Trạng thái" e=""></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="password" label="" hidden="true" field="1">
+          <text v="" e=""></text>
+        </field>
+        <field name="update_pass" fieldType="EXParam" label="" hidden="true" field="1">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[<enc>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</enc>]]>
+    </text>
+  </js>
+
+  <css>
+    <text>
+      <![CDATA[<enc>NnrjY7t9qla1gUM/7uX7PNyA8qTemdRMMLce1Xe0G9+X6o1JxWHDgfOqXO2TwFi3K0n0Ql8vlfOcVYZfeE8RlrCPgKnwPZpXrpKCZPLUUOIyThWPK7wgtzxsAF4061aMlYxq9Y+vK3A5gHajOPty/H/CUIVz9R/i0bHNpIdj7PAW0Owo3ZR4BEZWpPCWwloz</enc>]]>
+    </text>
+  </css>
+
+  <script>
+
+    <query>
+      <text>
+        <![CDATA[<enc>sCIEoTk8TIRATiEIbJyPmCw65KuVcJOE2Br7Mz1cuCzcR0YyOiMlCmGdbO+ICMNoZ4t1RagS3stztdG2dAzuKmdezL6BsVgnmg0aEJDeF7gUBY4ENhv4wnk20p+ehCaHca4Tn5ZXZTCSn+c9gmaM86dagXBdmT79XMz9DqBSfFH7QSjwYcHAPmNSXRU8dOQXM0GjjqAvLIEqQxGDhRTCyL9W2y4to+Nc1YQ9NsVzdNuHPnGnqHSExosH7WDhDd+8aPJYsTYG1GIGM0QvWIeogHrDggeuRyTSK4pZxP4G340rniC0liOwm8I0+NC86SNfmggz7gUkmvXH9Jl3x5BNXWt53Dno0jlHlkVWGlicQh+CFL1AIBW8Ot/UIUcHJCMMTwrGMWwQo6HtydF80tt2YdkEcZpj6Ni3sA6FQ87h5DSW4+GlswLIDXjyTsobLyHLFDKObm0sZDdmBvGSMt/J2lqetCtfgdECVIUIRUYY5zem3lc0Fy8f1qFsZ55/Ptag</enc>]]>
+      </text>
+    </query>
+
+    <loading code="1">
+      <text>
+        <![CDATA[<enc>Y4vvdFrIOgM18tfd9ufWQbuGpCCMV8WbSUj31tRXgu5EGyGP4kNnBur3omzH4DFptxRaZ3KJEwzdVBqcIk9mUwmUz7nrC/sXlYGplfhriYKfnzBDJ4ZV91W+iClzIXbp4zcbyjEl4VWcTGFmUn66z+HjkGhYfHhvIpPtoh/VaECgGqHKJmAEtTAKbUYICuEqB+sQRx5MqgB3olgpvpNH9kxYy2ZdlN/uJzqb1fWEdISB/Grxk3H8KKQO8sK94c/dOR9Tkto9WKr6jWCjqSoAv0qECOefnVIhEp9PZQmRqpc=</enc>]]>
+      </text>
+    </loading>
+
+    <updating>
+      <text>
+        <![CDATA[<enc>5mikBd8GfYJXUM2Mze6jcxgG8dDGfaTM/UpxjD4HMyguKaatfRGTauSRiMcxZvAx0AZK5Mc6w+sW21XN24LealSo/+UNz0637JC9MixhBlGyWlcbjIzfezmwY2Qa9RImy7hdGVINaJdAtuluoytXO7CUQ+AKkaJ42v7nO0CFCtQBm532M5oOkL3/4WvpBKDmH7QCeJm5Cpg5uRK2v/aul6g5N2/jR5DJ/CxBU1u8S90fM/Ks3PCcj/A64AOddmb39QnB6MXJoUbXHauSIh/4e3+fN1RWLeogkoFUKUimTkBRtygAMSJWCrU6kc6L8ndHiesz7j2tPGq6izC5fQpATRtx/FN7i8GZXxd0w3yQF0thxW+U1jnndLZKf89NaKfUGPa9OTpKl67nKBQ9nqhzzjMVDzzuWs9TsW8RRnFZxHT3sZY3K+lZ387bk5CrQDSWvHsb2eqWVful3ML1cDOjBnCu41H4aP6iFff/z2SSNFkanugX66Hb2LHkygSlNMeqGeua9FrKxWRAgVkGFGp7FttjIiBvq8VHnP/vgxUnzEF/Baq/ZkUAXmSAehhNhZ9rnQByEBwzaSlzl7KX8huD5pLnWKntlhv3r6b7U7okuBs=</enc>]]>
+      </text>
+    </updating>
+
+    <updated>
+      <text>
+        <![CDATA[<enc>XU+u96iGZiOUEDrvIf+8r8B6FvTpq5aDAbFUnkQfBmp4heeyUf3VWJLJJ/t9v72zTs/a+Rys7ILT63SN2ad349CSQDRpH40EZGAEWgi8U42KV2PKmpK567Em6zRClkK7gU6N70sBL0XplG34uPClkrXwFG6vpBW9hh0iuvWk247TnA/PaUfsLgg2ARJJsR7rwlir1ipos2bomvHFfYGWjYSo4UDTkYu1xEQiKZtE9IMSSsBy9OhPnZmGnqv4AJf/+UOXW58nP4k2TFaveDdcNqxDRl08m0uAk91C1XUqn8d6Zc4R1i9FRcrBh9CvEZpxQGOlui+wUXVdMo6qqH3F5tlKFbEjGY8Wi45OKDx2Fg/YIanS9zEVgS8hQztzxOyZYaqz/680Ax+iiRQ4dQotC7xdb3zCtt3AEr8HwnEweWBjbrlyTZDFxYaiCjL5+ktSkb2VEP6E56YdosNw1lRBCqOPesxY5TcJyeOz8RGZWp3JSZzVf7t0VH5ZV0tEchNv</enc>]]>
+      </text>
+    </updated>
+
+    <inserting>
+      <text>
+        <![CDATA[<enc>hhVOv2WC1cE+z6MNX1wW+hi+VAqUvm9oKAEnPeTVPx8zYHNsYpEhxIqenmWij/kJSo8xmmFAcGT0n3RV/O+B8rlbPX93l0NzjDwdn/PB5JLJbvv7MtYhw1UWnDMXXI1tQ0kSWX/973w14b2DAQpsZa7LLe3fAYNG3mnKrIqqLqDPsbcKh/i3fXFYMdIhcGXi/0QedEy5bT7cYb7vUsSrH7K2Pautdz28BJ9hPcKJZC5UPITa7Bp62ARyr30hm2BKAjhED9b5DagyD9ebNgiO0D0+R6Y2kcl5Y9Llza2iT+DpMywaFACqfH+Wy/uV7+k1IQ6/Ao5sPyCKdxbmjYjyAXxCOXDlTklFtclRuph6YFWDbrrTQaCKXABfbCFkE8FVtuQB3+gym3kSux60eKet7KAfVDbvWh4Jgy05EjACZs7uMtYQ9T3EVbYkVJSNQYEOWIwsJlfCD/L/ywHOM9YrMnH8Wj4qDIhbTCngpfb76N9ZWmh/5UywrtYP2e//yBAPteKGT+cJyhJH30e1P/4+pYKJQjxQntK/ihgC3fa4A8cCAgNqn0ca2XE9aNGV8hm8VAhcQaE3m8I/9StAkkl3rYgAbt1yWQtfOgDf34eDHgSdbeoYlkxhPpqcNHmJ8X0Fn/f2XzDYPxQ7wfAr+yi9uKII0dWvynEXLEmeEHukokI=</enc>]]>
+      </text>
+    </inserting>
+
+    <inserted>
+      <text>
+        <![CDATA[<enc>rTfOJd9kFQ3vwaN5PGPo5/tznTYxv0VGcRsO5spEjHwobi+nYWtZ4KeLv/z7JKLn+a2l3x93o0ZomXO0Kr8mMStExmvlzaP8yuPjDwR0ODx990Kdv1IDztPs6hTGkdqi76MMbGWkUmkFLPYo1u/BToReIQVGOpPcH7qU7q6O77xGvA/ZaZ8kmvLCvvH/s6zL+fuFjcSKqc8ldHN02WeQmUJPHH26wcJgXrY/F6gy8czFPvkQs0aS1SnWPuCjqVs5t9+22SfkYYneStbzqNA9Zan0vyPdNw1BvALU0CXRqIcJa/SH6taZMq/56merwSiZx1dfJ61c8GD4uE9UACdqwGSakSlHPch0lvihBkrcrlSBh6S4aoBOh3d5MCAXu/MaQy934M6/Vy1tvxazfULlDJ0Cddb9aMnLJoSweHxoT1npWjSAylfzYQcqbHVwwUiW</enc>]]>
+      </text>
+    </inserted>
+
+  </script>
+
+  <messages>
+    <message val="exists">
+      <text v="Tên người dùng đã tồn tại" e="User name already exists." />
+    </message>
+    <message val="maxUser">
+      <text v="Số lượng người dùng vượt quá giới hạn." e="Số lượng người dùng vượt quá giới hạn." />
+    </message>
+    <message val="phoneExists">
+      <text v="Số điện thoại di động đã tồn tại." e="Phone Number already exists." />
+    </message>
+    <message val="emailExists">
+      <text v="Địa chỉ Thư (Email) đã tồn tại." e="Email already exists." />
+    </message>
+    <message val="parentConflict">
+      <text v="Nhân viên cấp trên không hợp lệ." e="Invalid Parent User." />
+    </message>
+    <message val="NotParent4Admin">
+      <text v="Không nhập cấp trên cho administrator" e="" />
+    </message>
+  </messages>
+</dir>

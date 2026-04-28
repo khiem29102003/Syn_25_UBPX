@@ -1,0 +1,206 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmsmail" table="dmsmail" fieldKey="ma_smail" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh sách Mail gửi" e="Sent list"></title>
+  <title0 v="Thêm mới" e="Create New"></title0>
+  <title1 v="Sửa" e="Edit"></title1>
+
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120" >
+      <fields>
+	    <field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+          <text v="" e=""></text>
+        </field>
+		<field name="ma_smail" format="U" label="1" field="1" allowBlank="true" fieldType="PK" importable="-1" >
+          <text v="Mã" e="Code"></text>
+        </field>
+        <field name="s_mail" label="1" field="-" allowBlank="false" importable="5" >
+          <text v="Email" e="Email"></text>
+        </field>
+        <field name="ten_mail" label="1" field="-" allowBlank="true" importable="10" >
+          <text v="Tên mail" e="Full Name"></text>
+        </field>
+        <field name="ten_mail2" label="1" field="-" importable="-1" hidden="true">
+          <text v="Tên khác" e="Other Name"></text>
+        </field>
+		<field name="username_smail" label="1" field="-" allowBlank="true" importable="15" >
+          <text v="Tài khoản" e="Account"></text>
+        </field>
+
+		<field name="vpassword" allowBlank="false" fieldType="EX" valueDefault="********" label="1" field="1">
+          <text v="Mật khẩu" e="Password"></text>
+        </field>
+
+		<field name="smtp_server" label="1" field="-" allowBlank="true" importable="25" >
+          <text v="Máy chủ SMTP" e="SMTP Server"></text>
+        </field>
+		<field name="smtp_port" dataType="N" label="1" field="-" allowBlank="true" importable="30" >
+          <text v="Cổng SMTP" e="SMTP Port"></text>
+        </field>
+		<!-- <field name="password_smail" label="1" field="-" allowBlank="true" valueDefault="********" importable="20" > -->
+          <!-- <text v="Mật khẩu" e="Password"></text> -->
+        <!-- </field> -->
+		<field name="type_smail" viewType="Combobox" inactivate="true" label="1" field="2" >
+          <text v="Loại mail" e="Type Mail"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Gmail" e="1 - Gmail"></text>
+              </option>
+              <option val="0">
+                <text v="2 - Outlook" e="0 - Outlook"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+        <field name="status" viewType="Combobox" inactivate="true" valueDefault="1" label="1" field="2" >
+          <text v="Trạng thái" e="Status"></text>
+          <viewInfo>
+            <options>
+              <option val="1">
+                <text v="1 - Còn sử dụng" e="1 - Use"></text>
+              </option>
+              <option val="0">
+                <text v="0 - Không sử dụng" e="0 - Not use"></text>
+              </option>
+            </options>
+          </viewInfo>
+        </field>
+		<field name="mk_mail" label="1" field="-" allowBlank="true"  importable="20" hidden="true">
+          <text v="Mật khẩu ứng dụng" e="Full Name"></text>
+        </field>
+	
+      </fields>
+    </form>
+  </forms>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function dir$dmsmail(p){
+  this.constructor(p);
+}
+dir$dmsmail.prototype = new DirEvent();
+dir$dmsmail.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmsmail.prototype.afterInit = function(renderType){
+  var p = this._dir,g = p.grid();
+  
+	p.request('request_ma_smail', '', '' , function(pp, d, run){
+		if (run) {
+			p.setDisabled('ma_smail', true);
+		}
+	});
+	
+	p.jObject('vpassword').attr('type', 'password');
+	
+	if(p.options.action == 'NEW'){
+		p.valForm('vpassword', '');
+	}else{
+		p.valForm('vpassword', '*******' + String.fromCharCode(255));
+	}
+  
+  dir$dmsmailDisabledMasterField(p, g);
+
+}
+dir$dmsmail.prototype.beforeButtonDialogClick = function(ma_smail){
+  var p = this._dir;
+  switch (ma_smail) {
+    case 'ok':
+		p.valForm('mk_mail', p.valForm('vpassword'));
+    default:
+      break;
+  }
+  return true;
+}
+
+
+function dir$dmsmailDisabledMasterField(p, g){
+  
+  if(p.valForm('ma_smail').trim() != '')
+  {
+    p.setDisabled('ma_smail', true);
+  }
+  else
+  {
+    p.setDisabled('ma_smail', false);
+  }
+}
+         ]]>
+    </text>
+  </js>
+  
+  <css>
+	<text>
+	  <![CDATA[
+		.control-label.s_mail, .control-label.ten_mail
+		{	
+			//font-weight:bold;	
+			color: #499b98;;
+		}
+	  ]]>
+	</text>
+   </css>
+  
+   <script>
+		<request code="request_ma_smail">
+			<text> <![CDATA[ 
+						SELECT 
+							CASE 
+								WHEN MAX(ma_smail) IS NULL THEN 'SM001'
+								ELSE 'SM' + RIGHT('00' + CAST(CAST(SUBSTRING(MAX(ma_smail), 3, LEN(MAX(ma_smail))) AS INT) + 1 AS VARCHAR), 3)
+							END AS [!ma_smail]
+						FROM dmsmail
+									
+			]]> </text>
+		</request>
+	<importing>
+      <text>
+        <![CDATA[
+		SELECT ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS row_num, * INTO #temp_d FROM #data;
+		
+		DECLARE @i int, @ci int, @next_num int;
+		SET @i = 1
+		
+		SELECT @ci = MAX(row_num) FROM #temp_d
+		SELECT @next_num = ISNULL(CAST(SUBSTRING(MAX(ma_smail), 3, 10) AS INT) + 1, 1) FROM dmsmail;
+		
+		WHILE @i <= @ci
+		BEGIN
+		    DECLARE @current_s_mail varchar(255);
+			SELECT @current_s_mail = s_mail FROM #temp_d WHERE row_num = @i;
+			
+			UPDATE #data 
+			SET ma_smail = 'SM' + RIGHT('00' + CAST(@next_num AS VARCHAR(3)), 3)
+			WHERE s_mail = @current_s_mail;
+	
+			SET @i = @i + 1
+			SET @next_num = @next_num + 1;
+		END
+		
+		UPDATE #data set unit_id = @@unit;
+		
+		@@insert
+        ]]>
+      </text>
+    </importing>
+   </script>
+  
+   <messages>
+	<message val="codeExistsNewMsg">
+		<text v="Mã mail đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The mail code already exists in the catalog, please choose a different code."/>
+	</message>
+	<message val="codeExistsEditMsg">
+		<text v="Mã mail đã tồn tại trong danh mục, vui lòng chọn một mã khác." e="The mail code already exists in the catalog, please choose a different code."/>
+	</message>
+   </messages>
+
+</dir>

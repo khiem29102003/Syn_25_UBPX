@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButtonImport SYSTEM "..\Include\XML\DefaultButtonGridImport.xml">
+]>
+
+<dir id="hreqtct" width="Large" dirViewType="Grid" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Quá trình công tác &lt;b&gt;[%s]&lt;/b&gt;" e="&lt;b&gt;[%s]&lt;/b&gt;"></title>
+  <subtitle v="Thêm, sửa, xóa..." e="Add, Edit, Delete..."></subtitle>
+  <grids>
+    <grid table="hreqtct" fieldKey="id, line" order="id, line" allowFilter="true" allowOrder="true">
+      <fields>
+        <field name="id" dataType="N" fieldType="PK" width="100" format="0" hidden="true">
+          <text v="ID" e="ID"></text>
+        </field>
+        <field name="line" dataType="N" fieldType="PK" width="100" format="0" hidden="true">
+          <text v="Dòng" e="Line"></text>
+        </field>
+        <field name="ma_bp" width="100">
+          <text v="Bộ phận" e="Department"></text>
+        </field>
+        <field name="ten_bp" fieldType="EX" width="250" aliasName="b" join="left join hrdmbp b on a.ma_bp = b.ma_bp" >
+          <text v="Tên bộ phận" e="Deparment Name"></text>
+        </field>
+        <field name="ma_vtr" hidden="true" width="100">
+          <text v="" e=""></text>
+        </field>
+        <field name="ten_vtr" fieldType="EX" width="250" aliasName="c" join="left join hrdmvtr c on a.ma_vtr = c.ma_vtr" >
+          <text v="Vị trí" e="Position"></text>
+        </field>
+        <field name="ngay_tu" width="100" dataType="D">
+          <text v="Ngày bắt đầu" e=""></text>
+        </field>
+      </fields>
+
+      &DefaultButtonImport;
+
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+declare @key2 nvarchar(3000)
+select @key2 = 'id = ' + rtrim(@id)
+exec iswiftStoreTableLoading '@@table', '@@fieldKey', '@@fields', @@fieldOrder, '', '', '@@join', 'b.ten_bp, c.ten_vtr', '@@key', @key2, @@filterKey, '', @pageIndex, 50, @@admin, @@userId
+         ]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+
+  </grids>
+
+  <js>
+    <text>
+      <![CDATA[
+function grid$hreqtct(f){
+  this.constructor(f);
+}
+grid$hreqtct.prototype = new DirEvent();
+grid$hreqtct.prototype.afterInit = function(){
+  var p = this._dir;
+}
+]]>
+    </text>
+  </js>
+</dir>

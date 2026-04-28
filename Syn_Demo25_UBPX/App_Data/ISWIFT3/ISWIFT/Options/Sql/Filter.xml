@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<script>
+  <getJsonForm>
+    <text>
+      <![CDATA[
+select jsonform from sysreportform where id = @id and user_id in (0, @@userId) and controller = @controller
+         ]]>
+    </text>
+  </getJsonForm>
+  <saveJsonForm>
+    <text>
+      <![CDATA[
+if not exists(select 1 from sysreportform where id = @id and user_id = @@userId and controller = @controller) begin
+  select '$ReportPivotNotEdit' as message, 'name' as field
+  return
+end
+update sysreportform set jsonform = @reportForm where id = @id and user_id = @@userId and controller = @controller
+select '$Processed' as message
+         ]]>
+    </text>
+  </saveJsonForm>
+  <deleteJsonForm>
+    <text>
+      <![CDATA[
+if not exists(select 1 from sysreportform where id = @id and user_id = @@userId and controller = @controller) begin
+  select '$ReportPivotNotEdit' as message, 'name' as field
+  return
+end
+delete from sysreportform where id = @id and user_id = @@userId and controller = @controller
+select '' as message
+         ]]>
+    </text>
+  </deleteJsonForm>
+  <deletePivotForm>
+    <text>
+      <![CDATA[
+if not exists(select 1 from sysreportpivot where id = @id and user_id = @@userId and controller = @controller) begin
+  select '$ReportPivotNotEdit' as message, 'name' as field
+  return
+end
+delete from sysreportpivot where id = @id and user_id = @@userId and controller = @controller
+select '' as message
+         ]]>
+    </text>
+  </deletePivotForm>
+
+</script>

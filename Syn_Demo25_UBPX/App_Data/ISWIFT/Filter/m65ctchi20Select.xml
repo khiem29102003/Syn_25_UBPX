@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonFilter.xml">
+  <!ENTITY VoucherExtendFields SYSTEM "..\Include\XML\VoucherExtendFields.xml">
+]>
+
+<dir id="m65ctchi20Select" table="" height="" fieldKey="id" voucherCode="CR1" dirViewType="Dialog" readOnly="true" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Chi tiết phiếu được chọn" e="Quotation Entry Detail"></title>
+
+  <forms>
+    <form gravity="TopLeft" columns="120,120,120,120"  >
+      <fields>
+        <field name="ngay_ct1" label="1" field="1" readOnly="true" aliasName="@DFDFrom" disabled="true" allowBlank="false" dataType="D">
+          <text v="Ngày c/từ từ/đến" e="Voucher Date"></text>
+        </field>
+        <field name="ngay_ct2" label="" field="1" allowBlank="false" disabled="true" inactivate="true" dataType="D" nextRow="false">
+          <text v="Ngày đến" e="Voucher Date"></text>
+        </field>
+        <field name="unit_id" dataType="I" hidden="true" label="1" field="1">
+          <text v="Đơn vị" e="Unit"></text>
+        </field>	
+		<field name="ma_kh" format="U" label="1" disabled="true"  field="1" operation="like" >
+          <text v="Mã người ứng" e="Code"></text>
+        </field>
+		<field name="ten_kh" nextRow="false" readOnly="true" fieldType="EX" disabled="true" label="" field="-">
+			<text v="" e=""></text>
+		</field> 
+		<field name="t_tien2" nextRow="true" label="1" field="1" dataType="N" allowBlank ="true" disabled="true" format="Amount" >
+          <text v="Tiền tạm ứng" e="Total Amount"></text>
+        </field>
+		<field name="da_pb_nt" nextRow="false" label="1" field="1" dataType="N" allowBlank ="true" disabled="true" format="Amount" >
+          <text v="Tiền đã phân bổ" e="Total Amount"></text>
+        </field>
+		<field name="t_tien" nextRow="true" label="1" field="1" dataType="N" allowBlank ="true" disabled="true" format="Amount" >
+          <text v="Tiền chưa tất toán" e="Total Amount"></text>
+        </field>
+		<field name="id" dataType="N" hidden="true" fieldType="PK" label="1" field="1"  >
+			 <text v="ID" e="Code"></text>
+		</field>
+		
+      </fields>
+    </form>
+    <form tabPageIndex="" gravity="BottomLeft" height="0" columns="120,120,240" hidden="true">
+      <text v="" e=""></text>
+      <fields>
+        <field name="v61" allowBlank="false" label="" field="-" viewType="Grid">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+    </form>
+  </forms>
+
+ <grids>
+    <grid id="v61" table="v61" fieldKey="id" order="id" allowFilter="true" readOnly="true" allowOrder="true">
+      <fields>
+        <field name="id" foreignField="id" dataType="N" fieldType="PK" format="0" copy="false" hidden="true">
+          <text v="" e=""></text>
+        </field>
+      </fields>
+      <script>
+        <query>
+          <text>
+            <![CDATA[
+	select 1 as id
+	
+	select *, 0*tien_nt as da_pb_nt, 0*tien_nt as cl_nt into #v from ctchi20 
+	update #v set da_pb_nt = b.tt_nt from #v a join (select ma_kh, ma_nt, id, sum(tt_nt) as tt_nt from ctct20 where loai_tt = 1 and id in (select id from #v) group by ma_kh, ma_nt, id) b on a.id = b.id and a.ma_kh = b.ma_kh and a.ma_nt = b.ma_nt
+	update #v set cl_nt=tien_nt-da_pb_nt
+
+	select a.id id_dh, a.ma_kh, b.ten_kh, a.tien_nt t_tien2, a.tien, a.dien_giai, a.ma_bp, a.da_pb_nt, cl_nt t_tien, cl_nt t_tt from #v a left join dmkh b on a.ma_kh = b.ma_kh where a.id = @so_ct
+
+	drop table #v
+	]]>
+          </text>
+        </query>
+      </script>
+
+    </grid>
+   
+  </grids>
+
+  &DefaultButton;
+
+  <js>
+    <text>
+      <![CDATA[
+function filter$m65ctchi20Select(p){
+  this.constructor(p);
+}
+filter$m65ctchi20Select.prototype = new DirEvent();
+filter$m65ctchi20Select.prototype.beforeInit = function(){
+  var p = this._dir;
+  
+}
+
+
+filter$m65ctchi20Select.prototype.afterInit = function(){
+	var p = this._dir,g = p.grid(0),master = g.ds.get(1), rErr = '';
+  p.valForm(['ngay_ct1','ngay_ct2','id', 'ma_noi_di', 'ten_noi_di', 'ma_noi_den', 'ten_noi_den', 'ma_nt', 'unit_id'], [p.options._ngay_ct1,p.options._ngay_ct2,p.options._so_ct,p.options._ma_noi_di, p.options._ten_noi_di,p.options._ma_noi_den, p.options._ten_noi_den,  p.options._ma_nt, p.options._unit_id]);
+	dir$m65ctchi20SetMaster(p);
+
+}
+
+function dir$m65ctchi20SetMaster(p) {
+  p.request('ma_kh_request', '', ['id']);
+}
+
+filter$m65ctchi20Select.prototype.beforeAcceptFilter = function (m2, opt, sub) {
+  var p = this._dir, pa = p.options.parent, g = p.grid(), dt = g.data, master = g.ds.get(1), rErr = '';
+ 
+ var fun = function(){
+	//dt.removeRow('[so_luong] == 0');
+    //pa.appendGrid(0, dt, p.valForm('xprocess') == "2", 'so_luong', 'so_luong');
+	//pa.calcExpressionAll(0, 'so_luong');
+    pa.appendForm(master, 0);
+    p._close();
+  }
+
+  if (rErr.length) {
+    $.question('$VoucherRetrieveLimit', null, p, function(q, v){
+      q._close();
+      if (v) fun();
+    });
+  } else fun();
+  
+
+  //p._close();
+  
+  return false;
+}
+         ]]>
+    </text>
+  </js>
+  <css>
+    <text>
+      <![CDATA[
+		.control-label.t_tien,.input-field.t_tien {font-weight:bold;}
+      ]]>
+    </text>
+  </css>
+  <script>
+		<request code="ma_kh_request">
+			<text>
+			  <![CDATA[
+				  
+				  	select *, 0*tien_nt as da_pb_nt, 0*tien_nt as cl_nt into #v from ctchi20 
+					update #v set da_pb_nt = b.tt_nt from #v a join (select ma_kh, ma_nt, id, sum(tt_nt) as tt_nt from ctct20 where loai_tt = 1 and id in (select id from #v) group by ma_kh, ma_nt, id) b on a.id = b.id and a.ma_kh = b.ma_kh and a.ma_nt = b.ma_nt
+					update #v set cl_nt=tien_nt-da_pb_nt
+
+					select a.ma_kh [!ma_kh], b.ten_kh [!ten_kh], a.tien_nt [!t_tien2], a.da_pb_nt [!da_pb_nt], cl_nt [!t_tien] from #v a left join dmkh b on a.ma_kh = b.ma_kh where a.id = @id
+
+					drop table #v
+			]]>
+			</text>
+		  </request>
+    
+  </script>
+</dir>

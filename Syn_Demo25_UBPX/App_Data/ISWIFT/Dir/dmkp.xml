@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE dir [
+  <!ENTITY DefaultButton SYSTEM "..\Include\XML\DefaultButtonDir.xml">
+]>
+
+<dir id="dmkp" table="dmkp" fieldKey="ma_kp" transaction="true" tryCatch="true" dirViewType="Dialog" xmlns="urn:schemas-iswift:struct-dir">
+  <title v="Danh mục khu phố" e="Neighborhood Catalog"></title>
+  <title0 v="Thêm mới - văn bản lưu hành" e="New - cirulated"></title0>
+  <title1 v="Sửa - văn bản lưu hành" e="Edit - cirulated"></title1>
+
+  <forms>
+	<form gravity="TopLeft" columns="120,120,120,120,120" >
+		<fields>
+			<field name="unit_id" dataType="I" hidden="true" readOnly="true" inactivate="true" label="1" field="1" importable="-1">
+			  <text v="" e=""></text>
+			</field>
+			<field name="ma_kp" label="[120]" field="[120]" allowBlank="false" format="U" disabled="false" fieldType="PK" importable="5" >
+				<text v="Mã khu phố" e="Neighborhood Code"></text>
+			</field>
+			<field name="ten_kp" label="[120]" field="-" allowBlank="false" disabled="false" importable="10">
+			  <text v="Tên khu phố" e="Neighborhood Name"></text>
+			</field>
+			<!-- <field name="ma_ttp" dataType="N" format="0" label="1" field="1"  allowBlank="true" disabled="false" importable="20"> -->
+			  <!-- <text v="Mã tỉnh/thành phố" e="Province/City Code"></text> -->
+			<!-- </field> -->
+			<!-- <field name="ten_ttp" label="[120]" field="-" allowBlank="false" disabled="false" importable="10"> -->
+			  <!-- <text v="Tên tỉnh/thành phố" e="Province/City Name"></text> -->
+			<!-- </field> -->
+			
+			<field name="ma_ttp" viewType="Combobox" nextRow="true" inactivate="false" label="1" field="2" importable="30">
+			  <text v="Ưu tiên" e="Priority"></text>
+			  <viewInfo>
+				<options>
+					<option val="0">
+						<text v="0 - Không ưu tiên" e="0 - Không ưu tiên"></text>
+					</option>
+					<option val="1">
+						<text v="1 - Ưu tiên" e="1 - Ưu tiên"></text>
+					</option>
+				</options>
+			  </viewInfo>
+			</field>
+			
+			<!-- <field name="loai_ut" viewType="Combobox" nextRow="true" inactivate="false" label="1" field="2" importable="30"> -->
+			  <!-- <text v="Ưu tiên" e="Priority"></text> -->
+			  <!-- <viewInfo> -->
+				<!-- <options> -->
+					<!-- <option val="0"> -->
+						<!-- <text v="0 - Không ưu tiên" e="0 - Không ưu tiên"></text> -->
+					<!-- </option> -->
+					<!-- <option val="1"> -->
+						<!-- <text v="1 - Ưu tiên" e="1 - Ưu tiên"></text> -->
+					<!-- </option> -->
+				<!-- </options> -->
+			  <!-- </viewInfo> -->
+			<!-- </field> -->
+			
+			<field name="status" viewType="Combobox" inactivate="false" label="1" field="2" valueDefault="1" nextRow="true" importable="-1" >
+			  <text v="Trạng thái" e="Status"></text>
+			  <viewInfo>
+				<options query="select ma_tt, ten_tt%l from dmttsd where status = 1 ">
+				</options>
+			  </viewInfo>
+			</field>
+      </fields>
+    </form>
+</forms>
+
+&DefaultButton;
+
+<js>
+    <text>
+  <![CDATA[
+function dir$dmkp(p){
+  this.constructor(p);
+}
+dir$dmkp.prototype = new DirEvent();
+dir$dmkp.prototype.afterInit = function(){
+  var p = this._dir;
+}
+dir$dmkp.prototype.afterInit = function(renderType){
+  var p = this._dir;
+
+dir$dmkpDisabledMasterField(p);
+
+}
+
+function dir$dmkpDisabledMasterField(p){
+var maPl = p.valForm('ma_pl');
+	if(maPl) {
+		p.setDisabled('ma_pl', true);
+	} else {
+		p.setDisabled('ma_pl', false);
+	}
+}
+         ]]>
+    </text>
+  </js>
+	<css>
+		<text>
+			  <![CDATA[
+.modal-dialog-lg{min-width:720px!important;}
+.control-label.tt {color: #499b98; text-decoration: underline}
+.control-label.ma_pl {color: #499b98;}
+			  ]]>
+		</text>
+	</css>
+	<script>
+		<query>
+		  <text>
+			<![CDATA[
+select @@fields into #@@table from @@table a where [%whereFieldKey]
+[%updateRef]
+select * from #@@table
+drop table #@@table
+			 ]]>
+		  </text>
+		</query>
+		<updated>
+		  <text>
+			<![CDATA[
+update @@table set datetime2 = getdate(), user_id2 = @@userId where [%whereFieldKey]
+			 ]]>
+		  </text>
+		</updated>
+		<inserting>
+		  <text>
+			<![CDATA[
+if exists(select 1 from @@table a where [%whereFieldKey]) begin
+  select '$codeExistsNewMsg' as message, '@@firstFieldKey' as field
+  return
+end
+
+select @datetime0 = getdate(), @datetime2 = getdate(), @user_id0 = @@userId, @user_id2 = @@userId, @unit_id = @@unit
+			]]>
+		  </text>
+		</inserting>
+		<importing>
+			<text>
+			<![CDATA[
+update #data set unit_id = @@unit
+@@insert
+			]]>
+			</text>
+		</importing>
+	</script>
+	<messages>
+		<message val="codeExistsNewMsg">
+		  <text v="Mã văn bản lưu hành đã tồn tại trong danh mục." e="The circulation document code already exists in the list."/>
+		</message>
+	</messages>
+</dir>
